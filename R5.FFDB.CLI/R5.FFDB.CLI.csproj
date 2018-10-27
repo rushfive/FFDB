@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
+  </ItemGroup>
+
 </Project>
