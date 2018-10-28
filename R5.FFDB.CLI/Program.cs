@@ -15,8 +15,11 @@ namespace R5.FFDB.CLI
 
 			//WeekStats weekStats = TestFantasyApiWeekStatsAsync().GetAwaiter().GetResult();
 
-			var fetcher = new WeekStatsFetcher(null);
-			int latestWeek = fetcher.GetLatestCompletedWeekAsync().GetAwaiter().GetResult();
+			//var fetcher = new WeekStatsFetcher(null);
+			//int latestWeek = fetcher.GetLatestCompletedWeekAsync().GetAwaiter().GetResult();
+
+			var fileSvc = new FileService(null);
+			System.Collections.Generic.List<Core.Abstractions.WeekInfo> result = fileSvc.GetExistingWeeks(new Core.Abstractions.WeekInfo(1, 1));
 
 			Console.ReadKey();
 		}

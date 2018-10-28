@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Core.Models
+namespace R5.FFDB.Core.Game
 {
 	class Team
 	{

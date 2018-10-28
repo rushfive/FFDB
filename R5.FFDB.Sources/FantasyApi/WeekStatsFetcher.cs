@@ -31,35 +31,15 @@ namespace R5.FFDB.Sources.FantasyApi
 
 		public async Task FetchAllAvailableAsync()
 		{
-
+			// - get latest completed weeks
+			// - now we know the range of total possible weeks to fetch (2010-1 to latest)
+			// - scan the download directory, and find the diff of what's missing (throw if invalid file found via regex??)
+			// - fetch the diff'd weeks and save to disk!
 		}
 
 		// todo: private
 		public async Task<int> GetLatestCompletedWeekAsync()
 		{
-			//string filePath = @"D:\Repos\ffdb_weekstat_downloads\2018-7.json";
-
-			//JObject stats = JObject.Parse(File.ReadAllText(filePath));
-
-			//var games = stats["games"].ToObject<JObject>();
-
-			//string gameId = games.Properties().Select(p => p.Name).First();
-
-			//int currentWeek = games[gameId]["state"]["week"].ToObject<int>();
-			//bool weekCompleted = games[gameId]["state"]["isWeekGamesCompleted"].ToObject<bool>();
-
-			//foreach (KeyValuePair<string, JToken> x in games)
-			//{
-			//	string name = x.Key;
-			//	JToken gameInfo = x.Value;
-			//}
-
-			
-
-			////string test = "Here";
-			//return;
-			// REAL BELOW, temp get from disk above!!!!!!
-
 			// any week stats update returns info on current NFL "state", including
 			// the current week and "isWeekGamesCompleted". If true, use that week. If false, use previous.
 
