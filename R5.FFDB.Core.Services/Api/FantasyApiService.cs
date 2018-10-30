@@ -10,7 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Core.Services.Services
+namespace R5.FFDB.Core.Services.Api
 {
 	public class FantasyApiService
 	{
@@ -34,10 +34,6 @@ namespace R5.FFDB.Core.Services.Services
 		// lot more todos: parallel requests? making it non-blocking if updating CLIs ui with progress?
 		public async Task FetchAllAvailableToDiskAsync()
 		{
-			// - get latest completed weeks
-			// - now we know the range of total possible weeks to fetch (2010-1 to latest)
-			// - scan the download directory, and find the diff of what's missing (throw if invalid file found via regex??)
-			// - fetch the diff'd weeks and save to disk!
 			WeekInfo latestCompleted = await GetLatestCompletedWeekAsync();
 
 			List<WeekInfo> missingWeeks = _fileService.GetMissingWeeks(latestCompleted);
@@ -52,13 +48,11 @@ namespace R5.FFDB.Core.Services.Services
 				await Task.Delay(_config.RequestDelayMilliseconds);
 			}
 		}
-
-		// todo: private
+		
 		private async Task<WeekInfo> GetLatestCompletedWeekAsync()
 		{
-			// any week stats update returns info on current NFL "state", including
-			// the current week and "isWeekGamesCompleted". If true, use that week. If false, use previous.
-
+			// doesn't matter which week we choose, it'll always return
+			// the NFL's current state info
 			string endpoint = FantasyApiEndpoint.V2.WeekStatsUrl(2018, 1);
 
 			try

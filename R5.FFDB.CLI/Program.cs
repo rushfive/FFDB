@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using R5.FFDB.Core.Abstractions;
-using R5.FFDB.Core.Services.Services;
+using R5.FFDB.Core.Services.Api;
 using R5.FFDB.Sources.FantasyApi;
 using R5.FFDB.Sources.FantasyApi.V2.Models;
 using System;
