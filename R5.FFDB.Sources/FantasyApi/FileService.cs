@@ -11,7 +11,6 @@ namespace R5.FFDB.Sources.FantasyApi
 	public class FileService
 	{
 		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
-		private readonly WeekInfo earliestWeek = new WeekInfo(2010, 1);
 
 		private FantasyApiSourceConfig _config { get; }
 
@@ -20,14 +19,57 @@ namespace R5.FFDB.Sources.FantasyApi
 			_config = config;
 		}
 
-		// check the downloads dir and find any missing
-		public List<WeekInfo> GetExistingWeeks(WeekInfo latestAvailable)
+		public void SaveWeekStatsToDisk(string statsJson, WeekInfo week)
 		{
-			// temp: hardcode
-			latestAvailable = new WeekInfo(2018, 7);
-			string path = @"D:\Repos\ffdb_weekstat_downloads\";
+			string path = _config.DownloadPath;
+			if (!path.EndsWith(@"\"))
+			{
+				path += @"\";
+			}
 
-			var directory = new DirectoryInfo(path);
+			path += $"{week.Season}-{week.Week}.json";
+
+			if (File.Exists(path))
+			{
+				throw new InvalidOperationException($"Week stats file already exists for {week.Season} - {week.Week}.");
+			}
+
+			File.WriteAllText(path, statsJson);
+		}
+
+		// get available weeks that currently dont have its stats saved on disk
+		public List<WeekInfo> GetMissingWeeks(WeekInfo latestCompleted)
+		{
+			List<WeekInfo> allPossibleWeeks = GetAllPossibleWeeks(latestCompleted);
+			HashSet<WeekInfo> existingWeeks = GetExistingWeeks();
+
+			return allPossibleWeeks.Where(w => !existingWeeks.Contains(w)).ToList();
+		}
+		
+		private List<WeekInfo> GetAllPossibleWeeks(WeekInfo latestCompleted)
+		{
+			var result = new List<WeekInfo>();
+
+			// Earliest available is 2010-1
+			for (int season = 2010; season < latestCompleted.Season; season++)
+			{
+				for (int week = 1; week <= 17; week++)
+				{
+					result.Add(new WeekInfo(season, week));
+				}
+			}
+
+			for (int week = 1; week <= latestCompleted.Week; week++)
+			{
+				result.Add(new WeekInfo(latestCompleted.Season, week));
+			}
+
+			return result;
+		}
+		
+		private HashSet<WeekInfo> GetExistingWeeks()
+		{
+			var directory = new DirectoryInfo(_config.DownloadPath);
 			FileInfo[] files = directory.GetFiles();
 
 			List<string> fileNames = files.Select(f => f.Name).ToList();
@@ -46,8 +88,7 @@ namespace R5.FFDB.Sources.FantasyApi
 				return new WeekInfo(int.Parse(dashSplit[0]), int.Parse(dashSplit[1]));
 			};
 
-			return fileNames.Select(parseWeekInfo).ToList();
+			return fileNames.Select(parseWeekInfo).ToHashSet();
 		}
-
 	}
 }

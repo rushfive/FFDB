@@ -12,14 +12,12 @@ namespace R5.FFDB.CLI
 	{
 		static void Main(string[] args)
 		{
+			var config = new FantasyApiSourceConfig();
 
-			//WeekStats weekStats = TestFantasyApiWeekStatsAsync().GetAwaiter().GetResult();
+			var fileSvc = new FileService(config);
+			var fetcher = new WeekStatsFetcher(config, fileSvc);
 
-			//var fetcher = new WeekStatsFetcher(null);
-			//int latestWeek = fetcher.GetLatestCompletedWeekAsync().GetAwaiter().GetResult();
-
-			var fileSvc = new FileService(null);
-			System.Collections.Generic.List<Core.Abstractions.WeekInfo> result = fileSvc.GetExistingWeeks(new Core.Abstractions.WeekInfo(1, 1));
+			fetcher.FetchAllAvailableToDiskAsync().GetAwaiter().GetResult();
 
 			Console.ReadKey();
 		}
@@ -36,7 +34,7 @@ namespace R5.FFDB.CLI
 				using (HttpContent content = response.Content)
 				{
 					string result = await content.ReadAsStringAsync();
-
+					
 					string fileWritePath = downloadPath += $"2018-7.json";
 					System.IO.File.WriteAllText(fileWritePath, result);
 

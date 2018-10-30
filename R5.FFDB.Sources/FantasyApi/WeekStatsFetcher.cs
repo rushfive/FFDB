@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using R5.FFDB.Core.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,23 +23,40 @@ namespace R5.FFDB.Sources.FantasyApi
 	public class WeekStatsFetcher
 	{
 		private FantasyApiSourceConfig _config { get; }
+		private FileService _fileService { get; }
 
-
-		public WeekStatsFetcher(FantasyApiSourceConfig config)
+		public WeekStatsFetcher(
+			FantasyApiSourceConfig config,
+			FileService fileService)
 		{
 			_config = config;
+			_fileService = fileService;
 		}
 
-		public async Task FetchAllAvailableAsync()
+		// lot more todos: parallel requests? making it non-blocking if updating CLIs ui with progress?
+		public async Task FetchAllAvailableToDiskAsync()
 		{
 			// - get latest completed weeks
 			// - now we know the range of total possible weeks to fetch (2010-1 to latest)
 			// - scan the download directory, and find the diff of what's missing (throw if invalid file found via regex??)
 			// - fetch the diff'd weeks and save to disk!
+			WeekInfo latestCompleted = await GetLatestCompletedWeekAsync();
+
+			List<WeekInfo> missingWeeks = _fileService.GetMissingWeeks(latestCompleted);
+
+			foreach(WeekInfo week in missingWeeks)
+			{
+				string endpoint = FantasyApiEndpoint.V2.WeekStatsUrl(week.Season, week.Week);
+				string weekStats = await Http.Request.GetAsStringAsync(endpoint);
+
+				_fileService.SaveWeekStatsToDisk(weekStats, week);
+
+				await Task.Delay(_config.RequestDelayMilliseconds);
+			}
 		}
 
 		// todo: private
-		public async Task<int> GetLatestCompletedWeekAsync()
+		public async Task<WeekInfo> GetLatestCompletedWeekAsync()
 		{
 			// any week stats update returns info on current NFL "state", including
 			// the current week and "isWeekGamesCompleted". If true, use that week. If false, use previous.
@@ -55,9 +73,9 @@ namespace R5.FFDB.Sources.FantasyApi
 
 					JObject weekStats = JObject.Parse(weekStatsJson);
 
-					(int currentWeek, bool isCompleted) = GetCurrentWeekInfo(weekStats);
+					(int currentSeason, int currentWeek) = GetCurrentWeekInfo(weekStats);
 
-					return isCompleted ? currentWeek : currentWeek - 1;
+					return new WeekInfo(currentSeason, currentWeek);
 				}
 			}
 			catch (Exception ex)
@@ -68,16 +86,22 @@ namespace R5.FFDB.Sources.FantasyApi
 		}
 
 		// pass the entire FantasyApi WeekStats response, parsed into a JObject
-		private (int currentWeek, bool isCompleted) GetCurrentWeekInfo(JObject weekStats)
+		private (int currentSeason, int currentWeek) GetCurrentWeekInfo(JObject weekStats)
 		{
 			JObject games = weekStats["games"].ToObject<JObject>();
 
 			string gameId = games.Properties().Select(p => p.Name).First();
 
+			int season = games[gameId]["season"].ToObject<int>();
 			int currentWeek = games[gameId]["state"]["week"].ToObject<int>();
-			bool isCompleted = games[gameId]["state"]["isWeekGamesCompleted"].ToObject<bool>();
 
-			return (currentWeek, isCompleted);
+			bool isCompleted = games[gameId]["state"]["isWeekGamesCompleted"].ToObject<bool>();
+			if (!isCompleted)
+			{
+				currentWeek = currentWeek - 1;
+			}
+
+			return (season, currentWeek);
 		}
 
 		// todo: asynchrnous/non-blocking
