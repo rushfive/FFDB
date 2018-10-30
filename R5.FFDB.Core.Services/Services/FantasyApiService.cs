@@ -2,6 +2,7 @@
 using R5.FFDB.Core.Abstractions;
 using R5.FFDB.Core.Request;
 using R5.FFDB.Sources.FantasyApi;
+using R5.FFDB.Sources.FantasyApi.V2.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,8 @@ namespace R5.FFDB.Core.Services.Services
 
 		public FantasyApiWeekStats GetWeekStats(WeekInfo week)
 		{
-			return null;
+			WeekStatsJson statsJson = _fileService.GetWeekStats(week);
+			return WeekStatsJson.ToCoreEntity(statsJson);
 		}
 
 		// lot more todos: parallel requests? making it non-blocking if updating CLIs ui with progress?

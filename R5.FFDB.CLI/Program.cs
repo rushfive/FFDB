@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using R5.FFDB.Core.Abstractions;
 using R5.FFDB.Core.Services.Services;
 using R5.FFDB.Sources.FantasyApi;
 using R5.FFDB.Sources.FantasyApi.V2.Models;
@@ -16,9 +17,12 @@ namespace R5.FFDB.CLI
 			var config = new FantasyApiConfig();
 
 			var fileSvc = new FileService(config);
-			var fetcher = new FantasyApiService(config, fileSvc);
+			var apiService = new FantasyApiService(config, fileSvc);
 
-			fetcher.FetchAllAvailableToDiskAsync().GetAwaiter().GetResult();
+			var week = new WeekInfo(2018, 7);
+			Core.Request.FantasyApiWeekStats stats = apiService.GetWeekStats(week);
+
+			
 
 			Console.ReadKey();
 		}

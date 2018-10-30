@@ -42,11 +42,22 @@ namespace R5.FFDB.Sources.FantasyApi.V2.Models
 				
 				foreach(KeyValuePair<string, string> stat in modelStats)
 				{
+					if (stat.Key == "pts")
+					{
+						continue;
+					}
+
 					if (!string.IsNullOrWhiteSpace(stat.Value) &&
 						double.TryParse(stat.Value, out double value))
 					{
-						WeekStatType type = (WeekStatType)int.Parse(stat.Key);
-						stats.Add(type, value);
+						int key = int.Parse(stat.Key);
+
+						if (!Enum.IsDefined(typeof(WeekStatType), key))
+						{
+							continue;
+						}
+						
+						stats.Add((WeekStatType)key, value);
 					}
 				}
 
