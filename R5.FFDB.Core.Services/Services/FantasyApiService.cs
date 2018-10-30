@@ -1,36 +1,32 @@
 ﻿using Newtonsoft.Json.Linq;
 using R5.FFDB.Core.Abstractions;
+using R5.FFDB.Core.Request;
+using R5.FFDB.Sources.FantasyApi;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Sources.FantasyApi
+namespace R5.FFDB.Core.Services.Services
 {
-	// todo move
-	public static class FantasyApiEndpoint
+	public class FantasyApiService
 	{
-		public static class V2
-		{
-			public static string WeekStatsUrl(int season, int week)
-				=> $"http://api.fantasy.nfl.com/v2/players/weekstats?season={season}&week={week}";
-		}
-	}
-
-	public class WeekStatsFetcher
-	{
-		private FantasyApiSourceConfig _config { get; }
+		private FantasyApiConfig _config { get; }
 		private FileService _fileService { get; }
 
-		public WeekStatsFetcher(
-			FantasyApiSourceConfig config,
+		public FantasyApiService(
+			FantasyApiConfig config,
 			FileService fileService)
 		{
 			_config = config;
 			_fileService = fileService;
+		}
+
+		public FantasyApiWeekStats GetWeekStats(WeekInfo week)
+		{
+			return null;
 		}
 
 		// lot more todos: parallel requests? making it non-blocking if updating CLIs ui with progress?
@@ -44,7 +40,7 @@ namespace R5.FFDB.Sources.FantasyApi
 
 			List<WeekInfo> missingWeeks = _fileService.GetMissingWeeks(latestCompleted);
 
-			foreach(WeekInfo week in missingWeeks)
+			foreach (WeekInfo week in missingWeeks)
 			{
 				string endpoint = FantasyApiEndpoint.V2.WeekStatsUrl(week.Season, week.Week);
 				string weekStats = await Http.Request.GetAsStringAsync(endpoint);
@@ -56,7 +52,7 @@ namespace R5.FFDB.Sources.FantasyApi
 		}
 
 		// todo: private
-		public async Task<WeekInfo> GetLatestCompletedWeekAsync()
+		private async Task<WeekInfo> GetLatestCompletedWeekAsync()
 		{
 			// any week stats update returns info on current NFL "state", including
 			// the current week and "isWeekGamesCompleted". If true, use that week. If false, use previous.
@@ -103,12 +99,6 @@ namespace R5.FFDB.Sources.FantasyApi
 
 			return (season, currentWeek);
 		}
-
-		// todo: asynchrnous/non-blocking
-		//private List<(int Season, int Week)> ResolveMissingWeeks()
-		//{
-
-		//}
 
 	}
 }

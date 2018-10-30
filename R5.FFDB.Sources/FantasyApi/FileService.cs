@@ -1,4 +1,6 @@
-﻿using R5.FFDB.Core.Abstractions;
+﻿using Newtonsoft.Json;
+using R5.FFDB.Core.Abstractions;
+using R5.FFDB.Sources.FantasyApi.V2.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,14 +14,14 @@ namespace R5.FFDB.Sources.FantasyApi
 	{
 		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
 
-		private FantasyApiSourceConfig _config { get; }
+		private FantasyApiConfig _config { get; }
 
-		public FileService(FantasyApiSourceConfig config)
+		public FileService(FantasyApiConfig config)
 		{
 			_config = config;
 		}
 
-		public void SaveWeekStatsToDisk(string statsJson, WeekInfo week)
+		private string GetJsonPath(WeekInfo week)
 		{
 			string path = _config.DownloadPath;
 			if (!path.EndsWith(@"\"))
@@ -27,7 +29,19 @@ namespace R5.FFDB.Sources.FantasyApi
 				path += @"\";
 			}
 
-			path += $"{week.Season}-{week.Week}.json";
+			return path + $"{week.Season}-{week.Week}.json";
+		}
+
+		public WeekStatsJson GetWeekStats(WeekInfo week)
+		{
+			string path = GetJsonPath(week);
+
+			return JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
+		}
+
+		public void SaveWeekStatsToDisk(string statsJson, WeekInfo week)
+		{
+			string path = GetJsonPath(week);
 
 			if (File.Exists(path))
 			{

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
+using R5.FFDB.Core.Services.Services;
 using R5.FFDB.Sources.FantasyApi;
-using R5.FFDB.Sources.FantasyApi.V2.RequestModels;
+using R5.FFDB.Sources.FantasyApi.V2.Models;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,17 +13,17 @@ namespace R5.FFDB.CLI
 	{
 		static void Main(string[] args)
 		{
-			var config = new FantasyApiSourceConfig();
+			var config = new FantasyApiConfig();
 
 			var fileSvc = new FileService(config);
-			var fetcher = new WeekStatsFetcher(config, fileSvc);
+			var fetcher = new FantasyApiService(config, fileSvc);
 
 			fetcher.FetchAllAvailableToDiskAsync().GetAwaiter().GetResult();
 
 			Console.ReadKey();
 		}
 
-		static async Task<WeekStats> TestFantasyApiWeekStatsAsync()
+		static async Task<WeekStatsJson> TestFantasyApiWeekStatsAsync()
 		{
 			string endpoint = "http://api.fantasy.nfl.com/v2/players/weekstats?season=2018&week=7";
 			string downloadPath = @"D:\Repos\ffdb_weekstat_downloads\";
@@ -38,7 +39,7 @@ namespace R5.FFDB.CLI
 					string fileWritePath = downloadPath += $"2018-7.json";
 					System.IO.File.WriteAllText(fileWritePath, result);
 
-					return JsonConvert.DeserializeObject<WeekStats>(result);
+					return JsonConvert.DeserializeObject<WeekStatsJson>(result);
 				}
 			}
 			catch (Exception ex)

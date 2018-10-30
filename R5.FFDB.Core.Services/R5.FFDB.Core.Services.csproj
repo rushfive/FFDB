@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
+    <ProjectReference Include="..\R5.FFDB.Database\R5.FFDB.Database.csproj" />
+    <ProjectReference Include="..\R5.FFDB.Sources\R5.FFDB.Sources.csproj" />
+  </ItemGroup>
+
+</Project>
