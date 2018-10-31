@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Core.Services
+namespace R5.FFDB.Core
 {
 	// todo: more research on this, esp if im going to be making
 	// parallel calls
@@ -14,7 +14,7 @@ namespace R5.FFDB.Core.Services
 
 		public static class Request
 		{
-			internal static Task<string> GetAsStringAsync(string uri)
+			public static Task<string> GetAsStringAsync(string uri)
 			{
 				return Http.Client.GetStringAsync(uri);
 			}

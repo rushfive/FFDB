@@ -43,7 +43,7 @@ namespace R5.FFDB.CLI
 			Console.ReadKey();
 
 			// local funcs
-			(int id, string firstName, string lastName) getPlayerInfoFromRow(HtmlNode row)
+			(int nflId, string firstName, string lastName) getPlayerInfoFromRow(HtmlNode row)
 			{
 				var cells = row.SelectNodes("td");
 				var targetCell = cells[1];
