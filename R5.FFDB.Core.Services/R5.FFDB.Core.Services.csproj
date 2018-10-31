@@ -5,9 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
-    <ProjectReference Include="..\R5.FFDB.Database\R5.FFDB.Database.csproj" />
-    <ProjectReference Include="..\R5.FFDB.Sources\R5.FFDB.Sources.csproj" />
+    <ProjectReference Include="..\R5.FFDB.Database.Interfaces\R5.FFDB.Database.Interfaces.csproj" />
+    <ProjectReference Include="..\R5.FFDB.Sources.Interfaces\R5.FFDB.Sources.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

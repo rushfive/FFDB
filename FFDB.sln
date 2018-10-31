@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Sources", "R5.FFDB.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.Core.Services", "R5.FFDB.Core.Services\R5.FFDB.Core.Services.csproj", "{2D1FFF97-6C82-4D6D-873A-09D8A2192558}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.Sources.Interfaces", "R5.FFDB.Sources.Interfaces\R5.FFDB.Sources.Interfaces.csproj", "{C7875554-F5BB-4DC2-BC16-9FB1D63F37A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.Database.Interfaces", "R5.FFDB.Database.Interfaces\R5.FFDB.Database.Interfaces.csproj", "{6CB71231-7F88-4203-B601-CCE5FC6C3B1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{2D1FFF97-6C82-4D6D-873A-09D8A2192558}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D1FFF97-6C82-4D6D-873A-09D8A2192558}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D1FFF97-6C82-4D6D-873A-09D8A2192558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7875554-F5BB-4DC2-BC16-9FB1D63F37A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7875554-F5BB-4DC2-BC16-9FB1D63F37A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7875554-F5BB-4DC2-BC16-9FB1D63F37A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7875554-F5BB-4DC2-BC16-9FB1D63F37A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CB71231-7F88-4203-B601-CCE5FC6C3B1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CB71231-7F88-4203-B601-CCE5FC6C3B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CB71231-7F88-4203-B601-CCE5FC6C3B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CB71231-7F88-4203-B601-CCE5FC6C3B1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

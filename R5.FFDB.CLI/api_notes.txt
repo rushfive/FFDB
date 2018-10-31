@@ -1,0 +1,16 @@
+https://api.nfl.com/v1/currentWeek
+
+http://feeds.nfl.com/feeds-rs/depthChartClub/byTeam/SEA.json
+
+- for each team, get the page:
+http://www.nfl.com/teams/seattleseahawks/roster?team=SEA
+- get each player and their ids (NFL ids)
+table#result
+	tbody
+		for each tr
+			2nd td contains anchor with href:
+			/player/mauricealexander/2550145/profile
+
+			anchors value is the name:
+			Alexander, Maurice
+			split on command

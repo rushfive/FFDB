@@ -1,0 +1,424 @@
+// from endpoint: https://api.nfl.com/v1/teams?s=%7B%22%24query%22%3A%7B%22season%22%3A2018%2C%22standings%22%3A%7B%22%24query%22%3A%7B%22week.seasonType%22%3A%22REG%22%7D%7D%2C%22%24takeLast%22%3A1%7D,%22$take%22:40}&fs=%7Babbr%2Cstandings%7BoverallWins%2CoverallLosses%2CoverallTies%7D%7D
+// via browser
+
+{
+	"pager": { "total": 32 },
+	"data": [
+		{
+			"abbr": "ATL",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 4,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "BAL",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 4,
+						"overallLosses": 4,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "BUF",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 2,
+						"overallLosses": 6,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "CAR",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 5,
+						"overallLosses": 2,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "CHI",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 4,
+						"overallLosses": 3,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "CIN",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 5,
+						"overallLosses": 3,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "CLE",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 2,
+						"overallLosses": 5,
+						"overallTies": 1
+					}
+				]
+			}
+		},
+		{
+			"abbr": "DAL",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 4,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "DEN",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 5,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "DET",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 4,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "GB",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 3,
+						"overallTies": 1
+					}
+				]
+			}
+		},
+		{
+			"abbr": "TEN",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 4,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "HOU",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 5,
+						"overallLosses": 3,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "IND",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 5,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "JAX",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 5,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "KC",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 7,
+						"overallLosses": 1,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "LA",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 8,
+						"overallLosses": 0,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "OAK",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 1,
+						"overallLosses": 6,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "MIA",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 4,
+						"overallLosses": 4,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "MIN",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 4,
+						"overallLosses": 3,
+						"overallTies": 1
+					}
+				]
+			}
+		},
+		{
+			"abbr": "NE",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 6,
+						"overallLosses": 2,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "NO",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 6,
+						"overallLosses": 1,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "NYG",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 1,
+						"overallLosses": 7,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "NYJ",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 5,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "PHI",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 4,
+						"overallLosses": 4,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "ARI",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 2,
+						"overallLosses": 6,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "PIT",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 4,
+						"overallLosses": 2,
+						"overallTies": 1
+					}
+				]
+			}
+		},
+		{
+			"abbr": "LAC",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 5,
+						"overallLosses": 2,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "SF",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 1,
+						"overallLosses": 7,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "SEA",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 4,
+						"overallLosses": 3,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "TB",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 3,
+						"overallLosses": 4,
+						"overallTies": 0
+					}
+				]
+			}
+		},
+		{
+			"abbr": "WAS",
+			"standings": {
+				"pager": { "total": 1 },
+				"data": [
+					{
+						"overallWins": 5,
+						"overallLosses": 2,
+						"overallTies": 0
+					}
+				]
+			}
+		}
+	]
+}

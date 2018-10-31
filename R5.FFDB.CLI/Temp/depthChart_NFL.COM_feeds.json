@@ -1,0 +1,574 @@
+// http://feeds.nfl.com/feeds-rs/depthChartClub/byTeam/SEA.json
+
+{
+	"team": {
+		"teamId": "4600",
+		"abbr": "SEA",
+		"cityState": "Seattle",
+		"fullName": "Seattle Seahawks",
+		"nick": "Seahawks",
+		"teamType": "TEAM"
+	},
+	"depthChartClubFormations": [
+		{
+			"formation": "special_teams",
+			"depthChartClubPositions": [
+				{
+					"position": "K",
+					"displayPosition": "Kicker",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Blair",
+							"lastName": "Walsh",
+							"esbId": "WAL585473",
+							"depthTeam": 1
+						}
+					]
+				},
+				{
+					"position": "P",
+					"displayPosition": "Punter",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Jon",
+							"lastName": "Ryan",
+							"esbId": "RYA229481",
+							"depthTeam": 1
+						}
+					]
+				},
+				{
+					"position": "H",
+					"displayPosition": "Holder",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Jon",
+							"lastName": "Ryan",
+							"esbId": "RYA229481",
+							"depthTeam": 1
+						}
+					]
+				},
+				{
+					"position": "PR",
+					"displayPosition": "Punt Returner",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Tyler",
+							"lastName": "Lockett",
+							"esbId": "LOC420915",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "J.D.",
+							"lastName": "McKissic",
+							"esbId": "MCK692580",
+							"depthTeam": 2
+						}
+					]
+				},
+				{
+					"position": "KR",
+					"displayPosition": "Kick Returner",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Tyler",
+							"lastName": "Lockett",
+							"esbId": "LOC420915",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Paul",
+							"lastName": "Richardson",
+							"esbId": "RIC593564",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "J.D.",
+							"lastName": "McKissic",
+							"esbId": "MCK692580",
+							"depthTeam": 3
+						}
+					]
+				},
+				{
+					"position": "LS",
+					"displayPosition": "Long Snapper",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Tyler",
+							"lastName": "Ott",
+							"esbId": "OTT034606",
+							"depthTeam": 1
+						}
+					]
+				}
+			]
+		},
+		{
+			"formation": "defense",
+			"depthChartClubPositions": [
+				{
+					"position": "LDE",
+					"displayPosition": "Left Defensive End",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Michael",
+							"lastName": "Bennett",
+							"esbId": "BEN384391",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Branden",
+							"lastName": "Jackson",
+							"esbId": "JAC000003",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "Quinton",
+							"lastName": "Jefferson",
+							"esbId": "JEF350399",
+							"depthTeam": 3
+						},
+						{
+							"firstName": "Dion",
+							"lastName": "Jordan",
+							"esbId": "JOR165083",
+							"depthTeam": 4
+						}
+					]
+				},
+				{
+					"position": "LDT",
+					"displayPosition": "Left Defensive Tackle",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Jarran",
+							"lastName": "Reed",
+							"esbId": "REE257783",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Garrison",
+							"lastName": "Smith",
+							"esbId": "SMI281735",
+							"depthTeam": 2
+						}
+					]
+				},
+				{
+					"position": "RDT",
+					"displayPosition": "Right Defensive Tackle",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Sheldon",
+							"lastName": "Richardson",
+							"esbId": "RIC621130",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Nazair",
+							"lastName": "Jones",
+							"esbId": "JON636681",
+							"depthTeam": 2
+						}
+					]
+				},
+				{
+					"position": "RDE",
+					"displayPosition": "Right Defensive End",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Frank",
+							"lastName": "Clark",
+							"esbId": "CLA296952",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Marcus",
+							"lastName": "Smith",
+							"esbId": "SMI000009",
+							"depthTeam": 2
+						}
+					]
+				},
+				{
+					"position": "OLB",
+					"displayPosition": "Outside Linebacker",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Michael",
+							"lastName": "Wilhoite",
+							"esbId": "WIL062802",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Terence",
+							"lastName": "Garvin",
+							"esbId": "GAR734578",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "D.J.",
+							"lastName": "Alexander",
+							"esbId": "ALE227676",
+							"depthTeam": 3
+						},
+						{
+							"firstName": "K.J.",
+							"lastName": "Wright",
+							"esbId": "WRI487649",
+							"depthTeam": 4
+						},
+						{
+							"firstName": "Terence",
+							"lastName": "Garvin",
+							"esbId": "GAR734578",
+							"depthTeam": 5
+						},
+						{
+							"firstName": "Paul",
+							"lastName": "Dawson",
+							"esbId": "DAW695489",
+							"depthTeam": 6
+						}
+					]
+				},
+				{
+					"position": "MLB",
+					"displayPosition": "Middle Linebacker",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Bobby",
+							"lastName": "Wagner",
+							"esbId": "WAG236381",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Michael",
+							"lastName": "Wilhoite",
+							"esbId": "WIL062802",
+							"depthTeam": 2
+						}
+					]
+				},
+				{
+					"position": "LCB",
+					"displayPosition": "Left Cornerback",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Byron",
+							"lastName": "Maxwell",
+							"esbId": "MAX395038",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Jeremy",
+							"lastName": "Lane",
+							"esbId": "LAN313217",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "Neiko",
+							"lastName": "Thorpe",
+							"esbId": "THO820235",
+							"depthTeam": 3
+						}
+					]
+				},
+				{
+					"position": "RCB",
+					"displayPosition": "Right Cornerback",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Shaquill",
+							"lastName": "Griffin",
+							"esbId": "GRI296565",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Justin",
+							"lastName": "Coleman",
+							"esbId": "COL294032",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "DeShawn",
+							"lastName": "Shead",
+							"esbId": "SHE023560",
+							"depthTeam": 3
+						},
+						{
+							"firstName": "Mike",
+							"lastName": "Tyson",
+							"esbId": "TYS407791",
+							"depthTeam": 4
+						}
+					]
+				},
+				{
+					"position": "SS",
+					"displayPosition": "Strong Safety",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Bradley",
+							"lastName": "McDougald",
+							"esbId": "MCD722675",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Delano",
+							"lastName": "Hill",
+							"esbId": "HIL170556",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "Tedric",
+							"lastName": "Thompson",
+							"esbId": "THO706223",
+							"depthTeam": 3
+						}
+					]
+				},
+				{
+					"position": "FS",
+					"displayPosition": "Free Safety",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Earl",
+							"lastName": "Thomas",
+							"esbId": "THO124271",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Bradley",
+							"lastName": "McDougald",
+							"esbId": "MCD722675",
+							"depthTeam": 2
+						}
+					]
+				}
+			]
+		},
+		{
+			"formation": "offense",
+			"depthChartClubPositions": [
+				{
+					"position": "WR",
+					"displayPosition": "Wide Receiver",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Doug",
+							"lastName": "Baldwin",
+							"esbId": "BAL312014",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Tyler",
+							"lastName": "Lockett",
+							"esbId": "LOC420915",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "David",
+							"lastName": "Moore",
+							"esbId": "MOO249444",
+							"depthTeam": 3
+						},
+						{
+							"firstName": "Paul",
+							"lastName": "Richardson",
+							"esbId": "RIC593564",
+							"depthTeam": 4
+						},
+						{
+							"firstName": "Tanner",
+							"lastName": "McEvoy",
+							"esbId": "MCE657259",
+							"depthTeam": 5
+						},
+						{
+							"firstName": "Amara",
+							"lastName": "Darboh",
+							"esbId": "DAR032327",
+							"depthTeam": 6
+						}
+					]
+				},
+				{
+					"position": "LT",
+					"displayPosition": "Left Tackle",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Duane",
+							"lastName": "Brown",
+							"esbId": "BRO408217",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Matt",
+							"lastName": "Tobin",
+							"esbId": "TOB395515",
+							"depthTeam": 2
+						}
+					]
+				},
+				{
+					"position": "LG",
+					"displayPosition": "Left Guard",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Luke",
+							"lastName": "Joeckel",
+							"esbId": "JOE320575",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Ethan",
+							"lastName": "Pocic",
+							"esbId": "POC303385",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "Jordan",
+							"lastName": "Roos",
+							"esbId": "ROO631292",
+							"depthTeam": 3
+						}
+					]
+				},
+				{
+					"position": "C",
+					"displayPosition": "Center",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Justin",
+							"lastName": "Britt",
+							"esbId": "BRI704622",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Ethan",
+							"lastName": "Pocic",
+							"esbId": "POC303385",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "Joey",
+							"lastName": "Hunt",
+							"esbId": "HUN273483",
+							"depthTeam": 3
+						}
+					]
+				},
+				{
+					"position": "RG",
+					"displayPosition": "Right Guard",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Ethan",
+							"lastName": "Pocic",
+							"esbId": "POC303385",
+							"depthTeam": 1
+						}
+					]
+				},
+				{
+					"position": "RT",
+					"displayPosition": "Right Tackle",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Germain",
+							"lastName": "Ifedi",
+							"esbId": "IFE136317",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Matt",
+							"lastName": "Tobin",
+							"esbId": "TOB395515",
+							"depthTeam": 2
+						}
+					]
+				},
+				{
+					"position": "TE",
+					"displayPosition": "Tight End",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Jimmy",
+							"lastName": "Graham",
+							"esbId": "GRA207087",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Luke",
+							"lastName": "Willson",
+							"esbId": "WIL747168",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "Nick",
+							"lastName": "Vannett",
+							"esbId": "VAN643509",
+							"depthTeam": 3
+						}
+					]
+				},
+				{
+					"position": "QB",
+					"displayPosition": "Quarterback",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Russell",
+							"lastName": "Wilson",
+							"esbId": "WIL777781",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Austin",
+							"lastName": "Davis",
+							"esbId": "DAV164136",
+							"depthTeam": 2
+						}
+					]
+				},
+				{
+					"position": "FB",
+					"displayPosition": "Fullback",
+					"depthChartClubPlayers": []
+				},
+				{
+					"position": "RB",
+					"displayPosition": "Running Back",
+					"depthChartClubPlayers": [
+						{
+							"firstName": "Mike",
+							"lastName": "Davis",
+							"esbId": "DAV567050",
+							"depthTeam": 1
+						},
+						{
+							"firstName": "Thomas",
+							"lastName": "Rawls",
+							"esbId": "RAW440791",
+							"depthTeam": 2
+						},
+						{
+							"firstName": "Eddie",
+							"lastName": "Lacy",
+							"esbId": "LAC702361",
+							"depthTeam": 3
+						},
+						{
+							"firstName": "J.D.",
+							"lastName": "McKissic",
+							"esbId": "MCK692580",
+							"depthTeam": 4
+						}
+					]
+				}
+			]
+		}
+	]
+}
