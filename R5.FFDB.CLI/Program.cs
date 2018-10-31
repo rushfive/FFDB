@@ -1,8 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
-using R5.FFDB.Core.Abstractions;
-using R5.FFDB.Sources.FantasyApi;
-using R5.FFDB.Sources.FantasyApi.V2.Models;
+using R5.FFDB.Core.Components.FantasyApi.Models;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -90,7 +88,7 @@ namespace R5.FFDB.CLI
 			}
 		}
 
-		static async Task<WeekStatsJson> TestFantasyApiWeekStatsAsync()
+		static async Task<WeekStatsJsonV2> TestFantasyApiWeekStatsAsync()
 		{
 			string endpoint = "http://api.fantasy.nfl.com/v2/players/weekstats?season=2018&week=7";
 			string downloadPath = @"D:\Repos\ffdb_weekstat_downloads\";
@@ -106,7 +104,7 @@ namespace R5.FFDB.CLI
 					string fileWritePath = downloadPath += $"2018-7.json";
 					System.IO.File.WriteAllText(fileWritePath, result);
 
-					return JsonConvert.DeserializeObject<WeekStatsJson>(result);
+					return JsonConvert.DeserializeObject<WeekStatsJsonV2>(result);
 				}
 			}
 			catch (Exception ex)

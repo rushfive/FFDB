@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Abstractions;
-using R5.FFDB.Core.Request;
-using R5.FFDB.Sources.FantasyApi.V2.Models;
+using R5.FFDB.Core.Components.FantasyApi.Models;
+using R5.FFDB.Core.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +10,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Sources.FantasyApi
+namespace R5.FFDB.Core.Components.FantasyApi.Services
 {
-	public class FantasyApiService
+	public class ApiService
 	{
 		private FantasyApiConfig _config { get; }
 		private FileService _fileService { get; }
 
-		public FantasyApiService(
+		public ApiService(
 			FantasyApiConfig config,
 			FileService fileService)
 		{
@@ -25,10 +25,10 @@ namespace R5.FFDB.Sources.FantasyApi
 			_fileService = fileService;
 		}
 
-		public FantasyApiWeekStats GetWeekStats(WeekInfo week)
+		public WeekStats GetWeekStats(WeekInfo week)
 		{
-			WeekStatsJson statsJson = _fileService.GetWeekStats(week);
-			return WeekStatsJson.ToCoreEntity(statsJson);
+			WeekStatsJsonV2 statsJson = _fileService.GetWeekStats(week);
+			return WeekStatsJsonV2.ToCoreEntity(statsJson);
 		}
 
 		// lot more todos: parallel requests? making it non-blocking if updating CLIs ui with progress?

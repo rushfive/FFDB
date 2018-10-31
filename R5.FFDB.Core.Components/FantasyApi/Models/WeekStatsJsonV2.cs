@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
 using R5.FFDB.Core.Abstractions;
-using R5.FFDB.Core.Request;
+using R5.FFDB.Core.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Sources.FantasyApi.V2.Models
+namespace R5.FFDB.Core.Components.FantasyApi.Models
 {
 	// model for req payload seen in this example:
 	// http://api.fantasy.nfl.com/v2/players/weekstats?season=2018&week=7
@@ -17,15 +17,15 @@ namespace R5.FFDB.Sources.FantasyApi.V2.Models
 	// to get an idea of how to deserialize into types. copy pasting the entire response didnt work, so i 
 	// grabbed only the "Games" section (which is all we need i think)
 
-	public class WeekStatsJson
+	public class WeekStatsJsonV2
 	{
 		// the resp only seems to contain a single game id (kvp), prob representing the requested weeks game
 		[JsonProperty("games")]
 		public Dictionary<string, WeekStatsGameJson> Games { get; set; }
 
-		public static FantasyApiWeekStats ToCoreEntity(WeekStatsJson model)
+		public static WeekStats ToCoreEntity(WeekStatsJsonV2 model)
 		{
-			var playerStatsMap = new Dictionary<string, FantasyApiPlayerStats>();
+			var players = new List<PlayerStats>();
 
 			WeekStatsGameJson games = model.Games.Single().Value;
 			foreach(KeyValuePair<string, WeekStatsPlayerJson> player in games.Players)
@@ -61,17 +61,16 @@ namespace R5.FFDB.Sources.FantasyApi.V2.Models
 					}
 				}
 
-				var playerStats = new FantasyApiPlayerStats
+				players.Add(new PlayerStats
 				{
+					NflId = player.Key,
 					Stats = stats
-				};
-
-				playerStatsMap.Add(player.Key, playerStats);
+				});
 			}
 
-			return new FantasyApiWeekStats
+			return new WeekStats
 			{
-				Players = playerStatsMap
+				Players = players
 			};
 		}
 	}

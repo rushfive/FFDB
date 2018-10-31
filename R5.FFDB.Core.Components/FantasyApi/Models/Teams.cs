@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Sources.Static
+namespace R5.FFDB.Core.Components.FantasyApi.Models
 {
-public static	class Teams
+	public static class Teams
 	{
 		public static HashSet<string> Abbreviations = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 		{

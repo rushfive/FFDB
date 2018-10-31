@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Core
+namespace R5.FFDB.Core.Components
 {
 	// todo: more research on this, esp if im going to be making
 	// parallel calls

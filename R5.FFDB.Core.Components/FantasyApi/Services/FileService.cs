@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using R5.FFDB.Core.Abstractions;
-using R5.FFDB.Sources.FantasyApi.V2.Models;
+using R5.FFDB.Core.Components.FantasyApi.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace R5.FFDB.Sources.FantasyApi
+namespace R5.FFDB.Core.Components.FantasyApi.Services
 {
 	public class FileService
 	{
@@ -32,11 +32,11 @@ namespace R5.FFDB.Sources.FantasyApi
 			return path + $"{week.Season}-{week.Week}.json";
 		}
 
-		public WeekStatsJson GetWeekStats(WeekInfo week)
+		public WeekStatsJsonV2 GetWeekStats(WeekInfo week)
 		{
 			string path = GetJsonPath(week);
 
-			return JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
+			return JsonConvert.DeserializeObject<WeekStatsJsonV2>(File.ReadAllText(path));
 		}
 
 		public void SaveWeekStatsToDisk(string statsJson, WeekInfo week)

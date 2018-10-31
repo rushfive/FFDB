@@ -1,22 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\R5.FFDB.Core.Services\R5.FFDB.Core.Services.csproj" />
-    <ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
-    <ProjectReference Include="..\R5.FFDB.Database.Interfaces\R5.FFDB.Database.Interfaces.csproj" />
-    <ProjectReference Include="..\R5.FFDB.Database\R5.FFDB.Database.csproj" />
-    <ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
-    <ProjectReference Include="..\R5.FFDB.Sources.Interfaces\R5.FFDB.Sources.Interfaces.csproj" />
-    <ProjectReference Include="..\R5.FFDB.Sources\R5.FFDB.Sources.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Temp\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
   </ItemGroup>
 
 </Project>

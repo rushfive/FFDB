@@ -8,8 +8,7 @@ public	class Player
 	{
 		public Guid Id { get; set; }
 
-		// NFL's player id
-		public int NflId { get; set; }
+		public string NflId { get; set; }
 
 		// some NFL legacy id, stil needed for some stuff
 		public string EsbId { get; set; }
