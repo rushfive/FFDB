@@ -1,8 +1,5 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
-using R5.FFDB.Core.Components.FantasyApi.Models;
-using R5.FFDB.Core.Components.Setup.Models;
-using R5.FFDB.Core.Components.WebScrape.NFL;
 using System;
 using System.Collections.Generic;
 using System.IO;

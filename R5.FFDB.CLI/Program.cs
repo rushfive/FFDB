@@ -1,11 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using R5.FFDB.Core.Abstractions;
-using R5.FFDB.Core.Components.FantasyApi;
-using R5.FFDB.Core.Components.FantasyApi.Models;
-using R5.FFDB.Core.Components.FantasyApi.Services;
 using R5.FFDB.Core.Components.Setup.Services;
-using R5.FFDB.Core.Components.WebScrape.NFL;
+using R5.FFDB.Core.Components.WeekStats.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,26 +24,14 @@ namespace R5.FFDB.CLI
 				"2558125" //mahomes
 			};
 
-			initialSetupSvc.SavePlayerDataFilesAsync(playerIds)
-				.GetAwaiter()
-				.GetResult();
+			//initialSetupSvc.SavePlayerDataFilesAsync(playerIds)
+			//	.GetAwaiter()
+			//	.GetResult();
 
-			var playerData = initialSetupSvc.GetPlayerDataJson(playerIds[0]);
+			//var playerData = initialSetupSvc.GetPlayerDataJson(playerIds[0]);
 
 
 			return;
-
-
-
-
-
-			var config = new FantasyApiConfig();
-			var fileService = new FileService(config);
-			var apiService = new ApiService(config, fileService);
-			var statsService = new StatsService(fileService);
-
-			apiService.FetchAvailableStatsAsync().GetAwaiter().GetResult();
-			var stats = statsService.GetWeekStats(new WeekInfo(2010, 1));
 
 			
 			return;
@@ -125,7 +110,7 @@ namespace R5.FFDB.CLI
 			}
 		}
 
-		static async Task<WeekStatsJsonV2> TestFantasyApiWeekStatsAsync()
+		static async Task<WeekStatsJson> TestFantasyApiWeekStatsAsync()
 		{
 			string endpoint = "http://api.fantasy.nfl.com/v2/players/weekstats?season=2018&week=7";
 			string downloadPath = @"D:\Repos\ffdb_weekstat_downloads\";
@@ -141,7 +126,7 @@ namespace R5.FFDB.CLI
 					string fileWritePath = downloadPath += $"2018-7.json";
 					System.IO.File.WriteAllText(fileWritePath, result);
 
-					return JsonConvert.DeserializeObject<WeekStatsJsonV2>(result);
+					return JsonConvert.DeserializeObject<WeekStatsJson>(result);
 				}
 			}
 			catch (Exception ex)

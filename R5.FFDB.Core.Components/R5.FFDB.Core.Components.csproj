@@ -13,4 +13,9 @@
     <ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Setup\Models\" />
+    <Folder Include="WebScrape\NFL\" />
+  </ItemGroup>
+
 </Project>
