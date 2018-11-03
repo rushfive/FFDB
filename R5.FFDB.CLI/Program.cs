@@ -1,7 +1,13 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
+using R5.FFDB.Core.Abstractions;
+using R5.FFDB.Core.Components.FantasyApi;
 using R5.FFDB.Core.Components.FantasyApi.Models;
+using R5.FFDB.Core.Components.FantasyApi.Services;
+using R5.FFDB.Core.Components.Setup.Services;
+using R5.FFDB.Core.Components.WebScrape.NFL;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,6 +19,37 @@ namespace R5.FFDB.CLI
 	{
 		static void Main(string[] args)
 		{
+			var initialSetupSvc = new InitialSetupService();
+
+			var playerIds = new List<string>
+			{
+				"2530747", //dougb
+				"2558125" //mahomes
+			};
+
+			initialSetupSvc.SavePlayerDataFilesAsync(playerIds)
+				.GetAwaiter()
+				.GetResult();
+
+			var playerData = initialSetupSvc.GetPlayerDataJson(playerIds[0]);
+
+
+			return;
+
+
+
+
+
+			var config = new FantasyApiConfig();
+			var fileService = new FileService(config);
+			var apiService = new ApiService(config, fileService);
+			var statsService = new StatsService(fileService);
+
+			apiService.FetchAvailableStatsAsync().GetAwaiter().GetResult();
+			var stats = statsService.GetWeekStats(new WeekInfo(2010, 1));
+
+			
+			return;
 			/// depth charts by team:
 			/// http://feeds.nfl.com/feeds-rs/depthChartClub/byTeam/SEA.json
 
@@ -66,10 +103,10 @@ namespace R5.FFDB.CLI
 
 		static async Task GetRavensPageSaveToDisk()
 		{
-			var url = "";
+			var url = "http://www.nfl.com/player/dougbaldwin/2530747/profile";
 			var web = new HtmlWeb();
 			HtmlDocument doc = web.Load(url);
-			doc.Save(@"D:\Repos\ffdb_scrape_files\team_names_NFL.COM.html");
+			doc.Save(@"D:\Repos\ffdb_scrape_files\doug_baldwin_NFL.COM.html");
 		}
 
 		static async Task Test()

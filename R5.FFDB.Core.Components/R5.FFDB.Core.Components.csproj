@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.8.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
   </ItemGroup>
 

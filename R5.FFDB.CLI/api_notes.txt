@@ -14,3 +14,22 @@ table#result
 			anchors value is the name:
 			Alexander, Maurice
 			split on command
+
+------------------------
+
+- lots of information on players are STATIC
+	- fetch ONCE
+	- things like dob, weight, birth, etc
+
+- get UPDATED team roster info from official NFL pages
+- for those players NOT on those pages, can use:
+https://api.fantasy.nfl.com/v2/docs/service?serviceName=playerNgsContent
+eg: active (tom brady)
+http://api.fantasy.nfl.com/v2/player/ngs-content?playerId=2504211
+inactive (colin kapernick)
+http://api.fantasy.nfl.com/v2/player/ngs-content?playerId=2495186
+	- Nfl team id is null, team abbr is ""
+
+
+nfl player link:
+http://www.nfl.com/player/dougbaldwin/2530747/profile

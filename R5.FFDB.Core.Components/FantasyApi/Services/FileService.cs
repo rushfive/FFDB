@@ -23,7 +23,7 @@ namespace R5.FFDB.Core.Components.FantasyApi.Services
 
 		private string GetJsonPath(WeekInfo week)
 		{
-			string path = _config.DownloadPath;
+			string path = _config.WeekStatsDownloadPath;
 			if (!path.EndsWith(@"\"))
 			{
 				path += @"\";
@@ -83,7 +83,7 @@ namespace R5.FFDB.Core.Components.FantasyApi.Services
 		
 		private HashSet<WeekInfo> GetExistingWeeks()
 		{
-			var directory = new DirectoryInfo(_config.DownloadPath);
+			var directory = new DirectoryInfo(_config.WeekStatsDownloadPath);
 			FileInfo[] files = directory.GetFiles();
 
 			List<string> fileNames = files.Select(f => f.Name).ToList();

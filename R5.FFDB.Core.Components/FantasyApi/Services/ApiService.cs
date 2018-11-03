@@ -25,14 +25,8 @@ namespace R5.FFDB.Core.Components.FantasyApi.Services
 			_fileService = fileService;
 		}
 
-		public WeekStats GetWeekStats(WeekInfo week)
-		{
-			WeekStatsJsonV2 statsJson = _fileService.GetWeekStats(week);
-			return WeekStatsJsonV2.ToCoreEntity(statsJson);
-		}
-
 		// lot more todos: parallel requests? making it non-blocking if updating CLIs ui with progress?
-		public async Task FetchAllAvailableToDiskAsync()
+		public async Task FetchAvailableStatsAsync()
 		{
 			WeekInfo latestCompleted = await GetLatestCompletedWeekAsync();
 
@@ -40,8 +34,8 @@ namespace R5.FFDB.Core.Components.FantasyApi.Services
 
 			foreach (WeekInfo week in missingWeeks)
 			{
-				string endpoint = FantasyApiEndpoint.V2.WeekStatsUrl(week.Season, week.Week);
-				string weekStats = await Http.Request.GetAsStringAsync(endpoint);
+				string uri = FantasyApiEndpoint.V2.WeekStatsUri(week.Season, week.Week);
+				string weekStats = await Http.Client.GetStringAsync(uri);
 
 				_fileService.SaveWeekStatsToDisk(weekStats, week);
 
@@ -53,28 +47,37 @@ namespace R5.FFDB.Core.Components.FantasyApi.Services
 		{
 			// doesn't matter which week we choose, it'll always return
 			// the NFL's current state info
-			string endpoint = FantasyApiEndpoint.V2.WeekStatsUrl(2018, 1);
+			string uri = FantasyApiEndpoint.V2.WeekStatsUri(2018, 1);
 
-			try
-			{
-				using (var client = new HttpClient())
-				using (HttpResponseMessage response = await client.GetAsync(endpoint))
-				using (HttpContent content = response.Content)
-				{
-					string weekStatsJson = await content.ReadAsStringAsync();
+			string weekStatsJson = await Http.Client.GetStringAsync(uri);
+			//string weekStatsJson = await Http.Request.GetAsStringAsync(endpoint);
 
-					JObject weekStats = JObject.Parse(weekStatsJson);
+			JObject weekStats = JObject.Parse(weekStatsJson);
 
-					(int currentSeason, int currentWeek) = GetCurrentWeekInfo(weekStats);
+			(int currentSeason, int currentWeek) = GetCurrentWeekInfo(weekStats);
 
-					return new WeekInfo(currentSeason, currentWeek);
-				}
-			}
-			catch (Exception ex)
-			{
-				// todo
-				throw;
-			}
+			return new WeekInfo(currentSeason, currentWeek);
+
+			//try
+			//{
+			//	using (var client = new HttpClient())
+			//	using (HttpResponseMessage response = await client.GetAsync(endpoint))
+			//	using (HttpContent content = response.Content)
+			//	{
+			//		string weekStatsJson = await content.ReadAsStringAsync();
+
+			//		JObject weekStats = JObject.Parse(weekStatsJson);
+
+			//		(int currentSeason, int currentWeek) = GetCurrentWeekInfo(weekStats);
+
+			//		return new WeekInfo(currentSeason, currentWeek);
+			//	}
+			//}
+			//catch (Exception ex)
+			//{
+			//	// todo
+			//	throw;
+			//}
 		}
 
 		// pass the entire FantasyApi WeekStats response, parsed into a JObject
@@ -95,6 +98,5 @@ namespace R5.FFDB.Core.Components.FantasyApi.Services
 
 			return (season, currentWeek);
 		}
-
 	}
 }

@@ -12,12 +12,12 @@ namespace R5.FFDB.Core.Components
 	{
 		public static HttpClient Client = new HttpClient();
 
-		public static class Request
-		{
-			public static Task<string> GetAsStringAsync(string uri)
-			{
-				return Http.Client.GetStringAsync(uri);
-			}
-		}
+		//public static class Request
+		//{
+		//	public static Task<string> GetAsStringAsync(string uri)
+		//	{
+		//		return Http.Client.GetStringAsync(uri);
+		//	}
+		//}
 	}
 }
