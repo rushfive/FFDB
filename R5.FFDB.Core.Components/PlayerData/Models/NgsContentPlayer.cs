@@ -10,7 +10,7 @@ namespace R5.FFDB.Core.Components.PlayerData.Models
 		public string NflId { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-		public PositionType Position { get; set; }
+		public Position Position { get; set; }
 		public int? TeamId { get; set; } // not active if null
 	}
 }

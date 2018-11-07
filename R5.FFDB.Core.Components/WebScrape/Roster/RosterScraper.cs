@@ -54,7 +54,7 @@ namespace R5.FFDB.Core.Components.Scrapers
 			return (0, null, null);
 		}
 
-		private static PositionType ExtractPlayerPosition(HtmlNode playerRow)
+		private static Position ExtractPlayerPosition(HtmlNode playerRow)
 		{
 			HtmlNode td = playerRow.SelectNodes("td")[2];
 

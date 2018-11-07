@@ -1,8 +1,11 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using R5.FFDB.Core.Abstractions;
+using R5.FFDB.Core.Components;
+using R5.FFDB.Core.Components.Roster;
 using R5.FFDB.Core.Components.Setup.Services;
 using R5.FFDB.Core.Components.WeekStats.Models;
+using R5.FFDB.Core.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +19,21 @@ namespace R5.FFDB.CLI
 	{
 		static void Main(string[] args)
 		{
-			var initialSetupSvc = new InitialSetupService();
+			var config = new FfdbConfig();
+			var hawksTeam = Teams.Get().Single(t => t.Id == 30);
 
-			var playerIds = new List<string>
-			{
-				"2530747", //dougb
-				"2558125" //mahomes
-			};
+			var rosterSvc = new RosterService(config);
+
+			Core.Game.Roster roster = rosterSvc.GetForTeamAsync(hawksTeam).GetAwaiter().GetResult();
+
+
+			//var initialSetupSvc = new InitialSetupService();
+
+			//var playerIds = new List<string>
+			//{
+			//	"2530747", //dougb
+			//	"2558125" //mahomes
+			//};
 
 			//initialSetupSvc.SavePlayerDataFilesAsync(playerIds)
 			//	.GetAwaiter()

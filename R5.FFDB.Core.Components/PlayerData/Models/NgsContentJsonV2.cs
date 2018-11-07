@@ -26,7 +26,7 @@ namespace R5.FFDB.Core.Components.PlayerData.Models
 				NflId = player.NflId,
 				FirstName = player.FirstName,
 				LastName = player.LastName,
-				Position = Enum.Parse<PositionType>(player.Position),
+				Position = Enum.Parse<Position>(player.Position),
 				TeamId = teamId
 			};
 		}

@@ -194,7 +194,8 @@ namespace R5.FFDB.Core.Data
 				{
 					Id = 30,
 					Name = "Seattle Seahawks",
-					Abbreviation = "SEA"
+					Abbreviation = "SEA",
+					RosterPageUri = @"http://www.nfl.com/teams/seattleseahawks/roster?team=SEA"
 				},
 				new Team
 				{

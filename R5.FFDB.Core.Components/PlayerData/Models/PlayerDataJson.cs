@@ -19,7 +19,7 @@ namespace R5.FFDB.Core.Components.PlayerData.Models
 
 		[JsonProperty("position")]
 		[JsonConverter(typeof(StringEnumConverter))]
-		public PositionType Position { get; set; }
+		public Position Position { get; set; }
 
 		[JsonProperty("teamId")]
 		public int? TeamId { get; set; } // not active if null

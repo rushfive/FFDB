@@ -104,7 +104,7 @@ namespace R5.FFDB.Core.Components.PlayerData
 			string uri = $"http://www.nfl.com/player/{name}/{nflId}/profile";
 
 			var web = new HtmlWeb();
-			HtmlDocument page = web.Load(uri);
+			HtmlDocument page = await web.LoadFromWebAsync(uri);
 
 			int number = PlayerProfileScraper.ExtractPlayerNumber(page);
 			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);

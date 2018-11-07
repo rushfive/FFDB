@@ -12,7 +12,7 @@ namespace R5.FFDB.Core.Game
 		public string NflId { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-		public PositionType Position { get; set; }
+		public Position Position { get; set; }
 		public int? TeamId { get; set; }
 		public int Number { get; set; }
 		public int Height { get; set; }
@@ -30,7 +30,7 @@ namespace R5.FFDB.Core.Game
 		public string NflId { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-		public PositionType Position { get; set; }
+		public Position Position { get; set; }
 		public int? TeamId { get; set; }
 		public int Number { get; set; }
 		public int Height { get; set; }
