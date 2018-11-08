@@ -25,76 +25,8 @@ namespace R5.FFDB.CLI
 			var rosterSvc = new RosterService(config);
 
 			Core.Game.Roster roster = rosterSvc.GetForTeamAsync(hawksTeam).GetAwaiter().GetResult();
-
-
-			//var initialSetupSvc = new InitialSetupService();
-
-			//var playerIds = new List<string>
-			//{
-			//	"2530747", //dougb
-			//	"2558125" //mahomes
-			//};
-
-			//initialSetupSvc.SavePlayerDataFilesAsync(playerIds)
-			//	.GetAwaiter()
-			//	.GetResult();
-
-			//var playerData = initialSetupSvc.GetPlayerDataJson(playerIds[0]);
-
-
-			return;
-
 			
 			return;
-			/// depth charts by team:
-			/// http://feeds.nfl.com/feeds-rs/depthChartClub/byTeam/SEA.json
-
-
-			var doc = new HtmlDocument();
-			doc.Load(@"D:\Repos\ffdb_scrape_files\seahawks_roster_NFL.com.html");
-
-			var body = doc.DocumentNode.SelectSingleNode("//body");
-//			var t = doc.DocumentNode.SelectSingleNode("//table");
-
-
-			//var resultTable = doc.DocumentNode.SelectSingleNode("//@id=result");
-			HtmlNode result = doc.GetElementbyId("result");
-
-			HtmlNodeCollection rows = doc.GetElementbyId("result")
-				?.SelectSingleNode("//tbody")
-				?.SelectNodes("tr");
-
-			foreach(HtmlNode r in rows)
-			{
-				getPlayerInfoFromRow(r);
-			}
-
-			//GetRavensPageSaveToDisk().GetAwaiter().GetResult();
-
-			Console.ReadKey();
-
-			// local funcs
-			(int nflId, string firstName, string lastName) getPlayerInfoFromRow(HtmlNode row)
-			{
-				var cells = row.SelectNodes("td");
-				var targetCell = cells[1];
-
-				//HtmlNode a = targetCell.ChildNodes.First(n => n.InnerText != " ");
-
-				////var a2 = targetCell
-				//var first = targetCell.ChildNodes[0];
-				//var second = targetCell.ChildNodes[1];//a
-
-				var anchor = targetCell.ChildNodes.Single(n => n.NodeType == HtmlNodeType.Element);
-
-				//targetCell.ChildNodes.Single(n => n.Attributes["href"] != null)
-//				HtmlNode anchor = row.ChildNodes[1].FirstChild;
-
-				string profileUri = anchor.Attributes["href"].Value;
-				string name = anchor.InnerText;
-
-				return (0, null, null);
-			}
 		}
 
 		static async Task GetRavensPageSaveToDisk()
