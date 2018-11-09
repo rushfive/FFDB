@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Core.Abstractions
+namespace R5.FFDB.Core.Models
 {
 	public struct WeekInfo
 	{

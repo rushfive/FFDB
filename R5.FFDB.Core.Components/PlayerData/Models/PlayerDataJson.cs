@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using R5.FFDB.Core.Game;
+using R5.FFDB.Core.Models;
 using System;
 
 namespace R5.FFDB.Core.Components.PlayerData.Models
@@ -39,9 +39,9 @@ namespace R5.FFDB.Core.Components.PlayerData.Models
 		[JsonProperty("college")]
 		public string College { get; set; }
 
-		public static Core.Game.PlayerData ToCoreEntity(PlayerDataJson json)
+		public static Core.Models.PlayerData ToCoreEntity(PlayerDataJson json)
 		{
-			return new Core.Game.PlayerData
+			return new Core.Models.PlayerData
 			{
 				NflId = json.NflId,
 				FirstName = json.FirstName,

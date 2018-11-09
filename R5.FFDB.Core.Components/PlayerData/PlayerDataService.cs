@@ -1,5 +1,7 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Core.Components.Configurations;
 using R5.FFDB.Core.Components.PlayerData.Models;
 using System;
 using System.Collections.Generic;
@@ -10,23 +12,35 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Core.Components.PlayerData
 {
+	public interface IPlayerDataService
+	{
+
+	}
+
 	public class PlayerDataService
 	{
-		private FfdbConfig _config { get; }
+		private ILogger<PlayerDataService> _logger { get; }
+		private FileDownloadConfig _fileDownloadConfig { get; }
+		private IWebRequestClient _webRequestClient { get; }
 
-		public PlayerDataService(FfdbConfig config)
+		public PlayerDataService(
+			ILogger<PlayerDataService> logger,
+			FileDownloadConfig fileDownloadConfig,
+			IWebRequestClient webRequestClient)
 		{
-			_config = config;
+			_logger = logger;
+			_fileDownloadConfig = fileDownloadConfig;
+			_webRequestClient = webRequestClient;
 		}
 
-		public Core.Game.PlayerData GetPlayerData(string nflId)
+		public Core.Models.PlayerData GetPlayerData(string nflId)
 		{
-			string path = _config.PlayerDataPath + $"{nflId}.json";
+			string path = _fileDownloadConfig.PlayerData + $"{nflId}.json";
 			PlayerDataJson playerData = JsonConvert.DeserializeObject<PlayerDataJson>(File.ReadAllText(path));
 			return PlayerDataJson.ToCoreEntity(playerData);
 		}
 
-		public List<Core.Game.PlayerData> GetPlayerData(List<string> nflIds)
+		public List<Core.Models.PlayerData> GetPlayerData(List<string> nflIds)
 		{
 			return nflIds
 				.Select(id => GetPlayerData(id))
@@ -64,18 +78,16 @@ namespace R5.FFDB.Core.Components.PlayerData
 
 				string serializedPlayerData = JsonConvert.SerializeObject(playerData);
 
-				string path = _config.PlayerDataPath + $"{id}.json";
+				string path = _fileDownloadConfig.PlayerData + $"{id}.json";
 				File.WriteAllText(path, serializedPlayerData);
 
 				existing.Add(id);
-
-				await Task.Delay(_config.RequestDelayMilliseconds);
 			}
 		}
 
 		private HashSet<string> GetExistingPlayerNflIds()
 		{
-			var directory = new DirectoryInfo(_config.PlayerDataPath);
+			var directory = new DirectoryInfo(_fileDownloadConfig.PlayerData);
 
 			return directory
 				.GetFiles()
@@ -92,7 +104,7 @@ namespace R5.FFDB.Core.Components.PlayerData
 		{
 			string uri = $"http://api.fantasy.nfl.com/v2/player/ngs-content?playerId={nflId}";
 			
-			var response = await Http.Client.GetStringAsync(uri);
+			var response = await _webRequestClient.GetStringAsync(uri);
 			var json = JsonConvert.DeserializeObject<NgsContentJsonV2>(response);
 
 			return NgsContentJsonV2.ToEntity(json);
@@ -103,8 +115,13 @@ namespace R5.FFDB.Core.Components.PlayerData
 			string name = firstName.ToLower() + lastName.ToLower();
 			string uri = $"http://www.nfl.com/player/{name}/{nflId}/profile";
 
-			var web = new HtmlWeb();
-			HtmlDocument page = await web.LoadFromWebAsync(uri);
+			string html = await _webRequestClient.GetStringAsync(uri);
+
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
+
+			//var web = new HtmlWeb();
+			//HtmlDocument page = await web.LoadFromWebAsync(uri);
 
 			int number = PlayerProfileScraper.ExtractPlayerNumber(page);
 			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);

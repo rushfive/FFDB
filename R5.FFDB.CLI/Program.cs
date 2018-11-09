@@ -1,11 +1,11 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
-using R5.FFDB.Core.Abstractions;
 using R5.FFDB.Core.Components;
 using R5.FFDB.Core.Components.Roster;
 using R5.FFDB.Core.Components.Setup.Services;
 using R5.FFDB.Core.Components.WeekStats.Models;
 using R5.FFDB.Core.Data;
+using R5.FFDB.Engine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,15 +19,61 @@ namespace R5.FFDB.CLI
 	{
 		static void Main(string[] args)
 		{
-			var config = new FfdbConfig();
-			var hawksTeam = Teams.Get().Single(t => t.Id == 30);
+			var setup = new EngineSetup();
 
-			var rosterSvc = new RosterService(config);
+			setup.WebRequest
+				.AddDefaultBrowserHeaders()
+				.SetRandomizedThrottle(3000, 8000);
 
-			Core.Game.Roster roster = rosterSvc.GetForTeamAsync(hawksTeam).GetAwaiter().GetResult();
+			setup.FileDownload
+				.SetWeekStatsDirectory(@"D:\Repos\ffdb_stuff\weekstat_files")
+				.SetPlayerDataDirectory(@"D:\Repos\ffdb_stuff\playerdata_files");
+
+			setup.Logging
+				.SetLogDirectory(@"D:\Repos\ffdb_stuff\logs");
+
+			var engine = setup.Create();
+
+			engine.TestLogging();
+			
 			
 			return;
 		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		static async Task GetRavensPageSaveToDisk()
 		{

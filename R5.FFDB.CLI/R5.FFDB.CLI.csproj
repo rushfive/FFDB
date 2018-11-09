@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
 
 
-  <ItemGroup>
-    <Folder Include="Temp\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Temp\" />
+	</ItemGroup>
 
 
-  <ItemGroup>
-    <ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
+	</ItemGroup>
 
 </Project>

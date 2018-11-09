@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using R5.FFDB.Core.Stats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +20,9 @@ namespace R5.FFDB.Core.Components.WeekStats.Models
 		[JsonProperty("games")]
 		public Dictionary<string, WeekStatsGameJson> Games { get; set; }
 
-		public static Core.Stats.WeekStats ToCoreEntity(WeekStatsJson model)
+		public static Core.Models.WeekStats ToCoreEntity(WeekStatsJson model)
 		{
-			var players = new List<PlayerStats>();
+			var players = new List<Core.Models.PlayerStats>();
 
 			WeekStatsGameJson games = model.Games.Single().Value;
 			foreach (KeyValuePair<string, WeekStatsPlayerJson> player in games.Players)
@@ -36,7 +35,7 @@ namespace R5.FFDB.Core.Components.WeekStats.Models
 					continue;
 				}
 
-				var stats = new Dictionary<WeekStatType, double>();
+				var stats = new Dictionary<Core.Models.WeekStatType, double>();
 
 				foreach (KeyValuePair<string, string> stat in modelStats)
 				{
@@ -50,23 +49,23 @@ namespace R5.FFDB.Core.Components.WeekStats.Models
 					{
 						int key = int.Parse(stat.Key);
 
-						if (!Enum.IsDefined(typeof(WeekStatType), key))
+						if (!Enum.IsDefined(typeof(Core.Models.WeekStatType), key))
 						{
 							continue;
 						}
 
-						stats.Add((WeekStatType)key, value);
+						stats.Add((Core.Models.WeekStatType)key, value);
 					}
 				}
 
-				players.Add(new PlayerStats
+				players.Add(new Core.Models.PlayerStats
 				{
 					NflId = player.Key,
 					Stats = stats
 				});
 			}
 
-			return new Core.Stats.WeekStats
+			return new Core.Models.WeekStats
 			{
 				Players = players
 			};

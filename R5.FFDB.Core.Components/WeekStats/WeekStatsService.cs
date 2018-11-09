@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using R5.FFDB.Core.Abstractions;
+using R5.FFDB.Core.Components.Configurations;
 using R5.FFDB.Core.Components.WeekStats.Models;
+using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,11 +17,19 @@ namespace R5.FFDB.Core.Components.WeekStats
 	public class WeekStatsService
 	{
 		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
-		private FfdbConfig _config { get; }
+		
+		private ILogger<WeekStatsService> _logger { get; }
+		private FileDownloadConfig _fileDownloadConfig { get; }
+		private IWebRequestClient _webRequestClient { get; }
 
-		public WeekStatsService(FfdbConfig config)
+		public WeekStatsService(
+			ILogger<WeekStatsService> logger,
+			FileDownloadConfig fileDownloadConfig,
+			IWebRequestClient webRequestClient)
 		{
-			_config = config;
+			_logger = logger;
+			_fileDownloadConfig = fileDownloadConfig;
+			_webRequestClient = webRequestClient;
 		}
 
 		private static string GetApiUri(int season, int week)
@@ -37,9 +47,9 @@ namespace R5.FFDB.Core.Components.WeekStats
 			return downloadPath + $"{week.Season}-{week.Week}.json";
 		}
 
-		public Core.Stats.WeekStats GetStats(WeekInfo week)
+		public Core.Models.WeekStats GetStats(WeekInfo week)
 		{
-			string path = GetJsonPath(week, _config.WeekStatsDownloadPath);
+			string path = GetJsonPath(week, _fileDownloadConfig.WeekStats);
 
 			var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
 
@@ -55,16 +65,14 @@ namespace R5.FFDB.Core.Components.WeekStats
 			foreach (WeekInfo week in missingWeeks)
 			{
 				string uri = GetApiUri(week.Season, week.Week);
-				string weekStats = await Http.Client.GetStringAsync(uri);
+				string weekStats = await _webRequestClient.GetStringAsync(uri);
 
 				saveFile(weekStats, week);
-
-				await Task.Delay(_config.RequestDelayMilliseconds);
 			}
 
 			void saveFile(string statsJson, WeekInfo week)
 			{
-				string path = GetJsonPath(week, _config.WeekStatsDownloadPath);
+				string path = GetJsonPath(week, _fileDownloadConfig.WeekStats);
 
 				if (File.Exists(path))
 				{
@@ -90,7 +98,7 @@ namespace R5.FFDB.Core.Components.WeekStats
 			{
 				string uri = GetApiUri(2018, 1);
 
-				string weekStatsJson = await Http.Client.GetStringAsync(uri);
+				string weekStatsJson = await _webRequestClient.GetStringAsync(uri, throttle: false);
 
 				return JObject.Parse(weekStatsJson);
 			}
@@ -145,7 +153,7 @@ namespace R5.FFDB.Core.Components.WeekStats
 
 			HashSet<WeekInfo> getExistingWeeks()
 			{
-				var directory = new DirectoryInfo(_config.WeekStatsDownloadPath);
+				var directory = new DirectoryInfo(_fileDownloadConfig.WeekStats);
 				FileInfo[] files = directory.GetFiles();
 
 				List<string> fileNames = files.Select(f => f.Name).ToList();
