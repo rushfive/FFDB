@@ -1,8 +1,5 @@
 ﻿using Serilog;
 using Serilog.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace R5.FFDB.Components.Configurations
 {
@@ -12,6 +9,20 @@ namespace R5.FFDB.Components.Configurations
 		public long? MaxBytes { get; set; }
 		public RollingInterval RollingInterval { get; set; }
 		public bool RollOnFileSizeLimit { get; set; }
-		public LogEventLevel MinimumLogLevel { get; set; }
+		public LogEventLevel LogLevel { get; set; }
+
+		public LoggingConfig(
+			string logDirectory,
+			long? maxBytes,
+			RollingInterval rollingInterval,
+			bool rollOnFileSizeLimit,
+			LogEventLevel logLevel)
+		{
+			LogDirectory = logDirectory;
+			MaxBytes = maxBytes;
+			RollingInterval = rollingInterval;
+			RollOnFileSizeLimit = rollOnFileSizeLimit;
+			LogLevel = logLevel;
+		}
 	}
 }

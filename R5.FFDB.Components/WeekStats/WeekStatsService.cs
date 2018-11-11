@@ -14,7 +14,13 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.WeekStats
 {
-	public class WeekStatsService
+	public interface IWeekStatsService
+	{
+		Core.Models.WeekStats GetStats(WeekInfo week);
+		Task SaveWeekStatFilesAsync();
+	}
+
+	public class WeekStatsService : IWeekStatsService
 	{
 		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
 		

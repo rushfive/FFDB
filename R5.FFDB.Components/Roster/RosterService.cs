@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using R5.FFDB.Core.Data;
 using R5.FFDB.Core.Models;
 using System;
@@ -9,13 +10,18 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.Roster
 {
-	public class RosterService
+	public interface IRosterService
 	{
-		private FfdbConfig _config { get; }
+		Task<List<Core.Models.Roster>> GetAsync();
+	}
 
-		public RosterService(FfdbConfig config)
+	public class RosterService : IRosterService
+	{
+		private ILogger<RosterService> _logger { get; }
+
+		public RosterService(ILogger<RosterService> logger)
 		{
-			_config = config;
+			_logger = logger;
 		}
 
 		public async Task<List<Core.Models.Roster>> GetAsync()
@@ -33,7 +39,7 @@ namespace R5.FFDB.Components.Roster
 			return result;
 		}
 
-		public async Task<Core.Models.Roster> GetForTeamAsync(Team team)
+		private async Task<Core.Models.Roster> GetForTeamAsync(Team team)
 		{
 			// UNCOMMENT later
 			// --- FIX: should use webReqClient to get html string

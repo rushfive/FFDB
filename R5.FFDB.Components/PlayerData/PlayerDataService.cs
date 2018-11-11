@@ -14,10 +14,11 @@ namespace R5.FFDB.Components.PlayerData
 {
 	public interface IPlayerDataService
 	{
-
+		Core.Models.PlayerData GetPlayerData(string nflId);
+		List<Core.Models.PlayerData> GetPlayerData(List<string> nflIds);
 	}
 
-	public class PlayerDataService
+	public class PlayerDataService : IPlayerDataService
 	{
 		private ILogger<PlayerDataService> _logger { get; }
 		private FileDownloadConfig _fileDownloadConfig { get; }
