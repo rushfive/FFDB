@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Core.Components.Setup.Services
+namespace R5.FFDB.Components.Setup.Services
 {
 	public class InitialSetupService
 	{

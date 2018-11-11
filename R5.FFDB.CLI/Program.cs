@@ -1,9 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
-using R5.FFDB.Core.Components;
-using R5.FFDB.Core.Components.Roster;
-using R5.FFDB.Core.Components.Setup.Services;
-using R5.FFDB.Core.Components.WeekStats.Models;
+using R5.FFDB.Components.WeekStats.Models;
 using R5.FFDB.Core.Data;
 using R5.FFDB.Engine;
 using System;

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Core", "R5.FFDB.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Engine", "R5.FFDB.Engine\R5.FFDB.Engine.csproj", "{57C0892B-4267-4CC1-90A9-C98E3F1E1B97}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Core.Components", "R5.FFDB.Core.Components\R5.FFDB.Core.Components.csproj", "{2D1FFF97-6C82-4D6D-873A-09D8A2192558}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Components", "R5.FFDB.Components\R5.FFDB.Components.csproj", "{2D1FFF97-6C82-4D6D-873A-09D8A2192558}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

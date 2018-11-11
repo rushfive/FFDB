@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Core.Components.Roster
+namespace R5.FFDB.Components.Roster
 {
 	public static class RosterScraper
 	{

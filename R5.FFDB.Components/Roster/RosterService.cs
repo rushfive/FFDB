@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Core.Components.Roster
+namespace R5.FFDB.Components.Roster
 {
 	public class RosterService
 	{
@@ -18,9 +18,9 @@ namespace R5.FFDB.Core.Components.Roster
 			_config = config;
 		}
 
-		public async Task<List<Models.Roster>> GetAsync()
+		public async Task<List<Core.Models.Roster>> GetAsync()
 		{
-			var result = new List<Models.Roster>();
+			var result = new List<Core.Models.Roster>();
 
 			List<Team> teams = Teams.Get();
 
@@ -33,7 +33,7 @@ namespace R5.FFDB.Core.Components.Roster
 			return result;
 		}
 
-		public async Task<Models.Roster> GetForTeamAsync(Team team)
+		public async Task<Core.Models.Roster> GetForTeamAsync(Team team)
 		{
 			// UNCOMMENT later
 			// --- FIX: should use webReqClient to get html string
@@ -46,8 +46,8 @@ namespace R5.FFDB.Core.Components.Roster
 			doc.Load(@"D:\Repos\ffdb_roster\sea_roster.html");
 
 			
-			List<Models.RosterPlayer> players = RosterScraper.ExtractPlayers(doc)
-				.Select(p => new Models.RosterPlayer
+			List<Core.Models.RosterPlayer> players = RosterScraper.ExtractPlayers(doc)
+				.Select(p => new Core.Models.RosterPlayer
 				{
 					NflId = p.nflId,
 					Position = p.position,
@@ -55,7 +55,7 @@ namespace R5.FFDB.Core.Components.Roster
 				})
 				.ToList();
 
-			return new Models.Roster
+			return new Core.Models.Roster
 			{
 				TeamId = team.Id,
 				Players = players

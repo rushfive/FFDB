@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using R5.FFDB.Core.Components.Configurations;
-using R5.FFDB.Core.Components.WeekStats.Models;
+using R5.FFDB.Components.Configurations;
+using R5.FFDB.Components.WeekStats.Models;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Core.Components.WeekStats
+namespace R5.FFDB.Components.WeekStats
 {
 	public class WeekStatsService
 	{

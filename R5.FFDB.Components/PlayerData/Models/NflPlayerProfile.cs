@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace R5.FFDB.Core.Components.PlayerData.Models
+namespace R5.FFDB.Components.PlayerData.Models
 {
 	public class NflPlayerProfile
 	{

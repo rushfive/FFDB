@@ -3,7 +3,7 @@ using Newtonsoft.Json.Converters;
 using R5.FFDB.Core.Models;
 using System;
 
-namespace R5.FFDB.Core.Components.PlayerData.Models
+namespace R5.FFDB.Components.PlayerData.Models
 {
 	// static data retrieved from api and scraping
 	public class PlayerDataJson

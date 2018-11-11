@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Core.Components.Configurations
+namespace R5.FFDB.Components.Configurations
 {
 	public class LoggingConfig
 	{

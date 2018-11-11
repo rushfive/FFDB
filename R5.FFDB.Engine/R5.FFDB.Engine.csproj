@@ -14,7 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\R5.FFDB.Core.Components\R5.FFDB.Core.Components.csproj" />
+	  <ProjectReference Include="..\R5.FFDB.Components\R5.FFDB.Components.csproj" />
 	</ItemGroup>
 
 </Project>

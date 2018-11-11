@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Core.Components.WeekStats.Models
+namespace R5.FFDB.Components.WeekStats.Models
 {
 	// model for req payload seen in this example:
 	// http://api.fantasy.nfl.com/v2/players/weekstats?season=2018&week=7

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Core.Components.PlayerData
+namespace R5.FFDB.Components.PlayerData
 {
 	// todo: should all be internal
 	public static class PlayerProfileScraper
