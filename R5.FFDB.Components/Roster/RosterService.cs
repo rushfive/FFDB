@@ -39,7 +39,7 @@ namespace R5.FFDB.Components.Roster
 			return result;
 		}
 
-		private async Task<Core.Models.Roster> GetForTeamAsync(Team team)
+		public async Task<Core.Models.Roster> GetForTeamAsync(Team team)
 		{
 			// UNCOMMENT later
 			// --- FIX: should use webReqClient to get html string
@@ -49,13 +49,14 @@ namespace R5.FFDB.Components.Roster
 
 			// mock getting from endpoint
 			var doc = new HtmlDocument();
-			doc.Load(@"D:\Repos\ffdb_roster\sea_roster.html");
+			doc.Load(@"D:\Repos\ffdb_stuff\misc_stuff\sea_roster.html");
 
 			
-			List<Core.Models.RosterPlayer> players = RosterScraper.ExtractPlayers(doc)
-				.Select(p => new Core.Models.RosterPlayer
+			List<RosterPlayer> players = RosterScraper.ExtractPlayers(doc)
+				.Select(p => new RosterPlayer
 				{
 					NflId = p.nflId,
+					Number = p.number,
 					Position = p.position,
 					Status = p.status
 				})

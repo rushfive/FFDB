@@ -11,21 +11,30 @@ namespace R5.FFDB.Components.PlayerData.Models
 		[JsonProperty("nflId")]
 		public string NflId { get; set; }
 
+		[JsonProperty("esbId")]
+		public string EsbId { get; set; }
+
+		[JsonProperty("gsisId")]
+		public string GsisId { get; set; }
+
+		[JsonProperty("pictureUri")]
+		public string PictureUri { get; set; }
+
 		[JsonProperty("firstName")]
 		public string FirstName { get; set; }
 
 		[JsonProperty("lastName")]
 		public string LastName { get; set; }
 
-		[JsonProperty("position")]
-		[JsonConverter(typeof(StringEnumConverter))]
-		public Position Position { get; set; }
+		//[JsonProperty("position")]
+		//[JsonConverter(typeof(StringEnumConverter))]
+		//public Position Position { get; set; }
 
-		[JsonProperty("teamId")]
-		public int? TeamId { get; set; } // not active if null
+		//[JsonProperty("teamId")]
+		//public int? TeamId { get; set; } // not active if null
 
-		[JsonProperty("number")]
-		public int Number { get; set; }
+		//[JsonProperty("number")]
+		//public int Number { get; set; }
 
 		[JsonProperty("height")]
 		public int Height { get; set; }
@@ -44,11 +53,14 @@ namespace R5.FFDB.Components.PlayerData.Models
 			return new Core.Models.PlayerData
 			{
 				NflId = json.NflId,
+				EsbId = json.EsbId,
+				GsisId = json.GsisId,
+				PictureUri = json.PictureUri,
 				FirstName = json.FirstName,
 				LastName = json.LastName,
-				Position = json.Position,
-				TeamId = json.TeamId,
-				Number = json.Number,
+				//Position = json.Position,
+				//TeamId = json.TeamId,
+				//Number = json.Number,
 				Height = json.Height,
 				Weight = json.Weight,
 				DateOfBirth = json.DateOfBirth,

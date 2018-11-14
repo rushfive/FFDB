@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
+using R5.FFDB.Components.Roster;
 using R5.FFDB.Components.WeekStats.Models;
 using R5.FFDB.Core.Data;
 using R5.FFDB.Engine;
@@ -16,6 +17,15 @@ namespace R5.FFDB.CLI
 	{
 		static void Main(string[] args)
 		{
+			var rosterSvc = new RosterService(null);
+			var seahawks = Teams.Get().Single(t => t.Id == 30);
+			var roster = rosterSvc.GetForTeamAsync(seahawks).GetAwaiter().GetResult();
+
+			var playersWithoutNumbers = roster.Players.Where(p => !p.Number.HasValue).ToList();
+
+			return;
+
+			//
 			var setup = new EngineSetup();
 
 			setup.WebRequest

@@ -9,6 +9,34 @@ namespace R5.FFDB.Components.PlayerData
 	// todo: should all be internal
 	public static class PlayerProfileScraper
 	{
+		public static (string esbId, string gsisId) ExtractIds(HtmlDocument page)
+		{
+			string[] idCommentLines = page.DocumentNode
+				.SelectSingleNode("//comment()[contains(., 'GSIS')]")
+				.InnerHtml
+				.Split("\n\t");
+
+			// "ESB ID: ADA218591"
+			string esbId = idCommentLines
+				.Single(l => l.Contains("ESB"))
+				.Split(":")[1]
+				.Trim();
+
+			// "GSIS ID: 00-0031381"
+			string gsisId = idCommentLines
+				.Single(l => l.Contains("GSIS"))
+				.Split(":")[1]
+				.Trim();
+
+			return (esbId, gsisId);
+		}
+
+		public static string ExtractPictureUri(HtmlDocument page)
+		{
+			return page.DocumentNode.SelectNodes("//meta")
+				.SingleOrDefault(n => n.Attributes.Contains("property") && n.Attributes["property"].Value == "og:image")
+				?.Attributes["content"].Value;
+		}
 
 		public static int ExtractPlayerNumber(HtmlDocument page)
 		{

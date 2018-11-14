@@ -9,30 +9,69 @@ namespace R5.FFDB.Components.Roster
 {
 	public static class RosterScraper
 	{
-		public static List<(string nflId, Position position, RosterStatus status)> ExtractPlayers(HtmlDocument page)
+		public static List<(string nflId, int? number, Position position, RosterStatus status)> ExtractPlayers(HtmlDocument page)
 		{
-			var result = new List<(string, Position, RosterStatus)>();
+			var result = new List<(string, int?, Position, RosterStatus)>();
 
-			HtmlNodeCollection rows = page.GetElementbyId("result")
+			HtmlNodeCollection playerRows = page.GetElementbyId("result")
 				?.SelectSingleNode("//tbody")
 				?.SelectNodes("tr");
 
-			foreach (HtmlNode r in rows)
+			foreach (HtmlNode r in playerRows)
 			{
 				string id = ExtractNflId(r);
+				int? number = ExtractNumber(r);
 				Position position = ExtractPosition(r);
 				RosterStatus status = ExtractStatus(r);
 
-				result.Add((id, position, status));
+				result.Add((id, number, position, status));
 			}
 
 			return result;
 		}
 
-		private static string ExtractNflId(HtmlNode row)
+		private static int? ExtractNumber(HtmlNode playerRow)
+		{
+			//HtmlNode td = playerRow.SelectNodes("td")[0];
+			//var childNodes = td.ChildNodes;
+
+			HtmlNodeCollection tdChildNodes = playerRow.SelectNodes("td")[0].ChildNodes;
+
+			if (!tdChildNodes.Any())
+			{
+				return null;
+			}
+
+			string numberText = tdChildNodes.Single().InnerText;
+
+			if (string.IsNullOrWhiteSpace(numberText) || !int.TryParse(numberText, out int number))
+			{
+				return null;
+			}
+
+			return number;
+
+			//
+
+			//string numberText = playerRow.SelectNodes("td")[0]
+			//	.ChildNodes
+			//	.Single()
+			//	.InnerText;
+
+
+
+			//if (string.IsNullOrWhiteSpace(numberText) || !int.TryParse(numberText, out int number))
+			//{
+			//	return null;
+			//}
+
+			//return number;
+		}
+
+		private static string ExtractNflId(HtmlNode playerRow)
 		{
 			// "/player/mauricealexander/2550145/profile"
-			string profileUri = row.SelectNodes("td")[1]
+			string profileUri = playerRow.SelectNodes("td")[1]
 				.ChildNodes
 				.Single(n => n.NodeType == HtmlNodeType.Element)
 				.Attributes["href"]
@@ -45,10 +84,10 @@ namespace R5.FFDB.Components.Roster
 
 			return slashSplit.First(isNumericString);
 		}
-
-		private static Position ExtractPosition(HtmlNode row)
+		
+		private static Position ExtractPosition(HtmlNode playerRow)
 		{
-			string position = row.SelectNodes("td")[2]
+			string position = playerRow.SelectNodes("td")[2]
 				.ChildNodes
 				.Single()
 				.InnerText;
@@ -56,9 +95,9 @@ namespace R5.FFDB.Components.Roster
 			return Enum.Parse<Position>(position);
 		}
 
-		private static RosterStatus ExtractStatus(HtmlNode row)
+		private static RosterStatus ExtractStatus(HtmlNode playerRow)
 		{
-			string status = row.SelectNodes("td")[3]
+			string status = playerRow.SelectNodes("td")[3]
 				.ChildNodes
 				.Single()
 				.InnerText;

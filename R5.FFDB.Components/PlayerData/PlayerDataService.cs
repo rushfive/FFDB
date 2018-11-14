@@ -68,9 +68,9 @@ namespace R5.FFDB.Components.PlayerData
 					NflId = ngsContent.NflId,
 					FirstName = ngsContent.FirstName,
 					LastName = ngsContent.LastName,
-					Position = ngsContent.Position,
-					TeamId = ngsContent.TeamId,
-					Number = nflProfile.Number,
+					//Position = ngsContent.Position,
+					//TeamId = ngsContent.TeamId,
+					//Number = nflProfile.Number,
 					Height = nflProfile.Height,
 					Weight = nflProfile.Weight,
 					DateOfBirth = nflProfile.DateOfBirth.DateTime,
@@ -106,9 +106,9 @@ namespace R5.FFDB.Components.PlayerData
 			string uri = $"http://api.fantasy.nfl.com/v2/player/ngs-content?playerId={nflId}";
 			
 			var response = await _webRequestClient.GetStringAsync(uri);
-			var json = JsonConvert.DeserializeObject<NgsContentJsonV2>(response);
+			var json = JsonConvert.DeserializeObject<NgsContentJson>(response);
 
-			return NgsContentJsonV2.ToEntity(json);
+			return NgsContentJson.ToEntity(json);
 		}
 
 		private async Task<NflPlayerProfile> GetNflPlayerProfileInfoAsync(string nflId, string firstName, string lastName)
@@ -120,17 +120,19 @@ namespace R5.FFDB.Components.PlayerData
 
 			var page = new HtmlDocument();
 			page.LoadHtml(html);
-
-			//var web = new HtmlWeb();
-			//HtmlDocument page = await web.LoadFromWebAsync(uri);
-
+			
 			int number = PlayerProfileScraper.ExtractPlayerNumber(page);
 			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);
 			DateTimeOffset dateOfBirth = PlayerProfileScraper.ExtractDateOfBirth(page);
 			string college = PlayerProfileScraper.ExtractCollege(page);
+			(string esbId, string gsisId) = PlayerProfileScraper.ExtractIds(page);
+			string pictureUri = PlayerProfileScraper.ExtractPictureUri(page);
 
 			return new NflPlayerProfile
 			{
+				EsbId = esbId,
+				GsisId = gsisId,
+				PictureUri = pictureUri,
 				Number = number,
 				Height = height,
 				Weight = weight,

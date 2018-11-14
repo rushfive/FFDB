@@ -14,6 +14,7 @@ namespace R5.FFDB.Core.Models
 	public class RosterPlayer
 	{
 		public string NflId { get; set; }
+		public int? Number { get; set; }
 		public Position Position { get; set; }
 		public RosterStatus Status { get; set; }
 	}

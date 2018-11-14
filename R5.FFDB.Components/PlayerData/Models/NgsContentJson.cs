@@ -7,12 +7,12 @@ using System.Text;
 
 namespace R5.FFDB.Components.PlayerData.Models
 {
-	public class NgsContentJsonV2
+	public class NgsContentJson
 	{
 		[JsonProperty("games")]
 		public Dictionary<string, NgsContentGameJson> Games { get; set; }
 
-		public static NgsContentPlayer ToEntity(NgsContentJsonV2 model)
+		public static NgsContentPlayer ToEntity(NgsContentJson model)
 		{
 			NgsContentGameJson game = model.Games.Single().Value;
 			NgsContentPlayerJson player = game.Players.Single().Value;
