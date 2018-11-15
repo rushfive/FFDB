@@ -1,4 +1,5 @@
 ﻿using R5.FFDB.Core.Models;
+using R5.FFDB.Core.Sources;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -195,7 +196,13 @@ namespace R5.FFDB.Core.Data
 					Id = 30,
 					Name = "Seattle Seahawks",
 					Abbreviation = "SEA",
-					RosterPageUri = @"http://www.nfl.com/teams/seattleseahawks/roster?team=SEA"
+					RosterSourceUris = new Dictionary<string, string>
+					{
+						{
+							RosterSourceKeys.NFLWebTeam,
+							@"http://www.nfl.com/teams/seattleseahawks/roster?team=SEA"
+						}
+					}
 				},
 				new Team
 				{

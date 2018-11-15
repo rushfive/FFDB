@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.WeekStats.Models;
+using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi.Models;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -12,24 +12,24 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.WeekStats
+namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 {
-	public interface IWeekStatsService
+	public interface IWeekStatsSource
 	{
 		Core.Models.WeekStats GetStats(WeekInfo week);
 		Task SaveWeekStatFilesAsync();
 	}
 
-	public class WeekStatsService : IWeekStatsService
+	public class WeekStatsSource : IWeekStatsSource
 	{
 		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
-		
-		private ILogger<WeekStatsService> _logger { get; }
+
+		private ILogger<WeekStatsSource> _logger { get; }
 		private FileDownloadConfig _fileDownloadConfig { get; }
 		private IWebRequestClient _webRequestClient { get; }
 
-		public WeekStatsService(
-			ILogger<WeekStatsService> logger,
+		public WeekStatsSource(
+			ILogger<WeekStatsSource> logger,
 			FileDownloadConfig fileDownloadConfig,
 			IWebRequestClient webRequestClient)
 		{

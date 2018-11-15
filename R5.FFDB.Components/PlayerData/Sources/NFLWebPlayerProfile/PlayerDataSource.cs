@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.PlayerData.Models;
+using R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,22 +10,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.PlayerData
+namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 {
-	public interface IPlayerDataService
+	public class PlayerDataSource : IPlayerDataSource
 	{
-		Core.Models.PlayerData GetPlayerData(string nflId);
-		List<Core.Models.PlayerData> GetPlayerData(List<string> nflIds);
-	}
-
-	public class PlayerDataService : IPlayerDataService
-	{
-		private ILogger<PlayerDataService> _logger { get; }
+		private ILogger<PlayerDataSource> _logger { get; }
 		private FileDownloadConfig _fileDownloadConfig { get; }
 		private IWebRequestClient _webRequestClient { get; }
 
-		public PlayerDataService(
-			ILogger<PlayerDataService> logger,
+		public PlayerDataSource(
+			ILogger<PlayerDataSource> logger,
 			FileDownloadConfig fileDownloadConfig,
 			IWebRequestClient webRequestClient)
 		{
@@ -104,7 +98,7 @@ namespace R5.FFDB.Components.PlayerData
 		private async Task<NgsContentPlayer> GetNgsContentInfoAsync(string nflId)
 		{
 			string uri = $"http://api.fantasy.nfl.com/v2/player/ngs-content?playerId={nflId}";
-			
+
 			var response = await _webRequestClient.GetStringAsync(uri);
 			var json = JsonConvert.DeserializeObject<NgsContentJson>(response);
 
@@ -120,7 +114,7 @@ namespace R5.FFDB.Components.PlayerData
 
 			var page = new HtmlDocument();
 			page.LoadHtml(html);
-			
+
 			int number = PlayerProfileScraper.ExtractPlayerNumber(page);
 			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);
 			DateTimeOffset dateOfBirth = PlayerProfileScraper.ExtractDateOfBirth(page);

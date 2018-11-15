@@ -2,26 +2,26 @@
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Core.Data;
 using R5.FFDB.Core.Models;
+using R5.FFDB.Core.Sources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.Roster
+namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 {
-	public interface IRosterService
+	public class RosterSource : IRosterSource
 	{
-		Task<List<Core.Models.Roster>> GetAsync();
-	}
+		private ILogger<RosterSource> _logger { get; }
+		private IWebRequestClient _webRequestClient { get; }
 
-	public class RosterService : IRosterService
-	{
-		private ILogger<RosterService> _logger { get; }
-
-		public RosterService(ILogger<RosterService> logger)
+		public RosterSource(
+			ILogger<RosterSource> logger,
+			IWebRequestClient webRequestClient)
 		{
 			_logger = logger;
+			_webRequestClient = webRequestClient;
 		}
 
 		public async Task<List<Core.Models.Roster>> GetAsync()
@@ -41,6 +41,8 @@ namespace R5.FFDB.Components.Roster
 
 		public async Task<Core.Models.Roster> GetForTeamAsync(Team team)
 		{
+			string html = await _webRequestClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam]);
+
 			// UNCOMMENT later
 			// --- FIX: should use webReqClient to get html string
 			//var web = new HtmlWeb();
@@ -51,7 +53,7 @@ namespace R5.FFDB.Components.Roster
 			var doc = new HtmlDocument();
 			doc.Load(@"D:\Repos\ffdb_stuff\misc_stuff\sea_roster.html");
 
-			
+
 			List<RosterPlayer> players = RosterScraper.ExtractPlayers(doc)
 				.Select(p => new RosterPlayer
 				{

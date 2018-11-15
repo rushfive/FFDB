@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.PlayerData
+namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 {
 	// todo: should all be internal
 	public static class PlayerProfileScraper
@@ -69,7 +69,7 @@ namespace R5.FFDB.Components.PlayerData
 			{
 				var spaceSplit = segmentContainingHeight.Trim().Split(" ");
 				var dashSplit = spaceSplit[0].Split("-"); // "5-10"
-				
+
 				return int.Parse(dashSplit[0]) * 12 + int.Parse(dashSplit[1]);
 			}
 
@@ -84,7 +84,7 @@ namespace R5.FFDB.Components.PlayerData
 		{
 			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
 			HtmlNode dateOfBirthParagraph = infoParagraphs[3];
-			
+
 			var spaceSplit = dateOfBirthParagraph.InnerText.Split(" ");
 			return DateTimeOffset.Parse(spaceSplit[1]);
 		}

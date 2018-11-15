@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.PlayerData.Models
+namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile.Models
 {
 	public class NgsContentJson
 	{

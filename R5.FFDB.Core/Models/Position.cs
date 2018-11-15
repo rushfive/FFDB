@@ -42,4 +42,39 @@ namespace R5.FFDB.Core.Models
 		OG,
 		LS
 	}
+
+	// differs from what are used in stats
+	// curr source: ESPN team depth chart pages
+	public enum DepthChartPosition
+	{
+		// Offense
+		QB,
+		RB,
+		WR,
+		TE,
+		LT,
+		LG,
+		C,
+		RG,
+		RT,
+		// DEF
+		LDE,
+		LDT,
+		RDT,
+		RDE,
+		WLB,
+		MLB,
+		SLB,
+		SS,
+		FS,
+		RCB,
+		LCB,
+		// ST
+		PK,
+		P,
+		H,
+		PR,
+		KR,
+		LS
+	}
 }

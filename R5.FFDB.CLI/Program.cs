@@ -1,7 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using R5.FFDB.Components.Roster;
-using R5.FFDB.Components.WeekStats.Models;
+using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
+using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi.Models;
 using R5.FFDB.Core.Data;
 using R5.FFDB.Engine;
 using System;
@@ -17,7 +18,7 @@ namespace R5.FFDB.CLI
 	{
 		static void Main(string[] args)
 		{
-			var rosterSvc = new RosterService(null);
+			var rosterSvc = new RosterSource(null, null);
 			var seahawks = Teams.Get().Single(t => t.Id == 30);
 			var roster = rosterSvc.GetForTeamAsync(seahawks).GetAwaiter().GetResult();
 

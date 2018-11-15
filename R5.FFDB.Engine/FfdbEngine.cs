@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.PlayerData;
+using R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile;
 using R5.FFDB.Components.Roster;
 using R5.FFDB.Components.WeekStats;
+using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
 using System.Collections.Generic;
 
 namespace R5.FFDB.Engine
@@ -10,17 +12,17 @@ namespace R5.FFDB.Engine
 	public class FfdbEngine
 	{
 		private ILogger<FfdbEngine> _logger { get; }
-		private IPlayerDataService _playerDataService { get; }
-		private IRosterService _rosterService { get; }
-		private IWeekStatsService _weekStatsService { get; }
+		private IPlayerDataSource _playerDataService { get; }
+		private IRosterSource _rosterService { get; }
+		private IWeekStatsSource _weekStatsService { get; }
 
 		// leave as public for now,
 		// but should be configured with builder
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
-			IPlayerDataService playerDataService,
-			IRosterService rosterService,
-			IWeekStatsService weekStatsService)
+			IPlayerDataSource playerDataService,
+			IRosterSource rosterService,
+			IWeekStatsSource weekStatsService)
 		{
 			_logger = logger;
 			_playerDataService = playerDataService;
@@ -38,13 +40,13 @@ namespace R5.FFDB.Engine
 	}
 
 	// todo: move
-	public class PlayerDataSource
-	{
-		private List<IPlayerDataService> _sources { get; } = new List<IPlayerDataService>();
+	//public class PlayerDataSource
+	//{
+	//	private List<IPlayerDataSource> _sources { get; } = new List<IPlayerDataSource>();
 
-		public PlayerDataSource()
-		{
+	//	public PlayerDataSource()
+	//	{
 
-		}
-	}
+	//	}
+	//}
 }

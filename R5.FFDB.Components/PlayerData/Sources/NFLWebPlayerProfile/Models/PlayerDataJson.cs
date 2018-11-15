@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using R5.FFDB.Core.Models;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace R5.FFDB.Components.PlayerData.Models
+namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile.Models
 {
 	// static data retrieved from api and scraping
 	public class PlayerDataJson

@@ -19,6 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="DepthChart\Sources\TeamWeb\Models\" />
 		<Folder Include="Setup\Models\" />
 	</ItemGroup>
 

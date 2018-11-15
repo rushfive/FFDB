@@ -9,6 +9,7 @@ namespace R5.FFDB.Core.Models
 		public int Id { get; set; }
 		public string Name { get; set; }
 		public string Abbreviation { get; set; }
-		public string RosterPageUri { get; set; }
+
+		public Dictionary<string, string> RosterSourceUris { get; set; }
 	}
 }

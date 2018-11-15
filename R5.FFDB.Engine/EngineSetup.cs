@@ -2,8 +2,11 @@
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.PlayerData;
+using R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile;
 using R5.FFDB.Components.Roster;
+using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.WeekStats;
+using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
 using R5.FFDB.Engine.ConfigBuilders;
 using Serilog;
 
@@ -27,9 +30,9 @@ namespace R5.FFDB.Engine
 				.AddScoped(sp => webRequestConfig)
 				.AddScoped(sp => fileDownloadConfig)
 				.AddScoped<IWebRequestClient, WebRequestClient>()
-				.AddScoped<IPlayerDataService, PlayerDataService>()
-				.AddScoped<IRosterService, RosterService>()
-				.AddScoped<IWeekStatsService, WeekStatsService>()
+				.AddScoped<IPlayerDataSource, PlayerDataSource>()
+				.AddScoped<IRosterSource, RosterSource>()
+				.AddScoped<IWeekStatsSource, WeekStatsSource>()
 				.AddLogging(loggingConfig)
 				.AddScoped<FfdbEngine>();
 

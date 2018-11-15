@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.Roster
+namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 {
 	public static class RosterScraper
 	{
@@ -84,7 +84,7 @@ namespace R5.FFDB.Components.Roster
 
 			return slashSplit.First(isNumericString);
 		}
-		
+
 		private static Position ExtractPosition(HtmlNode playerRow)
 		{
 			string position = playerRow.SelectNodes("td")[2]
