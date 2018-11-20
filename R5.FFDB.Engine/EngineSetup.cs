@@ -2,12 +2,15 @@
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.PlayerData;
+//using R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile;
+using R5.FFDB.Components.PlayerData.Sources;
 using R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile;
 using R5.FFDB.Components.Roster;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.WeekStats;
 using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
 using R5.FFDB.Engine.ConfigBuilders;
+using R5.FFDB.Engine.SourceResolvers;
 using Serilog;
 
 namespace R5.FFDB.Engine
@@ -30,9 +33,23 @@ namespace R5.FFDB.Engine
 				.AddScoped(sp => webRequestConfig)
 				.AddScoped(sp => fileDownloadConfig)
 				.AddScoped<IWebRequestClient, WebRequestClient>()
-				.AddScoped<IPlayerDataSource, PlayerDataSource>()
-				.AddScoped<IRosterSource, RosterSource>()
-				.AddScoped<IWeekStatsSource, WeekStatsSource>()
+
+				//.AddScoped<IPlayerDataSource, PlayerDataSource>()
+				//.AddScoped<IRosterSource, RosterSource>()
+				//.AddScoped<IWeekStatsSource, WeekStatsSource>()
+				//.AddScoped<IDepthChartSource, DepthChartSource>()
+
+				// scoped or singleton?? being served from a singleton provider
+				.AddScoped<PlayerDataSource>()
+				.AddScoped<RosterSource>()
+				.AddScoped<WeekStatsSource>()
+
+				.AddScoped<IPlayerDataSourceResolver, PlayerDataSourceResolver>()
+				.AddScoped<IRosterSourceResolver, RosterSourceResolver>()
+				.AddScoped<IWeekStatsSourceResolver, WeekStatsSourceResolver>()
+				
+				.AddScoped<ISourcesFactory, SourcesFactory>()
+
 				.AddLogging(loggingConfig)
 				.AddScoped<FfdbEngine>();
 

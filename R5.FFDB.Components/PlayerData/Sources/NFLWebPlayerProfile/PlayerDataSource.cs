@@ -134,5 +134,10 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 				College = college
 			};
 		}
+
+		public Task<bool> IsHealthyAsync()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

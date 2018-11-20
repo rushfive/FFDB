@@ -43,18 +43,10 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 		{
 			string html = await _webRequestClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam]);
 
-			// UNCOMMENT later
-			// --- FIX: should use webReqClient to get html string
-			//var web = new HtmlWeb();
-			//HtmlDocument page = await web.LoadFromWebAsync(team.RosterPageUri);
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
 
-
-			// mock getting from endpoint
-			var doc = new HtmlDocument();
-			doc.Load(@"D:\Repos\ffdb_stuff\misc_stuff\sea_roster.html");
-
-
-			List<RosterPlayer> players = RosterScraper.ExtractPlayers(doc)
+			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
 				.Select(p => new RosterPlayer
 				{
 					NflId = p.nflId,
@@ -69,6 +61,11 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 				TeamId = team.Id,
 				Players = players
 			};
+		}
+
+		public Task<bool> IsHealthyAsync()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

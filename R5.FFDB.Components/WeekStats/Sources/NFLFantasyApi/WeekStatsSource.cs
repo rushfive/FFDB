@@ -14,12 +14,6 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 {
-	public interface IWeekStatsSource
-	{
-		Core.Models.WeekStats GetStats(WeekInfo week);
-		Task SaveWeekStatFilesAsync();
-	}
-
 	public class WeekStatsSource : IWeekStatsSource
 	{
 		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
@@ -180,6 +174,11 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 				return fileNames.Select(parseWeekInfo).ToHashSet();
 			}
+		}
+
+		public Task<bool> IsHealthyAsync()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

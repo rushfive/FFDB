@@ -18,9 +18,4 @@
 		<ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="DepthChart\Sources\TeamWeb\Models\" />
-		<Folder Include="Setup\Models\" />
-	</ItemGroup>
-
 </Project>
