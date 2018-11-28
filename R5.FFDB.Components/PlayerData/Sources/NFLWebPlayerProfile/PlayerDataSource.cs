@@ -15,22 +15,26 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 	public class PlayerDataSource : IPlayerDataSource
 	{
 		private ILogger<PlayerDataSource> _logger { get; }
-		private FileDownloadConfig _fileDownloadConfig { get; }
+		//private FileDownloadConfig _fileDownloadConfig { get; }
+		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 
 		public PlayerDataSource(
 			ILogger<PlayerDataSource> logger,
-			FileDownloadConfig fileDownloadConfig,
+			//FileDownloadConfig fileDownloadConfig,
+			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient)
 		{
 			_logger = logger;
-			_fileDownloadConfig = fileDownloadConfig;
+			//_fileDownloadConfig = fileDownloadConfig;
+			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 		}
 
 		public Core.Models.PlayerData GetPlayerData(string nflId)
 		{
-			string path = _fileDownloadConfig.PlayerData + $"{nflId}.json";
+			string path = _dataPath.PlayerData + $"{nflId}.json";
+			//string path = _fileDownloadConfig.PlayerData + $"{nflId}.json";
 			PlayerDataJson playerData = JsonConvert.DeserializeObject<PlayerDataJson>(File.ReadAllText(path));
 			return PlayerDataJson.ToCoreEntity(playerData);
 		}
@@ -73,7 +77,7 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 
 				string serializedPlayerData = JsonConvert.SerializeObject(playerData);
 
-				string path = _fileDownloadConfig.PlayerData + $"{id}.json";
+				string path = _dataPath.PlayerData + $"{id}.json";
 				File.WriteAllText(path, serializedPlayerData);
 
 				existing.Add(id);
@@ -82,7 +86,7 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 
 		private HashSet<string> GetExistingPlayerNflIds()
 		{
-			var directory = new DirectoryInfo(_fileDownloadConfig.PlayerData);
+			var directory = new DirectoryInfo(_dataPath.PlayerData);
 
 			return directory
 				.GetFiles()

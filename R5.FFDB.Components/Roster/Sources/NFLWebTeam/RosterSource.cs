@@ -63,6 +63,34 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 			};
 		}
 
+		// todo: make visible to tester
+		//internal async Task<Core.Models.Roster> GetForTeamAsync(Team team)
+		//{
+		//	return null;
+		//}
+
+		private Core.Models.Roster GetForTeam(int teamId, string rosterPage)
+		{
+			var page = new HtmlDocument();
+			page.LoadHtml(rosterPage);
+
+			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
+				.Select(p => new RosterPlayer
+				{
+					NflId = p.nflId,
+					Number = p.number,
+					Position = p.position,
+					Status = p.status
+				})
+				.ToList();
+
+			return new Core.Models.Roster
+			{
+				TeamId = teamId,
+				Players = players
+			};
+		}
+
 		public Task<bool> IsHealthyAsync()
 		{
 			throw new NotImplementedException();

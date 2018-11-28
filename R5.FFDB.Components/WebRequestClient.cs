@@ -20,7 +20,7 @@ namespace R5.FFDB.Components
 		private static HttpClient _client;
 		private static CookieContainer _cookieContainer;
 		private static HttpClientHandler _clientHandler;
-		private static Random _random;
+		private static Random _random = new Random();
 
 		private WebRequestConfig _config { get; }
 
@@ -74,42 +74,4 @@ namespace R5.FFDB.Components
 				_config.RandomizedThrottle.Value.max + 1);
 		}
 	}
-
-
-
-	// todo: more research on this, esp if im going to be making
-	// parallel calls
-	//public static class ManagedHttpClient
-	//{
-	//	private static HttpClient _client;
-	//	private static CookieContainer _cookieContainer;
-	//	private static HttpClientHandler _clientHandler;
-	//	private static Dictionary<string, string> _defaultHeaders;
-
-	//	static ManagedHttpClient()
-	//	{
-	//		ReinitializeClient();
-	//	}
-
-	//	private static void ReinitializeClient()
-	//	{
-	//		_cookieContainer = new CookieContainer();
-	//		_clientHandler = new HttpClientHandler
-	//		{
-	//			UseCookies = true,
-	//			CookieContainer = _cookieContainer
-	//		};
-	//		_client = new HttpClient(_clientHandler);
-
-	//		if (_defaultHeaders != null)
-	//		{
-	//			foreach (KeyValuePair<string, string> header in _defaultHeaders)
-	//			{
-	//				_client.DefaultRequestHeaders.Add(header.Key, header.Value);
-	//			}
-	//		}
-	//	}
-
-	//	public static HttpClient GetClient() => _client;
-	//}
 }

@@ -8,7 +8,13 @@ namespace R5.FFDB.Core.Models
 	public class Roster
 	{
 		public int TeamId { get; set; }
+		public string TeamAbbreviation { get; set; }
 		public List<RosterPlayer> Players { get; set; }
+
+		public override string ToString()
+		{
+			return $"{TeamAbbreviation} Roster";
+		}
 	}
 
 	public class RosterPlayer

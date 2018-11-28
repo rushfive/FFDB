@@ -19,16 +19,19 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
 
 		private ILogger<WeekStatsSource> _logger { get; }
-		private FileDownloadConfig _fileDownloadConfig { get; }
+		//private FileDownloadConfig _fileDownloadConfig { get; }
+		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 
 		public WeekStatsSource(
 			ILogger<WeekStatsSource> logger,
-			FileDownloadConfig fileDownloadConfig,
+			//FileDownloadConfig fileDownloadConfig,
+			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient)
 		{
 			_logger = logger;
-			_fileDownloadConfig = fileDownloadConfig;
+			//_fileDownloadConfig = fileDownloadConfig;
+			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 		}
 
@@ -49,7 +52,7 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 		public Core.Models.WeekStats GetStats(WeekInfo week)
 		{
-			string path = GetJsonPath(week, _fileDownloadConfig.WeekStats);
+			string path = GetJsonPath(week, _dataPath.WeekStats);
 
 			var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
 
@@ -72,7 +75,7 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 			void saveFile(string statsJson, WeekInfo week)
 			{
-				string path = GetJsonPath(week, _fileDownloadConfig.WeekStats);
+				string path = GetJsonPath(week, _dataPath.WeekStats);
 
 				if (File.Exists(path))
 				{
@@ -153,7 +156,7 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 			HashSet<WeekInfo> getExistingWeeks()
 			{
-				var directory = new DirectoryInfo(_fileDownloadConfig.WeekStats);
+				var directory = new DirectoryInfo(_dataPath.WeekStats);
 				FileInfo[] files = directory.GetFiles();
 
 				List<string> fileNames = files.Select(f => f.Name).ToList();

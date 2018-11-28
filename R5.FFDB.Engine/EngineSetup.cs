@@ -12,26 +12,54 @@ using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
 using R5.FFDB.Engine.ConfigBuilders;
 using R5.FFDB.Engine.SourceResolvers;
 using Serilog;
+using System;
+using System.IO;
 
 namespace R5.FFDB.Engine
 {
 	public class EngineSetup
 	{
 		public WebRequestConfigBuilder WebRequest { get; } = new WebRequestConfigBuilder();
-		public FileDownloadConfigBuilder FileDownload { get; } = new FileDownloadConfigBuilder();
+		//public FileDownloadConfigBuilder FileDownload { get; } = new FileDownloadConfigBuilder();
 		public LoggingConfigBuilder Logging { get; } = new LoggingConfigBuilder();
+
+		private string _rootDataPath { get; set; }
+
+		public void SetRootDataDirectoryPath(string path)
+		{
+			if (string.IsNullOrWhiteSpace(path))
+			{
+				throw new ArgumentNullException(nameof(path), "Root data directory path must be provided.");
+			}
+			if (!path.EndsWith("\\"))
+			{
+				path += "\\";
+			}
+			if (!Directory.Exists(path))
+			{
+				throw new ArgumentException($"Directory path '{path}' doesn't exist.");
+			}
+
+			_rootDataPath = path;
+		}
 
 		public FfdbEngine Create()
 		{
-			WebRequestConfig webRequestConfig = WebRequest.Build();
-			FileDownloadConfig fileDownloadConfig = FileDownload.Build();
-			LoggingConfig loggingConfig = Logging.Build();
+			if (string.IsNullOrWhiteSpace(_rootDataPath))
+			{
+				throw new InvalidOperationException("Root data directory path must be provided.");
+			}
+			var dataPath = new DataDirectoryPath(_rootDataPath);
 
+			WebRequestConfig webRequestConfig = WebRequest.Build();
+			//FileDownloadConfig fileDownloadConfig = FileDownload.Build();
+			LoggingConfig loggingConfig = Logging.Build();
+			
 			var services = new ServiceCollection();
 
 			services
 				.AddScoped(sp => webRequestConfig)
-				.AddScoped(sp => fileDownloadConfig)
+				.AddScoped(sp => dataPath)
 				.AddScoped<IWebRequestClient, WebRequestClient>()
 
 				//.AddScoped<IPlayerDataSource, PlayerDataSource>()

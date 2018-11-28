@@ -33,9 +33,10 @@ namespace R5.FFDB.CLI
 				.AddDefaultBrowserHeaders()
 				.SetRandomizedThrottle(3000, 8000);
 
-			setup.FileDownload
-				.SetWeekStatsDirectory(@"D:\Repos\ffdb_stuff\weekstat_files")
-				.SetPlayerDataDirectory(@"D:\Repos\ffdb_stuff\playerdata_files");
+			setup.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data");
+			//setup.FileDownload
+			//	.SetWeekStatsDirectory(@"D:\Repos\ffdb_stuff\weekstat_files")
+			//	.SetPlayerDataDirectory(@"D:\Repos\ffdb_stuff\playerdata_files");
 
 			setup.Logging
 				.SetLogDirectory(@"D:\Repos\ffdb_stuff\logs");

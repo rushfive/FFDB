@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Engine", "R5.FFDB.E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Components", "R5.FFDB.Components\R5.FFDB.Components.csproj", "{2D1FFF97-6C82-4D6D-873A-09D8A2192558}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevTester", "DevTester\DevTester.csproj", "{021D3D4F-DA9D-4953-B040-43A77E3FF198}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{2D1FFF97-6C82-4D6D-873A-09D8A2192558}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D1FFF97-6C82-4D6D-873A-09D8A2192558}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D1FFF97-6C82-4D6D-873A-09D8A2192558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{021D3D4F-DA9D-4953-B040-43A77E3FF198}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{021D3D4F-DA9D-4953-B040-43A77E3FF198}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{021D3D4F-DA9D-4953-B040-43A77E3FF198}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{021D3D4F-DA9D-4953-B040-43A77E3FF198}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

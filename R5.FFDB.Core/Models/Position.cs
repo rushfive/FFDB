@@ -40,7 +40,8 @@ namespace R5.FFDB.Core.Models
 		// added from scraping NFL roster pages
 		OT,
 		OG,
-		LS
+		LS,
+		SAF // ???
 	}
 
 	// differs from what are used in stats
