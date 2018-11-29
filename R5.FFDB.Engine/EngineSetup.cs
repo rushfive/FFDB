@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.PlayerData;
-//using R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile;
-using R5.FFDB.Components.PlayerData.Sources;
-using R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile;
+using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
 using R5.FFDB.Components.Roster;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.WeekStats;
@@ -70,7 +67,7 @@ namespace R5.FFDB.Engine
 				//.AddScoped<IDepthChartSource, DepthChartSource>()
 
 				// scoped or singleton?? being served from a singleton provider
-				.AddScoped<PlayerDataSource>()
+				.AddScoped<PlayerProfileSource>()
 				.AddScoped<RosterSource>()
 				.AddScoped<WeekStatsSource>()
 

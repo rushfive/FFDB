@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile.Models
+namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb.Models
 {
 	// static data retrieved from api and scraping
-	public class PlayerDataJson
+	public class PlayerProfileJson
 	{
 		[JsonProperty("nflId")]
 		public string NflId { get; set; }
@@ -48,9 +48,9 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile.Models
 		[JsonProperty("college")]
 		public string College { get; set; }
 
-		public static Core.Models.PlayerData ToCoreEntity(PlayerDataJson json)
+		public static Core.Models.PlayerProfile ToCoreEntity(PlayerProfileJson json)
 		{
-			return new Core.Models.PlayerData
+			return new Core.Models.PlayerProfile
 			{
 				NflId = json.NflId,
 				EsbId = json.EsbId,

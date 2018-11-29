@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.PlayerData;
+using R5.FFDB.Components.PlayerProfile;
 using R5.FFDB.Components.Roster;
 using R5.FFDB.Components.WeekStats;
 using R5.FFDB.Engine.SourceResolvers;
@@ -83,7 +83,7 @@ namespace R5.FFDB.Engine
 
 	public class Sources
 	{
-		public IPlayerDataSource PlayerData { get; set; }
+		public IPlayerProfileSource PlayerData { get; set; }
 		public IRosterSource Roster { get; set; }
 		public IWeekStatsSource WeekStats { get; set; }
 	}

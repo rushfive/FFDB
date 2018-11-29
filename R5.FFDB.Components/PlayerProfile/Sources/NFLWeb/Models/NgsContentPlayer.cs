@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile.Models
+namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb.Models
 {
 	public class NgsContentPlayer
 	{

@@ -1,8 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile.Models;
+using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,17 +9,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
+namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 {
-	public class PlayerDataSource : IPlayerDataSource
+	public class PlayerProfileSource : IPlayerProfileSource
 	{
-		private ILogger<PlayerDataSource> _logger { get; }
+		private ILogger<PlayerProfileSource> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
 
-		public PlayerDataSource(
-			ILogger<PlayerDataSource> logger,
+		public PlayerProfileSource(
+			ILogger<PlayerProfileSource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle)
@@ -31,17 +30,17 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 			_throttle = throttle;
 		}
 
-		public Core.Models.PlayerData GetPlayerData(string nflId)
+		public Core.Models.PlayerProfile GetPlayerProfile(string nflId)
 		{
 			string path = _dataPath.PlayerData + $"{nflId}.json";
-			PlayerDataJson playerData = JsonConvert.DeserializeObject<PlayerDataJson>(File.ReadAllText(path));
-			return PlayerDataJson.ToCoreEntity(playerData);
+			PlayerProfileJson playerData = JsonConvert.DeserializeObject<PlayerProfileJson>(File.ReadAllText(path));
+			return PlayerProfileJson.ToCoreEntity(playerData);
 		}
 
-		public List<Core.Models.PlayerData> GetPlayerData(List<string> nflIds)
+		public List<Core.Models.PlayerProfile> GetPlayerProfile(List<string> nflIds)
 		{
 			return nflIds
-				.Select(id => GetPlayerData(id))
+				.Select(id => GetPlayerProfile(id))
 				.ToList();
 		}
 
@@ -76,7 +75,7 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 
 				NflPlayerProfile nflProfile = await GetNflPlayerProfileInfoAsync(nflId, firstName, lastName);
 
-				var playerData = new PlayerDataJson
+				var playerData = new PlayerProfileJson
 				{
 					NflId = nflId,
 					EsbId = nflProfile.EsbId,

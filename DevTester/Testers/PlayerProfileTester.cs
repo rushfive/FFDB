@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
-using R5.FFDB.Components.PlayerData;
+using R5.FFDB.Components.PlayerProfile;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
 using R5.FFDB.Core.Data;
@@ -26,13 +26,13 @@ namespace DevTester.Testers
 	{
 		private ILogger<PlayerProfileTester> _logger { get; }
 		private IWebRequestClient _webRequestClient { get; }
-		private IPlayerDataSource _playerProfileSource { get; }
+		private IPlayerProfileSource _playerProfileSource { get; }
 		private DataDirectoryPath _dataPath { get; }
 
 		public PlayerProfileTester(
 			ILogger<PlayerProfileTester> logger,
 			IWebRequestClient webRequestClient,
-			IPlayerDataSource playerProfileSource,
+			IPlayerProfileSource playerProfileSource,
 			DataDirectoryPath dataPath)
 		{
 			_logger = logger;

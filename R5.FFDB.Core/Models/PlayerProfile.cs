@@ -6,7 +6,7 @@ namespace R5.FFDB.Core.Models
 {
 	// should only contain static type data, things that are
 	// unlikely to change
-	public class PlayerData
+	public class PlayerProfile
 	{
 		// Id examples are for Davantae Adams
 
