@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
 using R5.FFDB.Core.Data;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Core.Sources;
@@ -47,13 +48,7 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 			page.LoadHtml(html);
 
 			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
-				.Select(p => new RosterPlayer
-				{
-					NflId = p.nflId,
-					Number = p.number,
-					Position = p.position,
-					Status = p.status
-				})
+				.Select(NFLWebRosterPlayer.ToCoreEntity)
 				.ToList();
 
 			return new Core.Models.Roster
@@ -75,13 +70,7 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 			page.LoadHtml(rosterPage);
 
 			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
-				.Select(p => new RosterPlayer
-				{
-					NflId = p.nflId,
-					Number = p.number,
-					Position = p.position,
-					Status = p.status
-				})
+				.Select(NFLWebRosterPlayer.ToCoreEntity)
 				.ToList();
 
 			return new Core.Models.Roster

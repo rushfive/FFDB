@@ -52,7 +52,8 @@ namespace R5.FFDB.Engine
 			var dataPath = new DataDirectoryPath(_rootDataPath);
 
 			WebRequestConfig webRequestConfig = WebRequest.Build();
-			//FileDownloadConfig fileDownloadConfig = FileDownload.Build();
+			var throttle = new WebRequestThrottle(webRequestConfig.ThrottleMilliseconds, webRequestConfig.RandomizedThrottle);
+
 			LoggingConfig loggingConfig = Logging.Build();
 			
 			var services = new ServiceCollection();
@@ -60,6 +61,7 @@ namespace R5.FFDB.Engine
 			services
 				.AddScoped(sp => webRequestConfig)
 				.AddScoped(sp => dataPath)
+				.AddScoped(sp => throttle)
 				.AddScoped<IWebRequestClient, WebRequestClient>()
 
 				//.AddScoped<IPlayerDataSource, PlayerDataSource>()

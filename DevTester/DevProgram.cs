@@ -1,5 +1,7 @@
-﻿using HtmlAgilityPack;
+﻿using DevTester.Testers;
+using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
@@ -18,115 +20,48 @@ namespace DevTester
 {
 	public class DevProgram
 	{
-		static DataDirectoryPath DataPath = new DataDirectoryPath(@"D:\Repos\ffdb_data\");
-		static WebRequestClient WebClient = GetWebRequestClient();
+		private static IServiceProvider _serviceProvider { get; set; }
+		private static ILogger<DevProgram> _logger { get; set; }
 
 		public static async Task Main(string[] args)
 		{
-			//DownloadRosterPagesAsync()
-			//	.ConfigureAwait(false)
-			//	.GetAwaiter()
-			//	.GetResult();
+			_serviceProvider = DevTestServiceProvider.Build();
+			_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
 
-			var rosters = GetRosters();
+			await FetchPlayerProfilesFromRostersAsync(downloadRosterPages: false);
+
+			// temp: fix roster (get first and last names)
+			//var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
+			//var team = Teams.Get().First();
+			//var rosterPagePath = dataPath.RosterPages + $"{team.Abbreviation}.html";
+			//var pageHtml = File.ReadAllText(rosterPagePath);
+			//var page = new HtmlDocument();
+			//page.LoadHtml(pageHtml);
+			//List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
+			//	.Select(p => new RosterPlayer
+			//	{
+			//		NflId = p.nflId,
+			//		Number = p.number,
+			//		Position = p.position,
+			//		Status = p.status
+			//	})
+			//	.ToList();
 
 			Console.ReadKey();
 		}
 
-		public static IServiceProvider BuildDevTestServiceProvider()
+		private static Task FetchPlayerProfilesFromRostersAsync(bool downloadRosterPages)
 		{
-			var services = new ServiceCollection();
-
-			WebRequestClient webClient = GetWebRequestClient();
-
-			services
-				.AddScoped<IWebRequestClient>(sp => webClient);
-
-			AddLogging(services, @"D:\Repos\ffdb_data\dev_test_logs\");
-
-			return services.BuildServiceProvider();
-
-			// local funcs
-			void AddLogging(ServiceCollection sc, string logDirectory)
+			try
 			{
-				Log.Logger = new LoggerConfiguration()
-					.MinimumLevel.Debug()
-					.WriteTo.Console()
-					.WriteTo.File(
-						logDirectory + ".txt",
-						fileSizeLimitBytes: null,
-						restrictedToMinimumLevel: LogEventLevel.Debug,
-						rollingInterval: RollingInterval.Hour,
-						rollOnFileSizeLimit: false)
-					.CreateLogger();
-
-				sc.AddLogging(loggingBuilder => loggingBuilder.AddSerilog());
+				IPlayerProfileTester tester = _serviceProvider.GetRequiredService<IPlayerProfileTester>();
+				return tester.FetchSavePlayerProfilesAsync(downloadRosterPages);
 			}
-		}
-
-		public static List<Roster> GetRosters()
-		{
-			var rosters = new List<Roster>();
-
-			List<Team> teams = Teams.Get();//.GetRange(0, 1);
-
-			foreach(var team in teams)
+			catch (Exception ex)
 			{
-				string pagePath = DataPath.RosterPages + $"{team.Abbreviation}.html";
-				var pageHtml = File.ReadAllText(pagePath);
-
-				var page = new HtmlDocument();
-				page.LoadHtml(pageHtml);
-
-				List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
-					.Select(p => new RosterPlayer
-					{
-						NflId = p.nflId,
-						Number = p.number,
-						Position = p.position,
-						Status = p.status
-					})
-					.ToList();
-
-				rosters.Add(new Roster
-				{
-					TeamId = team.Id,
-					TeamAbbreviation = team.Abbreviation,
-					Players = players
-				});
+				_logger.LogError(ex, "There was an error fetching player profile from roster.");
+				throw;
 			}
-
-			return rosters;
-		}
-
-		public static async Task DownloadRosterPagesAsync()
-		{
-			List<Team> teams = Teams.Get();
-
-			// temp: get first
-			//var team = teams.First();
-			//string page = await WebClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam], throttle: true);
-			//await File.WriteAllTextAsync(DataPath.RosterPages + $"__TEST__{team.Abbreviation}.html", page);
-
-			foreach (Team team in teams.Where(t => t.RosterSourceUris.ContainsKey(RosterSourceKeys.NFLWebTeam)))
-			{
-				string page = await WebClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam], throttle: true);
-				await File.WriteAllTextAsync(DataPath.RosterPages + $"{team.Abbreviation}.html", page);
-			}
-		}
-
-		public static WebRequestClient GetWebRequestClient()
-		{
-			var headers = new Dictionary<string, string>
-			{
-				//{ "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" },
-				//{ "Accept-Encoding", "gzip, deflate" },
-				//{ "Accept-Language", "en-US,en;q=0.9" },
-				{ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36" }
-			};
-
-			var config = new WebRequestConfig(0, (3000, 8000), headers);
-			return new WebRequestClient(config);
 		}
 	}
 }

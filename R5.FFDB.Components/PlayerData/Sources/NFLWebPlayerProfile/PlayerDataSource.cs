@@ -15,26 +15,25 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 	public class PlayerDataSource : IPlayerDataSource
 	{
 		private ILogger<PlayerDataSource> _logger { get; }
-		//private FileDownloadConfig _fileDownloadConfig { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
+		private WebRequestThrottle _throttle { get; }
 
 		public PlayerDataSource(
 			ILogger<PlayerDataSource> logger,
-			//FileDownloadConfig fileDownloadConfig,
 			DataDirectoryPath dataPath,
-			IWebRequestClient webRequestClient)
+			IWebRequestClient webRequestClient,
+			WebRequestThrottle throttle)
 		{
 			_logger = logger;
-			//_fileDownloadConfig = fileDownloadConfig;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
+			_throttle = throttle;
 		}
 
 		public Core.Models.PlayerData GetPlayerData(string nflId)
 		{
 			string path = _dataPath.PlayerData + $"{nflId}.json";
-			//string path = _fileDownloadConfig.PlayerData + $"{nflId}.json";
 			PlayerDataJson playerData = JsonConvert.DeserializeObject<PlayerDataJson>(File.ReadAllText(path));
 			return PlayerDataJson.ToCoreEntity(playerData);
 		}
@@ -47,28 +46,44 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 		}
 
 		// ensures ALREADY EXISTING players ARENT fetched again
-		public async Task SavePlayerDataFilesAsync(List<string> nflIds)
+		public async Task SavePlayerDataFilesAsync(List<(string nflId, string firstName, string lastName)> players)
 		{
 			HashSet<string> existing = GetExistingPlayerNflIds();
 
-			foreach (string id in nflIds)
+			List<(string nflId, string firstName, string lastName)> newPlayers = players.Where(p => !existing.Contains(p.nflId)).ToList();
+
+			int alreadyExistingCount = players.Count - newPlayers.Count;
+			if (alreadyExistingCount > 0)
 			{
-				if (existing.Contains(id))
+				_logger.LogInformation($"Already have profile data for {players.Count - newPlayers.Count} players.");
+			}
+
+			int remaining = newPlayers.Count;
+			foreach ((string nflId, string firstName, string lastName) in newPlayers)
+			{
+				if (existing.Contains(nflId))
 				{
+					_logger.LogDebug($"Skipping fetching of profile data for player '{nflId}' because it already exists "
+						+ $"(remaining: {--remaining})");
 					continue;
 				}
 
-				NgsContentPlayer ngsContent = await GetNgsContentInfoAsync(id);
-				NflPlayerProfile nflProfile = await GetNflPlayerProfileInfoAsync(id, ngsContent.FirstName, ngsContent.LastName);
+				_logger.LogTrace($"Fetching profile data for '{nflId}'.");
+
+				// no longer needed since we get this info from rosters
+				//NgsContentPlayer ngsContent = await GetNgsContentInfoAsync(id);
+
+
+				NflPlayerProfile nflProfile = await GetNflPlayerProfileInfoAsync(nflId, firstName, lastName);
 
 				var playerData = new PlayerDataJson
 				{
-					NflId = ngsContent.NflId,
-					FirstName = ngsContent.FirstName,
-					LastName = ngsContent.LastName,
-					//Position = ngsContent.Position,
-					//TeamId = ngsContent.TeamId,
-					//Number = nflProfile.Number,
+					NflId = nflId,
+					EsbId = nflProfile.EsbId,
+					GsisId = nflProfile.GsisId,
+					PictureUri = nflProfile.PictureUri,
+					FirstName = firstName,
+					LastName = lastName,
 					Height = nflProfile.Height,
 					Weight = nflProfile.Weight,
 					DateOfBirth = nflProfile.DateOfBirth.DateTime,
@@ -77,10 +92,15 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 
 				string serializedPlayerData = JsonConvert.SerializeObject(playerData);
 
-				string path = _dataPath.PlayerData + $"{id}.json";
+				string path = _dataPath.PlayerData + $"{nflId}.json";
 				File.WriteAllText(path, serializedPlayerData);
 
-				existing.Add(id);
+				existing.Add(nflId);
+				
+				await Task.Delay(_throttle.Get());
+
+				_logger.LogDebug($"Successfully fetched profile data for '{nflId}' ({firstName} {lastName}) "
+					+ $"(remaining: {--remaining})");
 			}
 		}
 
@@ -103,23 +123,50 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 		{
 			string uri = $"http://api.fantasy.nfl.com/v2/player/ngs-content?playerId={nflId}";
 
-			var response = await _webRequestClient.GetStringAsync(uri);
-			var json = JsonConvert.DeserializeObject<NgsContentJson>(response);
+			string response;
+			try
+			{
+				response = await _webRequestClient.GetStringAsync(uri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to fetch data for '{nflId}' at '{uri}'.");
+				throw;
+			}
 
-			return NgsContentJson.ToEntity(json);
+			try
+			{
+				var json = JsonConvert.DeserializeObject<NgsContentJson>(response);
+				return NgsContentJson.ToEntity(json);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to deserialize fetched data for '{nflId}'.", response);
+				throw;
+			}
 		}
 
 		private async Task<NflPlayerProfile> GetNflPlayerProfileInfoAsync(string nflId, string firstName, string lastName)
 		{
-			string name = firstName.ToLower() + lastName.ToLower();
+			string name = firstName.ToLower() + lastName?.ToLower() ?? "";
 			string uri = $"http://www.nfl.com/player/{name}/{nflId}/profile";
 
-			string html = await _webRequestClient.GetStringAsync(uri);
+			string html;
+			try
+			{
+				html = await _webRequestClient.GetStringAsync(uri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to player profile page for '{nflId}' at '{uri}'.");
+				throw;
+			}
+			//string html = await _webRequestClient.GetStringAsync(uri);
 
 			var page = new HtmlDocument();
 			page.LoadHtml(html);
 
-			int number = PlayerProfileScraper.ExtractPlayerNumber(page);
+			//int number = PlayerProfileScraper.ExtractPlayerNumber(page);
 			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);
 			DateTimeOffset dateOfBirth = PlayerProfileScraper.ExtractDateOfBirth(page);
 			string college = PlayerProfileScraper.ExtractCollege(page);
@@ -131,7 +178,7 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 				EsbId = esbId,
 				GsisId = gsisId,
 				PictureUri = pictureUri,
-				Number = number,
+				//Number = number,
 				Height = height,
 				Weight = weight,
 				DateOfBirth = dateOfBirth,

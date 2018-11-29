@@ -38,18 +38,20 @@ namespace R5.FFDB.Components.PlayerData.Sources.NFLWebPlayerProfile
 				?.Attributes["content"].Value;
 		}
 
-		public static int ExtractPlayerNumber(HtmlDocument page)
-		{
-			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-			HtmlNode playerNumberParagraph = infoParagraphs[0].ChildNodes.Single(n => n.HasClass("player-number"));
+		//public static int ExtractPlayerNumber(HtmlDocument page)
+		//{
+		//	HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
+		//	HtmlNode playerNumberParagraph = infoParagraphs[0].ChildNodes.Single(n => n.HasClass("player-number"));
 
-			// InnerText:
-			// #89 WR
-			string[] textSplit = playerNumberParagraph.InnerText.Split(" ");
-			string numberToken = textSplit.Single(t => t.StartsWith("#"));
+		//	// InnerText:
+		//	// #89 WR
+		//	string[] textSplit = playerNumberParagraph.InnerText.Split(" ");
+		//	string numberToken = textSplit.Single(t => t.StartsWith("#"));
 
-			return int.Parse(numberToken.Substring(1));
-		}
+			/// Found an inner text that is "# DB"
+			/// this needs to be changed into a TryParse that returns a (int?)null of no number is found after the '#'
+		//	return int.Parse(numberToken.Substring(1));
+		//}
 
 		public static (int height, int weight) ExtractHeightWeight(HtmlDocument page)
 		{
