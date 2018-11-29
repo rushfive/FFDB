@@ -19,18 +19,15 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
 
 		private ILogger<WeekStatsSource> _logger { get; }
-		//private FileDownloadConfig _fileDownloadConfig { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 
 		public WeekStatsSource(
 			ILogger<WeekStatsSource> logger,
-			//FileDownloadConfig fileDownloadConfig,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient)
 		{
 			_logger = logger;
-			//_fileDownloadConfig = fileDownloadConfig;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 		}
@@ -59,27 +56,64 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 			return WeekStatsJson.ToCoreEntity(json);
 		}
 
-		public async Task SaveWeekStatFilesAsync()
+		public List<Core.Models.WeekStats> GetAll()
+		{
+			return GetExistingWeeks()
+				.Select(w => GetStats(w))
+				.ToList();
+		}
+
+		public async Task FetchAndSaveWeekStatsAsync()
 		{
 			WeekInfo latestCompleted = await GetLatestAvailableWeekAsync();
 
+			_logger.LogInformation($"Fetching all available week stats for players up to and including week {latestCompleted.Week}, {latestCompleted.Season}.");
+
 			List<WeekInfo> missingWeeks = GetMissingWeeks(latestCompleted);
+
+			IEnumerable<string> missing = missingWeeks.Select(w => $"{w.Season}-{w.Week}");
+			_logger.LogDebug($"Fetching for {missingWeeks.Count} weeks that are missing: {string.Join(", ", missing)}");
 
 			foreach (WeekInfo week in missingWeeks)
 			{
-				string uri = GetApiUri(week.Season, week.Week);
-				string weekStats = await _webRequestClient.GetStringAsync(uri);
+				_logger.LogDebug($"Beginning week stats fetch for {week.Season}-{week.Week}.");
 
-				saveFile(weekStats, week);
+				string uri = GetApiUri(week.Season, week.Week);
+
+				string weekStats = null;
+				try
+				{
+					weekStats = await _webRequestClient.GetStringAsync(uri);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, $"Failed to fetch week stats from '{uri}'.");
+					throw;
+				}
+
+				try
+				{
+					saveFile(weekStats, week);
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Failed to save week stats to disk.", weekStats);
+					throw;
+				}
+
+				_logger.LogInformation($"Successfully saved week stats for {week.Season}-{week.Week}.");
 			}
 
+			_logger.LogInformation("Successfully fetched all available week stats.");
+
+			// local functions
 			void saveFile(string statsJson, WeekInfo week)
 			{
 				string path = GetJsonPath(week, _dataPath.WeekStats);
 
 				if (File.Exists(path))
 				{
-					throw new InvalidOperationException($"Week stats file already exists for {week.Season} - {week.Week}.");
+					throw new InvalidOperationException($"Week stats file already exists for {week.Season}-{week.Week} at path '{path}'.");
 				}
 
 				File.WriteAllText(path, statsJson);
@@ -128,7 +162,7 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 		private List<WeekInfo> GetMissingWeeks(WeekInfo latestAvailable)
 		{
 			List<WeekInfo> allPossibleWeeks = getAllPossibleWeeks(latestAvailable);
-			HashSet<WeekInfo> existingWeeks = getExistingWeeks();
+			HashSet<WeekInfo> existingWeeks = GetExistingWeeks().ToHashSet();
 
 			return allPossibleWeeks.Where(w => !existingWeeks.Contains(w)).ToList();
 
@@ -153,35 +187,36 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 				return result;
 			}
+		}
 
-			HashSet<WeekInfo> getExistingWeeks()
+		private IEnumerable<WeekInfo> GetExistingWeeks()
+		{
+			var directory = new DirectoryInfo(_dataPath.WeekStats);
+			FileInfo[] files = directory.GetFiles();
+
+			List<string> fileNames = files.Select(f => f.Name).ToList();
+
+			bool namesAreValid = fileNames.All(n => Regex.IsMatch(n, weekStatsFileName));
+			if (!namesAreValid)
 			{
-				var directory = new DirectoryInfo(_dataPath.WeekStats);
-				FileInfo[] files = directory.GetFiles();
-
-				List<string> fileNames = files.Select(f => f.Name).ToList();
-
-				bool namesAreValid = fileNames.All(n => Regex.IsMatch(n, weekStatsFileName));
-				if (!namesAreValid)
-				{
-					throw new InvalidOperationException("There are some invalid week stat files. Remove them from the directory and try again.");
-				}
-
-				Func<string, WeekInfo> parseWeekInfo = fileName =>
-				{
-					string[] dotSplit = fileName.Split(".");
-					string[] dashSplit = dotSplit[0].Split("-");
-
-					return new WeekInfo(int.Parse(dashSplit[0]), int.Parse(dashSplit[1]));
-				};
-
-				return fileNames.Select(parseWeekInfo).ToHashSet();
+				throw new InvalidOperationException("There are some invalid week stat files. Remove them from the directory and try again.");
 			}
+
+			Func<string, WeekInfo> parseWeekInfo = fileName =>
+			{
+				string[] dotSplit = fileName.Split(".");
+				string[] dashSplit = dotSplit[0].Split("-");
+
+				return new WeekInfo(int.Parse(dashSplit[0]), int.Parse(dashSplit[1]));
+			};
+
+			return fileNames.Select(parseWeekInfo);
 		}
 
 		public Task<bool> IsHealthyAsync()
 		{
-			throw new NotImplementedException();
+			// todo:
+			return Task.FromResult(true);
 		}
 	}
 }

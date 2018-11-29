@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Engine.SourceResolvers
+namespace R5.FFDB.Engine.Source.Resolvers
 {
 	public interface IWeekStatsSourceResolver : ISourceResolver<IWeekStatsSource>
 	{

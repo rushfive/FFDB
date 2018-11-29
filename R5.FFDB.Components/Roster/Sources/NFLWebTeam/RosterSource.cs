@@ -6,6 +6,7 @@ using R5.FFDB.Core.Models;
 using R5.FFDB.Core.Sources;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,36 +17,62 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 	{
 		private ILogger<RosterSource> _logger { get; }
 		private IWebRequestClient _webRequestClient { get; }
+		private DataDirectoryPath _dataPath { get; }
 
 		public RosterSource(
 			ILogger<RosterSource> logger,
-			IWebRequestClient webRequestClient)
+			IWebRequestClient webRequestClient,
+			DataDirectoryPath dataPath)
 		{
 			_logger = logger;
 			_webRequestClient = webRequestClient;
+			_dataPath = dataPath;
 		}
 
-		public async Task<List<Core.Models.Roster>> GetAsync()
+		public async Task<List<Core.Models.Roster>> GetFromWebAsync(bool saveToDisk = true)
 		{
 			var result = new List<Core.Models.Roster>();
 
 			List<Team> teams = Teams.Get();
 
-			foreach (var team in teams)
+			foreach (Team team in teams)
 			{
-				var rosterInfo = await GetForTeamAsync(team);
+				string html = await _webRequestClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam]);
+
+				if (saveToDisk)
+				{
+					await File.WriteAllTextAsync(_dataPath.RosterPages + $"{team.Abbreviation}.html", html);
+				}
+
+				Core.Models.Roster rosterInfo = GetForTeam(team, html);
 				result.Add(rosterInfo);
 			}
 
 			return result;
 		}
 
-		public async Task<Core.Models.Roster> GetForTeamAsync(Team team)
+		public List<Core.Models.Roster> GetFromDisk()
 		{
-			string html = await _webRequestClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam]);
+			var result = new List<Core.Models.Roster>();
 
+			List<Team> teams = Teams.Get();
+
+			foreach (Team team in teams)
+			{
+				string pagePath = _dataPath.RosterPages + $"{team.Abbreviation}.html";
+				var pageHtml = File.ReadAllText(pagePath);
+
+				Core.Models.Roster rosterInfo = GetForTeam(team, pageHtml);
+				result.Add(rosterInfo);
+			}
+
+			return result;
+		}
+
+		private Core.Models.Roster GetForTeam(Team team, string pageHtml)
+		{
 			var page = new HtmlDocument();
-			page.LoadHtml(html);
+			page.LoadHtml(pageHtml);
 
 			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
 				.Select(NFLWebRosterPlayer.ToCoreEntity)
@@ -54,35 +81,31 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 			return new Core.Models.Roster
 			{
 				TeamId = team.Id,
+				TeamAbbreviation = team.Abbreviation,
 				Players = players
 			};
 		}
 
-		// todo: make visible to tester
-		//internal async Task<Core.Models.Roster> GetForTeamAsync(Team team)
+		//private Core.Models.Roster GetForTeam(int teamId, string rosterPage)
 		//{
-		//	return null;
+		//	var page = new HtmlDocument();
+		//	page.LoadHtml(rosterPage);
+
+		//	List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
+		//		.Select(NFLWebRosterPlayer.ToCoreEntity)
+		//		.ToList();
+
+		//	return new Core.Models.Roster
+		//	{
+		//		TeamId = teamId,
+		//		Players = players
+		//	};
 		//}
-
-		private Core.Models.Roster GetForTeam(int teamId, string rosterPage)
-		{
-			var page = new HtmlDocument();
-			page.LoadHtml(rosterPage);
-
-			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
-				.Select(NFLWebRosterPlayer.ToCoreEntity)
-				.ToList();
-
-			return new Core.Models.Roster
-			{
-				TeamId = teamId,
-				Players = players
-			};
-		}
 
 		public Task<bool> IsHealthyAsync()
 		{
-			throw new NotImplementedException();
+			// todo:
+			return Task.FromResult(true);
 		}
 	}
 }

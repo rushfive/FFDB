@@ -9,6 +9,7 @@ namespace R5.FFDB.Components.WeekStats
 	public interface IWeekStatsSource : ISource
 	{
 		Core.Models.WeekStats GetStats(WeekInfo week);
-		Task SaveWeekStatFilesAsync();
+		List<Core.Models.WeekStats> GetAll();
+		Task FetchAndSaveWeekStatsAsync();
 	}
 }

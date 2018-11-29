@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.PlayerProfile;
-using R5.FFDB.Components.Roster;
-using R5.FFDB.Components.WeekStats;
-using R5.FFDB.Engine.SourceResolvers;
+using R5.FFDB.Engine.Source;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine
@@ -21,71 +20,67 @@ namespace R5.FFDB.Engine
 			_sourcesFactory = sourcesFactory;
 		}
 		
-
-		public void TestLogging()
+		public async Task RunInitialSetupAsync()
 		{
-			_logger.LogTrace("this is a trace log.");
-			_logger.LogDebug("this is a debug log");
-			_logger.LogCritical("this is a criterial log");
-			
+			_logger.LogInformation("Running initial setup..");
+
+			// todo:
+			// 1. config validation
+			// 2. intiialize DB
+			// 3. verify/check sources (all must have AT LEAST one working source)
+			// 4. get all latest weekstats
+			// 5. download all rosters to temp
+			// 6. fetch and save player profiles from ROSTERS first, WEEKSTATS next
+
+			Sources sources = await _sourcesFactory.GetAsync();
+
+			// get all available week stats
 			try
 			{
-				Throw();
+				// todo: it should actually ALWAYS FETCH from web for this initial setup
+				//var rosters = await sources.Roster.GetFromWebAsync(saveToDisk: false);
+				List<Core.Models.Roster> rosters = sources.Roster.GetFromDisk();
+
+				List<string> rosterPlayerIds = rosters
+					.SelectMany(r => r.Players)
+					.Select(p => p.NflId)
+					.Distinct()
+					//.Select(p => (p.NflId, p.FirstName, p.LastName))
+					.ToList();
+
+				_logger.LogInformation($"Found '{rosterPlayerIds.Count}' players from rosters to fetch profile data for.");
+				await sources.PlayerProfile.FetchAndSavePlayerDataFilesAsync(rosterPlayerIds);
+				_logger.LogInformation("Finished fetching player profile data by rosters.");
+
+				await sources.WeekStats.FetchAndSaveWeekStatsAsync();
+
+				List<Core.Models.WeekStats> weekStats = sources.WeekStats.GetAll();
+
+				List<string> weekStatsPlayerIds = weekStats
+					.SelectMany(ws => ws.Players)
+					.Select(p => p.NflId)
+					.Distinct()
+					.ToList();
+
+				_logger.LogInformation($"Found '{weekStatsPlayerIds.Count}' players from week stats to fetch profile data for.");
+				await sources.PlayerProfile.FetchAndSavePlayerDataFilesAsync(weekStatsPlayerIds);
+				_logger.LogInformation("Finished fetching player profile data by week stats.");
+
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
-				_logger.LogError(ex, "caught an error", new object[] { "something", 23, true });
+				_logger.LogError(ex, "There was an error running the initial setup.");
+				throw;
 			}
-			
-		}
 
-		private void Throw()
-		{
-			throw new InvalidOperationException("an invalid op exception was thrown!");
+			// fetch and save current team roster pages
+
 		}
+		
 	}
 
-	public interface ISourcesFactory
-	{
-		Task<Sources> GetAsync();
-	}
+	
 
-	public class SourcesFactory : ISourcesFactory
-	{
-		private IPlayerDataSourceResolver _playerDataSourceResolver { get; }
-		private IRosterSourceResolver _rosterSourceResolver { get; }
-		private IWeekStatsSourceResolver _weekStatsSourceResolver { get; }
-
-		public SourcesFactory(
-			IPlayerDataSourceResolver playerDataSourceResolver,
-			IRosterSourceResolver rosterSourceResolver,
-			IWeekStatsSourceResolver weekStatsSourceResolver)
-		{
-			_playerDataSourceResolver = playerDataSourceResolver;
-			_rosterSourceResolver = rosterSourceResolver;
-			_weekStatsSourceResolver = weekStatsSourceResolver;
-		}
-
-		public async Task<Sources> GetAsync()
-		{
-			var playerData = await _playerDataSourceResolver.GetAsync();
-			var roster = await _rosterSourceResolver.GetAsync();
-			var weekStats = await _weekStatsSourceResolver.GetAsync();
-
-			return new Sources
-			{
-				PlayerData = playerData,
-				Roster = roster,
-				WeekStats = weekStats
-			};
-		}
-	}
-
-	public class Sources
-	{
-		public IPlayerProfileSource PlayerData { get; set; }
-		public IRosterSource Roster { get; set; }
-		public IWeekStatsSource WeekStats { get; set; }
-	}
+	
 	
 }

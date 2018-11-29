@@ -45,20 +45,20 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 		}
 
 		// ensures ALREADY EXISTING players ARENT fetched again
-		public async Task SavePlayerDataFilesAsync(List<(string nflId, string firstName, string lastName)> players)
+		public async Task FetchAndSavePlayerDataFilesAsync(List<string> playerNflIds)
 		{
 			HashSet<string> existing = GetExistingPlayerNflIds();
 
-			List<(string nflId, string firstName, string lastName)> newPlayers = players.Where(p => !existing.Contains(p.nflId)).ToList();
+			List<string> newPlayers = playerNflIds.Where(id => !existing.Contains(id)).ToList();
 
-			int alreadyExistingCount = players.Count - newPlayers.Count;
+			int alreadyExistingCount = playerNflIds.Count - newPlayers.Count;
 			if (alreadyExistingCount > 0)
 			{
-				_logger.LogInformation($"Already have profile data for {players.Count - newPlayers.Count} players.");
+				_logger.LogInformation($"Already have profile data for {playerNflIds.Count - newPlayers.Count} players.");
 			}
 
 			int remaining = newPlayers.Count;
-			foreach ((string nflId, string firstName, string lastName) in newPlayers)
+			foreach (string nflId in newPlayers)
 			{
 				if (existing.Contains(nflId))
 				{
@@ -73,7 +73,7 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 				//NgsContentPlayer ngsContent = await GetNgsContentInfoAsync(id);
 
 
-				NflPlayerProfile nflProfile = await GetNflPlayerProfileInfoAsync(nflId, firstName, lastName);
+				NflPlayerProfile nflProfile = await GetNflPlayerProfileInfoAsync(nflId);
 
 				var playerData = new PlayerProfileJson
 				{
@@ -81,8 +81,8 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 					EsbId = nflProfile.EsbId,
 					GsisId = nflProfile.GsisId,
 					PictureUri = nflProfile.PictureUri,
-					FirstName = firstName,
-					LastName = lastName,
+					FirstName = nflProfile.FirstName,
+					LastName = nflProfile.LastName,
 					Height = nflProfile.Height,
 					Weight = nflProfile.Weight,
 					DateOfBirth = nflProfile.DateOfBirth.DateTime,
@@ -98,7 +98,7 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 				
 				await Task.Delay(_throttle.Get());
 
-				_logger.LogDebug($"Successfully fetched profile data for '{nflId}' ({firstName} {lastName}) "
+				_logger.LogDebug($"Successfully fetched profile data for '{nflId}' ({nflProfile.FirstName} {nflProfile.LastName}) "
 					+ $"(remaining: {--remaining})");
 			}
 		}
@@ -145,10 +145,12 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 			}
 		}
 
-		private async Task<NflPlayerProfile> GetNflPlayerProfileInfoAsync(string nflId, string firstName, string lastName)
+		private async Task<NflPlayerProfile> GetNflPlayerProfileInfoAsync(string nflId)
 		{
-			string name = firstName.ToLower() + lastName?.ToLower() ?? "";
-			string uri = $"http://www.nfl.com/player/{name}/{nflId}/profile";
+			//string name = firstName.ToLower() + lastName?.ToLower() ?? "";
+
+			// the first {nflId} can be any random string, so we'll just use the id
+			string uri = $"http://www.nfl.com/player/{nflId}/{nflId}/profile";
 
 			string html;
 			try
@@ -166,6 +168,7 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 			page.LoadHtml(html);
 
 			//int number = PlayerProfileScraper.ExtractPlayerNumber(page);
+			(string firstName, string lastName) = PlayerProfileScraper.ExtractNames(page);
 			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);
 			DateTimeOffset dateOfBirth = PlayerProfileScraper.ExtractDateOfBirth(page);
 			string college = PlayerProfileScraper.ExtractCollege(page);
@@ -174,6 +177,8 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 
 			return new NflPlayerProfile
 			{
+				FirstName = firstName,
+				LastName = lastName,
 				EsbId = esbId,
 				GsisId = gsisId,
 				PictureUri = pictureUri,
@@ -187,7 +192,8 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 
 		public Task<bool> IsHealthyAsync()
 		{
-			throw new NotImplementedException();
+			// todo:
+			return Task.FromResult(true);
 		}
 	}
 }

@@ -2,12 +2,11 @@
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
-using R5.FFDB.Components.Roster;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
-using R5.FFDB.Components.WeekStats;
 using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
 using R5.FFDB.Engine.ConfigBuilders;
-using R5.FFDB.Engine.SourceResolvers;
+using R5.FFDB.Engine.Source;
+using R5.FFDB.Engine.Source.Resolvers;
 using Serilog;
 using System;
 using System.IO;

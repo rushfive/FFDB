@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 {
@@ -98,6 +99,28 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 
 			var spaceSplit = collegeParagraph.InnerText.Trim().Split(" ");
 			return spaceSplit[1];
+		}
+
+		public static (string firstName, string lastName) ExtractNames(HtmlDocument page)
+		{
+			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
+			HtmlNode nameParagraph = infoParagraphs[0];
+			HtmlNode name = nameParagraph.ChildNodes.Single(n => n.HasClass("player-name"));
+
+			string fullName = name.InnerText;
+			string stripped = Regex.Replace(fullName, @"&nbsp;", "").Trim();
+
+			var split = stripped.Split(" ");
+
+			string firstName = split[0];
+
+			string lastName = null;
+			if (split.Length > 1)
+			{
+				lastName = string.Join(" ", split.Skip(1)).Trim();
+			}
+
+			return (firstName, lastName);
 		}
 
 		private static HtmlNodeCollection GetInfoParagraphNodes(HtmlDocument page)

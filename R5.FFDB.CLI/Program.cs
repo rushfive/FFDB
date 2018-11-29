@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
+using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
 using R5.FFDB.Components.Roster;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi.Models;
@@ -14,9 +15,9 @@ using static System.Console;
 
 namespace R5.FFDB.CLI
 {
-	class Program
+	public class Program
 	{
-		static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			//var rosterSvc = new RosterSource(null, null);
 			//var seahawks = Teams.Get().Single(t => t.Id == 30);
@@ -25,7 +26,16 @@ namespace R5.FFDB.CLI
 			//var playersWithoutNumbers = roster.Players.Where(p => !p.Number.HasValue).ToList();
 
 			//return;
+			//var client = new HttpClient();
+			//string jdUri = @"http://www.nfl.com/player/j.d.mckissic/2556440/profile";
+			//string jdPage = await client.GetStringAsync(jdUri);
 
+			//var page = new HtmlDocument();
+			//page.LoadHtml(jdPage);
+
+			//(string firstName, string lastName) = PlayerProfileScraper.ExtractNames(page);
+
+			
 			//
 			var setup = new EngineSetup();
 
@@ -33,18 +43,17 @@ namespace R5.FFDB.CLI
 				.AddDefaultBrowserHeaders()
 				.SetRandomizedThrottle(3000, 8000);
 
-			setup.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data");
+			setup.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data\");
 			//setup.FileDownload
 			//	.SetWeekStatsDirectory(@"D:\Repos\ffdb_stuff\weekstat_files")
 			//	.SetPlayerDataDirectory(@"D:\Repos\ffdb_stuff\playerdata_files");
 
 			setup.Logging
-				.SetLogDirectory(@"D:\Repos\ffdb_stuff\logs");
+				.SetLogDirectory(@"D:\Repos\ffdb_data\logs");
 
-			var engine = setup.Create();
+			FfdbEngine engine = setup.Create();
 
-			engine.TestLogging();
-			
+			await engine.RunInitialSetupAsync();
 			
 			return;
 		}

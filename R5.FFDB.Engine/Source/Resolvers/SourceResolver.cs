@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Engine.SourceResolvers
+namespace R5.FFDB.Engine.Source.Resolvers
 {
 	public abstract class SourceResolver<TSource>
 		where TSource : ISource

@@ -62,14 +62,15 @@ namespace DevTester.Testers
 			//	.Distinct()
 			//	.ToList();
 
-			List<(string, string, string)> players = rosters
+			List<string> playerIds = rosters
 				.SelectMany(r => r.Players)
-				.Select(p => (p.NflId, p.FirstName, p.LastName))
+				.Select(p => p.NflId)
+				.Distinct()
 				.ToList();
 
-			_logger.LogDebug($"Found '{players.Count}' players to fetch profile data for.");
+			_logger.LogDebug($"Found '{playerIds.Count}' players to fetch profile data for.");
 
-			await _playerProfileSource.SavePlayerDataFilesAsync(players);
+			await _playerProfileSource.FetchAndSavePlayerDataFilesAsync(playerIds);
 
 			_logger.LogDebug("Finished fetching player profile data by rosters.");
 		}

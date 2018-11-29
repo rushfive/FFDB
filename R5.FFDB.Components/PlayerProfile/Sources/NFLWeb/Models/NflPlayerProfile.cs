@@ -6,6 +6,8 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb.Models
 {
 	public class NflPlayerProfile
 	{
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
 		public string EsbId { get; set; }
 		public string GsisId { get; set; }
 		public string PictureUri { get; set; }

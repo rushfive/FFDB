@@ -7,6 +7,7 @@ namespace R5.FFDB.Components.Roster
 {
 	public interface IRosterSource : ISource
 	{
-		Task<List<Core.Models.Roster>> GetAsync();
+		Task<List<Core.Models.Roster>> GetFromWebAsync(bool saveToDisk = true);
+		List<Core.Models.Roster> GetFromDisk();
 	}
 }
