@@ -48,7 +48,7 @@ namespace DevTester.Testers
 			foreach (Team team in teams.Where(t => t.RosterSourceUris.ContainsKey(RosterSourceKeys.NFLWebTeam)))
 			{
 				string page = await _webRequestClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam], throttle: true);
-				await File.WriteAllTextAsync(_dataPath.RosterPages + $"{team.Abbreviation}.html", page);
+				await File.WriteAllTextAsync(_dataPath.Temp.RosterPages + $"{team.Abbreviation}.html", page);
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace DevTester.Testers
 
 			foreach (var team in teams)
 			{
-				string pagePath = _dataPath.RosterPages + $"{team.Abbreviation}.html";
+				string pagePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
 				var pageHtml = File.ReadAllText(pagePath);
 
 				var page = new HtmlDocument();

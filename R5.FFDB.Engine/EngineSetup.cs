@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
+using R5.FFDB.Components.ErrorFileLog;
 using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
@@ -77,6 +78,7 @@ namespace R5.FFDB.Engine
 				.AddScoped<ISourcesFactory, SourcesFactory>()
 
 				.AddLogging(loggingConfig)
+				.AddScoped<IErrorFileLogger, ErrorFileLogger>()
 				.AddScoped<FfdbEngine>();
 
 			return services

@@ -10,11 +10,17 @@ namespace R5.FFDB.Components
 		private string _root { get; }
 
 		// static data
-		public string PlayerData => _root + @"player_data\";
-		public string WeekStats => _root + @"week_stats\";
+		public StaticDataDirectoryPath Static { get; }
+		public TempDataDirectoryPath Temp { get; }
+		public ErrorFileLogDirectoryPath Error { get; }
+		//public string PlayerData => _root + @"player_data\";
+		//public string WeekStats => _root + @"week_stats\";
 
 		// temp - always okay to dump all
-		public string RosterPages => _root + @"temp\roster_pages\";
+		//public string RosterPages => _root + @"temp\roster_pages\";
+
+		// Error file logs
+		//public string 
 
 		public DataDirectoryPath(string rootPath)
 		{
@@ -25,14 +31,68 @@ namespace R5.FFDB.Components
 
 			_root = rootPath.EndsWith(@"\") ? rootPath : rootPath + @"\";
 
+			Static = new StaticDataDirectoryPath(_root);
+			Temp = new TempDataDirectoryPath(_root);
+			Error = new ErrorFileLogDirectoryPath(_root);
+
 			CreateMissing();
 		}
 
 		private void CreateMissing()
 		{
-			Directory.CreateDirectory(PlayerData);
-			Directory.CreateDirectory(WeekStats);
-			Directory.CreateDirectory(RosterPages);
+			Static.CreateMissing();
+			Temp.CreateMissing();
+			Error.CreateMissing();
+		}
+
+		public class StaticDataDirectoryPath
+		{
+			private string _root { get; }
+			public string PlayerData => _root + @"player_data\";
+			public string WeekStats => _root + @"week_stats\";
+
+			public StaticDataDirectoryPath(string rootPath)
+			{
+				_root = rootPath;
+			}
+
+			public void CreateMissing()
+			{
+				Directory.CreateDirectory(PlayerData);
+				Directory.CreateDirectory(WeekStats);
+			}
+		}
+
+		public class TempDataDirectoryPath
+		{
+			private string _root { get; }
+			public string RosterPages => _root + @"temp\roster_pages\";
+
+			public TempDataDirectoryPath(string rootPath)
+			{
+				_root = rootPath;
+			}
+
+			public void CreateMissing()
+			{
+				Directory.CreateDirectory(RosterPages);
+			}
+		}
+
+		public class ErrorFileLogDirectoryPath
+		{
+			private string _root { get; }
+			public string PlayerProfileFetch => _root + @"error_file_logs\player_profile_fetch\";
+
+			public ErrorFileLogDirectoryPath(string rootPath)
+			{
+				_root = rootPath;
+			}
+
+			public void CreateMissing()
+			{
+				Directory.CreateDirectory(PlayerProfileFetch);
+			}
 		}
 	}
 }

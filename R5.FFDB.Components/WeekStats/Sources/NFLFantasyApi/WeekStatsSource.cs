@@ -49,7 +49,7 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 		public Core.Models.WeekStats GetStats(WeekInfo week)
 		{
-			string path = GetJsonPath(week, _dataPath.WeekStats);
+			string path = GetJsonPath(week, _dataPath.Static.WeekStats);
 
 			var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
 
@@ -70,6 +70,12 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 			_logger.LogInformation($"Fetching all available week stats for players up to and including week {latestCompleted.Week}, {latestCompleted.Season}.");
 
 			List<WeekInfo> missingWeeks = GetMissingWeeks(latestCompleted);
+
+			if (!missingWeeks.Any())
+			{
+				_logger.LogInformation("Already have all available week stats - no fetching necessary.");
+				return;
+			}
 
 			IEnumerable<string> missing = missingWeeks.Select(w => $"{w.Season}-{w.Week}");
 			_logger.LogDebug($"Fetching for {missingWeeks.Count} weeks that are missing: {string.Join(", ", missing)}");
@@ -109,7 +115,7 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 			// local functions
 			void saveFile(string statsJson, WeekInfo week)
 			{
-				string path = GetJsonPath(week, _dataPath.WeekStats);
+				string path = GetJsonPath(week, _dataPath.Static.WeekStats);
 
 				if (File.Exists(path))
 				{
@@ -191,7 +197,7 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 		private IEnumerable<WeekInfo> GetExistingWeeks()
 		{
-			var directory = new DirectoryInfo(_dataPath.WeekStats);
+			var directory = new DirectoryInfo(_dataPath.Static.WeekStats);
 			FileInfo[] files = directory.GetFiles();
 
 			List<string> fileNames = files.Select(f => f.Name).ToList();

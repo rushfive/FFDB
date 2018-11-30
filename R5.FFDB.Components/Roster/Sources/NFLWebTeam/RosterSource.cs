@@ -41,7 +41,7 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 
 				if (saveToDisk)
 				{
-					await File.WriteAllTextAsync(_dataPath.RosterPages + $"{team.Abbreviation}.html", html);
+					await File.WriteAllTextAsync(_dataPath.Temp.RosterPages + $"{team.Abbreviation}.html", html);
 				}
 
 				Core.Models.Roster rosterInfo = GetForTeam(team, html);
@@ -59,7 +59,7 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 
 			foreach (Team team in teams)
 			{
-				string pagePath = _dataPath.RosterPages + $"{team.Abbreviation}.html";
+				string pagePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
 				var pageHtml = File.ReadAllText(pagePath);
 
 				Core.Models.Roster rosterInfo = GetForTeam(team, pageHtml);

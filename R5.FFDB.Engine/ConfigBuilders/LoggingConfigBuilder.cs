@@ -10,7 +10,7 @@ namespace R5.FFDB.Engine.ConfigBuilders
 	{
 		private string _logDirectory { get; set; }
 		private long? _maxBytes { get; set; }
-		private RollingInterval _rollingInterval { get; set; } = RollingInterval.Hour;
+		private RollingInterval _rollingInterval { get; set; } = RollingInterval.Day;
 		private bool _rollOnFileSizeLimit { get; set; }
 		private LogEventLevel _logLevel { get; set; } = LogEventLevel.Debug;
 
