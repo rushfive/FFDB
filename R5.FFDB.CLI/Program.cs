@@ -41,7 +41,8 @@ namespace R5.FFDB.CLI
 
 			setup.WebRequest
 				.AddDefaultBrowserHeaders()
-				.SetRandomizedThrottle(3000, 8000);
+				.SetThrottle(2500);
+				//.SetRandomizedThrottle(3000, 8000);
 
 			setup.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data\");
 			//setup.FileDownload

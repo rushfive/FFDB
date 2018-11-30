@@ -2,13 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace R5.FFDB.Components.ErrorFileLog
 {
 	public interface IErrorFileLogger
 	{
+		// writing
 		void LogPlayerProfileFetchError(string nflId, Exception exception);
+
+		// reading
+		List<PlayerProfileFetchError> GetPlayerProfileFetchErrors();
 	}
 
 	public class ErrorFileLogger : IErrorFileLogger
@@ -36,6 +41,21 @@ namespace R5.FFDB.Components.ErrorFileLog
 		}
 
 		// Reading
+		public List<PlayerProfileFetchError> GetPlayerProfileFetchErrors()
+		{
+			var result = new List<PlayerProfileFetchError>();
+
+			var directory = new DirectoryInfo(_dataPath.Error.PlayerProfileFetch);
+			IEnumerable<string> errorFilePaths = directory.GetFiles().Select(f => f.FullName);
+
+			foreach(string path in errorFilePaths)
+			{
+				PlayerProfileFetchError error = JsonConvert.DeserializeObject<PlayerProfileFetchError>(File.ReadAllText(path));
+				result.Add(error);
+			}
+			
+			return result;
+		}
 	}
 
 	public enum ErrorType

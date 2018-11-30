@@ -7,6 +7,26 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine
 {
+	/*   Engine API notes
+	 *   
+		Misc. Engine stuff
+		--- initial setup
+		--- get status (for various things, eg latest updated week, timestamps for latest updates on rosters, etc)
+
+		Teams
+		--- update existing rosters by current team pages (includes fetching new player profiles)
+		--- roadmap: depth charts (via rotoworld? would require a way to match players/rotoworldIds to Nfl ids 
+		        (search/match on names, excluding punctuations? use some confidence rating, doesnt have to match every char but like 90% or something)
+		--- roadmap: get and update team pictures
+
+		WeekStats
+		--- fetch & save all available (includes fetching new player profiles)
+
+		Players
+		--- update profile pictures 
+		      player data currently has a static link, the link can be derived using the esbId
+
+	 */ 
 	public class FfdbEngine
 	{
 		private ILogger<FfdbEngine> _logger { get; }
@@ -20,6 +40,7 @@ namespace R5.FFDB.Engine
 			_sourcesFactory = sourcesFactory;
 		}
 		
+		// can be run more than once, in case of failure
 		public async Task RunInitialSetupAsync()
 		{
 			_logger.LogInformation("Running initial setup..");
@@ -77,10 +98,14 @@ namespace R5.FFDB.Engine
 
 		}
 		
-	}
+		public void DumpErrorFileLogs()
+		{
+			// do we really need this?
+		}
 
-	
-
-	
-	
+		public void DumpTempData()
+		{
+			// do we really need this?
+		}
+	}	
 }

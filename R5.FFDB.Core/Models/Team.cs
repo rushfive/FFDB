@@ -7,6 +7,7 @@ namespace R5.FFDB.Core.Models
 	public class Team
 	{
 		public int Id { get; set; }
+		public string NflId { get; set; }
 		public string Name { get; set; }
 		public string Abbreviation { get; set; }
 
