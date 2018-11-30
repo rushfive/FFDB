@@ -53,6 +53,9 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 		{
 			HashSet<string> existing = GetExistingPlayerNflIds();
 
+			// skip teams, no profile data to fetch
+			TeamDataStore.GetAll().ForEach(t => existing.Add(t.NflId));
+
 			List<string> newPlayers = playerNflIds
 				.Where(id => !existing.Contains(id))
 				.Distinct()
@@ -73,33 +76,10 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 			int remaining = newPlayers.Count;
 			foreach (string nflId in newPlayers)
 			{
-				//if (existing.Contains(nflId))
-				//{
-				//	_logger.LogDebug($"Skipping fetching of profile data for player '{nflId}' because it already exists "
-				//		+ $"(remaining: {--remaining})");
-				//	continue;
-				//}
-
 				_logger.LogTrace($"Fetching profile data for '{nflId}'.");
 
 				// no longer needed since we get this info from rosters
 				//NgsContentPlayer ngsContent = await GetNgsContentInfoAsync(id);
-
-				//NflPlayerProfile nflProfile = await GetNflPlayerProfileInfoAsync(nflId);
-
-				//var playerData = new PlayerProfileJson
-				//{
-				//	NflId = nflId,
-				//	EsbId = nflProfile.EsbId,
-				//	GsisId = nflProfile.GsisId,
-				//	PictureUri = nflProfile.PictureUri,
-				//	FirstName = nflProfile.FirstName,
-				//	LastName = nflProfile.LastName,
-				//	Height = nflProfile.Height,
-				//	Weight = nflProfile.Weight,
-				//	DateOfBirth = nflProfile.DateOfBirth.DateTime,
-				//	College = nflProfile.College
-				//};
 
 				PlayerProfileJson playerProfile = null;
 				try
@@ -112,14 +92,13 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 					File.WriteAllText(path, serializedPlayerData);
 
 					_logger.LogDebug($"Successfully fetched profile data for '{nflId}' ({playerProfile.FirstName} {playerProfile.LastName}) "
-					+ $"(remaining: {--remaining})");
+						+ $"(remaining: {--remaining})");
 				}
 				catch (Exception ex)
 				{
+					_logger.LogError(ex, $"Failed to fetch player profile for '{nflId}': {ex.Message}. Check the player_profile_fetch file error logs for more information.");
 					_errorFileLogger.LogPlayerProfileFetchError(nflId, ex);
 				}
-				
-				//existing.Add(nflId);
 				
 				await Task.Delay(_throttle.Get());
 			}

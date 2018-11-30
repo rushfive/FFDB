@@ -31,10 +31,11 @@ namespace R5.FFDB.Components.ErrorFileLog
 			var error = new PlayerProfileFetchError
 			{
 				NflId = nflId,
+				DateTime = DateTime.UtcNow,
 				Exception = ErrorFileException.FromException(exception)
 			};
 
-			string serializedErrorLog = JsonConvert.SerializeObject(error);
+			string serializedErrorLog = JsonConvert.SerializeObject(error, Formatting.Indented);
 
 			string path = _dataPath.Error.PlayerProfileFetch + $"{nflId}.json";
 			File.WriteAllText(path, serializedErrorLog);
@@ -67,6 +68,9 @@ namespace R5.FFDB.Components.ErrorFileLog
 	{
 		[JsonProperty("nflId")]
 		public string NflId { get; set; }
+
+		[JsonProperty("dateTime")]
+		public DateTime DateTime { get; set; }
 
 		[JsonProperty("exception")]
 		public ErrorFileException Exception { get; set; }

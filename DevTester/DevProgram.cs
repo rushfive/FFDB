@@ -2,12 +2,6 @@
 using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using R5.FFDB.Components;
-using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
-using R5.FFDB.Core.Data;
-using R5.FFDB.Core.Models;
-using R5.FFDB.Core.Sources;
 using Serilog;
 using Serilog.Events;
 using System;

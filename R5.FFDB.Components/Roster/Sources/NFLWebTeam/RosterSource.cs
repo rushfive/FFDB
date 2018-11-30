@@ -1,7 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
-using R5.FFDB.Core.Data;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Core.Sources;
 using System;
@@ -33,7 +32,7 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 		{
 			var result = new List<Core.Models.Roster>();
 
-			List<Team> teams = Teams.Get();
+			List<Team> teams = TeamDataStore.GetAll();
 
 			foreach (Team team in teams)
 			{
@@ -55,7 +54,7 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 		{
 			var result = new List<Core.Models.Roster>();
 
-			List<Team> teams = Teams.Get();
+			List<Team> teams = TeamDataStore.GetAll();
 
 			foreach (Team team in teams)
 			{

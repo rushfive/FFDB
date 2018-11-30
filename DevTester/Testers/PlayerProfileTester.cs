@@ -4,7 +4,6 @@ using R5.FFDB.Components;
 using R5.FFDB.Components.PlayerProfile;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
-using R5.FFDB.Core.Data;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Core.Sources;
 using System;
@@ -43,7 +42,7 @@ namespace DevTester.Testers
 
 		public async Task DownloadRosterPagesAsync()
 		{
-			List<Team> teams = Teams.Get();
+			List<Team> teams = TeamDataStore.GetAll();
 
 			foreach (Team team in teams.Where(t => t.RosterSourceUris.ContainsKey(RosterSourceKeys.NFLWebTeam)))
 			{
@@ -79,7 +78,7 @@ namespace DevTester.Testers
 		{
 			var rosters = new List<Roster>();
 
-			List<Team> teams = Teams.Get();//.GetRange(0, 1);
+			List<Team> teams = TeamDataStore.GetAll();//.GetRange(0, 1);
 
 			foreach (var team in teams)
 			{

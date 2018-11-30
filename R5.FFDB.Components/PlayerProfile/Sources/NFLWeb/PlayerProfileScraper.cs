@@ -39,28 +39,19 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 				?.Attributes["content"].Value;
 		}
 
-		//public static int ExtractPlayerNumber(HtmlDocument page)
-		//{
-		//	HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-		//	HtmlNode playerNumberParagraph = infoParagraphs[0].ChildNodes.Single(n => n.HasClass("player-number"));
-
-		//	// InnerText:
-		//	// #89 WR
-		//	string[] textSplit = playerNumberParagraph.InnerText.Split(" ");
-		//	string numberToken = textSplit.Single(t => t.StartsWith("#"));
-
-			/// Found an inner text that is "# DB"
-			/// this needs to be changed into a TryParse that returns a (int?)null of no number is found after the '#'
-		//	return int.Parse(numberToken.Substring(1));
-		//}
-
 		public static (int height, int weight) ExtractHeightWeight(HtmlDocument page)
 		{
 			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-			HtmlNode heightWeightParagraph = infoParagraphs[2];
 
 			// InnerText:
 			// "\r\n\t\t\t\t\tHeight: 5-10 &nbsp; \r\n\t\t\t\t\tWeight: 192 &nbsp; \r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\tAge: 30\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t"
+			HtmlNode heightWeightParagraph = infoParagraphs
+				.FirstOrDefault(p => p.InnerText.Contains("Height") && p.InnerText.Contains("Weight"));
+			if (heightWeightParagraph == null)
+			{
+				throw new InvalidOperationException("Failed to scrape height and weight.");
+			}
+			
 			string[] colonSplit = heightWeightParagraph.InnerText.Split(":");
 
 			int height = extractHeight(colonSplit[1]);
@@ -86,7 +77,12 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 		public static DateTimeOffset ExtractDateOfBirth(HtmlDocument page)
 		{
 			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-			HtmlNode dateOfBirthParagraph = infoParagraphs[3];
+
+			HtmlNode dateOfBirthParagraph = infoParagraphs.FirstOrDefault(p => p.InnerText.Contains("Born:", StringComparison.OrdinalIgnoreCase));
+			if (dateOfBirthParagraph == null)
+			{
+				throw new InvalidOperationException("Failed to scrape date of birth.");
+			}
 
 			var spaceSplit = dateOfBirthParagraph.InnerText.Split(" ");
 			return DateTimeOffset.Parse(spaceSplit[1]);
