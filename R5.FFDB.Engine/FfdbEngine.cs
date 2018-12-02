@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Core.Models;
 using R5.FFDB.Engine.Source;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace R5.FFDB.Engine
 			{
 				// todo: it should actually ALWAYS FETCH from web for this initial setup
 				//var rosters = await sources.Roster.GetFromWebAsync(saveToDisk: false);
-				List<Core.Models.Roster> rosters = sources.Roster.GetFromDisk();
+				List<Roster> rosters = sources.Roster.GetFromDisk();
 
 				List<string> rosterPlayerIds = rosters
 					.SelectMany(r => r.Players)
@@ -75,7 +76,7 @@ namespace R5.FFDB.Engine
 
 				await sources.WeekStats.FetchAndSaveWeekStatsAsync();
 
-				List<Core.Models.WeekStats> weekStats = sources.WeekStats.GetAll();
+				List<WeekStats> weekStats = sources.WeekStats.GetAll();
 
 				List<string> weekStatsPlayerIds = weekStats
 					.SelectMany(ws => ws.Players)

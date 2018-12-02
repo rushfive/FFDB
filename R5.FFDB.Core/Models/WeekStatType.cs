@@ -8,27 +8,25 @@ namespace R5.FFDB.Core.Models
 	public enum WeekStatType
 	{
 		// Passing
-		PassAttempts = 2,
-		PassCompletions = 3,
-		PassYards = 5,
-		PassTouchdowns = 6,
-		PassInterceptions = 7,
-		Sacked = 8,
+		Pass_Attempts = 2,
+		Pass_Completions = 3,
+		Pass_Yards = 5,
+		Pass_Touchdowns = 6,
+		Pass_Interceptions = 7,
+		Pass_Sacked = 8,
 		// Rushing
-		RushAttempts = 13,
-		RushYards = 14,
-		RushTouchdowns = 15,
+		Rush_Attempts = 13,
+		Rush_Yards = 14,
+		Rush_Touchdowns = 15,
 		// Receiving
-		Receptions = 20, // targets?
-		ReceiveYards = 21,
-		ReceiveTouchdowns = 22,
-		// DST (Single Player?)
-		ReturnYards = 27,
-		ReturnTouchdowns = 28,
-		FumbleTouchdowns = 29,
-		FumblesLost = 30,
-		// General/Shared
-		Fumbles = 31,
+		Receive_Catches = 20, // targets?
+		Receive_Yards = 21,
+		Receive_Touchdowns = 22,
+		Return_Yards = 27,
+		Return_Touchdowns = 28,
+		Fumble_Recover_Touchdowns = 29, // single player, eg mike evans week 12
+		Fumbles_Lost = 30,
+		Fumbles_Total = 31,
 		TwoPointConversions = 32,
 		// Kicking (totals implied by adding)
 		Kick_PAT_Makes = 33,

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using R5.FFDB.Components.ErrorFileLog.ErrorTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -56,41 +57,6 @@ namespace R5.FFDB.Components.ErrorFileLog
 			}
 			
 			return result;
-		}
-	}
-
-	public enum ErrorType
-	{
-		PlayerProfile
-	}
-
-	public class PlayerProfileFetchError
-	{
-		[JsonProperty("nflId")]
-		public string NflId { get; set; }
-
-		[JsonProperty("dateTime")]
-		public DateTime DateTime { get; set; }
-
-		[JsonProperty("exception")]
-		public ErrorFileException Exception { get; set; }
-	}
-
-	public class ErrorFileException
-	{
-		[JsonProperty("message")]
-		public string Message { get; set; }
-
-		[JsonProperty("stackTrace")]
-		public string StackTrace { get; set; }
-
-		public static ErrorFileException FromException(Exception ex)
-		{
-			return new ErrorFileException
-			{
-				Message = ex.Message,
-				StackTrace = ex.StackTrace
-			};
 		}
 	}
 }

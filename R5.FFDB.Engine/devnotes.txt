@@ -1,0 +1,6 @@
+TODOS:
+- try catch everywhere for better error messages
+- use file error more liberally in certain areas where it'd be useful
+	these logs can later be used dynamically to augment the engines run behavior
+
+- WAY LATER: run engine as background service! need to allow setup via config file to reference b/c its a svc

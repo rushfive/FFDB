@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj" />
 		<ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
 	</ItemGroup>
 

@@ -2,6 +2,7 @@
 using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using R5.FFDB.DbProviders.PostgreSql;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -19,27 +20,26 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			_serviceProvider = DevTestServiceProvider.Build();
-			_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
+			var postgresConfig = new PostgresConfig
+			{
+				DatabaseName = "ffdb_test_1",
+				Host = "localhost",
+				Username = "ffdb",
+				Password = "welc0me!"
+			};
 
-			await FetchPlayerProfilesFromRostersAsync(downloadRosterPages: false);
+			var postgresProvider = new PostgresDbProvider(postgresConfig);
+			PostgresDbContext context = postgresProvider.GetContext();
 
-			// temp: fix roster (get first and last names)
-			//var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
-			//var team = Teams.Get().First();
-			//var rosterPagePath = dataPath.RosterPages + $"{team.Abbreviation}.html";
-			//var pageHtml = File.ReadAllText(rosterPagePath);
-			//var page = new HtmlDocument();
-			//page.LoadHtml(pageHtml);
-			//List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
-			//	.Select(p => new RosterPlayer
-			//	{
-			//		NflId = p.nflId,
-			//		Number = p.number,
-			//		Position = p.position,
-			//		Status = p.status
-			//	})
-			//	.ToList();
+			await context.RunInitialSetupAsync();
+
+
+
+			//_serviceProvider = DevTestServiceProvider.Build();
+			//_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
+
+			//await FetchPlayerProfilesFromRostersAsync(downloadRosterPages: false);
+
 
 			Console.ReadKey();
 		}
