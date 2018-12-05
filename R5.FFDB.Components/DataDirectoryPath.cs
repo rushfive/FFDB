@@ -48,7 +48,8 @@ namespace R5.FFDB.Components
 		public class StaticDataDirectoryPath
 		{
 			private string _root { get; }
-			public string PlayerData => _root + @"player_data\";
+			public string PlayerProfile => _root + @"player_profile\";
+			public string PlayerTeamHistory => _root + @"player_team_history\";
 			public string WeekStats => _root + @"week_stats\";
 
 			public StaticDataDirectoryPath(string rootPath)
@@ -58,7 +59,8 @@ namespace R5.FFDB.Components
 
 			public void CreateMissing()
 			{
-				Directory.CreateDirectory(PlayerData);
+				Directory.CreateDirectory(PlayerProfile);
+				Directory.CreateDirectory(PlayerTeamHistory);
 				Directory.CreateDirectory(WeekStats);
 			}
 		}
@@ -83,6 +85,7 @@ namespace R5.FFDB.Components
 		{
 			private string _root { get; }
 			public string PlayerProfileFetch => _root + @"error_file_logs\player_profile_fetch\";
+			public string PlayerTeamHistoryFetch => _root + @"error_file_logs\player_team_history\";
 
 			public ErrorFileLogDirectoryPath(string rootPath)
 			{
@@ -92,6 +95,7 @@ namespace R5.FFDB.Components
 			public void CreateMissing()
 			{
 				Directory.CreateDirectory(PlayerProfileFetch);
+				Directory.CreateDirectory(PlayerTeamHistoryFetch);
 			}
 		}
 	}

@@ -2,6 +2,8 @@
 using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb.Models;
 using R5.FFDB.DbProviders.PostgreSql;
 using Serilog;
 using Serilog.Events;
@@ -20,20 +22,55 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			var postgresConfig = new PostgresConfig
+			var testHistory = new PlayerTeamHistoryJson
 			{
-				DatabaseName = "ffdb_test_1",
-				Host = "localhost",
-				Username = "ffdb",
-				Password = "welc0me!"
+				NflId = "TEST",
+				SeasonWeekTeamMap = new Dictionary<int, Dictionary<int, int>>
+				{
+					{
+						2015,
+						new Dictionary<int, int>
+						{
+							{ 1, 30 },
+							{ 2, 31 }
+						}
+					},
+					{
+						2016,
+						new Dictionary<int, int>
+						{
+							{ 1, 31 }
+						}
+					}
+				}
 			};
 
-			var postgresProvider = new PostgresDbProvider(postgresConfig);
-			PostgresDbContext context = postgresProvider.GetContext();
+			string testHistoryPath = @"D:\Repos\ffdb_data\player_team_history\test-history.json";
 
-			await context.RunInitialSetupAsync();
+			string serializedTestHistory = JsonConvert.SerializeObject(testHistory);
+			
+			File.WriteAllText(testHistoryPath, serializedTestHistory);
 
+			//
+			
+			PlayerTeamHistoryJson playerData = JsonConvert.DeserializeObject<PlayerTeamHistoryJson>(File.ReadAllText(testHistoryPath));
 
+			///////////////
+
+			//var postgresConfig = new PostgresConfig
+			//{
+			//	DatabaseName = "ffdb_test_1",
+			//	Host = "localhost",
+			//	Username = "ffdb",
+			//	Password = "welc0me!"
+			//};
+
+			//var postgresProvider = new PostgresDbProvider(postgresConfig);
+			//PostgresDbContext context = postgresProvider.GetContext();
+
+			//await context.RunInitialSetupAsync();
+
+			//////////
 
 			//_serviceProvider = DevTestServiceProvider.Build();
 			//_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();

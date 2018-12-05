@@ -29,7 +29,7 @@ namespace R5.FFDB.Engine.Source.Resolvers
 
 			if (!await ResolveSourceAsync())
 			{
-				throw new InvalidOperationException($"Failed to resolve a healthy source for {SourceName}.");
+				throw new InvalidOperationException($"Failed to resolve a healthy source for '{SourceName}'.");
 			}
 
 			return _source;

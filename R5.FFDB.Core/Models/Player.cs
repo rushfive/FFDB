@@ -6,7 +6,6 @@ namespace R5.FFDB.Core.Models
 {
 	public class Player
 	{
-		//public string Id => $"{FirstName[0]}{LastName[0]}{NflId}".ToUpper();
 		public bool IsActive => TeamId.HasValue;
 		public Guid Id { get; set; }
 
@@ -23,5 +22,11 @@ namespace R5.FFDB.Core.Models
 
 		// some NFL legacy id, stil needed for some stuff
 		public string EsbId { get; set; }
+	}
+
+	public class PlayerTeamHistory
+	{
+		public Guid Id { get; set; }
+		public Dictionary<int, Dictionary<int, int>> SeasonWeekTeamMap { get; set; }
 	}
 }

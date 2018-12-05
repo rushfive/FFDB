@@ -3,6 +3,7 @@ using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.ErrorFileLog;
 using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
+using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
 using R5.FFDB.Engine.ConfigBuilders;
@@ -70,10 +71,12 @@ namespace R5.FFDB.Engine
 				.AddScoped<PlayerProfileSource>()
 				.AddScoped<RosterSource>()
 				.AddScoped<WeekStatsSource>()
+				.AddScoped<PlayerTeamHistorySource>()
 
 				.AddScoped<IPlayerDataSourceResolver, PlayerDataSourceResolver>()
 				.AddScoped<IRosterSourceResolver, RosterSourceResolver>()
 				.AddScoped<IWeekStatsSourceResolver, WeekStatsSourceResolver>()
+				.AddScoped<IPlayerTeamHistorySourceResolver, PlayerTeamHistorySourceResolver>()
 				
 				.AddScoped<ISourcesFactory, SourcesFactory>()
 

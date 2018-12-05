@@ -7,6 +7,6 @@ namespace R5.FFDB.Components.PlayerProfile
 	{
 		Core.Models.PlayerProfile GetPlayerProfile(string nflId);
 		List<Core.Models.PlayerProfile> GetPlayerProfile(List<string> nflIds);
-		Task FetchAndSavePlayerDataFilesAsync(List<string> playerNflIds);
+		Task FetchAndSaveAsync(List<string> playerNflIds);
 	}
 }

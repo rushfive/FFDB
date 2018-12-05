@@ -12,9 +12,11 @@ namespace R5.FFDB.Components.ErrorFileLog
 	{
 		// writing
 		void LogPlayerProfileFetchError(string nflId, Exception exception);
+		void LogPlayerTeamHistoryFetchError(string nflId, Exception exception);
 
 		// reading
 		List<PlayerProfileFetchError> GetPlayerProfileFetchErrors();
+		List<PlayerTeamHistoryFetchError> GetPlayerTeamHistoryFetchErrors();
 	}
 
 	public class ErrorFileLogger : IErrorFileLogger
@@ -42,6 +44,21 @@ namespace R5.FFDB.Components.ErrorFileLog
 			File.WriteAllText(path, serializedErrorLog);
 		}
 
+		public void LogPlayerTeamHistoryFetchError(string nflId, Exception exception)
+		{
+			var error = new PlayerTeamHistoryFetchError
+			{
+				NflId = nflId,
+				DateTime = DateTime.UtcNow,
+				Exception = ErrorFileException.FromException(exception)
+			};
+
+			string serializedErrorLog = JsonConvert.SerializeObject(error, Formatting.Indented);
+
+			string path = _dataPath.Error.PlayerTeamHistoryFetch + $"{nflId}.json";
+			File.WriteAllText(path, serializedErrorLog);
+		}
+
 		// Reading
 		public List<PlayerProfileFetchError> GetPlayerProfileFetchErrors()
 		{
@@ -56,6 +73,22 @@ namespace R5.FFDB.Components.ErrorFileLog
 				result.Add(error);
 			}
 			
+			return result;
+		}
+
+		public List<PlayerTeamHistoryFetchError> GetPlayerTeamHistoryFetchErrors()
+		{
+			var result = new List<PlayerTeamHistoryFetchError>();
+
+			var directory = new DirectoryInfo(_dataPath.Error.PlayerProfileFetch);
+			IEnumerable<string> errorFilePaths = directory.GetFiles().Select(f => f.FullName);
+
+			foreach (string path in errorFilePaths)
+			{
+				PlayerTeamHistoryFetchError error = JsonConvert.DeserializeObject<PlayerTeamHistoryFetchError>(File.ReadAllText(path));
+				result.Add(error);
+			}
+
 			return result;
 		}
 	}

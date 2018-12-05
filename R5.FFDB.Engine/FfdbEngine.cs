@@ -71,7 +71,7 @@ namespace R5.FFDB.Engine
 					.ToList();
 
 				_logger.LogInformation($"Found '{rosterPlayerIds.Count}' players from rosters to fetch profile data for.");
-				await sources.PlayerProfile.FetchAndSavePlayerDataFilesAsync(rosterPlayerIds);
+				await sources.PlayerProfile.FetchAndSaveAsync(rosterPlayerIds);
 				_logger.LogInformation("Finished fetching player profile data by rosters.");
 
 				await sources.WeekStats.FetchAndSaveWeekStatsAsync();
@@ -85,7 +85,7 @@ namespace R5.FFDB.Engine
 					.ToList();
 
 				_logger.LogInformation($"Found '{weekStatsPlayerIds.Count}' players from week stats to fetch profile data for.");
-				await sources.PlayerProfile.FetchAndSavePlayerDataFilesAsync(weekStatsPlayerIds);
+				await sources.PlayerProfile.FetchAndSaveAsync(weekStatsPlayerIds);
 				_logger.LogInformation("Finished fetching player profile data by week stats.");
 
 			}

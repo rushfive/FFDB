@@ -69,7 +69,7 @@ namespace DevTester.Testers
 
 			_logger.LogDebug($"Found '{playerIds.Count}' players to fetch profile data for.");
 
-			await _playerProfileSource.FetchAndSavePlayerDataFilesAsync(playerIds);
+			await _playerProfileSource.FetchAndSaveAsync(playerIds);
 
 			_logger.LogDebug("Finished fetching player profile data by rosters.");
 		}

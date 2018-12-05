@@ -36,7 +36,7 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 
 		public Core.Models.PlayerProfile GetPlayerProfile(string nflId)
 		{
-			string path = _dataPath.Static.PlayerData + $"{nflId}.json";
+			string path = _dataPath.Static.PlayerProfile + $"{nflId}.json";
 			PlayerProfileJson playerData = JsonConvert.DeserializeObject<PlayerProfileJson>(File.ReadAllText(path));
 			return PlayerProfileJson.ToCoreEntity(playerData);
 		}
@@ -49,14 +49,14 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 		}
 
 		// ensures ALREADY EXISTING players ARENT fetched again
-		public async Task FetchAndSavePlayerDataFilesAsync(List<string> playerNflIds)
+		public async Task FetchAndSaveAsync(List<string> nflIds)
 		{
-			HashSet<string> existing = GetExistingPlayerNflIds();
+			HashSet<string> existing = GetPlayersWithExistingProfileData();
 
 			// skip teams, no profile data to fetch
 			TeamDataStore.GetAll().ForEach(t => existing.Add(t.NflId));
 
-			List<string> newPlayers = playerNflIds
+			List<string> newPlayers = nflIds
 				.Where(id => !existing.Contains(id))
 				.Distinct()
 				.ToList();
@@ -67,10 +67,10 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 				return;
 			}
 
-			int alreadyExistingCount = playerNflIds.Count - newPlayers.Count;
+			int alreadyExistingCount = nflIds.Count - newPlayers.Count;
 			if (alreadyExistingCount > 0)
 			{
-				_logger.LogInformation($"Already have profile data for {playerNflIds.Count - newPlayers.Count} players.");
+				_logger.LogInformation($"Already have profile data for {nflIds.Count - newPlayers.Count} players.");
 			}
 
 			int remaining = newPlayers.Count;
@@ -84,51 +84,35 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 				PlayerProfileJson playerProfile = null;
 				try
 				{
-					playerProfile = await fetchPlayerAsync(nflId);
+					playerProfile = await FetchForPlayerAsync(nflId);
 
 					string serializedPlayerData = JsonConvert.SerializeObject(playerProfile);
 
-					string path = _dataPath.Static.PlayerData + $"{nflId}.json";
+					string path = _dataPath.Static.PlayerProfile + $"{nflId}.json";
 					File.WriteAllText(path, serializedPlayerData);
 
 					_logger.LogDebug($"Successfully fetched profile data for '{nflId}' ({playerProfile.FirstName} {playerProfile.LastName}) "
-						+ $"(remaining: {--remaining})");
+						+ $"(remaining: {remaining - 1})");
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to fetch player profile for '{nflId}': {ex.Message}. Check the player_profile_fetch file error logs for more information.");
 					_errorFileLogger.LogPlayerProfileFetchError(nflId, ex);
 				}
+				finally
+				{
+					remaining--;
+				}
 				
 				await Task.Delay(_throttle.Get());
 			}
-
-			// local functions
-			async Task<PlayerProfileJson> fetchPlayerAsync(string id)
-			{
-				NflPlayerProfile nflProfile = await GetNflPlayerProfileInfoAsync(id);
-
-				return new PlayerProfileJson
-				{
-					NflId = id,
-					EsbId = nflProfile.EsbId,
-					GsisId = nflProfile.GsisId,
-					PictureUri = nflProfile.PictureUri,
-					FirstName = nflProfile.FirstName,
-					LastName = nflProfile.LastName,
-					Height = nflProfile.Height,
-					Weight = nflProfile.Weight,
-					DateOfBirth = nflProfile.DateOfBirth.DateTime,
-					College = nflProfile.College
-				};
-			}
 		}
 
-		private HashSet<string> GetExistingPlayerNflIds()
+		private HashSet<string> GetPlayersWithExistingProfileData()
 		{
-			var directory = new DirectoryInfo(_dataPath.Static.PlayerData);
+			var directory = new DirectoryInfo(_dataPath.Static.PlayerProfile);
 
-			return directory
+			var existing = directory
 				.GetFiles()
 				.Select(f =>
 				{
@@ -137,6 +121,51 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 					return split[0];
 				})
 				.ToHashSet();
+
+			// skip teams, no profile data to fetch
+			TeamDataStore.GetAll().ForEach(t => existing.Add(t.NflId));
+
+			return existing;
+		}
+
+		private async Task<PlayerProfileJson> FetchForPlayerAsync(string nflId)
+		{
+			// the first {nflId} can be any random string, so we'll just use the id
+			string uri = $"http://www.nfl.com/player/{nflId}/{nflId}/profile"; // change this to the gamelogs page, it contains profile stuff too
+
+			string html;
+			try
+			{
+				html = await _webRequestClient.GetStringAsync(uri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to player profile page for '{nflId}' at '{uri}'.");
+				throw;
+			}
+
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
+
+			(string firstName, string lastName) = PlayerProfileScraper.ExtractNames(page);
+			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);
+			DateTimeOffset dateOfBirth = PlayerProfileScraper.ExtractDateOfBirth(page);
+			string college = PlayerProfileScraper.ExtractCollege(page);
+			(string esbId, string gsisId) = PlayerProfileScraper.ExtractIds(page);
+			string pictureUri = PlayerProfileScraper.ExtractPictureUri(page);
+
+			return new PlayerProfileJson
+			{
+				FirstName = firstName,
+				LastName = lastName,
+				EsbId = esbId,
+				GsisId = gsisId,
+				PictureUri = pictureUri,
+				Height = height,
+				Weight = weight,
+				DateOfBirth = dateOfBirth.DateTime,
+				College = college
+			};
 		}
 
 		private async Task<NgsContentPlayer> GetNgsContentInfoAsync(string nflId)
@@ -164,51 +193,6 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 				_logger.LogError(ex, $"Failed to deserialize fetched data for '{nflId}'.", response);
 				throw;
 			}
-		}
-
-		private async Task<NflPlayerProfile> GetNflPlayerProfileInfoAsync(string nflId)
-		{
-			//string name = firstName.ToLower() + lastName?.ToLower() ?? "";
-
-			// the first {nflId} can be any random string, so we'll just use the id
-			string uri = $"http://www.nfl.com/player/{nflId}/{nflId}/profile";
-
-			string html;
-			try
-			{
-				html = await _webRequestClient.GetStringAsync(uri, throttle: false);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Failed to player profile page for '{nflId}' at '{uri}'.");
-				throw;
-			}
-			//string html = await _webRequestClient.GetStringAsync(uri);
-
-			var page = new HtmlDocument();
-			page.LoadHtml(html);
-
-			//int number = PlayerProfileScraper.ExtractPlayerNumber(page);
-			(string firstName, string lastName) = PlayerProfileScraper.ExtractNames(page);
-			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);
-			DateTimeOffset dateOfBirth = PlayerProfileScraper.ExtractDateOfBirth(page);
-			string college = PlayerProfileScraper.ExtractCollege(page);
-			(string esbId, string gsisId) = PlayerProfileScraper.ExtractIds(page);
-			string pictureUri = PlayerProfileScraper.ExtractPictureUri(page);
-
-			return new NflPlayerProfile
-			{
-				FirstName = firstName,
-				LastName = lastName,
-				EsbId = esbId,
-				GsisId = gsisId,
-				PictureUri = pictureUri,
-				//Number = number,
-				Height = height,
-				Weight = weight,
-				DateOfBirth = dateOfBirth,
-				College = college
-			};
 		}
 
 		public Task<bool> IsHealthyAsync()
