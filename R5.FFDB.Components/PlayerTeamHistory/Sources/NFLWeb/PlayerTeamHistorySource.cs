@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using R5.FFDB.Components.ErrorFileLog;
 using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb.Models;
+using R5.FFDB.Components.Stores;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,6 +32,21 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 			_webRequestClient = webRequestClient;
 			_throttle = throttle;
 			_errorFileLogger = errorFileLogger;
+		}
+
+		public PlayerTeamHistoryStore GetHistoryStore()
+		{
+			var directory = new DirectoryInfo(_dataPath.Static.PlayerTeamHistory);
+			IEnumerable<string> filePaths = directory.GetFiles().Select(f => f.ToString());
+
+			var historyItems = new List<PlayerTeamHistoryJson>();
+			foreach(string path in filePaths)
+			{
+				PlayerTeamHistoryJson history = JsonConvert.DeserializeObject<PlayerTeamHistoryJson>(File.ReadAllText(path));
+				historyItems.Add(history);
+			}
+
+			return new PlayerTeamHistoryStore(historyItems);
 		}
 
 		public async Task FetchAndSaveAsync(List<Core.Models.PlayerProfile> players)
@@ -103,12 +119,12 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 
 		private async Task<List<int>> GetSeasonsPlayedAsync(string nflId)
 		{
-
+			throw new NotImplementedException();
 		}
 
 		private async Task<Dictionary<int, int>> GetHistoryBySeasonAsync(string nflId, int season)
 		{
-
+			throw new NotImplementedException();
 		}
 
 		public Task<bool> IsHealthyAsync()

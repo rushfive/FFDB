@@ -2,8 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
+using R5.FFDB.Components.ErrorFileLog;
 using R5.FFDB.Components.PlayerProfile;
 using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
+using R5.FFDB.Components.PlayerTeamHistory;
+using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -26,12 +29,17 @@ namespace DevTester
 				.AddScoped<IWebRequestClient>(sp => webClient)
 				.AddScoped<DataDirectoryPath>(sp => dataPath)
 				.AddScoped<WebRequestThrottle>(sp => throttle)
-				.AddScoped<IPlayerProfileSource, PlayerProfileSource>();
+				.AddScoped<IPlayerProfileSource, PlayerProfileSource>()
+				.AddScoped<IErrorFileLogger, ErrorFileLogger>();
 
 			AddLogging(services, @"D:\Repos\ffdb_data\dev_test_logs\");
 
 			services
-				.AddScoped<IPlayerProfileTester, PlayerProfileTester>();
+				.AddScoped<IPlayerProfileTester, PlayerProfileTester>()
+				.AddScoped<IPlayerTeamHistoryTester, PlayerTeamHistoryTester>();
+
+			services
+				.AddScoped<IPlayerTeamHistorySource, PlayerTeamHistorySource>();
 
 			return services.BuildServiceProvider();
 
