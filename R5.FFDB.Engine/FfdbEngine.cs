@@ -99,14 +99,5 @@ namespace R5.FFDB.Engine
 
 		}
 		
-		public void DumpErrorFileLogs()
-		{
-			// do we really need this?
-		}
-
-		public void DumpTempData()
-		{
-			// do we really need this?
-		}
 	}	
 }

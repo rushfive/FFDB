@@ -8,15 +8,16 @@ using System.Text;
 
 namespace R5.FFDB.Components.ErrorFileLog
 {
+	// todo: better structuring, by categories?
 	public interface IErrorFileLogger
 	{
 		// writing
 		void LogPlayerProfileFetchError(string nflId, Exception exception);
 		void LogPlayerTeamHistoryFetchError(string nflId, Exception exception);
+		void LogPlayerTeamHistoryWeekUnavailableError(string nflId, int season, int week);
 
 		// reading
 		List<PlayerProfileFetchError> GetPlayerProfileFetchErrors();
-		List<PlayerTeamHistoryFetchError> GetPlayerTeamHistoryFetchErrors();
 	}
 
 	public class ErrorFileLogger : IErrorFileLogger
@@ -56,6 +57,22 @@ namespace R5.FFDB.Components.ErrorFileLog
 			string serializedErrorLog = JsonConvert.SerializeObject(error, Formatting.Indented);
 
 			string path = _dataPath.Error.PlayerTeamHistoryFetch + $"{nflId}.json";
+			File.WriteAllText(path, serializedErrorLog);
+		}
+
+		public void LogPlayerTeamHistoryWeekUnavailableError(string nflId, int season, int week)
+		{
+			var error = new PlayerTeamHistoryWeekUnavailableError
+			{
+				NflId = nflId,
+				Season = season,
+				Week = week,
+				DateTime = DateTime.UtcNow
+			};
+
+			string serializedErrorLog = JsonConvert.SerializeObject(error, Formatting.Indented);
+
+			string path = _dataPath.Error.PlayerTeamHistoryWeekUnavailable + $"{nflId}.json";
 			File.WriteAllText(path, serializedErrorLog);
 		}
 

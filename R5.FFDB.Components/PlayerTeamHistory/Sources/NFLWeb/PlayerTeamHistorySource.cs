@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using R5.FFDB.Components.ErrorFileLog;
 using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb.Models;
@@ -89,6 +90,8 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 				{
 					remaining--;
 				}
+
+				await Task.Delay(_throttle.Get());
 			}
 		}
 
@@ -111,6 +114,8 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 				result.SeasonWeekTeamMap[season] = history;
 
 				_logger.LogDebug($"Successfully fetched team history for '{nflId}' season {season}.");
+
+				await Task.Delay(_throttle.Get());
 			}
 
 			_logger.LogInformation($"Successfully fetched team history for player '{nflId}'.");
@@ -119,7 +124,25 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 
 		private async Task<List<int>> GetSeasonsPlayedAsync(string nflId)
 		{
-			throw new NotImplementedException();
+			var uri = $"http://www.nfl.com/player/{nflId}/{nflId}/profile";
+
+			string html;
+			try
+			{
+				html = await _webRequestClient.GetStringAsync(uri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to player profile page for '{nflId}' at '{uri}'.");
+				throw;
+			}
+
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
+
+			return PlayerTeamHistoryScraper.ExtractSeasonsPlayed(page)
+				.OrderBy(s => s)
+				.ToList();
 		}
 
 		private async Task<Dictionary<int, int>> GetHistoryBySeasonAsync(string nflId, int season)

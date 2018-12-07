@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
@@ -9,72 +10,53 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 	{
 		public static List<int> ExtractSeasonsPlayed(HtmlDocument page)
 		{
-			// https://hexfox.com/p/having-trouble-extracting-the-tbody-element-during-my-web-scrape/
-			// DONT select tbody, it doesnt exist in the HTML (browsers just inject it)
-			// insteaad, get all TRs that dont have the classes:
-			// 'player-table-header' and 'player-table-key'
-			// the table has 3 rows in thead
+			var result = new List<int>();
 
-
-			HtmlNode test = page.DocumentNode
+			HtmlNodeCollection careerStatTableRows = page.DocumentNode
 				.SelectSingleNode("//*[@id='player-stats-wrapper']")
 				.SelectSingleNode("./table[2]")
-				//
-				.SelectSingleNode("./tbody");
+				.SelectNodes("./tr");
 
+			foreach(HtmlNode row in careerStatTableRows)
+			{
+				HtmlNodeCollection tds = row.SelectNodes("td");
 
+				// the rows we want dont contain a class in the first <td>,
+				// while the ignored row's first <td> contain either
+				// 'border-td' or 'player-totals' as its class.
+				if (tds[0].Attributes.Contains("class"))
+				{
+					continue;
+				}
 
+				int season = int.Parse(tds[0].InnerText.Trim());
+				result.Add(season);
+			}
 
-			var end = "test";
-
-			//var testSecondTable = page.DocumentNode
-			//	.SelectSingleNode("//*[@id='player-stats-wrapper']//table[2]");
-
-			//var secondBODY = testSecondTable.SelectSingleNode(".//tbody");
-
-			//var secondBodyROWS = secondBODY.SelectNodes(".//tr");
-
-
-			//var testSecondTable2 = page.DocumentNode
-			//	.SelectNodes("//*[@id='player-stats-wrapper']//table[2]//tbody//tr");
-			////
-
-			//HtmlNode wrapper = page.GetElementbyId("player-stats-wrapper");
-
-			//HtmlNode secondTable = wrapper
-			//	.SelectSingleNode("//table[2]");
-
-			//HtmlNodeCollection bodyRows = secondTable
-			//	.SelectNodes("//tbody//tr");
-
-			//// career stats table rows
-			//var careerStatsRows = page.GetElementbyId("player-stats-wrapper")
-			//	.SelectSingleNode("//table[2]//tbody");
-			//	//.SelectSingleNode("//table[2]/tbody")
-			//	//.SelectSingleNode("//tbody")
-			//	//.SelectNodes("tr");
-
-			//var tbody = page.GetElementbyId("player-stats-wrapper")
-			//	.SelectSingleNode("//table[2]/tbody");
-
-			//var trows = page.GetElementbyId("player-stats-wrapper")
-			//	.SelectNodes("//table[2]/tbody/tr");
-
-
-			//foreach (HtmlNode r in careerStatsRows)
-			//{
-			//	HtmlNodeCollection tdNodes = r.SelectNodes("td");
-
-
-
-			//	var t = "test";
-			//}
-
-			return null;
+			return result;
 		}
 
-		public static Dictionary<int, int> ExtractHistoryForSeason(int season, HtmlDocument page)
+		public static Dictionary<int, int> ExtractHistoryForSeason(HtmlDocument page)
 		{
+			IEnumerable<HtmlNode> gameLogTableRows = page.DocumentNode
+				.SelectSingleNode("//*[@id='player-stats-wrapper']")
+				.SelectSingleNode("./table[2]")
+				.SelectNodes("./tr")
+				.Where(r => !r.SelectNodes("td")[0].Attributes.Contains("class"));
+
+			//var gameRows = gameLogTableRows.Where(r => !r.SelectNodes("td")[0].Attributes.Contains("class"))
+
+			foreach(HtmlNode row in gameLogTableRows)
+			{
+				HtmlNodeCollection tds = row.SelectNodes("td");
+
+				if (tds[0].Attributes.Contains("class"))
+				{
+					continue;
+				}
+
+			}
+
 			throw new NotImplementedException();
 		}
 	}
