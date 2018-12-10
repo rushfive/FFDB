@@ -45,9 +45,8 @@ namespace R5.FFDB.Database
 	// making the connection to the db, etc. the databasecontext
 	// implementation should simply take in the connection as 
 	// a constructor param and use it
-	public interface IDatabaseProvider<TDatabaseContext>
-		where TDatabaseContext : IDatabaseContext
+	public interface IDatabaseProvider
 	{
-		TDatabaseContext GetContext();
+		IDatabaseContext GetContext();
 	}
 }

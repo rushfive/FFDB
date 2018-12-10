@@ -11,7 +11,7 @@ namespace R5.FFDB.Components
 
 		public WebRequestThrottle(
 			int throttle,
-			(int min, int max)? randomizedThrottle)
+			(int min, int max)? randomizedThrottle = null)
 		{
 			if (!randomizedThrottle.HasValue)
 			{

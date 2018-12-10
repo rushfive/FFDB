@@ -124,7 +124,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 
 	
 
-	public class PostgresDbProvider : IDatabaseProvider<PostgresDbContext>
+	public class PostgresDbProvider : IDatabaseProvider
 	{
 		private PostgresConfig _config { get; }
 
@@ -133,7 +133,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			_config = config;
 		}
 
-		public PostgresDbContext GetContext()
+		public IDatabaseContext GetContext()
 		{
 			return new PostgresDbContext(GetConnection);
 		}

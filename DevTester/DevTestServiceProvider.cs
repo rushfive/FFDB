@@ -22,7 +22,7 @@ namespace DevTester
 			var services = new ServiceCollection();
 
 			WebRequestClient webClient = GetWebRequestClient();
-			var throttle = new WebRequestThrottle(0, (3000, 8000));
+			var throttle = new WebRequestThrottle(1000);
 			var dataPath = new DataDirectoryPath(@"D:\Repos\ffdb_data\");
 
 			services

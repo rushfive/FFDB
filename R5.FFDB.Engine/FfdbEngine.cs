@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Core.Models;
+using R5.FFDB.Database;
 using R5.FFDB.Engine.Source;
 using System;
 using System.Collections.Generic;
@@ -32,13 +33,16 @@ namespace R5.FFDB.Engine
 	{
 		private ILogger<FfdbEngine> _logger { get; }
 		private ISourcesFactory _sourcesFactory { get; }
+		private IDatabaseProvider _databaseProvider { get; }
 
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
-			ISourcesFactory sourcesFactory)
+			ISourcesFactory sourcesFactory,
+			IDatabaseProvider databaseProvider)
 		{
 			_logger = logger;
 			_sourcesFactory = sourcesFactory;
+			_databaseProvider = databaseProvider;
 		}
 		
 		// can be run more than once, in case of failure
@@ -60,8 +64,8 @@ namespace R5.FFDB.Engine
 			try
 			{
 				// todo: it should actually ALWAYS FETCH from web for this initial setup
-				//var rosters = await sources.Roster.GetFromWebAsync(saveToDisk: false);
-				List<Roster> rosters = sources.Roster.GetFromDisk();
+				List<Roster> rosters = await sources.Roster.GetFromWebAsync(saveToDisk: false);
+				//List<Roster> rosters = sources.Roster.GetFromDisk();
 
 				List<string> rosterPlayerIds = rosters
 					.SelectMany(r => r.Players)

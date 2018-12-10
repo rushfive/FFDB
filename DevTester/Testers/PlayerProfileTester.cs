@@ -6,7 +6,6 @@ using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
 using R5.FFDB.Components.Stores;
 using R5.FFDB.Core.Models;
-using R5.FFDB.Core.Sources;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,9 +44,9 @@ namespace DevTester.Testers
 		{
 			List<Team> teams = TeamDataStore.GetAll();
 
-			foreach (Team team in teams.Where(t => t.RosterSourceUris.ContainsKey(RosterSourceKeys.NFLWebTeam)))
+			foreach (Team team in teams)
 			{
-				string page = await _webRequestClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam], throttle: true);
+				string page = await _webRequestClient.GetStringAsync(team.GetRosterSourceUri(), throttle: true);
 				await File.WriteAllTextAsync(_dataPath.Temp.RosterPages + $"{team.Abbreviation}.html", page);
 			}
 		}

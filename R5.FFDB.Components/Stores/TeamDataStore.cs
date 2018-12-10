@@ -1,5 +1,4 @@
 ﻿using R5.FFDB.Core.Models;
-using R5.FFDB.Core.Sources;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,11 +7,22 @@ namespace R5.FFDB.Components.Stores
 {
 	public static class TeamDataStore
 	{
-		private static HashSet<string> _nflIds = new HashSet<string>();
+		private static HashSet<string> _nflIds { get; }
+		private static Dictionary<string, string> _abbreviationShortNameMap { get; }
+		private static Dictionary<string, int> _shortNameIdMap { get; }
 
 		static TeamDataStore()
 		{
-			_teams.ForEach(t => _nflIds.Add(t.NflId));
+			_nflIds = new HashSet<string>();
+			_abbreviationShortNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_shortNameIdMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+			_teams.ForEach(t =>
+			{
+				_nflIds.Add(t.NflId);
+				_abbreviationShortNameMap[t.Abbreviation] = t.ShortName;
+				_shortNameIdMap[t.ShortName] = t.Id;
+			});
 		}
 
 		public static List<Team> GetAll()
@@ -25,6 +35,26 @@ namespace R5.FFDB.Components.Stores
 			return _nflIds.Contains(nflId);
 		}
 
+		public static string GetShortNameFromAbbreviation(string abbreviation)
+		{
+			if (!_abbreviationShortNameMap.TryGetValue(abbreviation, out string shortName))
+			{
+				throw new InvalidOperationException($"Failed to find team's short name by abbreviation '{abbreviation}'.");
+			}
+
+			return shortName;
+		}
+
+		public static int GetIdFromShortName(string shortName)
+		{
+			if (!_shortNameIdMap.TryGetValue(shortName, out int id))
+			{
+				throw new InvalidOperationException($"Failed to find team's id by short name '{shortName}'.");
+			}
+
+			return id;
+		}
+
 		private static List<Team> _teams = new List<Team>
 		{
 			new Team
@@ -32,448 +62,256 @@ namespace R5.FFDB.Components.Stores
 				Id = 1,
 				NflId = "100001",
 				Name = "Atlanta Falcons",
-				Abbreviation = "ATL",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/atlantafalcons/roster?team=ATL"
-					}
-				}
+				ShortName = "falcons",
+				Abbreviation = "ATL"
 			},
 			new Team
 			{
 				Id = 2,
 				NflId = "100002",
 				Name = "Baltimore Ravens",
-				Abbreviation = "BAL",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/baltimoreravens/roster?team=BAL"
-					}
-				}
+				ShortName = "ravens",
+				Abbreviation = "BAL"
 			},
 			new Team
 			{
 				Id = 3,
 				NflId = "100003",
 				Name = "Buffalo Bills",
-				Abbreviation = "BUF",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/buffalobills/roster?team=BUF"
-					}
-				}
+				ShortName = "bills",
+				Abbreviation = "BUF"
 			},
 			new Team
 			{
 				Id = 4,
 				NflId = "100004",
 				Name = "Carolina Panthers",
-				Abbreviation = "CAR",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/carolinapanthers/roster?team=CAR"
-					}
-				}
+				ShortName = "panthers",
+				Abbreviation = "CAR"
 			},
 			new Team
 			{
 				Id = 5,
 				NflId = "100005",
 				Name = "Chicago Bears",
-				Abbreviation = "CHI",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/chicagobears/roster?team=CHI"
-					}
-				}
+				ShortName = "bears",
+				Abbreviation = "CHI"
 			},
 			new Team
 			{
 				Id = 6,
 				NflId = "100006",
 				Name = "Cincinnati Bengals",
-				Abbreviation = "CIN",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/cincinnatibengals/roster?team=CIN"
-					}
-				}
+				ShortName = "bengals",
+				Abbreviation = "CIN"
 			},
 			new Team
 			{
 				Id = 7,
 				NflId = "100007",
 				Name = "Cleveland Browns",
-				Abbreviation = "CLE",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/clevelandbrowns/roster?team=CLE"
-					}
-				}
+				ShortName = "browns",
+				Abbreviation = "CLE"
 			},
 			new Team
 			{
 				Id = 8,
 				NflId = "100008",
 				Name = "Dallas Cowboys",
-				Abbreviation = "DAL",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/dallascowboys/roster?team=DAL"
-					}
-				}
+				ShortName = "cowboys",
+				Abbreviation = "DAL"
 			},
 			new Team
 			{
 				Id = 9,
 				NflId = "100009",
 				Name = "Denver Broncos",
-				Abbreviation = "DEN",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/denverbroncos/roster?team=DEN"
-					}
-				}
+				ShortName = "broncos",
+				Abbreviation = "DEN"
 			},
 			new Team
 			{
 				Id = 10,
 				NflId = "100010",
 				Name = "Detroit Lions",
-				Abbreviation = "DET",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/detroitlions/roster?team=DET"
-					}
-				}
+				ShortName = "lions",
+				Abbreviation = "DET"
 			},
 			new Team
 			{
 				Id = 11,
 				NflId = "100011",
 				Name = "Green Bay Packers",
-				Abbreviation = "GB",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/greenbaypackers/roster?team=GB"
-					}
-				}
+				ShortName = "packers",
+				Abbreviation = "GB"
 			},
 			new Team
 			{
 				Id = 12,
 				NflId = "100012",
 				Name = "Tennessee Titans",
-				Abbreviation = "TEN",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/tennesseetitans/roster?team=TEN"
-					}
-				}
+				ShortName = "titans",
+				Abbreviation = "TEN"
 			},
 			new Team
 			{
 				Id = 13,
 				NflId = "100013",
 				Name = "Houston Texans",
-				Abbreviation = "HOU",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/houstontexans/roster?team=HOU"
-					}
-				}
+				ShortName = "texans",
+				Abbreviation = "HOU"
 			},
 			new Team
 			{
 				Id = 14,
 				NflId = "100014",
 				Name = "Indianapolis Colts",
-				Abbreviation = "IND",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/indianapoliscolts/roster?team=IND"
-					}
-				}
+				ShortName = "colts",
+				Abbreviation = "IND"
 			},
 			new Team
 			{
 				Id = 15,
 				NflId = "100015",
 				Name = "Jacksonville Jaguars",
-				Abbreviation = "JAX",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/jacksonvillejaguars/roster?team=JAX"
-					}
-				}
+				ShortName = "jaguars",
+				Abbreviation = "JAX"
 			},
 			new Team
 			{
 				Id = 16,
 				NflId = "100016",
 				Name = "Kansas City Chiefs",
-				Abbreviation = "KC",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/kansascitychiefs/roster?team=KC"
-					}
-				}
+				ShortName = "chiefs",
+				Abbreviation = "KC"
 			},
 			new Team
 			{
 				Id = 17,
 				NflId = "100017",
 				Name = "Los Angeles Rams",
-				Abbreviation = "LA",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/losangelesrams/roster?team=LA"
-					}
-				}
+				ShortName = "rams",
+				Abbreviation = "LA"
 			},
 			new Team
 			{
 				Id = 18,
 				NflId = "100018",
 				Name = "Oakland Raiders",
-				Abbreviation = "OAK",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/oaklandraiders/roster?team=OAK"
-					}
-				}
+				ShortName = "raiders",
+				Abbreviation = "OAK"
 			},
 			new Team
 			{
 				Id = 19,
 				NflId = "100019",
 				Name = "Miami Dolphins",
-				Abbreviation = "MIA",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/miamidolphins/roster?team=MIA"
-					}
-				}
+				ShortName = "dolphins",
+				Abbreviation = "MIA"
 			},
 			new Team
 			{
 				Id = 20,
 				NflId = "100020",
 				Name = "Minnesota Vikings",
-				Abbreviation = "MIN",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/minnesotavikings/roster?team=MIN"
-					}
-				}
+				ShortName = "vikings",
+				Abbreviation = "MIN"
 			},
 			new Team
 			{
 				Id = 21,
 				NflId = "100021",
 				Name = "New England Patriots",
-				Abbreviation = "NE",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/newenglandpatriots/roster?team=NE"
-					}
-				}
+				ShortName = "patriots",
+				Abbreviation = "NE"
 			},
 			new Team
 			{
 				Id = 22,
 				NflId = "100022",
 				Name = "New Orleans Saints",
-				Abbreviation = "NO",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/neworleanssaints/roster?team=NO"
-					}
-				}
+				ShortName = "saints",
+				Abbreviation = "NO"
 			},
 			new Team
 			{
 				Id = 23,
 				NflId = "100023",
 				Name = "New York Giants",
-				Abbreviation = "NYG",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/newyorkgiants/roster?team=NYG"
-					}
-				}
+				ShortName = "giants",
+				Abbreviation = "NYG"
 			},
 			new Team
 			{
 				Id = 24,
 				NflId = "100024",
 				Name = "New York Jets",
-				Abbreviation = "NYJ",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/newyorkjets/roster?team=NYJ"
-					}
-				}
+				ShortName = "jets",
+				Abbreviation = "NYJ"
 			},
 			new Team
 			{
 				Id = 25,
 				NflId = "100025",
 				Name = "Philadelphia Eagles",
-				Abbreviation = "PHI",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/philadelphiaeagles/roster?team=PHI"
-					}
-				}
+				ShortName = "eagles",
+				Abbreviation = "PHI"
 			},
 			new Team
 			{
 				Id = 26,
 				NflId = "100026",
 				Name = "Arizona Cardinals",
-				Abbreviation = "ARI",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/arizonacardinals/roster?team=ARI"
-					}
-				}
+				ShortName = "cardinals",
+				Abbreviation = "ARI"
 			},
 			new Team
 			{
 				Id = 27,
 				NflId = "100027",
 				Name = "Pittsburgh Steelers",
-				Abbreviation = "PIT",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/pittsburghsteelers/roster?team=PIT"
-					}
-				}
+				ShortName = "steelers",
+				Abbreviation = "PIT"
 			},
 			new Team
 			{
 				Id = 28,
 				NflId = "100028",
 				Name = "Los Angeles Chargers",
-				Abbreviation = "LAC",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/losangeleschargers/roster?team=LAC"
-					}
-				}
+				ShortName = "chargers",
+				Abbreviation = "LAC"
 			},
 			new Team
 			{
 				Id = 29,
 				NflId = "100029",
 				Name = "San Francisco 49ers",
-				Abbreviation = "SF",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/sanfrancisco49ers/roster?team=SF"
-					}
-				}
+				ShortName = "49ers",
+				Abbreviation = "SF"
 			},
 			new Team
 			{
 				Id = 30,
 				NflId = "100030",
 				Name = "Seattle Seahawks",
-				Abbreviation = "SEA",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/seattleseahawks/roster?team=SEA"
-					}
-				}
+				ShortName = "seahawks",
+				Abbreviation = "SEA"
 			},
 			new Team
 			{
 				Id = 31,
 				NflId = "100031",
 				Name = "Tampa Bay Buccaneers",
-				Abbreviation = "TB",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/tampabaybuccaneers/roster?team=TB"
-					}
-				}
+				ShortName = "buccaneers",
+				Abbreviation = "TB"
 			},
 			new Team
 			{
 				Id = 32,
 				NflId = "100032",
 				Name = "Washington Redskins",
-				Abbreviation = "WAS",
-				RosterSourceUris = new Dictionary<string, string>
-				{
-					{
-						RosterSourceKeys.NFLWebTeam,
-						@"http://www.nfl.com/teams/washingtonredskins/roster?team=WAS"
-					}
-				}
+				ShortName = "redskins",
+				Abbreviation = "WAS"
 			}
 		};
 	}

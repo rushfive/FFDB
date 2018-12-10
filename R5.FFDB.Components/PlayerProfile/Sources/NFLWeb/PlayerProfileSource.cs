@@ -35,6 +35,21 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 			_errorFileLogger = errorFileLogger;
 		}
 
+		public List<Core.Models.PlayerProfile> GetAll()
+		{
+			var directory = new DirectoryInfo(_dataPath.Static.PlayerProfile);
+
+			return directory
+				.GetFiles()
+				.Select(f =>
+				{
+					string filePath = f.ToString();
+					PlayerProfileJson json = JsonConvert.DeserializeObject<PlayerProfileJson>(File.ReadAllText(filePath));
+					return PlayerProfileJson.ToCoreEntity(json);
+				})
+				.ToList();
+		}
+
 		public Core.Models.PlayerProfile GetPlayerProfile(string nflId)
 		{
 			string path = _dataPath.Static.PlayerProfile + $"{nflId}.json";

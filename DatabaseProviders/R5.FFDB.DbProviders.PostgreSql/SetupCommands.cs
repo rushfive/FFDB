@@ -30,18 +30,13 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			+ "date_of_birth TIMESTAMPTZ,"
 			+ "college TEXT)";
 
-		// season
-		// week
-		// player_id (foreign key -> players)
-		// then all the available stat types as its own DECIMAL column
 		public static string CreateWeekStatsTable()
 		{
 			string sqlCommand = "CREATE TABLE week_stats ("
 				+ "player_id UUID NOT NULL REFERENCES players(id),"
 				+ "season INT NOT NULL,"
 				+ "week INT NOT NULL,"
-				+ "team_id INT NOT NULL REFERENCES teams(id),"
-				+ "position TEXT NOT NULL,";
+				+ "team_id INT NOT NULL REFERENCES teams(id),";
 
 			foreach (string statType in Enum.GetNames(typeof(WeekStatType)))
 			{

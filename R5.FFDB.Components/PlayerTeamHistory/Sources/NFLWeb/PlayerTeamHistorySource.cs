@@ -78,7 +78,7 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 					string path = _dataPath.Static.PlayerTeamHistory + $"{player.NflId}.json";
 					File.WriteAllText(path, serializedHistory);
 
-					_logger.LogDebug($"Successfully fetched team history for '{player.NflId}' ({player.FirstName} {player.LastName}) "
+					_logger.LogInformation($"Successfully fetched team history for '{player.NflId}' ({player.FirstName} {player.LastName}) "
 						+ $"(remaining: {remaining - 1})");
 				}
 				catch (Exception ex)
@@ -117,8 +117,7 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 
 				await Task.Delay(_throttle.Get());
 			}
-
-			_logger.LogInformation($"Successfully fetched team history for player '{nflId}'.");
+			
 			return result;
 		}
 
@@ -133,7 +132,7 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Failed to player profile page for '{nflId}' at '{uri}'.");
+				_logger.LogError(ex, $"Failed to get seasons played by player profile page for '{nflId}' at '{uri}'.");
 				throw;
 			}
 
@@ -147,7 +146,23 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 
 		private async Task<Dictionary<int, int>> GetHistoryBySeasonAsync(string nflId, int season)
 		{
-			throw new NotImplementedException();
+			var uri = $"http://www.nfl.com/player/{nflId}/{nflId}/gamelogs?season={season}";
+
+			string html;
+			try
+			{
+				html = await _webRequestClient.GetStringAsync(uri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to get game logs page for '{nflId}' ({season}) at '{uri}'.");
+				throw;
+			}
+
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
+
+			return PlayerTeamHistoryScraper.ExtractHistoryForSeason(page);
 		}
 
 		public Task<bool> IsHealthyAsync()

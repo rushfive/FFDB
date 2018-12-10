@@ -6,6 +6,8 @@ using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
 using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
 using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
+using R5.FFDB.Database;
+using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.Engine.ConfigBuilders;
 using R5.FFDB.Engine.Source;
 using R5.FFDB.Engine.Source.Resolvers;
@@ -18,12 +20,12 @@ namespace R5.FFDB.Engine
 	public class EngineSetup
 	{
 		public WebRequestConfigBuilder WebRequest { get; } = new WebRequestConfigBuilder();
-		//public FileDownloadConfigBuilder FileDownload { get; } = new FileDownloadConfigBuilder();
 		public LoggingConfigBuilder Logging { get; } = new LoggingConfigBuilder();
 
 		private string _rootDataPath { get; set; }
+		private IDatabaseProvider _databaseProvider { get; set; }
 
-		public void SetRootDataDirectoryPath(string path)
+		public EngineSetup SetRootDataDirectoryPath(string path)
 		{
 			if (string.IsNullOrWhiteSpace(path))
 			{
@@ -39,14 +41,37 @@ namespace R5.FFDB.Engine
 			}
 
 			_rootDataPath = path;
+			return this;
+		}
+
+		public EngineSetup UsePostgreSql(PostgresConfig config)
+		{
+			// todo: validate config
+
+			_databaseProvider = new PostgresDbProvider(config);
+			return this;
+		}
+
+		public EngineSetup UseMongo()
+		{
+			return this;
+		}
+
+		public EngineSetup UseDatabase(IDatabaseProvider provider)
+		{
+			if (provider == null)
+			{
+				throw new ArgumentNullException(nameof(provider), "A valid provider must be given.");
+			}
+
+			_databaseProvider = provider;
+			return this;
 		}
 
 		public FfdbEngine Create()
 		{
-			if (string.IsNullOrWhiteSpace(_rootDataPath))
-			{
-				throw new InvalidOperationException("Root data directory path must be provided.");
-			}
+			ValidateConfigurations();
+
 			var dataPath = new DataDirectoryPath(_rootDataPath);
 
 			WebRequestConfig webRequestConfig = WebRequest.Build();
@@ -82,11 +107,24 @@ namespace R5.FFDB.Engine
 
 				.AddLogging(loggingConfig)
 				.AddScoped<IErrorFileLogger, ErrorFileLogger>()
+				.AddScoped<IDatabaseProvider>(sp => _databaseProvider)
 				.AddScoped<FfdbEngine>();
 
 			return services
 				.BuildServiceProvider()
 				.GetService<FfdbEngine>();
+		}
+
+		private void ValidateConfigurations()
+		{
+			if (string.IsNullOrWhiteSpace(_rootDataPath))
+			{
+				throw new InvalidOperationException("Root data directory path must be provided.");
+			}
+			if (_databaseProvider == null)
+			{
+				throw new InvalidOperationException("Database provider must be provided.");
+			}
 		}
 	}
 

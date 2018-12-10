@@ -12,6 +12,9 @@ namespace R5.FFDB.Core.Models
 		public string ShortName { get; set; }
 		public string Abbreviation { get; set; }
 
-		public Dictionary<string, string> RosterSourceUris { get; set; }
+		public string GetRosterSourceUri()
+		{
+			return $"http://www.nfl.com/teams/{ShortName}/roster?team={Abbreviation}";
+		}
 	}
 }

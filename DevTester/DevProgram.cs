@@ -3,9 +3,11 @@ using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Components.PlayerProfile;
 using R5.FFDB.Components.PlayerTeamHistory;
 using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb;
 using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb.Models;
+using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
 using Serilog;
 using Serilog.Events;
@@ -24,26 +26,9 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			//var url = "http://www.nfl.com/player/chriscarson/2558865/profile";
-			//var web = new HtmlWeb();
-			//HtmlDocument doc = web.Load(url);
-			//doc.Save(@"D:\Repos\ffdb_data\temp\chris_carson_profile.html");
+			_serviceProvider = DevTestServiceProvider.Build();
 
-			string pagePath = @"D:\Repos\ffdb_data\temp\chris_carson_profile.html";
-			var pageHtml = File.ReadAllText(pagePath);
-			var page = new HtmlDocument();
-			page.LoadHtml(pageHtml);
-
-			var seasons = PlayerTeamHistoryScraper.ExtractSeasonsPlayed(page);
-
-			///////////////
-
-			//_serviceProvider = DevTestServiceProvider.Build();
-			//_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
-
-			//await FetchPlayerTeamHistoryAsync("NFL_ID", "Chris", "Carson");
-
-			///////////////
+			await FetchAllPlayerTeamHistoriesAsync();
 
 			//var postgresConfig = new PostgresConfig
 			//{
@@ -54,19 +39,21 @@ namespace DevTester
 			//};
 
 			//var postgresProvider = new PostgresDbProvider(postgresConfig);
-			//PostgresDbContext context = postgresProvider.GetContext();
+			//IDatabaseContext context = postgresProvider.GetContext();
 
 			//await context.RunInitialSetupAsync();
 
-			//////////
-
-			//_serviceProvider = DevTestServiceProvider.Build();
-			//_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
-
-			//await FetchPlayerProfilesFromRostersAsync(downloadRosterPages: false);
-
 
 			Console.ReadKey();
+		}
+
+		private static async Task FetchAllPlayerTeamHistoriesAsync()
+		{
+			IPlayerProfileSource profileSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
+			IPlayerTeamHistorySource historySource = _serviceProvider.GetRequiredService<IPlayerTeamHistorySource>();
+
+			List<R5.FFDB.Core.Models.PlayerProfile> allPlayers = profileSource.GetAll();
+			await historySource.FetchAndSaveAsync(allPlayers);
 		}
 
 		private static Task FetchPlayerTeamHistoryAsync(string nflId, string firstName, string lastName)
@@ -104,6 +91,30 @@ namespace DevTester
 				_logger.LogError(ex, "There was an error fetching player profile from roster.");
 				throw;
 			}
+		}
+
+		private static async Task<HtmlDocument> DownloadPageAsync(
+			string pageUri, string filePath, bool skipFetch)
+		{
+			// Save 
+
+			//string uri = "http://www.nfl.com/player/mikemitchell/238227/gamelogs?season=2018";
+			//string filePath = @"D:\Repos\ffdb_data\temp\debug.html";
+
+			if (!skipFetch)
+			{
+				var web = new HtmlWeb();
+				HtmlDocument doc = await web.LoadFromWebAsync(pageUri);
+				doc.Save(filePath);
+			}
+			
+
+			// Read
+			string html = File.ReadAllText(filePath);
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
+
+			return page;
 		}
 	}
 }

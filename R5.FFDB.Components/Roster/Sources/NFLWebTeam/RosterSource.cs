@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
 using R5.FFDB.Components.Stores;
 using R5.FFDB.Core.Models;
-using R5.FFDB.Core.Sources;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,7 +36,7 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 
 			foreach (Team team in teams)
 			{
-				string html = await _webRequestClient.GetStringAsync(team.RosterSourceUris[RosterSourceKeys.NFLWebTeam]);
+				string html = await _webRequestClient.GetStringAsync(team.GetRosterSourceUri());
 
 				if (saveToDisk)
 				{
@@ -51,23 +50,23 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 			return result;
 		}
 
-		public List<Core.Models.Roster> GetFromDisk()
-		{
-			var result = new List<Core.Models.Roster>();
+		//public List<Core.Models.Roster> GetFromDisk()
+		//{
+		//	var result = new List<Core.Models.Roster>();
 
-			List<Team> teams = TeamDataStore.GetAll();
+		//	List<Team> teams = TeamDataStore.GetAll();
 
-			foreach (Team team in teams)
-			{
-				string pagePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
-				var pageHtml = File.ReadAllText(pagePath);
+		//	foreach (Team team in teams)
+		//	{
+		//		string pagePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
+		//		var pageHtml = File.ReadAllText(pagePath);
 
-				Core.Models.Roster rosterInfo = GetForTeam(team, pageHtml);
-				result.Add(rosterInfo);
-			}
+		//		Core.Models.Roster rosterInfo = GetForTeam(team, pageHtml);
+		//		result.Add(rosterInfo);
+		//	}
 
-			return result;
-		}
+		//	return result;
+		//}
 
 		private Core.Models.Roster GetForTeam(Team team, string pageHtml)
 		{
