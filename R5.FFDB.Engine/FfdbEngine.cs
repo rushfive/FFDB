@@ -63,15 +63,12 @@ namespace R5.FFDB.Engine
 			// get all available week stats
 			try
 			{
-				// todo: it should actually ALWAYS FETCH from web for this initial setup
-				List<Roster> rosters = await sources.Roster.GetFromWebAsync(saveToDisk: false);
-				//List<Roster> rosters = sources.Roster.GetFromDisk();
+				List<Roster> rosters = await sources.Roster.GetAsync();
 
 				List<string> rosterPlayerIds = rosters
 					.SelectMany(r => r.Players)
 					.Select(p => p.NflId)
 					.Distinct()
-					//.Select(p => (p.NflId, p.FirstName, p.LastName))
 					.ToList();
 
 				_logger.LogInformation($"Found '{rosterPlayerIds.Count}' players from rosters to fetch profile data for.");

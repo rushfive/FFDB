@@ -23,7 +23,7 @@ namespace R5.FFDB.Components.CoreData.Roster
 				int? number = ExtractNumber(r);
 				(string firstName, string lastName) = ExtractName(r);
 				Position position = ExtractPosition(r);
-				RosterStatus status = ExtractStatus(r);
+				RosterPlayer.RosterStatus status = ExtractStatus(r);
 
 				result.Add(new RosterPlayer
 				{
@@ -100,14 +100,14 @@ namespace R5.FFDB.Components.CoreData.Roster
 			return Enum.Parse<Position>(position);
 		}
 
-		private static RosterStatus ExtractStatus(HtmlNode playerRow)
+		private static RosterPlayer.RosterStatus ExtractStatus(HtmlNode playerRow)
 		{
 			string status = playerRow.SelectNodes("td")[3]
 				.ChildNodes
 				.Single()
 				.InnerText;
 
-			return Enum.Parse<RosterStatus>(status);
+			return Enum.Parse<RosterPlayer.RosterStatus>(status);
 		}
 	}
 }

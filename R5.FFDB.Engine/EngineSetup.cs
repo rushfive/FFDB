@@ -5,6 +5,7 @@ using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.ErrorFileLog;
+using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Database;

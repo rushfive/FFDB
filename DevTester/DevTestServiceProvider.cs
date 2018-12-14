@@ -4,6 +4,7 @@ using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.ErrorFileLog;
+using R5.FFDB.Components.Http;
 using Serilog;
 using Serilog.Events;
 using System;

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Stores;
 using R5.FFDB.Core.Models;
 using System;
@@ -45,7 +46,8 @@ namespace DevTester.Testers
 
 			foreach (Team team in teams)
 			{
-				string page = await _webRequestClient.GetStringAsync(team.GetRosterSourceUri(), throttle: true);
+				string uri = Endpoints.Page.TeamRoster(team.ShortName, team.Abbreviation);
+				string page = await _webRequestClient.GetStringAsync(uri, throttle: true);
 				await File.WriteAllTextAsync(_dataPath.Temp.RosterPages + $"{team.Abbreviation}.html", page);
 			}
 		}

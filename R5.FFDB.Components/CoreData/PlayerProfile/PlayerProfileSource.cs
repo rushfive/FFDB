@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using R5.FFDB.Components.CoreData.PlayerProfile.Models;
 using R5.FFDB.Components.ErrorFileLog;
+using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Stores;
 using System;
 using System.Collections.Generic;
@@ -155,7 +156,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 		private async Task<PlayerProfileJson> FetchForPlayerAsync(string nflId)
 		{
 			// the first {nflId} can be any random string, so we'll just use the id
-			string uri = Endpoints.Page.NFLWebPlayerProfile(nflId);
+			string uri = Endpoints.Page.PlayerProfile(nflId);
 
 			string html;
 			try

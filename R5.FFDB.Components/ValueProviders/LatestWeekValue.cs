@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace R5.FFDB.Components.ValueProviders
 		private IWebRequestClient _webRequestClient { get; }
 
 		public LatestWeekValue(IWebRequestClient webRequestClient)
+			: base("Latest Week")
 		{
 			_webRequestClient = webRequestClient;
 		}

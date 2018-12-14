@@ -27,9 +27,6 @@ namespace R5.FFDB.Core.Models
 		public string PictureUri { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-		//public Position Position { get; set; }
-		//public int? TeamId { get; set; }
-		//public int Number { get; set; }
 		public int Height { get; set; }
 		public int Weight { get; set; }
 		public DateTimeOffset DateOfBirth { get; set; }

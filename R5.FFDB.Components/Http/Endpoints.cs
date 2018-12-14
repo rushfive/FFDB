@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components
+namespace R5.FFDB.Components.Http
 {
 	public static class Endpoints
 	{
@@ -29,9 +29,14 @@ namespace R5.FFDB.Components
 
 		public static class Page
 		{
-			public static string NFLWebPlayerProfile(string nflId)
+			public static string PlayerProfile(string nflId)
 			{
 				return $"http://www.nfl.com/player/{nflId}/{nflId}/profile";
+			}
+
+			public static string TeamRoster(string shortName, string abbreviation)
+			{
+				return $"http://www.nfl.com/teams/{shortName}/roster?team={abbreviation}";
 			}
 		}
 	}

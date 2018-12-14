@@ -87,8 +87,6 @@ namespace R5.FFDB.Components
 		{
 			private string _root { get; }
 			public string PlayerProfileFetch => _root + @"error_file_logs\player_profile_fetch\";
-			public string PlayerTeamHistoryFetch => _root + @"error_file_logs\player_team_history\fetch\";
-			public string PlayerTeamHistoryWeekUnavailable => _root + @"error_file_logs\player_team_history\week_unavailable\";
 
 			public ErrorFileLogDirectoryPath(string rootPath)
 			{
@@ -98,8 +96,6 @@ namespace R5.FFDB.Components
 			public void CreateMissing()
 			{
 				Directory.CreateDirectory(PlayerProfileFetch);
-				Directory.CreateDirectory(PlayerTeamHistoryFetch);
-				Directory.CreateDirectory(PlayerTeamHistoryWeekUnavailable);
 			}
 		}
 	}

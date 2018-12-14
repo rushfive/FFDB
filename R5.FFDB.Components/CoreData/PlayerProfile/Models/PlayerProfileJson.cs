@@ -26,16 +26,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile.Models
 		[JsonProperty("lastName")]
 		public string LastName { get; set; }
 
-		//[JsonProperty("position")]
-		//[JsonConverter(typeof(StringEnumConverter))]
-		//public Position Position { get; set; }
-
-		//[JsonProperty("teamId")]
-		//public int? TeamId { get; set; } // not active if null
-
-		//[JsonProperty("number")]
-		//public int Number { get; set; }
-
 		[JsonProperty("height")]
 		public int Height { get; set; }
 

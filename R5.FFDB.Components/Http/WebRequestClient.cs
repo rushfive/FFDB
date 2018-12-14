@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components
+namespace R5.FFDB.Components.Http
 {
 	public interface IWebRequestClient
 	{

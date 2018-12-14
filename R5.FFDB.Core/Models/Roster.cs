@@ -25,5 +25,16 @@ namespace R5.FFDB.Core.Models
 		public string LastName { get; set; }
 		public Position Position { get; set; }
 		public RosterStatus Status { get; set; }
+
+		public enum RosterStatus
+		{
+			ACT, // active
+			RES, // injured reserve
+			NON, // non football-related injured reserve
+			SUS, // suspended
+			PUP, // physically unable to perform
+			UDF, // unsigned draft pick
+			EXE // exempt
+		}
 	}
 }

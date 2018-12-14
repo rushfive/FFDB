@@ -1,4 +1,5 @@
 ﻿using R5.FFDB.Components;
+using R5.FFDB.Components.CoreData;
 using System;
 using System.Collections.Generic;
 using System.Text;
