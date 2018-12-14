@@ -1,20 +1,25 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using R5.FFDB.Components.Configurations;
+using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.Components.Resolvers;
-using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi.Models;
+using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
+namespace R5.FFDB.Components.CoreData.WeekStats
 {
+	public interface IWeekStatsSource : ISource
+	{
+		Core.Models.WeekStats GetStats(WeekInfo week);
+		List<Core.Models.WeekStats> GetAll();
+		Task FetchAndSaveWeekStatsAsync();
+	}
+
 	public class WeekStatsSource : IWeekStatsSource
 	{
 		private ILogger<WeekStatsSource> _logger { get; }
@@ -69,13 +74,13 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 			WeekInfo latestCompleted = await _latestWeek.GetAsync();
 
 			_logger.LogInformation($"Fetching all available week stats for players up to and including week {latestCompleted.Week}, {latestCompleted.Season}.");
-			
+
 			HashSet<WeekInfo> existingWeeks = DirectoryFilesResolver
 				.GetWeeksFromJsonFiles(_dataPath.Static.WeekStats)
 				.ToHashSet();
-			
+
 			List<WeekInfo> missingWeeks = await _availableWeeks.GetAsync(excludeWeeks: existingWeeks);
-			
+
 			if (!missingWeeks.Any())
 			{
 				_logger.LogInformation("Already have all available week stats - no fetching necessary.");

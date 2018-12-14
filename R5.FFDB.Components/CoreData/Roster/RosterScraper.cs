@@ -1,18 +1,17 @@
 ﻿using HtmlAgilityPack;
-using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
+namespace R5.FFDB.Components.CoreData.Roster
 {
 	public static class RosterScraper
 	{
-		public static List<NFLWebRosterPlayer> ExtractPlayers(HtmlDocument page)
+		public static List<RosterPlayer> ExtractPlayers(HtmlDocument page)
 		{
-			var result = new List<NFLWebRosterPlayer>();
+			var result = new List<RosterPlayer>();
 
 			HtmlNodeCollection playerRows = page.GetElementbyId("result")
 				?.SelectSingleNode("//tbody")
@@ -26,9 +25,9 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 				Position position = ExtractPosition(r);
 				RosterStatus status = ExtractStatus(r);
 
-				result.Add(new NFLWebRosterPlayer
+				result.Add(new RosterPlayer
 				{
-					Id = id,
+					NflId = id,
 					Number = number,
 					FirstName = firstName,
 					LastName = lastName,

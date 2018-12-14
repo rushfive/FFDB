@@ -1,15 +1,17 @@
-﻿using R5.FFDB.Core.Models;
+﻿using R5.FFDB.Components.ValueProviders;
+using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components
+namespace R5.FFDB.Components.Resolvers
 {
 	public interface IAvailableWeeksResolver
 	{
 		Task<List<WeekInfo>> GetAsync(HashSet<WeekInfo> excludeWeeks = null);
 	}
+
 	public class AvailableWeeksResolver : IAvailableWeeksResolver
 	{
 		private LatestWeekValue _latestWeek { get; }

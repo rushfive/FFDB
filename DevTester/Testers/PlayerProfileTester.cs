@@ -1,9 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
+using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.PlayerProfile;
-using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
-using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
 using R5.FFDB.Components.Stores;
 using R5.FFDB.Core.Models;
 using System;
@@ -88,9 +87,7 @@ namespace DevTester.Testers
 				var page = new HtmlDocument();
 				page.LoadHtml(pageHtml);
 
-				List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
-					.Select(NFLWebRosterPlayer.ToCoreEntity)
-					.ToList();
+				List<RosterPlayer> players = RosterScraper.ExtractPlayers(page);
 
 				rosters.Add(new Roster
 				{

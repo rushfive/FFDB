@@ -1,17 +1,21 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.Roster.Sources.NFLWebTeam.Models;
 using R5.FFDB.Components.Stores;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
+namespace R5.FFDB.Components.CoreData.Roster
 {
+	public interface IRosterSource : ISource
+	{
+		Task<List<Core.Models.Roster>> GetFromWebAsync(bool saveToDisk = true);
+		//List<Core.Models.Roster> GetFromDisk();
+	}
+
 	public class RosterSource : IRosterSource
 	{
 		private ILogger<RosterSource> _logger { get; }
@@ -73,9 +77,7 @@ namespace R5.FFDB.Components.Roster.Sources.NFLWebTeam
 			var page = new HtmlDocument();
 			page.LoadHtml(pageHtml);
 
-			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page)
-				.Select(NFLWebRosterPlayer.ToCoreEntity)
-				.ToList();
+			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page);
 
 			return new Core.Models.Roster
 			{

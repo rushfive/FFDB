@@ -1,7 +1,7 @@
-﻿using R5.FFDB.Components.PlayerProfile;
+﻿using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.PlayerProfile;
 using R5.FFDB.Components.PlayerTeamHistory;
-using R5.FFDB.Components.Roster;
-using R5.FFDB.Components.WeekStats;
 using System;
 using System.Collections.Generic;
 using System.Text;

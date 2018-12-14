@@ -1,9 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
-using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
-using R5.FFDB.Components.Roster;
-using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
-using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi.Models;
+using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.Engine;
 using System;
 using System.Collections.Generic;

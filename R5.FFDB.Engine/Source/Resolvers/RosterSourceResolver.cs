@@ -1,5 +1,4 @@
-﻿using R5.FFDB.Components.Roster;
-using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
+﻿using R5.FFDB.Components.CoreData.Roster;
 using System;
 using System.Collections.Generic;
 using System.Text;

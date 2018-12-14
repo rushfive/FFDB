@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
+using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.ErrorFileLog;
 using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
 using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb;
-using R5.FFDB.Components.Roster.Sources.NFLWebTeam;
-using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
+using R5.FFDB.Components.Resolvers;
+using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.Engine.ConfigBuilders;

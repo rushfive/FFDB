@@ -1,5 +1,4 @@
-﻿using R5.FFDB.Components.WeekStats;
-using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi;
+﻿using R5.FFDB.Components.CoreData.WeekStats;
 using System;
 using System.Collections.Generic;
 using System.Text;
