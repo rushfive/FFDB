@@ -1,8 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Components.CoreData.PlayerProfile.Models;
 using R5.FFDB.Components.ErrorFileLog;
-using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb.Models;
 using R5.FFDB.Components.Stores;
 using System;
 using System.Collections.Generic;
@@ -11,8 +11,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
+namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
+	public interface IPlayerProfileSource : ISource
+	{
+		List<Core.Models.PlayerProfile> GetAll();
+		Core.Models.PlayerProfile GetPlayerProfile(string nflId);
+		List<Core.Models.PlayerProfile> GetPlayerProfile(List<string> nflIds);
+		Task FetchAndSaveAsync(List<string> playerNflIds);
+	}
+
 	public class PlayerProfileSource : IPlayerProfileSource
 	{
 		private ILogger<PlayerProfileSource> _logger { get; }

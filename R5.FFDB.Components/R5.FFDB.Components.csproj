@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="TeamGameHistory\Sources\NFLGameCenter\Models\" />
+	  <Folder Include="CoreData\TeamGameHistory\Models\" />
 	</ItemGroup>
 
 </Project>

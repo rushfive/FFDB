@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb.Models
+namespace R5.FFDB.Components.CoreData.PlayerProfile.Models
 {
 	// static data retrieved from api and scraping
 	public class PlayerProfileJson

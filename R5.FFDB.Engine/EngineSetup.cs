@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
+using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.ErrorFileLog;
-using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
-using R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Database;
@@ -98,12 +97,10 @@ namespace R5.FFDB.Engine
 				.AddScoped<PlayerProfileSource>()
 				.AddScoped<RosterSource>()
 				.AddScoped<WeekStatsSource>()
-				.AddScoped<PlayerTeamHistorySource>()
 
 				.AddScoped<IPlayerDataSourceResolver, PlayerDataSourceResolver>()
 				.AddScoped<IRosterSourceResolver, RosterSourceResolver>()
 				.AddScoped<IWeekStatsSourceResolver, WeekStatsSourceResolver>()
-				.AddScoped<IPlayerTeamHistorySourceResolver, PlayerTeamHistorySourceResolver>()
 				
 				.AddScoped<ISourcesFactory, SourcesFactory>()
 

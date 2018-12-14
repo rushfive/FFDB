@@ -1,8 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
+using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.Roster;
-using R5.FFDB.Components.PlayerProfile;
 using R5.FFDB.Components.Stores;
 using R5.FFDB.Core.Models;
 using System;

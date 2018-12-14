@@ -1,5 +1,4 @@
-﻿using R5.FFDB.Components.PlayerProfile;
-using R5.FFDB.Components.PlayerProfile.Sources.NFLWeb;
+﻿using R5.FFDB.Components.CoreData.PlayerProfile;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
+namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
 	// todo: should all be internal
 	public static class PlayerProfileScraper
@@ -51,7 +51,7 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 			{
 				throw new InvalidOperationException("Failed to scrape height and weight.");
 			}
-			
+
 			string[] colonSplit = heightWeightParagraph.InnerText.Split(":");
 
 			int height = extractHeight(colonSplit[1]);

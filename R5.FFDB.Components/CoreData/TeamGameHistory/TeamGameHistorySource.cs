@@ -9,8 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace R5.FFDB.Components.TeamGameHistory.Sources.NFLGameCenter
+namespace R5.FFDB.Components.CoreData.TeamGameHistory
 {
+	public interface ITeamGameHistorySource : ISource
+	{
+		Task FetchAndSaveAsync();
+	}
+
 	public class TeamGameHistorySource : ITeamGameHistorySource
 	{
 		private ILogger<TeamGameHistorySource> _logger { get; }
@@ -65,7 +70,7 @@ namespace R5.FFDB.Components.TeamGameHistory.Sources.NFLGameCenter
 				.GetFileNames(_dataPath.Static.TeamGameHistoryGameStats, excludeExtensions: true)
 				.ToHashSet();
 
-			foreach(string gameId in GetAllAvailableGameIds())
+			foreach (string gameId in GetAllAvailableGameIds())
 			{
 				if (existing.Contains(gameId))
 				{
@@ -89,7 +94,7 @@ namespace R5.FFDB.Components.TeamGameHistory.Sources.NFLGameCenter
 
 			var weekGameFiles = DirectoryFilesResolver.GetFileNames(_dataPath.Static.TeamGameHistoryWeekGames);
 
-			foreach(string file in weekGameFiles)
+			foreach (string file in weekGameFiles)
 			{
 				XElement weekGameXml = XElement.Load(file);
 
