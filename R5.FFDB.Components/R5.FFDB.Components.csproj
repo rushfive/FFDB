@@ -18,4 +18,8 @@
 		<ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="TeamGameHistory\Sources\NFLGameCenter\Models\" />
+	</ItemGroup>
+
 </Project>

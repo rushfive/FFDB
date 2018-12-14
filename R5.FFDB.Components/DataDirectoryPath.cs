@@ -51,6 +51,8 @@ namespace R5.FFDB.Components
 			public string PlayerProfile => _root + @"player_profile\";
 			public string PlayerTeamHistory => _root + @"player_team_history\";
 			public string WeekStats => _root + @"week_stats\";
+			public string TeamGameHistoryWeekGames => _root + @"team_game_history\week_games\";
+			public string TeamGameHistoryGameStats => _root + @"team_game_history\game_stats\";
 
 			public StaticDataDirectoryPath(string rootPath)
 			{
@@ -62,6 +64,8 @@ namespace R5.FFDB.Components
 				Directory.CreateDirectory(PlayerProfile);
 				Directory.CreateDirectory(PlayerTeamHistory);
 				Directory.CreateDirectory(WeekStats);
+				Directory.CreateDirectory(TeamGameHistoryWeekGames);
+				Directory.CreateDirectory(TeamGameHistoryGameStats);
 			}
 		}
 

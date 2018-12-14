@@ -119,8 +119,8 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 				{
 					remaining--;
 				}
-				
-				await Task.Delay(_throttle.Get());
+
+				await _throttle.DelayAsync();
 			}
 		}
 
@@ -147,7 +147,7 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 		private async Task<PlayerProfileJson> FetchForPlayerAsync(string nflId)
 		{
 			// the first {nflId} can be any random string, so we'll just use the id
-			string uri = $"http://www.nfl.com/player/{nflId}/{nflId}/profile"; // change this to the gamelogs page, it contains profile stuff too
+			string uri = Endpoints.Page.NFLWebPlayerProfile(nflId);
 
 			string html;
 			try
@@ -184,32 +184,32 @@ namespace R5.FFDB.Components.PlayerProfile.Sources.NFLWeb
 			};
 		}
 
-		private async Task<NgsContentPlayer> GetNgsContentInfoAsync(string nflId)
-		{
-			string uri = $"http://api.fantasy.nfl.com/v2/player/ngs-content?playerId={nflId}";
+		//private async Task<NgsContentPlayer> GetNgsContentInfoAsync(string nflId)
+		//{
+		//	string uri = $"http://api.fantasy.nfl.com/v2/player/ngs-content?playerId={nflId}";
 
-			string response;
-			try
-			{
-				response = await _webRequestClient.GetStringAsync(uri, throttle: false);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Failed to fetch data for '{nflId}' at '{uri}'.");
-				throw;
-			}
+		//	string response;
+		//	try
+		//	{
+		//		response = await _webRequestClient.GetStringAsync(uri, throttle: false);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_logger.LogError(ex, $"Failed to fetch data for '{nflId}' at '{uri}'.");
+		//		throw;
+		//	}
 
-			try
-			{
-				var json = JsonConvert.DeserializeObject<NgsContentJson>(response);
-				return NgsContentJson.ToEntity(json);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Failed to deserialize fetched data for '{nflId}'.", response);
-				throw;
-			}
-		}
+		//	try
+		//	{
+		//		var json = JsonConvert.DeserializeObject<NgsContentJson>(response);
+		//		return NgsContentJson.ToEntity(json);
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_logger.LogError(ex, $"Failed to deserialize fetched data for '{nflId}'.", response);
+		//		throw;
+		//	}
+		//}
 
 		public Task<bool> IsHealthyAsync()
 		{

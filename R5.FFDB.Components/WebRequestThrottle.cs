@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace R5.FFDB.Components
 {
 	public class WebRequestThrottle
 	{
 		private Random _random { get; }
-		public Func<int> Get { get; }
+		private Func<int> _getFunc { get; }
 
 		public WebRequestThrottle(
 			int throttle,
@@ -15,16 +16,21 @@ namespace R5.FFDB.Components
 		{
 			if (!randomizedThrottle.HasValue)
 			{
-				Get = () => throttle;
+				_getFunc = () => throttle;
 			}
 			else
 			{
 				_random = new Random();
 
-				Get = () => _random.Next(
+				_getFunc = () => _random.Next(
 					randomizedThrottle.Value.min,
 					randomizedThrottle.Value.max + 1);
 			}
+		}
+
+		public Task DelayAsync()
+		{
+			return Task.Delay(_getFunc());
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using R5.FFDB.Components.Configurations;
+using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi.Models;
 using R5.FFDB.Core.Models;
 using System;
@@ -16,25 +17,24 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 {
 	public class WeekStatsSource : IWeekStatsSource
 	{
-		private const string weekStatsFileName = @"^\d{4}-\d{1,2}.json$";
-
 		private ILogger<WeekStatsSource> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
+		private IAvailableWeeksResolver _availableWeeks { get; }
+		private LatestWeekValue _latestWeek { get; }
 
 		public WeekStatsSource(
 			ILogger<WeekStatsSource> logger,
 			DataDirectoryPath dataPath,
-			IWebRequestClient webRequestClient)
+			IWebRequestClient webRequestClient,
+			IAvailableWeeksResolver availableWeeks,
+			LatestWeekValue latestWeek)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
-		}
-
-		private static string GetApiUri(int season, int week)
-		{
-			return $"http://api.fantasy.nfl.com/v2/players/weekstats?season={season}&week={week}";
+			_availableWeeks = availableWeeks;
+			_latestWeek = latestWeek;
 		}
 
 		private static string GetJsonPath(WeekInfo week, string downloadPath)
@@ -58,19 +58,24 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 		public List<Core.Models.WeekStats> GetAll()
 		{
-			return GetExistingWeeks()
+			return DirectoryFilesResolver
+				.GetWeeksFromJsonFiles(_dataPath.Static.WeekStats)
 				.Select(w => GetStats(w))
 				.ToList();
 		}
 
 		public async Task FetchAndSaveWeekStatsAsync()
 		{
-			WeekInfo latestCompleted = await GetLatestAvailableWeekAsync();
+			WeekInfo latestCompleted = await _latestWeek.GetAsync();
 
 			_logger.LogInformation($"Fetching all available week stats for players up to and including week {latestCompleted.Week}, {latestCompleted.Season}.");
-
-			List<WeekInfo> missingWeeks = GetMissingWeeks(latestCompleted);
-
+			
+			HashSet<WeekInfo> existingWeeks = DirectoryFilesResolver
+				.GetWeeksFromJsonFiles(_dataPath.Static.WeekStats)
+				.ToHashSet();
+			
+			List<WeekInfo> missingWeeks = await _availableWeeks.GetAsync(excludeWeeks: existingWeeks);
+			
 			if (!missingWeeks.Any())
 			{
 				_logger.LogInformation("Already have all available week stats - no fetching necessary.");
@@ -84,7 +89,7 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 			{
 				_logger.LogDebug($"Beginning week stats fetch for {week.Season}-{week.Week}.");
 
-				string uri = GetApiUri(week.Season, week.Week);
+				string uri = Endpoints.Api.WeekStats(week.Season, week.Week);
 
 				string weekStats = null;
 				try
@@ -124,99 +129,6 @@ namespace R5.FFDB.Components.WeekStats.Sources.NFLFantasyApi
 
 				File.WriteAllText(path, statsJson);
 			}
-		}
-
-		private async Task<WeekInfo> GetLatestAvailableWeekAsync()
-		{
-			// doesn't matter which week we choose, it'll always return
-			// the NFL's current state info
-			JObject weekStats = await getWeekStatsAsync();
-
-			(int currentSeason, int currentWeek) = getCurrentWeekInfo(weekStats);
-
-			return new WeekInfo(currentSeason, currentWeek);
-
-			// local functions
-			async Task<JObject> getWeekStatsAsync()
-			{
-				string uri = GetApiUri(2018, 1);
-
-				string weekStatsJson = await _webRequestClient.GetStringAsync(uri, throttle: false);
-
-				return JObject.Parse(weekStatsJson);
-			}
-
-			(int season, int week) getCurrentWeekInfo(JObject stats)
-			{
-				JObject games = stats["games"].ToObject<JObject>();
-
-				string gameId = games.Properties().Select(p => p.Name).First();
-
-				int season = games[gameId]["season"].ToObject<int>();
-				int week = games[gameId]["state"]["week"].ToObject<int>();
-
-				bool isCompleted = games[gameId]["state"]["isWeekGamesCompleted"].ToObject<bool>();
-				if (!isCompleted)
-				{
-					week = week - 1;
-				}
-
-				return (season, week);
-			}
-		}
-
-		private List<WeekInfo> GetMissingWeeks(WeekInfo latestAvailable)
-		{
-			List<WeekInfo> allPossibleWeeks = getAllPossibleWeeks(latestAvailable);
-			HashSet<WeekInfo> existingWeeks = GetExistingWeeks().ToHashSet();
-
-			return allPossibleWeeks.Where(w => !existingWeeks.Contains(w)).ToList();
-
-			// local functions
-			List<WeekInfo> getAllPossibleWeeks(WeekInfo latest)
-			{
-				var result = new List<WeekInfo>();
-
-				// Earliest available is 2010-1
-				for (int season = 2010; season < latest.Season; season++)
-				{
-					for (int week = 1; week <= 17; week++)
-					{
-						result.Add(new WeekInfo(season, week));
-					}
-				}
-
-				for (int week = 1; week <= latest.Week; week++)
-				{
-					result.Add(new WeekInfo(latest.Season, week));
-				}
-
-				return result;
-			}
-		}
-
-		private IEnumerable<WeekInfo> GetExistingWeeks()
-		{
-			var directory = new DirectoryInfo(_dataPath.Static.WeekStats);
-			FileInfo[] files = directory.GetFiles();
-
-			List<string> fileNames = files.Select(f => f.Name).ToList();
-
-			bool namesAreValid = fileNames.All(n => Regex.IsMatch(n, weekStatsFileName));
-			if (!namesAreValid)
-			{
-				throw new InvalidOperationException("There are some invalid week stat files. Remove them from the directory and try again.");
-			}
-
-			Func<string, WeekInfo> parseWeekInfo = fileName =>
-			{
-				string[] dotSplit = fileName.Split(".");
-				string[] dashSplit = dotSplit[0].Split("-");
-
-				return new WeekInfo(int.Parse(dashSplit[0]), int.Parse(dashSplit[1]));
-			};
-
-			return fileNames.Select(parseWeekInfo);
 		}
 
 		public Task<bool> IsHealthyAsync()

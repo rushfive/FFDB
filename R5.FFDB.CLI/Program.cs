@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static System.Console;
 
 namespace R5.FFDB.CLI
@@ -18,6 +19,33 @@ namespace R5.FFDB.CLI
 	{
 		public static async Task Main(string[] args)
 		{
+			//await FetchGameCenterDataAsync();
+
+
+			XElement gcXml = XElement.Load(@"D:\Repos\ffdb_data\temp\gc.xml");
+			
+			List<XElement> gameNodes = gcXml.Elements("gms").Single().Elements("g").ToList();
+			List<string> gameIds = gameNodes.Select(g => g.Attribute("eid").Value).ToList();
+
+
+			//Console.WriteLine(gcXml);
+
+			//var url = @"http://www.nfl.com/liveupdate/game-center/2012020500/2012020500_gtd.json";
+			//var client = new HttpClient();
+			//string r = await client.GetStringAsync(url);
+			//System.IO.File.WriteAllText(@"D:\Repos\ffdb_data\temp\2012020500_gtd.json", r);
+
+
+			return;
+
+
+
+
+
+
+
+
+
 			//var rosterSvc = new RosterSource(null, null);
 			//var seahawks = Teams.Get().Single(t => t.Id == 30);
 			//var roster = rosterSvc.GetForTeamAsync(seahawks).GetAwaiter().GetResult();
@@ -34,7 +62,7 @@ namespace R5.FFDB.CLI
 
 			//(string firstName, string lastName) = PlayerProfileScraper.ExtractNames(page);
 
-			
+
 			//
 			var setup = new EngineSetup();
 
@@ -67,7 +95,35 @@ namespace R5.FFDB.CLI
 
 
 
+		private static async Task FetchGameCenterDataAsync()
+		{
+			var url = "http://www.nfl.com/ajax/scorestrip?season=2018&seasonType=REG&week=1";
+			var client = new HttpClient();
+			string r = await client.GetStringAsync(url);
+			System.IO.File.WriteAllText(@"D:\Repos\ffdb_data\temp\gc.xml", r);
 
+
+
+
+
+
+
+
+
+
+			return;
+
+
+
+
+
+
+			// http://www.nfl.com/ajax/scorestrip?season=2018&seasonType=REG&week=1
+
+			var web = new HtmlWeb();
+			HtmlDocument doc = web.Load(url);
+			doc.Save(@"D:\Repos\ffdb_data\temp\gc.xml");
+		}
 
 
 

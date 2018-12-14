@@ -105,6 +105,9 @@ namespace R5.FFDB.Engine
 				
 				.AddScoped<ISourcesFactory, SourcesFactory>()
 
+				.AddScoped<LatestWeekValue>()
+				.AddScoped<IAvailableWeeksResolver, AvailableWeeksResolver>()
+
 				.AddLogging(loggingConfig)
 				.AddScoped<IErrorFileLogger, ErrorFileLogger>()
 				.AddScoped<IDatabaseProvider>(sp => _databaseProvider)

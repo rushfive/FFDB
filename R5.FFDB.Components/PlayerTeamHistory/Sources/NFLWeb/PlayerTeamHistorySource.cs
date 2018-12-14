@@ -91,7 +91,7 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 					remaining--;
 				}
 
-				await Task.Delay(_throttle.Get());
+				await _throttle.DelayAsync();
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace R5.FFDB.Components.PlayerTeamHistory.Sources.NFLWeb
 
 				_logger.LogDebug($"Successfully fetched team history for '{nflId}' season {season}.");
 
-				await Task.Delay(_throttle.Get());
+				await _throttle.DelayAsync();
 			}
 			
 			return result;
