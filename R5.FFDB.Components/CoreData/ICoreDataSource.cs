@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData
 {
-	public interface ISource
+	public interface ICoreDataSource
 	{
-		Task<bool> IsHealthyAsync();
+		string Label { get; }
+
+		// should throw if NOT healthy and be logged
+		Task CheckHealthAsync();
 	}
 }

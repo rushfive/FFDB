@@ -14,16 +14,15 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
-	public interface IPlayerProfileSource : ISource
+	public interface IPlayerProfileSource : ICoreDataSource
 	{
-		List<Core.Models.PlayerProfile> GetAll();
-		Core.Models.PlayerProfile GetPlayerProfile(string nflId);
-		List<Core.Models.PlayerProfile> GetPlayerProfile(List<string> nflIds);
 		Task FetchAndSaveAsync(List<string> playerNflIds);
 	}
 
 	public class PlayerProfileSource : IPlayerProfileSource
 	{
+		public string Label => "Player Profile";
+
 		private ILogger<PlayerProfileSource> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
@@ -43,37 +42,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			_throttle = throttle;
 			_errorFileLogger = errorFileLogger;
 		}
-
-		public List<Core.Models.PlayerProfile> GetAll()
-		{
-			var directory = new DirectoryInfo(_dataPath.Static.PlayerProfile);
-
-			return directory
-				.GetFiles()
-				.Select(f =>
-				{
-					string filePath = f.ToString();
-					PlayerProfileJson json = JsonConvert.DeserializeObject<PlayerProfileJson>(File.ReadAllText(filePath));
-					return PlayerProfileJson.ToCoreEntity(json);
-				})
-				.ToList();
-		}
-
-		public Core.Models.PlayerProfile GetPlayerProfile(string nflId)
-		{
-			string path = _dataPath.Static.PlayerProfile + $"{nflId}.json";
-			PlayerProfileJson playerData = JsonConvert.DeserializeObject<PlayerProfileJson>(File.ReadAllText(path));
-			return PlayerProfileJson.ToCoreEntity(playerData);
-		}
-
-		public List<Core.Models.PlayerProfile> GetPlayerProfile(List<string> nflIds)
-		{
-			return nflIds
-				.Select(id => GetPlayerProfile(id))
-				.ToList();
-		}
-
-		// ensures ALREADY EXISTING players ARENT fetched again
+		
 		public async Task FetchAndSaveAsync(List<string> nflIds)
 		{
 			HashSet<string> existing = GetPlayersWithExistingProfileData();
@@ -220,10 +189,10 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 		//	}
 		//}
 
-		public Task<bool> IsHealthyAsync()
+		public Task CheckHealthAsync()
 		{
-			// todo:
-			return Task.FromResult(true);
+			// Todo:
+			return Task.CompletedTask;
 		}
 	}
 }

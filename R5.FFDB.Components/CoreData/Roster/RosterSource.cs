@@ -11,13 +11,15 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Roster
 {
-	public interface IRosterSource : ISource
+	public interface IRosterSource : ICoreDataSource
 	{
 		Task<List<Core.Models.Roster>> GetAsync(bool fromDisk = false);
 	}
 
 	public class RosterSource : IRosterSource
 	{
+		public string Label => "Roster";
+
 		private ILogger<RosterSource> _logger { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private DataDirectoryPath _dataPath { get; }
@@ -84,10 +86,10 @@ namespace R5.FFDB.Components.CoreData.Roster
 			};
 		}
 
-		public Task<bool> IsHealthyAsync()
+		public Task CheckHealthAsync()
 		{
-			// todo:
-			return Task.FromResult(true);
+			// Todo:
+			return Task.CompletedTask;
 		}
 	}
 }

@@ -12,13 +12,15 @@ using System.Xml.Linq;
 
 namespace R5.FFDB.Components.CoreData.TeamGameHistory
 {
-	public interface ITeamGameHistorySource : ISource
+	public interface ITeamGameHistorySource : ICoreDataSource
 	{
 		Task FetchAndSaveAsync();
 	}
 
 	public class TeamGameHistorySource : ITeamGameHistorySource
 	{
+		public string Label => "Team Game History";
+
 		private ILogger<TeamGameHistorySource> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
@@ -97,7 +99,7 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 
 			foreach (string file in weekGameFiles)
 			{
-				XElement weekGameXml = XElement.Load(file);
+				XElement weekGameXml = XElement.Load(_dataPath.Static.TeamGameHistoryWeekGames + file);
 
 				IEnumerable<string> gameIds = weekGameXml
 					.Elements("gms")
@@ -111,9 +113,10 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 			return result;
 		}
 
-		public Task<bool> IsHealthyAsync()
+		public Task CheckHealthAsync()
 		{
-			throw new NotImplementedException();
+			// Todo:
+			return Task.CompletedTask;
 		}
 	}
 }

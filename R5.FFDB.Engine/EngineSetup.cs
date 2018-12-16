@@ -1,19 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using R5.FFDB.Components;
-using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.CoreData.PlayerProfile;
-using R5.FFDB.Components.CoreData.Roster;
-using R5.FFDB.Components.CoreData.WeekStats;
-using R5.FFDB.Components.ErrorFileLog;
-using R5.FFDB.Components.Http;
-using R5.FFDB.Components.Resolvers;
-using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.Engine.ConfigBuilders;
-using R5.FFDB.Engine.Source;
-using R5.FFDB.Engine.Source.Resolvers;
-using Serilog;
 using System;
 using System.IO;
 
@@ -72,81 +60,19 @@ namespace R5.FFDB.Engine
 
 		public FfdbEngine Create()
 		{
-			ValidateConfigurations();
+			var baseServiceCollection = new EngineBaseServiceCollection();
 
-			var dataPath = new DataDirectoryPath(_rootDataPath);
-
-			WebRequestConfig webRequestConfig = WebRequest.Build();
-			var throttle = new WebRequestThrottle(webRequestConfig.ThrottleMilliseconds, webRequestConfig.RandomizedThrottle);
-
-			LoggingConfig loggingConfig = Logging.Build();
+			ServiceCollection services = baseServiceCollection
+				.SetRootDataPath(_rootDataPath)
+				.AddWebRequestConfig(WebRequest.Build())
+				.AddLoggingConfig(Logging.Build())
+				.AddDatabaseProvider(_databaseProvider)
+				.Create();
 			
-			var services = new ServiceCollection();
-
-			services
-				.AddScoped(sp => webRequestConfig)
-				.AddScoped(sp => dataPath)
-				.AddScoped(sp => throttle)
-				.AddScoped<IWebRequestClient, WebRequestClient>()
-
-				//.AddScoped<IPlayerDataSource, PlayerDataSource>()
-				//.AddScoped<IRosterSource, RosterSource>()
-				//.AddScoped<IWeekStatsSource, WeekStatsSource>()
-				//.AddScoped<IDepthChartSource, DepthChartSource>()
-
-				// scoped or singleton?? being served from a singleton provider
-				.AddScoped<PlayerProfileSource>()
-				.AddScoped<RosterSource>()
-				.AddScoped<WeekStatsSource>()
-
-				.AddScoped<IPlayerDataSourceResolver, PlayerDataSourceResolver>()
-				.AddScoped<IRosterSourceResolver, RosterSourceResolver>()
-				.AddScoped<IWeekStatsSourceResolver, WeekStatsSourceResolver>()
-				
-				.AddScoped<ISourcesFactory, SourcesFactory>()
-
-				.AddScoped<LatestWeekValue>()
-				.AddScoped<IAvailableWeeksResolver, AvailableWeeksResolver>()
-
-				.AddLogging(loggingConfig)
-				.AddScoped<IErrorFileLogger, ErrorFileLogger>()
-				.AddScoped<IDatabaseProvider>(sp => _databaseProvider)
-				.AddScoped<FfdbEngine>();
-
 			return services
+				.AddScoped<FfdbEngine>()
 				.BuildServiceProvider()
 				.GetService<FfdbEngine>();
-		}
-
-		private void ValidateConfigurations()
-		{
-			if (string.IsNullOrWhiteSpace(_rootDataPath))
-			{
-				throw new InvalidOperationException("Root data directory path must be provided.");
-			}
-			if (_databaseProvider == null)
-			{
-				throw new InvalidOperationException("Database provider must be provided.");
-			}
-		}
-	}
-
-	public static class EngineSetupExtensions
-	{
-		public static IServiceCollection AddLogging(this IServiceCollection services, LoggingConfig config)
-		{
-			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.Debug()
-				.WriteTo.Console()
-				.WriteTo.File(
-					config.LogDirectory + ".txt",
-					fileSizeLimitBytes: config.MaxBytes,
-					restrictedToMinimumLevel: config.LogLevel,
-					rollingInterval: config.RollingInterval,
-					rollOnFileSizeLimit: config.RollOnFileSizeLimit)
-				.CreateLogger();
-
-			return services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog());
 		}
 	}
 }

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.WeekStats
 {
-	public interface IWeekStatsSource : ISource
+	public interface IWeekStatsSource : ICoreDataSource
 	{
 		Core.Models.WeekStats GetStats(WeekInfo week);
 		List<Core.Models.WeekStats> GetAll();
@@ -23,6 +23,8 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 
 	public class WeekStatsSource : IWeekStatsSource
 	{
+		public string Label => "Week Stats";
+
 		private ILogger<WeekStatsSource> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
@@ -137,10 +139,10 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			}
 		}
 
-		public Task<bool> IsHealthyAsync()
+		public Task CheckHealthAsync()
 		{
-			// todo:
-			return Task.FromResult(true);
+			// Todo:
+			return Task.CompletedTask;
 		}
 	}
 }

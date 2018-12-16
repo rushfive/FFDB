@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
 using Serilog;
@@ -23,7 +24,15 @@ namespace DevTester
 		public static async Task Main(string[] args)
 		{
 			_serviceProvider = DevTestServiceProvider.Build();
-			
+			_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
+
+			// get GSIS to NFL id mapping
+
+
+			//var teamHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
+			//await teamHistorySource.FetchAndSaveAsync();
+
+
 
 			//var postgresConfig = new PostgresConfig
 			//{

@@ -32,16 +32,16 @@ namespace R5.FFDB.Engine
 	public class FfdbEngine
 	{
 		private ILogger<FfdbEngine> _logger { get; }
-		private ISourcesFactory _sourcesFactory { get; }
+		private SourcesResolver _sourcesResolver { get; }
 		private IDatabaseProvider _databaseProvider { get; }
 
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
-			ISourcesFactory sourcesFactory,
+			SourcesResolver sourcesResolver,
 			IDatabaseProvider databaseProvider)
 		{
 			_logger = logger;
-			_sourcesFactory = sourcesFactory;
+			_sourcesResolver = sourcesResolver;
 			_databaseProvider = databaseProvider;
 		}
 		
@@ -58,7 +58,7 @@ namespace R5.FFDB.Engine
 			// 5. download all rosters to temp
 			// 6. fetch and save player profiles from ROSTERS first, WEEKSTATS next
 
-			Sources sources = await _sourcesFactory.GetAsync();
+			Sources sources = await _sourcesResolver.GetAsync();
 
 			// get all available week stats
 			try
