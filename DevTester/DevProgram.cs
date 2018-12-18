@@ -3,7 +3,17 @@ using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using R5.FFDB.Components;
+using R5.FFDB.Components.CoreData.PlayerProfile;
+using R5.FFDB.Components.CoreData.PlayerProfile.Models;
+using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.CoreData.TeamGameHistory;
+using R5.FFDB.Components.CoreData.TeamGameHistory.Models;
+using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.Mappers;
+using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
 using Serilog;
@@ -25,6 +35,28 @@ namespace DevTester
 		{
 			_serviceProvider = DevTestServiceProvider.Build();
 			_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
+			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
+
+			// redownload all profiles
+			//await UpdatePlayerProfileFilesAsync();
+
+			var weekTeamMap = _serviceProvider.GetRequiredService<PlayerWeekTeamMap>();
+
+			Dictionary<string, Dictionary<WeekInfo, int>> map
+				= Timer.Time<Dictionary<string, Dictionary<WeekInfo, int>>>("build map",
+				() => weekTeamMap.Get(), TimerUnit.Seconds);
+
+			return;
+
+
+
+
+
+
+
+
+
+
 
 			// get GSIS to NFL id mapping
 
@@ -51,6 +83,52 @@ namespace DevTester
 			Console.ReadKey();
 		}
 		
+		// REMOVE all existing files first to ensure updated copies
+		private static async Task UpdatePlayerProfileFilesAsync()
+		{
+			var nflIdsToFetch = new HashSet<string>();
+
+			var weekStatSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
+			await weekStatSource.FetchAndSaveAsync();
+			weekStatSource.GetAll()
+				.SelectMany(s => s.Players)
+				.ToList()
+				.ForEach(p => nflIdsToFetch.Add(p.NflId));
+
+			var rosterSource = _serviceProvider.GetRequiredService<IRosterSource>();
+			List<Roster> rosters = await rosterSource.GetAsync();
+			rosters
+				.SelectMany(r => r.Players)
+				.ToList()
+				.ForEach(p => nflIdsToFetch.Add(p.NflId));
+
+			var playerProfileSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
+			await playerProfileSource.FetchAndSaveAsync(nflIdsToFetch.ToList());
+		}
+
+		private static async Task UpdateAllSourceFilesAsync()
+		{
+			var weekStatsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
+			await weekStatsSource.FetchAndSaveAsync();
+			var ids = weekStatsSource.GetAll()
+				.SelectMany(s => s.Players)
+				.Select(p => p.NflId)
+				.ToList();
+
+
+			var profileSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
+			await profileSource.FetchAndSaveAsync(ids);
+		}
+
+
+
+
+
+
+
+
+
+
 
 
 		private static Task FetchPlayerProfilesFromRostersAsync(bool downloadRosterPages)

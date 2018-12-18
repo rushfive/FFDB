@@ -75,7 +75,7 @@ namespace R5.FFDB.Engine
 				await sources.PlayerProfile.FetchAndSaveAsync(rosterPlayerIds);
 				_logger.LogInformation("Finished fetching player profile data by rosters.");
 
-				await sources.WeekStats.FetchAndSaveWeekStatsAsync();
+				await sources.WeekStats.FetchAndSaveAsync();
 
 				List<WeekStats> weekStats = sources.WeekStats.GetAll();
 

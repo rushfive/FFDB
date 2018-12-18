@@ -13,6 +13,8 @@ namespace R5.FFDB.Components.Mappers
 	{
 		string NflFromGsis(string gsisId);
 		string NflFromEsb(string esbId);
+		bool TryGetNflFromGsis(string gsisId, out string nflId);
+		bool TryGetNflFromEsb(string esbId, out string nflId);
 	}
 	public class PlayerIdMapper : IPlayerIdMapper
 	{
@@ -46,6 +48,34 @@ namespace R5.FFDB.Components.Mappers
 			}
 
 			return nflId;
+		}
+
+		public bool TryGetNflFromGsis(string gsisId, out string nflId)
+		{
+			InitializeMapsIfNotSet();
+
+			if (_mappings.GsisNflIdMap.TryGetValue(gsisId, out string id))
+			{
+				nflId = id;
+				return true;
+			}
+
+			nflId = null;
+			return false;
+		}
+
+		public bool TryGetNflFromEsb(string esbId, out string nflId)
+		{
+			InitializeMapsIfNotSet();
+
+			if (_mappings.EsbNflIdMap.TryGetValue(esbId, out string id))
+			{
+				nflId = id;
+				return true;
+			}
+
+			nflId = null;
+			return false;
 		}
 
 		private void InitializeMapsIfNotSet()

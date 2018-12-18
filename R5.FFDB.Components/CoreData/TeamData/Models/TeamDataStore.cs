@@ -1,27 +1,31 @@
 ﻿using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.Stores
+namespace R5.FFDB.Components.CoreData.TeamData.Models
 {
 	public static class TeamDataStore
 	{
 		private static HashSet<string> _nflIds { get; }
 		private static Dictionary<string, string> _abbreviationShortNameMap { get; }
 		private static Dictionary<string, int> _shortNameIdMap { get; }
+		private static Dictionary<string, int> _abbreviationIdMap { get; }
 
 		static TeamDataStore()
 		{
 			_nflIds = new HashSet<string>();
 			_abbreviationShortNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_shortNameIdMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_abbreviationIdMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 			_teams.ForEach(t =>
 			{
 				_nflIds.Add(t.NflId);
 				_abbreviationShortNameMap[t.Abbreviation] = t.ShortName;
 				_shortNameIdMap[t.ShortName] = t.Id;
+				_abbreviationIdMap[t.Abbreviation] = t.Id;
 			});
 		}
 
@@ -53,6 +57,27 @@ namespace R5.FFDB.Components.Stores
 			}
 
 			return id;
+		}
+
+		public static int GetIdFromAbbreviation(string abbreviation, bool includePriorLookup = false)
+		{
+			if (_abbreviationIdMap.TryGetValue(abbreviation, out int id))
+			{
+				return id;
+			}
+
+			if (!includePriorLookup)
+			{
+				throw new InvalidOperationException($"Failed to find team's id by abbreviation '{abbreviation}'.");
+			}
+
+			Team priorMatch = _teams.SingleOrDefault(t => t.PriorAbbreviations.Contains(abbreviation));
+			if (priorMatch == null)
+			{
+				throw new InvalidOperationException($"Failed to find team's id by abbreviation '{abbreviation}'.");
+			}
+
+			return priorMatch.Id;
 		}
 
 		private static List<Team> _teams = new List<Team>
@@ -175,7 +200,11 @@ namespace R5.FFDB.Components.Stores
 				NflId = "100015",
 				Name = "Jacksonville Jaguars",
 				ShortName = "jaguars",
-				Abbreviation = "JAX"
+				Abbreviation = "JAX",
+				PriorAbbreviations = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+				{
+					"JAC"
+				}
 			},
 			new Team
 			{
@@ -191,7 +220,11 @@ namespace R5.FFDB.Components.Stores
 				NflId = "100017",
 				Name = "Los Angeles Rams",
 				ShortName = "rams",
-				Abbreviation = "LA"
+				Abbreviation = "LA",
+				PriorAbbreviations = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+				{
+					"STL"
+				}
 			},
 			new Team
 			{
@@ -279,7 +312,11 @@ namespace R5.FFDB.Components.Stores
 				NflId = "100028",
 				Name = "Los Angeles Chargers",
 				ShortName = "chargers",
-				Abbreviation = "LAC"
+				Abbreviation = "LAC",
+				PriorAbbreviations = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+				{
+					"SD"
+				}
 			},
 			new Team
 			{

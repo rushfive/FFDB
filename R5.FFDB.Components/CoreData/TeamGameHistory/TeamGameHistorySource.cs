@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.CoreData.TeamGameHistory.Models;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Core.Models;
@@ -26,19 +27,22 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
 		private IAvailableWeeksResolver _availableWeeks { get; }
+		private GameWeekMap _gameWeekMap { get; }
 
 		public TeamGameHistorySource(
 			ILogger<TeamGameHistorySource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
-			IAvailableWeeksResolver availableWeeks)
+			IAvailableWeeksResolver availableWeeks,
+			GameWeekMap gameWeekMap)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_throttle = throttle;
 			_availableWeeks = availableWeeks;
+			_gameWeekMap = gameWeekMap;
 		}
 
 		public async Task FetchAndSaveAsync()
@@ -73,7 +77,9 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 				.GetFileNames(_dataPath.Static.TeamGameHistoryGameStats, excludeExtensions: true)
 				.ToHashSet();
 
-			foreach (string gameId in GetAllAvailableGameIds())
+			List<string> gameIds = _gameWeekMap.Get().Keys.ToList();
+
+			foreach (string gameId in gameIds)
 			{
 				if (existing.Contains(gameId))
 				{
@@ -89,28 +95,6 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 				existing.Add(gameId);
 				await _throttle.DelayAsync();
 			}
-		}
-
-		private List<string> GetAllAvailableGameIds()
-		{
-			var result = new List<string>();
-
-			var weekGameFiles = DirectoryFilesResolver.GetFileNames(_dataPath.Static.TeamGameHistoryWeekGames);
-
-			foreach (string file in weekGameFiles)
-			{
-				XElement weekGameXml = XElement.Load(_dataPath.Static.TeamGameHistoryWeekGames + file);
-
-				IEnumerable<string> gameIds = weekGameXml
-					.Elements("gms")
-					.Single()
-					.Elements("g")
-					.Select(g => g.Attribute("eid").Value);
-
-				result.AddRange(gameIds);
-			}
-
-			return result;
 		}
 
 		public Task CheckHealthAsync()

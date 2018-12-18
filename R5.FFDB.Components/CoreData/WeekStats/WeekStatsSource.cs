@@ -18,7 +18,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 	{
 		Core.Models.WeekStats GetStats(WeekInfo week);
 		List<Core.Models.WeekStats> GetAll();
-		Task FetchAndSaveWeekStatsAsync();
+		Task FetchAndSaveAsync();
 	}
 
 	public class WeekStatsSource : IWeekStatsSource
@@ -72,7 +72,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 				.ToList();
 		}
 
-		public async Task FetchAndSaveWeekStatsAsync()
+		public async Task FetchAndSaveAsync()
 		{
 			WeekInfo latestCompleted = await _latestWeek.GetAsync();
 

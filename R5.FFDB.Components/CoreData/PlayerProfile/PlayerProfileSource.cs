@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using R5.FFDB.Components.CoreData.PlayerProfile.Models;
+using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.ErrorFileLog;
 using R5.FFDB.Components.Http;
-using R5.FFDB.Components.Stores;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -150,6 +150,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 
 			return new PlayerProfileJson
 			{
+				NflId = nflId,
 				FirstName = firstName,
 				LastName = lastName,
 				EsbId = esbId,
