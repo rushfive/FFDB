@@ -1,4 +1,6 @@
-﻿using R5.FFDB.DbProviders.PostgreSql.Models;
+﻿using R5.FFDB.DbProviders.PostgreSql.Attributes;
+using R5.FFDB.DbProviders.PostgreSql.Models;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,18 +18,9 @@ namespace R5.FFDB.DbProviders.PostgreSql
 
 		private static List<Type> _entityTypes = new List<Type>
 		{
-			typeof(TeamSql)
+			typeof(TeamSql), typeof(PlayerSql)
 		};
-
-		//public static string TableName(Type entityType)
-		//{
-		//	if (!_tableNames.TryGetValue(entityType, out string name))
-		//	{
-		//		throw new InvalidOperationException($"Table name doesn't exist for type '{entityType.Name}'.");
-		//	}
-		//	return name;
-		//}
-
+		
 		public static string TableName(Type entityType)
 		{
 			if (!_tableNames.TryGetValue(entityType, out string name))

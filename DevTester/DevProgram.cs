@@ -17,6 +17,7 @@ using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.DbProviders.PostgreSql.Models;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -43,14 +44,19 @@ namespace DevTester
 			//await PostgresTester.InsertTeamsAsync(_serviceProvider);
 
 			var teamSql = new TeamSql();
+			var createTeam = teamSql.CreateTableCommand();
+
+			var playerSql = new PlayerSql();
+			var createPlayer = playerSql.CreateTableCommand();
 
 			//var infos = teamSql.GetColumnInfos();
-			var create = SqlEntityCommandBuilder.CreateTable(typeof(TeamSql));
+			//var create = SqlEntityCommandBuilder.CreateTable(typeof(TeamSql));
+			//var create2 = SqlEntityCommandBuilder.CreateTable(typeof(TeamSql));
 
 			//string tableName = teamSql.TableName();
 
 			//string teamTableName = EntityInfoMap.TableName(typeof(TeamSql));
-			
+
 			var te = "t";
 
 
@@ -120,7 +126,7 @@ namespace DevTester
 
 			Console.ReadKey();
 		}
-		
+
 		// REMOVE all existing files first to ensure updated copies
 		private static async Task UpdatePlayerProfileFilesAsync()
 		{
@@ -197,7 +203,7 @@ namespace DevTester
 				HtmlDocument doc = await web.LoadFromWebAsync(pageUri);
 				doc.Save(filePath);
 			}
-			
+
 
 			// Read
 			string html = File.ReadAllText(filePath);
