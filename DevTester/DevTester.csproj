@@ -11,4 +11,8 @@
 		<ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Helpers\" />
+	</ItemGroup>
+
 </Project>

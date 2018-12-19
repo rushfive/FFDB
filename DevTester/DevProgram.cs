@@ -16,12 +16,14 @@ using R5.FFDB.Components.Mappers;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
+using R5.FFDB.DbProviders.PostgreSql.Models;
 using Serilog;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DevTester
@@ -37,14 +39,50 @@ namespace DevTester
 			_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
 			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
+			//await PostgresTester.SetupTablesAsync(_serviceProvider);
+			//await PostgresTester.InsertTeamsAsync(_serviceProvider);
+
+			var teamSql = new TeamSql();
+
+			//var infos = teamSql.GetColumnInfos();
+			var create = SqlEntityCommandBuilder.CreateTable(typeof(TeamSql));
+
+			//string tableName = teamSql.TableName();
+
+			//string teamTableName = EntityInfoMap.TableName(typeof(TeamSql));
+			
+			var te = "t";
+
+
+
 			// redownload all profiles
 			//await UpdatePlayerProfileFilesAsync();
 
-			var weekTeamMap = _serviceProvider.GetRequiredService<PlayerWeekTeamMap>();
+			//var weekTeamMap = _serviceProvider.GetRequiredService<PlayerWeekTeamMap>();
 
-			Dictionary<string, Dictionary<WeekInfo, int>> map
-				= Timer.Time<Dictionary<string, Dictionary<WeekInfo, int>>>("build map",
-				() => weekTeamMap.Get(), TimerUnit.Seconds);
+			//Dictionary<string, Dictionary<WeekInfo, int>> map
+			//	= Timer.Time<Dictionary<string, Dictionary<WeekInfo, int>>>("build map",
+			//	() => weekTeamMap.Get(), TimerUnit.Seconds);
+
+			//var weekStatsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
+			//HashSet<string> playersFromWeekStats = weekStatsSource.GetAll()
+			//	.SelectMany(s => s.Players)
+			//	.Select(p => p.NflId)
+			//	.ToHashSet();
+
+			//Console.WriteLine($"{playersFromWeekStats.Count} total players from week stats.");
+
+			//int notFound = 0;
+			//foreach(string nflId in playersFromWeekStats)
+			//{
+			//	if (!map.ContainsKey(nflId))
+			//	{
+			//		Console.WriteLine($"Failed to find nfl id '{nflId}' in week team map.");
+			//		notFound++;
+			//	}
+			//}
+
+			//Console.WriteLine($"Failed to find a total of {notFound} players in map.");
 
 			return;
 

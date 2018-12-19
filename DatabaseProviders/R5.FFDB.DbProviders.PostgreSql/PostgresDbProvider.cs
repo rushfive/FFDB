@@ -28,11 +28,11 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		public async Task RunInitialSetupAsync()
 		{
 			await Task.WhenAll(
-				ExecuteCommandAsync(SetupCommands.CreateTeamsTable),
-				ExecuteCommandAsync(SetupCommands.CreatePlayersTable)
+				ExecuteCommandAsync(CreateTableCommands.Teams),
+				ExecuteCommandAsync(CreateTableCommands.Players)
 			);
 
-			await ExecuteCommandAsync(SetupCommands.CreateWeekStatsTable());
+			await ExecuteCommandAsync(CreateTableCommands.WeekStats());
 		}
 
 		

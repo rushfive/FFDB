@@ -15,8 +15,8 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 {
 	public interface IPlayerWeekTeamHistory
 	{
-		int GetTeam(string nflId, int season, int week);
-		int GetTeam(string nflId, WeekInfo week);
+		bool TryGetTeam(string nflId, int season, int week, out int teamId);
+		bool TryGetTeam(string nflId, WeekInfo week, out int teamId);
 	}
 	
 	public class PlayerWeekTeamHistory : IPlayerWeekTeamHistory
@@ -28,26 +28,25 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 			_map = map;
 		}
 
-		public int GetTeam(string nflId, int season, int week)
+		public bool TryGetTeam(string nflId, int season, int week, out int teamId)
 		{
 			var weekInfo = new WeekInfo(season, week);
-			return GetTeam(nflId, weekInfo);
+			return TryGetTeam(nflId, weekInfo, out teamId);
 		}
 
-		public int GetTeam(string nflId, WeekInfo week)
+		public bool TryGetTeam(string nflId, WeekInfo week, out int teamId)
 		{
 			Dictionary<string, Dictionary<WeekInfo, int>> map = _map.Get();
 
-			if (!map.TryGetValue(nflId, out Dictionary<WeekInfo, int> weekMap))
+			if (!map.TryGetValue(nflId, out Dictionary<WeekInfo, int> weekMap)
+				|| !weekMap.TryGetValue(week, out int id))
 			{
-				throw new InvalidOperationException($"Failed to find team history for player '{nflId}'.");
-			}
-			if (!weekMap.TryGetValue(week, out int teamId))
-			{
-				throw new InvalidOperationException($"Failed to find team history for player '{nflId}' ({week.Season}-{week.Week})");
+				teamId = -1;
+				return false;
 			}
 
-			return teamId;
+			teamId = id;
+			return true;
 		}
 	}
 }

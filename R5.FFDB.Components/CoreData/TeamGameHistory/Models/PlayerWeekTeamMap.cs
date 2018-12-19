@@ -36,7 +36,9 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 
 		protected override Dictionary<string, Dictionary<WeekInfo, int>> ResolveValue()
 		{
-			var result = new Dictionary<string, Dictionary<WeekInfo, int>>();
+			int capacity = (DateTime.UtcNow.Year - 2010) * 300;
+			var result = new Dictionary<string, Dictionary<WeekInfo, int>>(
+				PrimeGenerator.StartingAt(capacity));
 
 			Dictionary<string, WeekInfo> gameWeekMap = _gameWeekMap.Get();
 
@@ -77,6 +79,7 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 					if (!_playerIdMapper.TryGetNflFromGsis(gsis, out string nflId))
 					{
 						// todo: file error log?
+						// most likely insignificant players that we dont care about
 						continue;
 					}
 
