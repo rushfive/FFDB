@@ -6,9 +6,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
 	public abstract class SqlEntity
 	{
-		public virtual string CreateTableCommand()
+		public string CreateTableCommand()
 		{
-			return SqlEntityCommandBuilder.CreateTable(this.GetType());
+			return SqlCommandBuilder.Table.Create(this.GetType());
 		}
 	}
 }

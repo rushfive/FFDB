@@ -1,30 +1,11 @@
-﻿using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.PostgreSql.Attributes;
+﻿using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models
+namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
 {
-	public abstract class ColumnInfo
-	{
-		public string Name { get; }
-		public PostgresDataType DataType { get; }
-		public PropertyInfo Property { get;  }
-
-		protected ColumnInfo(
-			string name,
-			PostgresDataType dataType,
-			PropertyInfo property)
-		{
-			Name = name;
-			DataType = dataType;
-			Property = property;
-		}
-	}
-
 	public class PropertyColumnInfo : ColumnInfo
 	{
 		public bool PrimaryKey { get; set; }
@@ -38,7 +19,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models
 		private PropertyColumnInfo(
 			string name,
 			PostgresDataType dataType,
-			PropertyInfo property = null) 
+			PropertyInfo property = null)
 			: base(name, dataType, property)
 		{
 		}
@@ -52,7 +33,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models
 			Type foreignTableType = null;
 			string foreignColumnName = null;
 
-			foreach(Attribute attr in property.GetCustomAttributes())
+			foreach (Attribute attr in property.GetCustomAttributes())
 			{
 				switch (attr)
 				{
@@ -82,28 +63,4 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models
 			};
 		}
 	}
-
-	public class WeekStatColumnInfo : ColumnInfo
-	{
-		public WeekStatType StatType { get; }
-
-		private WeekStatColumnInfo(
-			string name, 
-			WeekStatType statType,
-			PropertyInfo property)
-			: base(name, PostgresDataType.FLOAT8, property)
-		{
-			StatType = statType;
-		}
-
-		public static WeekStatColumnInfo FromProperty(PropertyInfo property)
-		{
-			var attr = property
-				.GetCustomAttributes()
-				.Single(a => a is WeekStatColumnAttribute) as WeekStatColumnAttribute;
-
-			return new WeekStatColumnInfo(attr.Name, attr.StatType, property);
-		}
-	}
-
 }

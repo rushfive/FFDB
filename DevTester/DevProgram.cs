@@ -56,7 +56,7 @@ namespace DevTester
 			var playerTeamMapTblName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
 
 			var weekStatsSql = new WeekStatsSql();
-			//var createweekStats = weekStatsSql.CreateTableCommand();
+			var createweekStats = weekStatsSql.CreateTableCommand();
 			var weekStatsTblName = EntityInfoMap.TableName(typeof(WeekStatsSql));
 
 			//var infos = teamSql.GetColumnInfos();

@@ -1,5 +1,6 @@
 ﻿using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using R5.FFDB.DbProviders.PostgreSql.Models;
+using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

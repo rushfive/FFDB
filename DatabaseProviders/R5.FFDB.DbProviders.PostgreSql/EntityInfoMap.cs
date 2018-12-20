@@ -1,5 +1,7 @@
-﻿using R5.FFDB.DbProviders.PostgreSql.Attributes;
+﻿using R5.FFDB.Core.Models;
+using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using R5.FFDB.DbProviders.PostgreSql.Models;
+using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 	{
 		private static Dictionary<Type, string> _tableNames { get; }
 		private static Dictionary<Type, List<ColumnInfo>> _tableColumnInfos { get; }
+		private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; }
 
 		private static List<Type> _entityTypes = new List<Type>
 		{
@@ -23,7 +26,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			typeof(PlayerTeamMapSql),
 			typeof(WeekStatsSql)
 		};
-		
+
 		public static string TableName(Type entityType)
 		{
 			if (!_tableNames.TryGetValue(entityType, out string name))
@@ -43,6 +46,15 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			return infos;
 		}
 
+		public static PropertyInfo GetPropertyByStat(WeekStatType type)
+		{
+			if (!_weekStatProperty.TryGetValue(type, out PropertyInfo info))
+			{
+				throw new InvalidOperationException($"Failed to find property info mapped to week stat type '{type}'.");
+			}
+			return info;
+		}
+
 		// initialization
 
 		static EntityInfoMap()
@@ -51,6 +63,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			_tableColumnInfos = new Dictionary<Type, List<ColumnInfo>>();
 
 			ResolveMapData();
+			ResolveWeekStatPropertyMappings();
 		}
 
 		private static void ResolveMapData()
@@ -60,6 +73,11 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				_tableNames[t] = GetTableName(t);
 				_tableColumnInfos[t] = GetColumnInfos(t);
 			});
+		}
+
+		private static void ResolveWeekStatPropertyMappings()
+		{
+			throw new NotImplementedException();
 		}
 
 		private static string GetTableName(Type entityType)
