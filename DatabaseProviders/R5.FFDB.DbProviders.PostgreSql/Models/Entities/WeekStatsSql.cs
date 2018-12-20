@@ -220,8 +220,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 			foreach(KeyValuePair<WeekStatType, double> kv in stats)
 			{
 				PropertyInfo property = EntityInfoMap.GetPropertyByStat(kv.Key);
-				// todo set value
+				property.SetValue(result, kv.Value);
 			}
+
+			return result;
 		}
 	}
 }

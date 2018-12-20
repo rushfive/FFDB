@@ -40,6 +40,29 @@ namespace DevTester
 			_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
 			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
+			var weekStatsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
+			var stats = weekStatsSource.GetStats(new WeekInfo(2018, 14));
+
+			var pm = stats.Players.Single(p => p.NflId == "2558125");
+
+			WeekStatsSql sql = WeekStatsSql.FromCoreEntity(Guid.Empty,
+				0, 2018, 14, pm.Stats);
+
+			 var testttt = "test";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			//await PostgresTester.SetupTablesAsync(_serviceProvider);
 			//await PostgresTester.InsertTeamsAsync(_serviceProvider);
 

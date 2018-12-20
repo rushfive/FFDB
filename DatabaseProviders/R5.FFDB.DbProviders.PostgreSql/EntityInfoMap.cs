@@ -15,9 +15,9 @@ namespace R5.FFDB.DbProviders.PostgreSql
 	// so pre-cache everything for better performance
 	public static class EntityInfoMap
 	{
-		private static Dictionary<Type, string> _tableNames { get; }
-		private static Dictionary<Type, List<ColumnInfo>> _tableColumnInfos { get; }
-		private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; }
+		private static Dictionary<Type, string> _tableNames { get; } = new Dictionary<Type, string>();
+		private static Dictionary<Type, List<ColumnInfo>> _tableColumnInfos { get; } = new Dictionary<Type, List<ColumnInfo>>();
+		private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; } = new Dictionary<WeekStatType, PropertyInfo>();
 
 		private static List<Type> _entityTypes = new List<Type>
 		{
@@ -59,11 +59,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 
 		static EntityInfoMap()
 		{
-			_tableNames = new Dictionary<Type, string>();
-			_tableColumnInfos = new Dictionary<Type, List<ColumnInfo>>();
-
 			ResolveMapData();
-			ResolveWeekStatPropertyMappings();
 		}
 
 		private static void ResolveMapData()
@@ -73,11 +69,6 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				_tableNames[t] = GetTableName(t);
 				_tableColumnInfos[t] = GetColumnInfos(t);
 			});
-		}
-
-		private static void ResolveWeekStatPropertyMappings()
-		{
-			throw new NotImplementedException();
 		}
 
 		private static string GetTableName(Type entityType)
@@ -112,9 +103,20 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				throw new InvalidOperationException($"Type '{entityType.Name}' doesn't contain any column attributes.");
 			}
 
-			return columnProperties
-				.Select(ColumnInfoResolver.FromProperty)
-				.ToList();
+			var result = new List<ColumnInfo>();
+
+			foreach (PropertyInfo property in columnProperties)
+			{
+				ColumnInfo info = ColumnInfoResolver.FromProperty(property);
+				result.Add(info);
+
+				if (info is WeekStatColumnInfo weekStatInfo)
+				{
+					_weekStatProperty[weekStatInfo.StatType] = weekStatInfo.Property;
+				}
+			}
+
+			return result;
 		}
 	}
 }
