@@ -6,12 +6,14 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
+	[TableName("players")]
 	public class PlayerSql : SqlEntity
 	{
 		[PrimaryKey]
 		[Column("id", PostgresDataType.UUID)]
 		public Guid Id { get; set; }
 
+		[NotNull]
 		[Column("nfl_id", PostgresDataType.TEXT)]
 		public string NflId { get; set; }
 
@@ -21,6 +23,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("gsis_id", PostgresDataType.TEXT)]
 		public string GsisId { get; set; }
 
+		[NotNull]
 		[Column("first_name", PostgresDataType.TEXT)]
 		public string FirstName { get; set; }
 

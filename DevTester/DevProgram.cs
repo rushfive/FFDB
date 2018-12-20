@@ -45,9 +45,19 @@ namespace DevTester
 
 			var teamSql = new TeamSql();
 			var createTeam = teamSql.CreateTableCommand();
+			var teamTblName = EntityInfoMap.TableName(typeof(TeamSql));
 
 			var playerSql = new PlayerSql();
 			var createPlayer = playerSql.CreateTableCommand();
+			var playerTblName = EntityInfoMap.TableName(typeof(PlayerSql));
+
+			var playerTeamMapSql = new PlayerTeamMapSql();
+			var createPlayerTeamMap = playerTeamMapSql.CreateTableCommand();
+			var playerTeamMapTblName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
+
+			var weekStatsSql = new WeekStatsSql();
+			//var createweekStats = weekStatsSql.CreateTableCommand();
+			var weekStatsTblName = EntityInfoMap.TableName(typeof(WeekStatsSql));
 
 			//var infos = teamSql.GetColumnInfos();
 			//var create = SqlEntityCommandBuilder.CreateTable(typeof(TeamSql));

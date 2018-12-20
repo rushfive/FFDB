@@ -24,7 +24,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			+ "gsis_id TEXT,"
 			+ "first_name TEXT NOT NULL,"
 			+ "last_name TEXT,"
-			+ "position TEXT NOT NULL,"
+			+ "position TEXT,"
 			+ "number INT,"
 			+ "height INT,"
 			+ "weight INT,"

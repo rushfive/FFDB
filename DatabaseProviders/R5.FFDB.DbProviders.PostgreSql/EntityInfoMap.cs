@@ -14,11 +14,14 @@ namespace R5.FFDB.DbProviders.PostgreSql
 	public static class EntityInfoMap
 	{
 		private static Dictionary<Type, string> _tableNames { get; }
-		private static Dictionary<Type, List<TableColumnInfo>> _tableColumnInfos { get; }
+		private static Dictionary<Type, List<ColumnInfo>> _tableColumnInfos { get; }
 
 		private static List<Type> _entityTypes = new List<Type>
 		{
-			typeof(TeamSql), typeof(PlayerSql)
+			typeof(TeamSql),
+			typeof(PlayerSql),
+			typeof(PlayerTeamMapSql),
+			typeof(WeekStatsSql)
 		};
 		
 		public static string TableName(Type entityType)
@@ -31,9 +34,9 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			return name;
 		}
 
-		public static List<TableColumnInfo> ColumnInfos(Type entityType)
+		public static List<ColumnInfo> ColumnInfos(Type entityType)
 		{
-			if (!_tableColumnInfos.TryGetValue(entityType, out List<TableColumnInfo> infos))
+			if (!_tableColumnInfos.TryGetValue(entityType, out List<ColumnInfo> infos))
 			{
 				throw new InvalidOperationException($"Table column infos don't exist for type '{entityType.Name}'.");
 			}
@@ -45,7 +48,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		static EntityInfoMap()
 		{
 			_tableNames = new Dictionary<Type, string>();
-			_tableColumnInfos = new Dictionary<Type, List<TableColumnInfo>>();
+			_tableColumnInfos = new Dictionary<Type, List<ColumnInfo>>();
 
 			ResolveMapData();
 		}
@@ -67,7 +70,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				throw new ArgumentException($"EntityInfoMap should only deal with types deriving from '{typeof(SqlEntity).Name}'.");
 			}
 
-			CustomAttributeData attr = typeof(TeamSql).CustomAttributes
+			CustomAttributeData attr = entityType.CustomAttributes
 				.SingleOrDefault(a => a.AttributeType == typeof(TableNameAttribute));
 
 			if (attr == null)
@@ -78,62 +81,22 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			return (string)attr.ConstructorArguments[0].Value;
 		}
 
-		private static List<TableColumnInfo> GetColumnInfos(Type entityType)
+		private static List<ColumnInfo> GetColumnInfos(Type entityType)
 		{
-			var columnInfos = new List<TableColumnInfo>();
-
-			IEnumerable<PropertyInfo> columnProperties = entityType
+			List<PropertyInfo> columnProperties = entityType
 				.GetProperties()
 				.Where(p => p.GetCustomAttributes()
-							 .Any(a => a.GetType().BaseType == typeof(EntityColumnAttribute)));
+					.Any(a => a.GetType().BaseType == typeof(EntityColumnAttribute)))
+				.ToList();
 
-			//var props = teamSql.GetType().GetProperties();
-			foreach (PropertyInfo property in columnProperties)
+			if (!columnProperties.Any())
 			{
-				var info = new TableColumnInfo
-				{
-					PropertyInfo = property
-				};
-
-				foreach (Attribute a in property.GetCustomAttributes())
-				{
-					switch (a)
-					{
-						case PrimaryKeyAttribute _:
-							info.PrimaryKey = true;
-							break;
-						case NotNullAttribute _:
-							info.NotNull = true;
-							break;
-						case ColumnAttribute column:
-							info.Name = column.Name;
-							info.DataType = column.DataType;
-							break;
-						case ForeignKeyAttribute foreign:
-							info.ForeignTableType = foreign.ForeignTableType;
-							info.ForeignKeyColumn = foreign.ForeignColumnName;
-							break;
-					}
-				}
-
-				columnInfos.Add(info);
+				throw new InvalidOperationException($"Type '{entityType.Name}' doesn't contain any column attributes.");
 			}
 
-			return columnInfos;
+			return columnProperties
+				.Select(ColumnInfoResolver.FromProperty)
+				.ToList();
 		}
-	}
-
-	public class TableColumnInfo
-	{
-		public string Name { get; set; }
-		public PostgresDataType DataType { get; set; }
-		public bool PrimaryKey { get; set; }
-		public bool NotNull { get; set; }
-		public Type ForeignTableType { get; set; }
-		public string ForeignKeyColumn { get; set; }
-		public PropertyInfo PropertyInfo { get; set; }
-
-		public bool HasForeignKeyConstraint =>
-			ForeignTableType != null && !string.IsNullOrWhiteSpace(ForeignKeyColumn);
 	}
 }
