@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.PlayerProfile;
@@ -23,10 +24,12 @@ namespace R5.FFDB.Engine
 {
 	public class EngineBaseServiceCollection
 	{
+		private ServiceCollection _services { get; } = new ServiceCollection();
+
 		private string _rootDataPath { get; set; }
 		private WebRequestConfig _webRequestConfig { get; set; }
 		private LoggingConfig _loggingConfig { get; set; }
-		private IDatabaseProvider _databaseProvider { get; set; }
+		private Func<ILoggerFactory, IDatabaseProvider> _dbProviderFactory { get; set; }
 
 		public ServiceCollection Create()
 		{
@@ -34,7 +37,7 @@ namespace R5.FFDB.Engine
 
 			var services = new ServiceCollection();
 
-			services.AddLogging();
+			services.AddLogging(_loggingConfig);
 			
 			var dataPath = new DataDirectoryPath(_rootDataPath);
 
@@ -51,7 +54,11 @@ namespace R5.FFDB.Engine
 				.AddScoped<PlayerProfiles>()
 				.AddScoped<GameWeekMap>()
 				.AddScoped<PlayerWeekTeamMap>()
-				.AddScoped(sp => _databaseProvider);
+				.AddScoped<IDatabaseProvider>(sp =>
+				{
+					var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+					return _dbProviderFactory(loggerFactory);
+				});
 
 			services
 				.AddScoped<IWebRequestClient, WebRequestClient>()
@@ -81,9 +88,9 @@ namespace R5.FFDB.Engine
 			{
 				throw new InvalidOperationException("Logging config must be provided.");
 			}
-			if (_databaseProvider == null)
+			if (_dbProviderFactory == null)
 			{
-				throw new InvalidOperationException("Database provider must be provided.");
+				throw new InvalidOperationException("Database provider factory must be provided.");
 			}
 		}
 
@@ -105,9 +112,10 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
-		public EngineBaseServiceCollection AddDatabaseProvider(IDatabaseProvider provider)
+		public EngineBaseServiceCollection AddDatabaseProviderFactory(
+			Func<ILoggerFactory, IDatabaseProvider> dbProviderFactory)
 		{
-			_databaseProvider = provider;
+			_dbProviderFactory = dbProviderFactory;
 			return this;
 		}
 	}
@@ -126,7 +134,7 @@ namespace R5.FFDB.Engine
 					rollingInterval: config.RollingInterval,
 					rollOnFileSizeLimit: config.RollOnFileSizeLimit)
 				.CreateLogger();
-
+			
 			return services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog());
 		}
 	}

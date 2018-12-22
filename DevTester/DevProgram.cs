@@ -37,91 +37,22 @@ namespace DevTester
 		public static async Task Main(string[] args)
 		{
 			_serviceProvider = DevTestServiceProvider.Build();
-			_logger = _serviceProvider.GetRequiredService<ILogger<DevProgram>>();
+			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
 			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
-			var weekStatsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
-			var stats = weekStatsSource.GetStats(new WeekInfo(2018, 14));
+			//PostgresTester.OutCreateTableSqlCommands();
+			//PostgresTester.OutputInsertSqlCommandsForTeams(insertMany: true);
 
-			var pm = stats.Players.Single(p => p.NflId == "2558125");
+			//await PostgresTester.TestSetupAsync(_serviceProvider);
 
-			WeekStatsSql sql = WeekStatsSql.FromCoreEntity(Guid.Empty,
-				0, 2018, 14, pm.Stats);
+			//var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
+			//var logger = loggerFactory.CreateLogger("testlogger");
+			//logger.LogInformation("HELLO THERE!");
 
-			 var testttt = "test";
+			var logger = _serviceProvider.GetService<ILoggerFactory>()
+			.CreateLogger<DevProgram>();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-			//await PostgresTester.SetupTablesAsync(_serviceProvider);
-			//await PostgresTester.InsertTeamsAsync(_serviceProvider);
-
-			var teamSql = new TeamSql();
-			var createTeam = teamSql.CreateTableCommand();
-			var teamTblName = EntityInfoMap.TableName(typeof(TeamSql));
-
-			var playerSql = new PlayerSql();
-			var createPlayer = playerSql.CreateTableCommand();
-			var playerTblName = EntityInfoMap.TableName(typeof(PlayerSql));
-
-			var playerTeamMapSql = new PlayerTeamMapSql();
-			var createPlayerTeamMap = playerTeamMapSql.CreateTableCommand();
-			var playerTeamMapTblName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
-
-			var weekStatsSql = new WeekStatsSql();
-			var createweekStats = weekStatsSql.CreateTableCommand();
-			var weekStatsTblName = EntityInfoMap.TableName(typeof(WeekStatsSql));
-
-			//var infos = teamSql.GetColumnInfos();
-			//var create = SqlEntityCommandBuilder.CreateTable(typeof(TeamSql));
-			//var create2 = SqlEntityCommandBuilder.CreateTable(typeof(TeamSql));
-
-			//string tableName = teamSql.TableName();
-
-			//string teamTableName = EntityInfoMap.TableName(typeof(TeamSql));
-
-			var te = "t";
-
-
-
-			// redownload all profiles
-			//await UpdatePlayerProfileFilesAsync();
-
-			//var weekTeamMap = _serviceProvider.GetRequiredService<PlayerWeekTeamMap>();
-
-			//Dictionary<string, Dictionary<WeekInfo, int>> map
-			//	= Timer.Time<Dictionary<string, Dictionary<WeekInfo, int>>>("build map",
-			//	() => weekTeamMap.Get(), TimerUnit.Seconds);
-
-			//var weekStatsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
-			//HashSet<string> playersFromWeekStats = weekStatsSource.GetAll()
-			//	.SelectMany(s => s.Players)
-			//	.Select(p => p.NflId)
-			//	.ToHashSet();
-
-			//Console.WriteLine($"{playersFromWeekStats.Count} total players from week stats.");
-
-			//int notFound = 0;
-			//foreach(string nflId in playersFromWeekStats)
-			//{
-			//	if (!map.ContainsKey(nflId))
-			//	{
-			//		Console.WriteLine($"Failed to find nfl id '{nflId}' in week team map.");
-			//		notFound++;
-			//	}
-			//}
-
-			//Console.WriteLine($"Failed to find a total of {notFound} players in map.");
+			logger.LogInformation("WHATS UP!");
 
 			return;
 

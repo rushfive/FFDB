@@ -58,6 +58,21 @@ namespace R5.FFDB.Engine
 			// 5. download all rosters to temp
 			// 6. fetch and save player profiles from ROSTERS first, WEEKSTATS next
 
+			// config validation already happens during engine setup
+
+			IDatabaseContext dbContext = _databaseProvider.GetContext();
+			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
+
+
+			await dbContext.CreateTablesAsync();
+
+
+
+
+
+
+			// OLD
+
 			Sources sources = await _sourcesResolver.GetAsync();
 
 			// get all available week stats

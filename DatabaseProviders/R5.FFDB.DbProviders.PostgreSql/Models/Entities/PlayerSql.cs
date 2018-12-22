@@ -42,11 +42,15 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("weight", PostgresDataType.INT)]
 		public int Weight { get; set; }
 
-		[Column("date_of_birth", PostgresDataType.TIMESTAMPTZ)]
+		[Column("date_of_birth", PostgresDataType.DATE)]
 		public DateTimeOffset DateOfBirth { get; set; }
 
 		[Column("college", PostgresDataType.TEXT)]
 		public string College { get; set; }
-		
+
+		public override string InsertCommand()
+		{
+			return SqlCommandBuilder.Rows.Insert(this);
+		}
 	}
 }

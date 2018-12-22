@@ -15,6 +15,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models
 		TEXT,
 		INT,
 		TIMESTAMPTZ,
-		FLOAT8
+		FLOAT8,
+		DATE
 	}
 }

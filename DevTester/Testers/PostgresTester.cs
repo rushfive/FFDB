@@ -3,6 +3,8 @@ using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
+using R5.FFDB.DbProviders.PostgreSql.DatabaseContext;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,31 @@ namespace DevTester.Testers
 {
 	internal static class PostgresTester
 	{
+		internal static async Task TestSetupAsync(IServiceProvider serviceProvider)
+		{
+			var dbProvider = serviceProvider.GetRequiredService<IDatabaseProvider>();
+			var dbContext = (PostgresDbContext)dbProvider.GetContext();
+
+			string team = SqlCommandBuilder.Table.Create(typeof(TeamSql));
+			string player = SqlCommandBuilder.Table.Create(typeof(PlayerSql));
+			string playerTeamMap = SqlCommandBuilder.Table.Create(typeof(PlayerTeamMapSql));
+			string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
+
+			await dbContext.ExecuteCommandAsync(team);
+			await dbContext.ExecuteCommandAsync(player);
+			await dbContext.ExecuteCommandAsync(playerTeamMap);
+			await dbContext.ExecuteCommandAsync(weekStats);
+
+			// insert teams
+			IEnumerable<TeamSql> teamSqls = TeamDataStore
+				.GetAll()
+				.Select(TeamSql.FromCoreEntity);
+
+			string insertTeamsSql = SqlCommandBuilder.Rows.InsertMany(teamSqls);
+			await dbContext.ExecuteCommandAsync(insertTeamsSql);
+		}
+
+
 		internal static async Task SetupTablesAsync(IServiceProvider serviceProvider)
 		{
 			var dbProvider = serviceProvider.GetRequiredService<IDatabaseProvider>();
@@ -38,6 +65,54 @@ namespace DevTester.Testers
 			//{
 			//	string sqlCommand = InitialSeedCommands.Team(team);
 			//}
+		}
+
+		internal static void OutCreateTableSqlCommands()
+		{
+			string team = SqlCommandBuilder.Table.Create(typeof(TeamSql));
+			string player = SqlCommandBuilder.Table.Create(typeof(PlayerSql));
+			string playerTeamMap = SqlCommandBuilder.Table.Create(typeof(PlayerTeamMapSql));
+			string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
+
+			string breaks = Environment.NewLine + Environment.NewLine;
+			Console.WriteLine($"{team}{breaks}{player}{breaks}{playerTeamMap}{breaks}{weekStats}");
+		}
+
+		internal static void OutputInsertSqlCommandsForTeams(bool insertMany)
+		{
+			IEnumerable<TeamSql> teamSqls = TeamDataStore
+				.GetAll()
+				.Select(TeamSql.FromCoreEntity);
+
+			if (insertMany)
+			{
+				string sql = SqlCommandBuilder.Rows.InsertMany(teamSqls);
+				Console.WriteLine(sql);
+			}
+			else
+			{
+				foreach (TeamSql team in teamSqls)
+				{
+					string insertSql = team.InsertCommand();
+					Console.WriteLine($"{insertSql}{Environment.NewLine}{Environment.NewLine}");
+				}
+			}
+		}
+
+		internal static void OutputInsertSqlCommandsForPlayers()
+		{
+
+
+
+			IEnumerable<TeamSql> teamSqls = TeamDataStore
+				.GetAll()
+				.Select(TeamSql.FromCoreEntity);
+
+			foreach (TeamSql team in teamSqls)
+			{
+				string insertSql = team.InsertCommand();
+				Console.WriteLine($"{insertSql}{Environment.NewLine}{Environment.NewLine}");
+			}
 		}
 	}
 }

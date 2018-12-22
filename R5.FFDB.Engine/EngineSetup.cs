@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
+using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.Engine.ConfigBuilders;
 using System;
 using System.IO;
@@ -13,7 +14,7 @@ namespace R5.FFDB.Engine
 		public LoggingConfigBuilder Logging { get; } = new LoggingConfigBuilder();
 
 		private string _rootDataPath { get; set; }
-		private IDatabaseProvider _databaseProvider { get; set; }
+		private PostgresConfig _postgresConfig { get; set; }
 
 		public EngineSetup SetRootDataDirectoryPath(string path)
 		{
@@ -37,24 +38,12 @@ namespace R5.FFDB.Engine
 		public EngineSetup UsePostgreSql(PostgresConfig config)
 		{
 			// todo: validate config
-
-			_databaseProvider = new PostgresDbProvider(config);
+			_postgresConfig = config;
 			return this;
 		}
 
 		public EngineSetup UseMongo()
 		{
-			return this;
-		}
-
-		public EngineSetup UseDatabase(IDatabaseProvider provider)
-		{
-			if (provider == null)
-			{
-				throw new ArgumentNullException(nameof(provider), "A valid provider must be given.");
-			}
-
-			_databaseProvider = provider;
 			return this;
 		}
 
@@ -66,7 +55,7 @@ namespace R5.FFDB.Engine
 				.SetRootDataPath(_rootDataPath)
 				.AddWebRequestConfig(WebRequest.Build())
 				.AddLoggingConfig(Logging.Build())
-				.AddDatabaseProvider(_databaseProvider)
+				.AddDatabaseProviderFactory(loggerFactory => new PostgresDbProvider(_postgresConfig, loggerFactory))
 				.Create();
 			
 			return services

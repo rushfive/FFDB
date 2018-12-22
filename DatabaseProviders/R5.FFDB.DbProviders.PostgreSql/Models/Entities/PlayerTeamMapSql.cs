@@ -17,5 +17,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[ForeignKey(typeof(TeamSql), "id")]
 		[Column("team_id", PostgresDataType.INT)]
 		public int TeamId { get; set; }
+
+		public override string InsertCommand()
+		{
+			return SqlCommandBuilder.Rows.Insert(this);
+		}
 	}
 }

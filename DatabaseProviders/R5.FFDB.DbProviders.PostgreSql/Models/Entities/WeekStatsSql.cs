@@ -106,19 +106,19 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[WeekStatColumn("kick_fifty_plus_makes", WeekStatType.Kick_FiftyPlus_Makes)]
 		public double? KickFiftyPlusMakes { get; set; }
 
-		[WeekStatColumn("kick_zero_twenty_makes", WeekStatType.Kick_ZeroTwenty_Misses)]
+		[WeekStatColumn("kick_zero_twenty_misses", WeekStatType.Kick_ZeroTwenty_Misses)]
 		public double? KickZeroTwentyMisses { get; set; }
 
-		[WeekStatColumn("kick_twenty_thirty_makes", WeekStatType.Kick_TwentyThirty_Misses)]
+		[WeekStatColumn("kick_twenty_thirty_misses", WeekStatType.Kick_TwentyThirty_Misses)]
 		public double? KickTwentyThirtyMisses { get; set; }
 
-		[WeekStatColumn("kick_thirty_forty_makes", WeekStatType.Kick_ThirtyForty_Misses)]
+		[WeekStatColumn("kick_thirty_forty_misses", WeekStatType.Kick_ThirtyForty_Misses)]
 		public double? KickThirtyFortyMisses { get; set; }
 
-		[WeekStatColumn("kick_forty_fifty_makes", WeekStatType.Kick_FortyFifty_Misses)]
+		[WeekStatColumn("kick_forty_fifty_misses", WeekStatType.Kick_FortyFifty_Misses)]
 		public double? KickFortyFiftyMisses { get; set; }
 
-		[WeekStatColumn("kick_fifty_plus_makes", WeekStatType.Kick_FiftyPlus_Misses)]
+		[WeekStatColumn("kick_fifty_plus_misses", WeekStatType.Kick_FiftyPlus_Misses)]
 		public double? KickFiftyPlusMisses { get; set; }
 
 		[WeekStatColumn("dst_sacks", WeekStatType.DST_Sacks)]
@@ -224,6 +224,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 			}
 
 			return result;
+		}
+
+		public override string InsertCommand()
+		{
+			return SqlCommandBuilder.Rows.Insert(this);
 		}
 	}
 }

@@ -3,6 +3,7 @@ using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
+using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.Engine;
 using Serilog;
 using Serilog.Events;
@@ -23,7 +24,7 @@ namespace DevTester
 			var webRequestConfig = new WebRequestConfig(1000, null, webRequestHeaders);
 
 			var loggingConfig = new LoggingConfig(
-				@"D:\Repos\ffdb_data\dev_test_logs\.txt",
+				@"D:\Repos\ffdb_data\dev_test_logs\",
 				maxBytes: null,
 				RollingInterval.Day,
 				rollOnFileSizeLimit: false,
@@ -36,7 +37,6 @@ namespace DevTester
 				Username = "ffdb",
 				Password = "welc0me!"
 			};
-			var postgresProvider = new PostgresDbProvider(postgresConfig);
 
 			var baseServiceCollection = new EngineBaseServiceCollection();
 
@@ -44,7 +44,7 @@ namespace DevTester
 				.SetRootDataPath(@"D:\Repos\ffdb_data\")
 				.AddWebRequestConfig(webRequestConfig)
 				.AddLoggingConfig(loggingConfig)
-				.AddDatabaseProvider(postgresProvider)
+				.AddDatabaseProviderFactory(loggerFactory => new PostgresDbProvider(postgresConfig, loggerFactory))
 				.Create();
 
 			return services.BuildServiceProvider();

@@ -14,13 +14,14 @@ namespace R5.FFDB.Database
 	{
 		ITeamDatabaseContext Team { get; }
 		IPlayerDatabaseContext Player { get; }
-		IStatsDatabaseContext Stats { get; }
+		IWeekStatsDatabaseContext Stats { get; }
 
-		Task RunInitialSetupAsync();
+		Task CreateTablesAsync();
 	}
 
 	public interface ITeamDatabaseContext
 	{
+		Task AddTeamsAsync();
 		Task UpdateRostersAsync(List<Roster> rosters);
 		
 		// todo/roadmap
@@ -34,7 +35,7 @@ namespace R5.FFDB.Database
 		Task UpdateAsync(List<PlayerProfile> players, bool overrideExisting);
 	}
 
-	public interface IStatsDatabaseContext
+	public interface IWeekStatsDatabaseContext
 	{
 		Task<List<WeekInfo>> GetExistingWeeksAsync();
 		Task UpdateWeeksAsync(List<WeekStats> stats, bool overrideExisting);
