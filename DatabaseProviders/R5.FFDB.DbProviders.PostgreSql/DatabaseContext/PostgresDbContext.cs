@@ -27,15 +27,36 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task CreateTablesAsync()
 		{
-			string team = SqlCommandBuilder.Table.Create(typeof(TeamSql));
-			string player = SqlCommandBuilder.Table.Create(typeof(PlayerSql));
-			string playerTeamMap = SqlCommandBuilder.Table.Create(typeof(PlayerTeamMapSql));
-			string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
+			var logger = GetLogger<PostgresDbContext>();
+			logger.LogDebug("Starting creation of database tables..");
 
-			await ExecuteCommandAsync(team);
-			await ExecuteCommandAsync(player);
-			await ExecuteCommandAsync(playerTeamMap);
-			await ExecuteCommandAsync(weekStats);
+			await createTableAsync(typeof(TeamSql));
+			await createTableAsync(typeof(PlayerSql));
+			await createTableAsync(typeof(PlayerTeamMapSql));
+			await createTableAsync(typeof(WeekStatsSql));
+
+			//string team = SqlCommandBuilder.Table.Create(typeof(TeamSql));
+			//string player = SqlCommandBuilder.Table.Create(typeof(PlayerSql));
+			//string playerTeamMap = SqlCommandBuilder.Table.Create(typeof(PlayerTeamMapSql));
+			//string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
+
+			//await ExecuteCommandAsync(team);
+			//await ExecuteCommandAsync(player);
+			//await ExecuteCommandAsync(playerTeamMap);
+			//await ExecuteCommandAsync(weekStats);
+
+			// local functions
+			async Task createTableAsync(Type entityType)
+			{
+				string tableName = EntityInfoMap.TableName(entityType);
+				logger.LogDebug($"Creating table '{tableName}'.");
+
+				string sql = SqlCommandBuilder.Table.Create(entityType);
+				logger.LogTrace($"Adding using SQL command:" + Environment.NewLine + sql);
+
+				await ExecuteCommandAsync(sql);
+				logger.LogInformation($"Successfully added table '{tableName}'.");
+			}
 		}
 	}
 }

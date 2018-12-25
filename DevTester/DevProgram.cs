@@ -16,8 +16,10 @@ using R5.FFDB.Components.Mappers;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
+using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
+using R5.FFDB.Engine.Source;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -40,6 +42,7 @@ namespace DevTester
 			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
 			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
+
 			//PostgresTester.OutCreateTableSqlCommands();
 			//PostgresTester.OutputInsertSqlCommandsForTeams(insertMany: true);
 
@@ -49,10 +52,16 @@ namespace DevTester
 			//var logger = loggerFactory.CreateLogger("testlogger");
 			//logger.LogInformation("HELLO THERE!");
 
-			var logger = _serviceProvider.GetService<ILoggerFactory>()
-			.CreateLogger<DevProgram>();
+			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
+			IDatabaseContext dbContext = dbProvider.GetContext();
 
-			logger.LogInformation("WHATS UP!");
+			await dbContext.CreateTablesAsync();
+			await dbContext.Team.AddTeamsAsync();
+
+			var sourcesResolver = _serviceProvider.GetRequiredService<SourcesResolver>();
+			Sources sources = await sourcesResolver.GetAsync();
+
+
 
 			return;
 

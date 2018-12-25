@@ -42,5 +42,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 				}
 			}
 		}
+
+		protected ILogger<T> GetLogger<T>()
+		{
+			return _loggerFactory.CreateLogger<T>();
+		}
 	}
 }

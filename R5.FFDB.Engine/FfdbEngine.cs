@@ -63,13 +63,12 @@ namespace R5.FFDB.Engine
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
 			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
 
-
 			await dbContext.CreateTablesAsync();
 
 
 
 
-
+			return;
 
 			// OLD
 

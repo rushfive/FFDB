@@ -21,14 +21,24 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 		}
 
-		public Task AddTeamsAsync()
+		public async Task AddTeamsAsync()
 		{
+			string tableName = EntityInfoMap.TableName(typeof(TeamSql));
+			ILogger<PostgresTeamDbContext> logger = GetLogger<PostgresTeamDbContext>();
+
+			logger.LogDebug($"Adding NFL team entries to '{tableName}' table.");
+
 			IEnumerable<TeamSql> teamSqls = TeamDataStore
 				.GetAll()
 				.Select(TeamSql.FromCoreEntity);
 
 			string insertTeamsSql = SqlCommandBuilder.Rows.InsertMany(teamSqls);
-			return ExecuteCommandAsync(insertTeamsSql);
+
+			logger.LogTrace("Adding teams using SQL command: " + Environment.NewLine + insertTeamsSql);
+
+			await ExecuteCommandAsync(insertTeamsSql);
+
+			logger.LogInformation($"Successfully added team entries to '{tableName}' table.");
 		}
 
 		public Task UpdateRostersAsync(List<Roster> rosters)

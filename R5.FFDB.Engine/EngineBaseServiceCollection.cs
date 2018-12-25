@@ -16,6 +16,7 @@ using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Database;
 using R5.FFDB.Engine.Source;
 using Serilog;
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -124,8 +125,32 @@ namespace R5.FFDB.Engine
 	{
 		public static IServiceCollection AddLogging(this IServiceCollection services, LoggingConfig config)
 		{
-			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.Debug()
+			var loggerConfig = new LoggerConfiguration();
+			switch (config.LogLevel)
+			{
+				case LogEventLevel.Verbose:
+					loggerConfig = loggerConfig.MinimumLevel.Verbose();
+					break;
+				case LogEventLevel.Debug:
+					loggerConfig = loggerConfig.MinimumLevel.Debug();
+					break;
+				case LogEventLevel.Information:
+					loggerConfig = loggerConfig.MinimumLevel.Information();
+					break;
+				case LogEventLevel.Warning:
+					loggerConfig = loggerConfig.MinimumLevel.Warning();
+					break;
+				case LogEventLevel.Error:
+					loggerConfig = loggerConfig.MinimumLevel.Error();
+					break;
+				case LogEventLevel.Fatal:
+					loggerConfig = loggerConfig.MinimumLevel.Fatal();
+					break;
+				default:
+					throw new ArgumentOutOfRangeException($"'{config.LogLevel}' is an invalid serilog log event level.");
+			}
+			
+			Log.Logger = loggerConfig
 				.WriteTo.Console()
 				.WriteTo.File(
 					config.LogDirectory + ".txt",

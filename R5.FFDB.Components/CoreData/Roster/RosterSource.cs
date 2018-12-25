@@ -36,28 +36,50 @@ namespace R5.FFDB.Components.CoreData.Roster
 
 		public async Task<List<Core.Models.Roster>> GetAsync(bool fromDisk = false)
 		{
+			_logger.LogInformation("Beginning fetching of Team Rosters.");
+
 			var result = new List<Core.Models.Roster>();
 
 			List<Team> teams = TeamDataStore.GetAll();
 
 			foreach(Team team in teams)
 			{
+				_logger.LogDebug($"Fetching roster for team '{team.Abbreviation}'"
+					+ (fromDisk ? " from disk." : "."));
+
 				Core.Models.Roster roster = fromDisk
 					? await GetTeamFromDiskAsync(team)
 					: await GetTeamFromWebAsync(team);
 
 				result.Add(roster);
+
+				_logger.LogDebug($"Successfully fetched roster information for team '{team.Abbreviation}'.");
 			}
 
+			_logger.LogInformation("Successfully fetched Team Roster information.");
 			return result;
 		}
 
 		private async Task<Core.Models.Roster> GetTeamFromWebAsync(Team team)
 		{
 			string uri = Endpoints.Page.TeamRoster(team.ShortName, team.Abbreviation);
-			string html = await _webRequestClient.GetStringAsync(uri);
+			_logger.LogTrace($"Beginning request for team '{team.Abbreviation}' roster page at '{uri}'.");
+
+			string html = null;
+			try
+			{
+				html = await _webRequestClient.GetStringAsync(uri);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to fetch team '{team.Abbreviation}' roster page at '{uri}'.");
+				throw;
+			}
 
 			// always save to disk on web fetch
+			string savePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
+
+			_logger.LogTrace($"Saving team '{team.Abbreviation}' roster page to '{savePath}'.");
 			await File.WriteAllTextAsync(_dataPath.Temp.RosterPages + $"{team.Abbreviation}.html", html);
 
 			return GetForTeam(team, html);
@@ -73,10 +95,14 @@ namespace R5.FFDB.Components.CoreData.Roster
 
 		private Core.Models.Roster GetForTeam(Team team, string pageHtml)
 		{
+			_logger.LogTrace($"Beginning scraping of team '{team.Abbreviation}' roster page.");
+
 			var page = new HtmlDocument();
 			page.LoadHtml(pageHtml);
 
 			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page);
+
+			_logger.LogTrace($"Successfully scraped team '{team.Abbreviation}' roster information.");
 
 			return new Core.Models.Roster
 			{
