@@ -36,13 +36,24 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogTrace("Adding teams using SQL command: " + Environment.NewLine + insertTeamsSql);
 
-			await ExecuteCommandAsync(insertTeamsSql);
+			await ExecuteNonQueryAsync(insertTeamsSql);
 
 			logger.LogInformation($"Successfully added team entries to '{tableName}' table.");
 		}
 
+		// todo: DELETE all first??
 		public Task UpdateRostersAsync(List<Roster> rosters)
 		{
+			string tableName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
+			var logger = GetLogger<PostgresTeamDbContext>();
+
+			logger.LogDebug($"Adding player-team mapping entries to '{tableName}' table.");
+
+
+
+
+			logger.LogInformation($"Successfully added player-team mapping entries to '{tableName}' table.");
+
 			throw new NotImplementedException();
 		}
 	}

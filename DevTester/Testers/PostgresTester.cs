@@ -25,10 +25,10 @@ namespace DevTester.Testers
 			string playerTeamMap = SqlCommandBuilder.Table.Create(typeof(PlayerTeamMapSql));
 			string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
 
-			await dbContext.ExecuteCommandAsync(team);
-			await dbContext.ExecuteCommandAsync(player);
-			await dbContext.ExecuteCommandAsync(playerTeamMap);
-			await dbContext.ExecuteCommandAsync(weekStats);
+			await dbContext.ExecuteNonQueryAsync(team);
+			await dbContext.ExecuteNonQueryAsync(player);
+			await dbContext.ExecuteNonQueryAsync(playerTeamMap);
+			await dbContext.ExecuteNonQueryAsync(weekStats);
 
 			// insert teams
 			IEnumerable<TeamSql> teamSqls = TeamDataStore
@@ -36,7 +36,7 @@ namespace DevTester.Testers
 				.Select(TeamSql.FromCoreEntity);
 
 			string insertTeamsSql = SqlCommandBuilder.Rows.InsertMany(teamSqls);
-			await dbContext.ExecuteCommandAsync(insertTeamsSql);
+			await dbContext.ExecuteNonQueryAsync(insertTeamsSql);
 		}
 
 
@@ -58,7 +58,7 @@ namespace DevTester.Testers
 
 			// "INSERT INTO teams (id, nfl_id, name, abbreviation) VALUES (1, 100001, Atlanta Falcons, ATL)"
 			List<Team> teams = TeamDataStore.GetAll();
-			await dbContext.ExecuteCommandAsync(
+			await dbContext.ExecuteNonQueryAsync(
 				"INSERT INTO teams (id, nfl_id, name, abbreviation) VALUES (1, '100001', 'Atlanta Falcons', 'ATL')");
 
 			//foreach(Team team in TeamDataStore.GetAll())

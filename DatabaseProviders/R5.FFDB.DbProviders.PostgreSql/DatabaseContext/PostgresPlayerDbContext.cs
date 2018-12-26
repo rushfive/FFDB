@@ -64,7 +64,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 				logger.LogTrace($"Inserting batch {i + 1} using SQL command:" + Environment.NewLine + sqlCommand);
 
-				await ExecuteCommandAsync(sqlCommand);
+				await ExecuteNonQueryAsync(sqlCommand);
 			}
 
 			logger.LogInformation($"Successfully added players to the '{tableName}' table.");
