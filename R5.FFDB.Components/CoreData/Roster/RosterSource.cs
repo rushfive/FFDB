@@ -13,7 +13,8 @@ namespace R5.FFDB.Components.CoreData.Roster
 {
 	public interface IRosterSource : ICoreDataSource
 	{
-		Task<List<Core.Models.Roster>> GetAsync(bool fromDisk = false);
+		Task FetchAndSaveAsync();
+		List<Core.Models.Roster> Get();
 	}
 
 	public class RosterSource : IRosterSource
@@ -23,44 +24,39 @@ namespace R5.FFDB.Components.CoreData.Roster
 		private ILogger<RosterSource> _logger { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private DataDirectoryPath _dataPath { get; }
+		private IRosterScraper _scraper { get; }
 
 		public RosterSource(
 			ILogger<RosterSource> logger,
 			IWebRequestClient webRequestClient,
-			DataDirectoryPath dataPath)
+			DataDirectoryPath dataPath,
+			IRosterScraper scraper)
 		{
 			_logger = logger;
 			_webRequestClient = webRequestClient;
 			_dataPath = dataPath;
+			_scraper = scraper;
 		}
 
-		public async Task<List<Core.Models.Roster>> GetAsync(bool fromDisk = false)
+		public async Task FetchAndSaveAsync()
 		{
 			_logger.LogInformation("Beginning fetching of Team Rosters.");
 
-			var result = new List<Core.Models.Roster>();
-
 			List<Team> teams = TeamDataStore.GetAll();
 
-			foreach(Team team in teams)
+			foreach (Team team in teams)
 			{
-				_logger.LogDebug($"Fetching roster for team '{team.Abbreviation}'"
-					+ (fromDisk ? " from disk." : "."));
+				_logger.LogTrace($"Fetching roster page for team '{team.Abbreviation}'.");
 
-				Core.Models.Roster roster = fromDisk
-					? await GetTeamFromDiskAsync(team)
-					: await GetTeamFromWebAsync(team);
-
-				result.Add(roster);
+				await FetchTeamAsync(team);
 
 				_logger.LogDebug($"Successfully fetched roster information for team '{team.Abbreviation}'.");
 			}
 
-			_logger.LogInformation("Successfully fetched Team Roster information.");
-			return result;
+			_logger.LogInformation("Successfully fetched team roster pages from web.");
 		}
 
-		private async Task<Core.Models.Roster> GetTeamFromWebAsync(Team team)
+		private async Task FetchTeamAsync(Team team)
 		{
 			string uri = Endpoints.Page.TeamRoster(team.ShortName, team.Abbreviation);
 			_logger.LogTrace($"Beginning request for team '{team.Abbreviation}' roster page at '{uri}'.");
@@ -78,17 +74,41 @@ namespace R5.FFDB.Components.CoreData.Roster
 
 			// always save to disk on web fetch
 			string savePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
+			
+			await File.WriteAllTextAsync(savePath, html);
 
-			_logger.LogTrace($"Saving team '{team.Abbreviation}' roster page to '{savePath}'.");
-			await File.WriteAllTextAsync(_dataPath.Temp.RosterPages + $"{team.Abbreviation}.html", html);
-
-			return GetForTeam(team, html);
+			_logger.LogTrace($"Successfully saved team '{team.Abbreviation}' roster page to '{savePath}'.");
 		}
 
-		private async Task<Core.Models.Roster> GetTeamFromDiskAsync(Team team)
+		public List<Core.Models.Roster> Get()
+		{
+			_logger.LogInformation("Getting team roster information.");
+
+			var result = new List<Core.Models.Roster>();
+
+			List<Team> teams = TeamDataStore.GetAll();
+
+			foreach(Team team in teams)
+			{
+				_logger.LogTrace($"Getting team roster information for'{team.Abbreviation}.'");
+
+				Core.Models.Roster roster = GetTeam(team);
+
+				result.Add(roster);
+
+				_logger.LogDebug($"Successfully extracted team roster information for '{team.Abbreviation}'.");
+			}
+
+			_logger.LogInformation("Successfully extracted roster information for all teams.");
+			return result;
+		}
+
+		
+
+		private Core.Models.Roster GetTeam(Team team)
 		{
 			string pagePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
-			var pageHtml = await File.ReadAllTextAsync(pagePath);
+			var pageHtml = File.ReadAllText(pagePath);
 
 			return GetForTeam(team, pageHtml);
 		}
@@ -100,7 +120,7 @@ namespace R5.FFDB.Components.CoreData.Roster
 			var page = new HtmlDocument();
 			page.LoadHtml(pageHtml);
 
-			List<RosterPlayer> players = RosterScraper.ExtractPlayers(page);
+			List<RosterPlayer> players = _scraper.ExtractPlayers(page);
 
 			_logger.LogTrace($"Successfully scraped team '{team.Abbreviation}' roster information.");
 

@@ -135,8 +135,9 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				switch (dataType)
 				{
 					case PostgresDataType.UUID:
-					case PostgresDataType.TEXT:
 						return $"'{value}'";
+					case PostgresDataType.TEXT:
+						return $"'{value.ToString().Replace("'", "''")}'";
 					case PostgresDataType.INT:
 					case PostgresDataType.FLOAT8:
 						return value.ToString();

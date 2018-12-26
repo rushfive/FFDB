@@ -42,26 +42,34 @@ namespace DevTester
 			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
 			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
+			//
+			//var playerSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
+			//List<PlayerProfile> players = playerSource.Get();
 
-			//PostgresTester.OutCreateTableSqlCommands();
-			//PostgresTester.OutputInsertSqlCommandsForTeams(insertMany: true);
+			//var invalidPlayers = new List<PlayerProfile>();
+			//foreach (var p in players)
+			//{
+			//	if (p.FirstName.Contains('#')
+			//		|| p.LastName.Contains('#')
+			//		|| p.College.Contains('#'))
+			//	{
+			//		invalidPlayers.Add(p);
+			//	}
+			//}
 
-			//await PostgresTester.TestSetupAsync(_serviceProvider);
-
-			//var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-			//var logger = loggerFactory.CreateLogger("testlogger");
-			//logger.LogInformation("HELLO THERE!");
-
+			//Console.WriteLine($"INVALID nflids: ");
+			//foreach (var invalidP in invalidPlayers)
+			//{
+			//	Console.WriteLine(invalidP.NflId);
+			//	File.Delete(dataPath.Static.PlayerProfile + invalidP.NflId + ".json");
+			//}
+			//
+			
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			IDatabaseContext dbContext = dbProvider.GetContext();
 
-			await dbContext.CreateTablesAsync();
-			await dbContext.Team.AddTeamsAsync();
-
-			var sourcesResolver = _serviceProvider.GetRequiredService<SourcesResolver>();
-			Sources sources = await sourcesResolver.GetAsync();
-
-
+			await InitialSetupTestAsync();
+			//await dbContext.TestInsertWithParamsAsync();
 
 			return;
 
@@ -100,6 +108,61 @@ namespace DevTester
 			Console.ReadKey();
 		}
 
+		// TODO: this will all be copied to the ENGINEs initial setup method
+		//       after done and tested
+		private static async Task InitialSetupTestAsync()
+		{
+			_logger.LogInformation("Running initial setup..");
+
+			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
+			IDatabaseContext dbContext = dbProvider.GetContext();
+			_logger.LogInformation($"Will run using database provider '{dbProvider.GetType().Name}'.");
+
+			await dbContext.CreateTablesAsync();
+			await dbContext.Team.AddTeamsAsync();
+
+			var sourcesResolver = _serviceProvider.GetRequiredService<SourcesResolver>();
+			Sources sources = await sourcesResolver.GetAsync();
+
+			//await sources.Roster.FetchAndSaveAsync();
+			List<Roster> rosters = sources.Roster.Get();
+
+			//await sources.WeekStats.FetchAndSaveAsync();
+			List<WeekStats> weekStats = sources.WeekStats.GetAll();
+
+			_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
+
+			List<string> playerNflIds = rosters
+				.SelectMany(r => r.Players)
+				.Select(p => p.NflId)
+				.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
+				.ToList();
+
+			await sources.PlayerProfile.FetchAndSaveAsync(playerNflIds);
+
+			_logger.LogInformation("Beginning persisting of player profiles to database...");
+
+			List<PlayerProfile> players = sources.PlayerProfile.Get();
+			await dbContext.Player.AddAsync(players, rosters);
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		// REMOVE all existing files first to ensure updated copies
 		private static async Task UpdatePlayerProfileFilesAsync()
 		{
@@ -113,7 +176,7 @@ namespace DevTester
 				.ForEach(p => nflIdsToFetch.Add(p.NflId));
 
 			var rosterSource = _serviceProvider.GetRequiredService<IRosterSource>();
-			List<Roster> rosters = await rosterSource.GetAsync();
+			List<Roster> rosters = rosterSource.Get();
 			rosters
 				.SelectMany(r => r.Players)
 				.ToList()

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
 	// todo: should all be internal
+	// todo: integrate to IOC with logging
 	public static class PlayerProfileScraper
 	{
 		public static (string esbId, string gsisId) ExtractIds(HtmlDocument page)
@@ -94,7 +95,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			HtmlNode collegeParagraph = infoParagraphs[4];
 
 			var spaceSplit = collegeParagraph.InnerText.Trim().Split(" ");
-			return spaceSplit[1];
+			return HtmlEntity.DeEntitize(spaceSplit[1]);
 		}
 
 		public static (string firstName, string lastName) ExtractNames(HtmlDocument page)
@@ -116,7 +117,9 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 				lastName = string.Join(" ", split.Skip(1)).Trim();
 			}
 
-			return (firstName, lastName);
+			return (
+				HtmlEntity.DeEntitize(firstName), 
+				HtmlEntity.DeEntitize(lastName));
 		}
 
 		private static HtmlNodeCollection GetInfoParagraphNodes(HtmlDocument page)

@@ -1,4 +1,5 @@
-﻿using R5.FFDB.DbProviders.PostgreSql.Attributes;
+﻿using R5.FFDB.Components;
+using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using System;
@@ -46,9 +47,9 @@ namespace R5.FFDB.DbProviders.PostgreSql
 						}
 						break;
 					case PostgresDataType.TEXT:
-						if (propertyType != typeof(string) && !propertyType.IsEnum)
+						if (propertyType != typeof(string) && !propertyType.IsEnum && !propertyType.IsNullableEnum())
 						{
-							throw new InvalidOperationException($"Column properties with '{PostgresDataType.TEXT}' data type must have a 'string' type.");
+							throw new InvalidOperationException($"Column properties with '{PostgresDataType.TEXT}' data type must have a 'string' or 'Enum/Enum?' type.");
 						}
 						break;
 					case PostgresDataType.INT:

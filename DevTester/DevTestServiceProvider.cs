@@ -28,7 +28,7 @@ namespace DevTester
 				maxBytes: null,
 				RollingInterval.Day,
 				rollOnFileSizeLimit: false,
-				LogEventLevel.Verbose);
+				LogEventLevel.Debug);
 			
 			var postgresConfig = new PostgresConfig
 			{

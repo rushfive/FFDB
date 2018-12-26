@@ -25,6 +25,22 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			Stats = new PostgresWeekStatsDbContext(getConnection, loggerFactory);
 		}
 
+		public async Task TestInsertWithParamsAsync()
+		{
+			string command = "INSERT INTO players VALUES " +
+				$"('{Guid.NewGuid()}', 'TEST_NFL_ID', 'TEST_ESB_ID', 'TEST_GSIS', "
+				+ $"1, @FirstName, @LastName, 'QB', 33, 55, 66, '1996-01-10', @College)";
+
+			var sqlParams = new List<(string, string)>
+			{
+				("@FirstName", "TestFirstName Hello'McFattyPants"),
+				("@LastName", "TestLastName Last`ConnieWhat"),
+				("@College", "Test O'Donals McVersa-tay`ee")
+			};
+
+			await ExecuteCommandAsync(command, sqlParams);
+		}
+
 		public async Task CreateTablesAsync()
 		{
 			var logger = GetLogger<PostgresDbContext>();
@@ -34,16 +50,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			await createTableAsync(typeof(PlayerSql));
 			await createTableAsync(typeof(PlayerTeamMapSql));
 			await createTableAsync(typeof(WeekStatsSql));
-
-			//string team = SqlCommandBuilder.Table.Create(typeof(TeamSql));
-			//string player = SqlCommandBuilder.Table.Create(typeof(PlayerSql));
-			//string playerTeamMap = SqlCommandBuilder.Table.Create(typeof(PlayerTeamMapSql));
-			//string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
-
-			//await ExecuteCommandAsync(team);
-			//await ExecuteCommandAsync(player);
-			//await ExecuteCommandAsync(playerTeamMap);
-			//await ExecuteCommandAsync(weekStats);
 
 			// local functions
 			async Task createTableAsync(Type entityType)

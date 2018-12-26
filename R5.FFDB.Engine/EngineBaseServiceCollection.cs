@@ -65,6 +65,7 @@ namespace R5.FFDB.Engine
 				.AddScoped<IWebRequestClient, WebRequestClient>()
 				.AddScoped<IPlayerProfileSource, PlayerProfileSource>()
 				.AddScoped<IRosterSource, RosterSource>()
+				.AddScoped<IRosterScraper, RosterScraper>()
 				.AddScoped<IWeekStatsSource, WeekStatsSource>()
 				.AddScoped<ITeamGameHistorySource, TeamGameHistorySource>()
 				.AddScoped<IPlayerWeekTeamHistory, PlayerWeekTeamHistory>()

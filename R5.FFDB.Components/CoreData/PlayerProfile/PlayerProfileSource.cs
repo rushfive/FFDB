@@ -17,6 +17,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 	public interface IPlayerProfileSource : ICoreDataSource
 	{
 		Task FetchAndSaveAsync(List<string> playerNflIds);
+		List<Core.Models.PlayerProfile> Get();
 	}
 
 	public class PlayerProfileSource : IPlayerProfileSource
@@ -161,6 +162,18 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 				DateOfBirth = dateOfBirth.DateTime,
 				College = college
 			};
+		}
+
+		public List<Core.Models.PlayerProfile> Get()
+		{
+			return new DirectoryInfo(_dataPath.Static.PlayerProfile)
+				.GetFiles()
+				.Select(f =>
+				{
+					var json = JsonConvert.DeserializeObject<PlayerProfileJson>(File.ReadAllText(f.ToString()));
+					return PlayerProfileJson.ToCoreEntity(json);
+				})
+				.ToList();
 		}
 
 		//private async Task<NgsContentPlayer> GetNgsContentInfoAsync(string nflId)

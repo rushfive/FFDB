@@ -31,10 +31,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		public string LastName { get; set; }
 
 		[Column("position", PostgresDataType.TEXT)]
-		public Position Position { get; set; }
+		public Position? Position { get; set; }
 
 		[Column("number", PostgresDataType.INT)]
-		public int Number { get; set; }
+		public int? Number { get; set; }
 
 		[Column("height", PostgresDataType.INT)]
 		public int Height { get; set; }
@@ -47,6 +47,26 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 
 		[Column("college", PostgresDataType.TEXT)]
 		public string College { get; set; }
+
+		public static PlayerSql FromCoreEntity(PlayerProfile player,
+			int? number, Position? position)
+		{
+			return new PlayerSql
+			{
+				Id = Guid.NewGuid(),
+				NflId = player.NflId,
+				EsbId = player.EsbId,
+				GsisId = player.GsisId,
+				FirstName = player.FirstName,
+				LastName = player.LastName,
+				Position = position,
+				Number = number,
+				Height = player.Height,
+				Weight = player.Weight,
+				DateOfBirth = player.DateOfBirth,
+				College = player.College
+			};
+		}
 
 		public override string InsertCommand()
 		{

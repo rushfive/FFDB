@@ -27,17 +27,20 @@ namespace DevTester.Testers
 		private IWebRequestClient _webRequestClient { get; }
 		private IPlayerProfileSource _playerProfileSource { get; }
 		private DataDirectoryPath _dataPath { get; }
+		private IRosterScraper _rosterScraper { get; }
 
 		public PlayerProfileTester(
 			ILogger<PlayerProfileTester> logger,
 			IWebRequestClient webRequestClient,
 			IPlayerProfileSource playerProfileSource,
-			DataDirectoryPath dataPath)
+			DataDirectoryPath dataPath,
+			IRosterScraper rosterScraper)
 		{
 			_logger = logger;
 			_webRequestClient = webRequestClient;
 			_playerProfileSource = playerProfileSource;
 			_dataPath = dataPath;
+			_rosterScraper = rosterScraper;
 		}
 
 		public async Task DownloadRosterPagesAsync()
@@ -89,7 +92,7 @@ namespace DevTester.Testers
 				var page = new HtmlDocument();
 				page.LoadHtml(pageHtml);
 
-				List<RosterPlayer> players = RosterScraper.ExtractPlayers(page);
+				List<RosterPlayer> players = _rosterScraper.ExtractPlayers(page);
 
 				rosters.Add(new Roster
 				{

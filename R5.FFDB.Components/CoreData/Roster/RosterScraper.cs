@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -7,15 +8,38 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.Roster
 {
-	public static class RosterScraper
+	public interface IRosterScraper
 	{
-		public static List<RosterPlayer> ExtractPlayers(HtmlDocument page)
+		List<RosterPlayer> ExtractPlayers(HtmlDocument page);
+	}
+
+	public class RosterScraper : IRosterScraper
+	{
+		private ILogger<RosterScraper> _logger { get; }
+
+		public RosterScraper(ILogger<RosterScraper> logger)
+		{
+			_logger = logger;
+		}
+
+		public List<RosterPlayer> ExtractPlayers(HtmlDocument page)
 		{
 			var result = new List<RosterPlayer>();
 
-			HtmlNodeCollection playerRows = page.GetElementbyId("result")
-				?.SelectSingleNode("//tbody")
-				?.SelectNodes("tr");
+			HtmlNodeCollection playerRows = null;
+			try
+			{
+				playerRows = page.GetElementbyId("result")
+					?.SelectSingleNode("//tbody")
+					?.SelectNodes("tr");
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find players table rows.");
+				throw;
+			}
+
+			_logger.LogDebug($"Found {playerRows.Count} player rows to scrape.");
 
 			foreach (HtmlNode r in playerRows)
 			{
@@ -34,80 +58,122 @@ namespace R5.FFDB.Components.CoreData.Roster
 					Position = position,
 					Status = status
 				});
+
+				_logger.LogTrace($"Extracted player '{id}' ({firstName} {lastName}).");
 			}
 
 			return result;
 		}
 
-		private static string ExtractNflId(HtmlNode playerRow)
+		private string ExtractNflId(HtmlNode playerRow)
 		{
-			// "/player/mauricealexander/2550145/profile"
-			string profileUri = playerRow.SelectNodes("td")[1]
-				.ChildNodes
-				.Single(n => n.NodeType == HtmlNodeType.Element)
-				.Attributes["href"]
-				.Value;
+			try
+			{
+				// "/player/mauricealexander/2550145/profile"
+				string profileUri = playerRow.SelectNodes("td")[1]
+					.ChildNodes
+					.Single(n => n.NodeType == HtmlNodeType.Element)
+					.Attributes["href"]
+					.Value;
 
-			string[] slashSplit = profileUri.Split("/");
+				string[] slashSplit = profileUri.Split("/");
 
-			Func<string, bool> isNumericString = s =>
-				!string.IsNullOrWhiteSpace(s) && s.All(char.IsDigit);
+				Func<string, bool> isNumericString = s =>
+					!string.IsNullOrWhiteSpace(s) && s.All(char.IsDigit);
 
-			return slashSplit.First(isNumericString);
+				return slashSplit.First(isNumericString);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to extract NFL Id from a player row.");
+				throw;
+			}
 		}
 
-		private static int? ExtractNumber(HtmlNode playerRow)
+		private int? ExtractNumber(HtmlNode playerRow)
 		{
-			HtmlNodeCollection tdChildNodes = playerRow.SelectNodes("td")[0].ChildNodes;
-
-			if (!tdChildNodes.Any())
+			try
 			{
-				return null;
+				HtmlNodeCollection tdChildNodes = playerRow.SelectNodes("td")[0].ChildNodes;
+
+				if (!tdChildNodes.Any())
+				{
+					return null;
+				}
+
+				string numberText = tdChildNodes.Single().InnerText;
+
+				if (string.IsNullOrWhiteSpace(numberText) || !int.TryParse(numberText, out int number))
+				{
+					return null;
+				}
+
+				return number;
 			}
-
-			string numberText = tdChildNodes.Single().InnerText;
-
-			if (string.IsNullOrWhiteSpace(numberText) || !int.TryParse(numberText, out int number))
+			catch (Exception ex)
 			{
-				return null;
+				_logger.LogError(ex, "Failed to extract player's number from a player row.");
+				throw;
 			}
-
-			return number;
 		}
 
-		private static (string firstName, string lastName) ExtractName(HtmlNode playerRow)
+		private (string firstName, string lastName) ExtractName(HtmlNode playerRow)
 		{
-			HtmlNodeCollection tdChildNodes = playerRow.SelectNodes("td")[1].ChildNodes;
-
-			string fullName = tdChildNodes[1].InnerText;
-
-			string[] commaSplit = fullName.Split(",");
-			if (commaSplit.Length == 1 || commaSplit.Length > 2)
+			try
 			{
-				return (fullName, null);
-			}
+				HtmlNodeCollection tdChildNodes = playerRow.SelectNodes("td")[1].ChildNodes;
 
-			return (commaSplit[1].Trim(), commaSplit[0].Trim());
+				string fullName = tdChildNodes[1].InnerText;
+
+				string[] commaSplit = fullName.Split(",");
+				if (commaSplit.Length == 1 || commaSplit.Length > 2)
+				{
+					return (fullName, null);
+				}
+
+				return (commaSplit[1].Trim(), commaSplit[0].Trim());
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to extract first and last name from a player row.");
+				throw;
+			}
 		}
 
-		private static Position ExtractPosition(HtmlNode playerRow)
+		private Position ExtractPosition(HtmlNode playerRow)
 		{
-			string position = playerRow.SelectNodes("td")[2]
+			try
+			{
+				string position = playerRow.SelectNodes("td")[2]
 				.ChildNodes
 				.Single()
 				.InnerText;
 
-			return Enum.Parse<Position>(position);
+				return Enum.Parse<Position>(position);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to extract position from a player row.");
+				throw;
+			}
 		}
 
-		private static RosterPlayer.RosterStatus ExtractStatus(HtmlNode playerRow)
+		private RosterPlayer.RosterStatus ExtractStatus(HtmlNode playerRow)
 		{
-			string status = playerRow.SelectNodes("td")[3]
+			try
+			{
+				string status = playerRow.SelectNodes("td")[3]
 				.ChildNodes
 				.Single()
 				.InnerText;
 
-			return Enum.Parse<RosterPlayer.RosterStatus>(status);
+				return Enum.Parse<RosterPlayer.RosterStatus>(status);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to extract roster status from a player row.");
+				throw;
+			}
 		}
 	}
 }
