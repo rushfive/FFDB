@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 		[JsonProperty("games")]
 		public Dictionary<string, WeekStatsGameJson> Games { get; set; }
 
-		public static Core.Models.WeekStats ToCoreEntity(WeekStatsJson model)
+		public static Core.Models.WeekStats ToCoreEntity(WeekStatsJson model, WeekInfo week)
 		{
 			var players = new List<Core.Models.PlayerStats>();
 
@@ -67,6 +68,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 
 			return new Core.Models.WeekStats
 			{
+				Week = week,
 				Players = players
 			};
 		}

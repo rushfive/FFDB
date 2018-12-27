@@ -61,7 +61,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 
 			var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
 
-			return WeekStatsJson.ToCoreEntity(json);
+			return WeekStatsJson.ToCoreEntity(json, week);
 		}
 
 		public List<Core.Models.WeekStats> GetAll()

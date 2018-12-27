@@ -125,18 +125,18 @@ namespace DevTester
 			Sources sources = await sourcesResolver.GetAsync();
 
 			//await sources.Roster.FetchAndSaveAsync();
-			List<Roster> rosters = sources.Roster.Get();
+			//List<Roster> rosters = sources.Roster.Get();
 
 			//await sources.WeekStats.FetchAndSaveAsync();
 			List<WeekStats> weekStats = sources.WeekStats.GetAll();
 
 			_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
 
-			List<string> playerNflIds = rosters
-				.SelectMany(r => r.Players)
-				.Select(p => p.NflId)
-				.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
-				.ToList();
+			//List<string> playerNflIds = rosters
+			//	.SelectMany(r => r.Players)
+			//	.Select(p => p.NflId)
+			//	.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
+			//	.ToList();
 
 			//await sources.PlayerProfile.FetchAndSaveAsync(playerNflIds);
 
@@ -150,7 +150,10 @@ namespace DevTester
 			// RESEARCH: should we have entries for all players, with potentially null TEAM id values?
 			//    OR only include entries for players CURRENTLY on a team?
 
-			await dbContext.Team.UpdateRostersAsync(rosters);
+			//await dbContext.Team.UpdateRostersAsync(rosters);
+
+			// TESTING: week stat adds
+			List<WeekStats> orderedWeeks = weekStats.OrderBy(ws => ws.Week).ToList();
 		}
 
 

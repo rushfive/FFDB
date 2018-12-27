@@ -6,6 +6,7 @@ namespace R5.FFDB.Core.Models
 {
 	public class WeekStats
 	{
+		public WeekInfo Week { get; set; }
 		public List<PlayerStats> Players { get; set; }
 	}
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace R5.FFDB.Core.Models
 {
-	public struct WeekInfo
+	public struct WeekInfo : IComparable<WeekInfo>
 	{
 		public int Season { get; }
 		public int Week { get; }
@@ -38,6 +38,28 @@ namespace R5.FFDB.Core.Models
 		public override string ToString()
 		{
 			return $"{Season}-{Week}";
+		}
+
+		public int CompareTo(WeekInfo other)
+		{
+			if (this.Season < other.Season)
+			{
+				return -1;
+			}
+			if (other.Season < this.Season)
+			{
+				return 1;
+			}
+
+			if (this.Week < other.Week)
+			{
+				return -1;
+			}
+			if (other.Week < this.Week)
+			{
+				return 1;
+			}
+			return 0;
 		}
 	}
 }
