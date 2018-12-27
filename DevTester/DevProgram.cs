@@ -68,8 +68,8 @@ namespace DevTester
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			IDatabaseContext dbContext = dbProvider.GetContext();
 
-			//await InitialSetupTestAsync();
-			await dbContext.TestInsertWithParamsAsync();
+			await InitialSetupTestAsync();
+			//await dbContext.TestInsertWithParamsAsync();
 
 			return;
 
@@ -118,8 +118,8 @@ namespace DevTester
 			IDatabaseContext dbContext = dbProvider.GetContext();
 			_logger.LogInformation($"Will run using database provider '{dbProvider.GetType().Name}'.");
 
-			await dbContext.CreateTablesAsync();
-			await dbContext.Team.AddTeamsAsync();
+			//await dbContext.CreateTablesAsync();
+			//await dbContext.Team.AddTeamsAsync();
 
 			var sourcesResolver = _serviceProvider.GetRequiredService<SourcesResolver>();
 			Sources sources = await sourcesResolver.GetAsync();
@@ -138,7 +138,7 @@ namespace DevTester
 				.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
 				.ToList();
 
-			await sources.PlayerProfile.FetchAndSaveAsync(playerNflIds);
+			//await sources.PlayerProfile.FetchAndSaveAsync(playerNflIds);
 
 			_logger.LogInformation("Beginning persisting of player profiles to database..");
 
@@ -150,6 +150,7 @@ namespace DevTester
 			// RESEARCH: should we have entries for all players, with potentially null TEAM id values?
 			//    OR only include entries for players CURRENTLY on a team?
 
+			await dbContext.Team.UpdateRostersAsync(rosters);
 		}
 
 

@@ -40,73 +40,15 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			//	("@LastName", "TestLastName Last`ConnieWhat"),
 			//	("@College", "Test O'Donals McVersa-tay`ee")
 			//};
+			
 
-			//await ExecuteCommandAsync(command, sqlParams);
-
-			//Action<NpgsqlDataReader> cb = reader =>
-			//  {
-			//   while (reader.Read())
-			//   {
-			//	   var str = new StringBuilder();
-			//	   int count = 0;
-
-			//	   while (count < reader.FieldCount)
-			//	   {
-			//		   str.Append(reader.GetName(count) + ": " + reader.GetValue(count));
-
-			//		   if ((count + 1) < reader.FieldCount)
-			//		   {
-			//			   str.Append(", ");
-			//		   }
-
-			//		   count++;
-			//	   }
-
-			//	   Console.WriteLine(str.ToString());
-			//	   Console.WriteLine("====================");
-			//   }
-			//  };
-
-			//Func<NpgsqlDataReader, string> cb2 = reader =>
-			//{
-			//	while (reader.Read())
-			//	{
-			//		var str = new StringBuilder();
-			//		int count = 0;
-
-			//		while (count < reader.FieldCount)
-			//		{
-			//			str.Append(reader.GetName(count) + ": " + reader.GetValue(count));
-
-			//			var valueType = reader.GetValue(count).GetType().Name;
-			//			Console.WriteLine("ValueType: " + valueType);
-
-			//			if ((count + 1) < reader.FieldCount)
-			//			{
-			//				str.Append(", ");
-			//			}
-
-			//			count++;
-			//		}
-
-			//		Console.WriteLine(str.ToString());
-			//		Console.WriteLine("====================");
-
-
-			//	}
-
-			//	return "RETURNED";
-			//};
-
-			//var command = "SELECT * FROM teams";
-			//List<TeamSql> tSqls = await SelectAsEntitiesAsync<TeamSql>(command);
+			var command = "SELECT * FROM teams";
+			List<TeamSql> tSqls = await SelectAsEntitiesAsync<TeamSql>(command);
 
 			var c2 = "SELECT * FROM players";
 			List<PlayerSql> pSqls = await SelectAsEntitiesAsync<PlayerSql>(c2);
 			//List<TeamSql> teamSqls = await ExecuteReaderAsync<List<TeamSql>>(, SelectAsEntitiesAsync<TeamSql>);
-
-			//await ExecuteReaderAsync("SELECT * FROM teams", cb);
-			//string returned = await ExecuteReaderAsync<string>("SELECT * FROM teams", cb2);
+			
 
 		}
 		

@@ -19,13 +19,14 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("team_id", PostgresDataType.INT)]
 		public int TeamId { get; set; }
 
-		//public static PlayerTeamMapSql FromCoreEntity(RosterPlayer player, int teamId)
-		//{
-		//	return new PlayerTeamMapSql
-		//	{
-		//		PlayerId = player
-		//	}
-		//}
+		public static PlayerTeamMapSql ToSqlEntity(Guid playerId, int teamId)
+		{
+			return new PlayerTeamMapSql
+			{
+				PlayerId = playerId,
+				TeamId = teamId
+			};
+		}
 
 		public override string InsertCommand()
 		{

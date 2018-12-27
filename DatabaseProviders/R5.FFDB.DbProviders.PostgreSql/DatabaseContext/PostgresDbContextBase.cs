@@ -91,10 +91,29 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			}
 		}
 
-		public Task<List<TSqlEntity>> SelectAsEntitiesAsync<TSqlEntity>(string sqlCommand)
+		public Task<List<TSqlEntity>> SelectAsEntitiesAsync<TSqlEntity>(string sqlCommand = null)
 			where TSqlEntity : SqlEntity, new()
 		{
+			if (string.IsNullOrWhiteSpace(sqlCommand))
+			{
+				sqlCommand = $"SELECT * FROM {EntityInfoMap.TableName(typeof(TSqlEntity))}";
+			}
+
 			return ExecuteReaderAsync<List<TSqlEntity>>(sqlCommand, SqlEntityMapper.SelectAsEntitiesAsync<TSqlEntity>);
+		}
+
+		public Task ExecuteTransactionWrappedAsync(IEnumerable<string> commands)
+		{
+			string sqlCommand = "BEGIN;" + Environment.NewLine;
+
+			foreach(string command in commands)
+			{
+				sqlCommand += command;
+			}
+
+			sqlCommand += Environment.NewLine + "COMMIT;";
+
+			return ExecuteNonQueryAsync(sqlCommand);
 		}
 
 		protected ILogger<T> GetLogger<T>()
@@ -125,77 +144,14 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 					if (columnMap.TryGetValue(columnName, out ColumnInfo info))
 					{
 						object columnValue = reader.GetValue(i);
-						Type type = info.Property.PropertyType;
 
-						if (type.IsNullable())
+						if (info.Property.PropertyType.IsNullable())
 						{
-							if (columnValue == null || columnValue.GetType() == typeof(DBNull))
-							{
-								info.Property.SetValue(entity, null);
-							}
-							else
-							{
-								if (type.IsNullableEnum())
-								{
-									Type nullableType = Nullable.GetUnderlyingType(type);
-									info.Property.SetValue(entity, Enum.Parse(nullableType, (string)columnValue));
-								}
-								else
-								{
-									object convertedValue = columnValue;
-									switch (info.DataType)
-									{
-										case PostgresDataType.UUID:
-											break;
-										case PostgresDataType.TEXT:
-											break;
-										case PostgresDataType.INT:
-											break;
-										case PostgresDataType.TIMESTAMPTZ:
-											break;
-										case PostgresDataType.FLOAT8:
-											break;
-										case PostgresDataType.DATE:
-											break;
-										default:
-											throw new ArgumentOutOfRangeException(nameof(info.DataType), $"'{info.DataType}' is an invalid '{nameof(PostgresDataType)}'.");
-									}
-
-									info.Property.SetValue(entity, convertedValue);
-								}
-							}
+							SetValueForNullable(entity, columnValue, info);
 						}
 						else
 						{
-							object convertedValue = columnValue;
-							switch (info.DataType)
-							{
-								case PostgresDataType.UUID:
-									break;
-								case PostgresDataType.TEXT:
-									if (type.IsEnum)
-									{
-										convertedValue = Enum.Parse(type, (string)columnValue);
-									}
-									break;
-								case PostgresDataType.INT:
-									break;
-								case PostgresDataType.TIMESTAMPTZ:
-									break;
-								case PostgresDataType.FLOAT8:
-									break;
-								case PostgresDataType.DATE:
-									DateTime dt = (DateTime)columnValue;
-									dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
-
-									DateTimeOffset dtOffset = dt; 
-									convertedValue = dtOffset;
-									break;
-								default:
-									throw new ArgumentOutOfRangeException(nameof(info.DataType), $"'{info.DataType}' is an invalid '{nameof(PostgresDataType)}'.");
-							}
-
-							info.Property.SetValue(entity, convertedValue);
+							SetValueForNonNullable(entity, columnValue, info);
 						}
 					}
 				}
@@ -204,6 +160,58 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			}
 
 			return result;
+		}
+
+		private static void SetValueForNullable(object entity, object columnValue, ColumnInfo info)
+		{
+			if (columnValue == null || columnValue.GetType() == typeof(DBNull))
+			{
+				info.Property.SetValue(entity, null);
+				return;
+			}
+
+			Type type = info.Property.PropertyType;
+
+			if (type.IsNullableEnum())
+			{
+				Type nullableType = Nullable.GetUnderlyingType(type);
+				info.Property.SetValue(entity, Enum.Parse(nullableType, (string)columnValue));
+				return;
+			}
+
+			info.Property.SetValue(entity, columnValue);
+		}
+
+		private static void SetValueForNonNullable(object entity, object columnValue, ColumnInfo info)
+		{
+			Type type = info.Property.PropertyType;
+
+			object convertedValue = columnValue;
+			switch (info.DataType)
+			{
+				case PostgresDataType.TEXT:
+					if (type.IsEnum)
+					{
+						convertedValue = Enum.Parse(type, (string)columnValue);
+					}
+					break;
+				case PostgresDataType.DATE:
+					DateTime dt = (DateTime)columnValue;
+					dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+
+					DateTimeOffset dtOffset = dt;
+					convertedValue = dtOffset;
+					break;
+				case PostgresDataType.UUID:
+				case PostgresDataType.INT:
+				case PostgresDataType.TIMESTAMPTZ:
+				case PostgresDataType.FLOAT8:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(info.DataType), $"'{info.DataType}' is an invalid '{nameof(PostgresDataType)}'.");
+			}
+
+			info.Property.SetValue(entity, convertedValue);
 		}
 	}
 }
