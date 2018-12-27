@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Components.CoreData.TeamGameHistory.Models;
 using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
@@ -30,19 +31,22 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 		private IWebRequestClient _webRequestClient { get; }
 		private IAvailableWeeksResolver _availableWeeks { get; }
 		private LatestWeekValue _latestWeek { get; }
+		private IPlayerWeekTeamHistory _playerWeekTeamHistory { get; }
 
 		public WeekStatsSource(
 			ILogger<WeekStatsSource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			IAvailableWeeksResolver availableWeeks,
-			LatestWeekValue latestWeek)
+			LatestWeekValue latestWeek,
+			IPlayerWeekTeamHistory playerWeekTeamHistory)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_availableWeeks = availableWeeks;
 			_latestWeek = latestWeek;
+			_playerWeekTeamHistory = playerWeekTeamHistory;
 		}
 
 		private static string GetJsonPath(WeekInfo week, string downloadPath)
@@ -61,7 +65,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 
 			var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
 
-			return WeekStatsJson.ToCoreEntity(json, week);
+			return WeekStatsJson.ToCoreEntity(json, week, _playerWeekTeamHistory.GetTeam);
 		}
 
 		public List<Core.Models.WeekStats> GetAll()

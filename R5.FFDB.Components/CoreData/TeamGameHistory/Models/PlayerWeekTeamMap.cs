@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.Mappers;
 using R5.FFDB.Components.Resolvers;
@@ -22,20 +23,25 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 		private DataDirectoryPath _dataPath { get; }
 		private GameWeekMap _gameWeekMap { get; }
 		private IPlayerIdMapper _playerIdMapper { get; }
+		private ILogger<PlayerWeekTeamMap> _logger { get; }
 
 		public PlayerWeekTeamMap(
 			DataDirectoryPath dataPath,
 			GameWeekMap gameWeekMap,
-			IPlayerIdMapper playerIdMapper)
+			IPlayerIdMapper playerIdMapper,
+			ILogger<PlayerWeekTeamMap> logger)
 			: base("Player Week Team Map")
 		{
 			_dataPath = dataPath;
 			_gameWeekMap = gameWeekMap;
 			_playerIdMapper = playerIdMapper;
+			_logger = logger;
 		}
 
 		protected override Dictionary<string, Dictionary<WeekInfo, int>> ResolveValue()
 		{
+			_logger.LogDebug("Resolving player week team mapping information..");
+
 			int capacity = (DateTime.UtcNow.Year - 2010) * 300;
 			var result = new Dictionary<string, Dictionary<WeekInfo, int>>(
 				PrimeGenerator.StartingAt(capacity));
@@ -50,6 +56,7 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 				AddFromGame(gameId, week, result);
 			}
 
+			_logger.LogDebug("Finished resolving player week team mapping information.");
 			return result;
 		}
 

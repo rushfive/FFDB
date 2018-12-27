@@ -30,38 +30,27 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task TestInsertWithParamsAsync()
 		{
-			//string command = "INSERT INTO players VALUES " +
-			//	$"('{Guid.NewGuid()}', 'TEST_NFL_ID', 'TEST_ESB_ID', 'TEST_GSIS', "
-			//	+ $"1, @FirstName, @LastName, 'QB', 33, 55, 66, '1996-01-10', @College)";
-
-			//var sqlParams = new List<(string, string)>
-			//{
-			//	("@FirstName", "TestFirstName Hello'McFattyPants"),
-			//	("@LastName", "TestLastName Last`ConnieWhat"),
-			//	("@College", "Test O'Donals McVersa-tay`ee")
-			//};
-			
-
-			var command = "SELECT * FROM teams";
-			List<TeamSql> tSqls = await SelectAsEntitiesAsync<TeamSql>(command);
-
-			var c2 = "SELECT * FROM players";
-			List<PlayerSql> pSqls = await SelectAsEntitiesAsync<PlayerSql>(c2);
-			//List<TeamSql> teamSqls = await ExecuteReaderAsync<List<TeamSql>>(, SelectAsEntitiesAsync<TeamSql>);
-			
 
 		}
 		
 
-		public async Task CreateTablesAsync()
+		public async Task InitializeAsync()
 		{
 			var logger = GetLogger<PostgresDbContext>();
+
+			logger.LogInformation("Creating postgresql schema 'ffdb'.");
+
+			//await ExecuteNonQueryAsync("CREATE SCHEMA ffdb;");
+
 			logger.LogDebug("Starting creation of database tables..");
 
 			await createTableAsync(typeof(TeamSql));
 			await createTableAsync(typeof(PlayerSql));
 			await createTableAsync(typeof(PlayerTeamMapSql));
 			await createTableAsync(typeof(WeekStatsSql));
+			await createTableAsync(typeof(WeekStatsKickerSql));
+			await createTableAsync(typeof(WeekStatsDstSql));
+			await createTableAsync(typeof(WeekStatsIdpSql));
 
 			// local functions
 			async Task createTableAsync(Type entityType)

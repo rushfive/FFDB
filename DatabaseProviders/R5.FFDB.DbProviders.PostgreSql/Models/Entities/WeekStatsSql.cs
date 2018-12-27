@@ -8,29 +8,9 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
-	[TableName("week_stats")]
-	public class WeekStatsSql : SqlEntity
+	[TableName("ffdb.week_stats")]
+	public class WeekStatsSql : WeekStatsSqlBase
 	{
-		[NotNull]
-		[ForeignKey(typeof(PlayerSql), "id")]
-		[Column("player_id", PostgresDataType.UUID)]
-		public Guid PlayerId { get; set; }
-
-		// Can be null, as safety in case we can't resolve it from sources
-		[ForeignKey(typeof(TeamSql), "id")]
-		[Column("team_id", PostgresDataType.INT)]
-		public int TeamId { get; set; }
-
-		[NotNull]
-		[Column("season", PostgresDataType.INT)]
-		public int Season { get; set; }
-
-		[NotNull]
-		[Column("week", PostgresDataType.INT)]
-		public int Week { get; set; }
-
-		// Stats
-
 		[WeekStatColumn("pass_attempts", WeekStatType.Pass_Attempts)]
 		public double? PassAttempts { get; set; }
 
@@ -85,139 +65,138 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[WeekStatColumn("two_point_conversions", WeekStatType.TwoPointConversions)]
 		public double? TwoPointConversions { get; set; }
 
-		[WeekStatColumn("kick_pat_makes", WeekStatType.Kick_PAT_Makes)]
-		public double? KickPatMakes { get; set; }
+		//[WeekStatColumn("kick_pat_makes", WeekStatType.Kick_PAT_Makes)]
+		//public double? KickPatMakes { get; set; }
 
-		[WeekStatColumn("kick_pat_misses", WeekStatType.Kick_PAT_Misses)]
-		public double? KickPatMisses { get; set; }
+		//[WeekStatColumn("kick_pat_misses", WeekStatType.Kick_PAT_Misses)]
+		//public double? KickPatMisses { get; set; }
 
-		[WeekStatColumn("kick_zero_twenty_makes", WeekStatType.Kick_ZeroTwenty_Makes)]
-		public double? KickZeroTwentyMakes { get; set; }
+		//[WeekStatColumn("kick_zero_twenty_makes", WeekStatType.Kick_ZeroTwenty_Makes)]
+		//public double? KickZeroTwentyMakes { get; set; }
 
-		[WeekStatColumn("kick_twenty_thirty_makes", WeekStatType.Kick_TwentyThirty_Makes)]
-		public double? KickTwentyThirtyMakes { get; set; }
+		//[WeekStatColumn("kick_twenty_thirty_makes", WeekStatType.Kick_TwentyThirty_Makes)]
+		//public double? KickTwentyThirtyMakes { get; set; }
 
-		[WeekStatColumn("kick_thirty_forty_makes", WeekStatType.Kick_ThirtyForty_Makes)]
-		public double? KickThirtyFortyMakes { get; set; }
+		//[WeekStatColumn("kick_thirty_forty_makes", WeekStatType.Kick_ThirtyForty_Makes)]
+		//public double? KickThirtyFortyMakes { get; set; }
 
-		[WeekStatColumn("kick_forty_fifty_makes", WeekStatType.Kick_FortyFifty_Makes)]
-		public double? KickFortyFiftyMakes { get; set; }
+		//[WeekStatColumn("kick_forty_fifty_makes", WeekStatType.Kick_FortyFifty_Makes)]
+		//public double? KickFortyFiftyMakes { get; set; }
 
-		[WeekStatColumn("kick_fifty_plus_makes", WeekStatType.Kick_FiftyPlus_Makes)]
-		public double? KickFiftyPlusMakes { get; set; }
+		//[WeekStatColumn("kick_fifty_plus_makes", WeekStatType.Kick_FiftyPlus_Makes)]
+		//public double? KickFiftyPlusMakes { get; set; }
 
-		[WeekStatColumn("kick_zero_twenty_misses", WeekStatType.Kick_ZeroTwenty_Misses)]
-		public double? KickZeroTwentyMisses { get; set; }
+		//[WeekStatColumn("kick_zero_twenty_misses", WeekStatType.Kick_ZeroTwenty_Misses)]
+		//public double? KickZeroTwentyMisses { get; set; }
 
-		[WeekStatColumn("kick_twenty_thirty_misses", WeekStatType.Kick_TwentyThirty_Misses)]
-		public double? KickTwentyThirtyMisses { get; set; }
+		//[WeekStatColumn("kick_twenty_thirty_misses", WeekStatType.Kick_TwentyThirty_Misses)]
+		//public double? KickTwentyThirtyMisses { get; set; }
 
-		[WeekStatColumn("kick_thirty_forty_misses", WeekStatType.Kick_ThirtyForty_Misses)]
-		public double? KickThirtyFortyMisses { get; set; }
+		//[WeekStatColumn("kick_thirty_forty_misses", WeekStatType.Kick_ThirtyForty_Misses)]
+		//public double? KickThirtyFortyMisses { get; set; }
 
-		[WeekStatColumn("kick_forty_fifty_misses", WeekStatType.Kick_FortyFifty_Misses)]
-		public double? KickFortyFiftyMisses { get; set; }
+		//[WeekStatColumn("kick_forty_fifty_misses", WeekStatType.Kick_FortyFifty_Misses)]
+		//public double? KickFortyFiftyMisses { get; set; }
 
-		[WeekStatColumn("kick_fifty_plus_misses", WeekStatType.Kick_FiftyPlus_Misses)]
-		public double? KickFiftyPlusMisses { get; set; }
+		//[WeekStatColumn("kick_fifty_plus_misses", WeekStatType.Kick_FiftyPlus_Misses)]
+		//public double? KickFiftyPlusMisses { get; set; }
 
-		[WeekStatColumn("dst_sacks", WeekStatType.DST_Sacks)]
-		public double? DstSacks { get; set; }
+		//[WeekStatColumn("dst_sacks", WeekStatType.DST_Sacks)]
+		//public double? DstSacks { get; set; }
 
-		[WeekStatColumn("dst_interceptions", WeekStatType.DST_Interceptions)]
-		public double? DstInterceptions { get; set; }
+		//[WeekStatColumn("dst_interceptions", WeekStatType.DST_Interceptions)]
+		//public double? DstInterceptions { get; set; }
 
-		[WeekStatColumn("dst_fumbles_recovered", WeekStatType.DST_FumblesRecovered)]
-		public double? DstFumblesRecovered { get; set; }
+		//[WeekStatColumn("dst_fumbles_recovered", WeekStatType.DST_FumblesRecovered)]
+		//public double? DstFumblesRecovered { get; set; }
 
-		[WeekStatColumn("dst_fumbles_forced", WeekStatType.DST_FumblesForced)]
-		public double? DstFumblesForced { get; set; }
+		//[WeekStatColumn("dst_fumbles_forced", WeekStatType.DST_FumblesForced)]
+		//public double? DstFumblesForced { get; set; }
 
-		[WeekStatColumn("dst_safeties", WeekStatType.DST_Safeties)]
-		public double? DstSafeties { get; set; }
+		//[WeekStatColumn("dst_safeties", WeekStatType.DST_Safeties)]
+		//public double? DstSafeties { get; set; }
 
-		[WeekStatColumn("dst_touchdowns", WeekStatType.DST_Touchdowns)]
-		public double? DstTouchdowns { get; set; }
+		//[WeekStatColumn("dst_touchdowns", WeekStatType.DST_Touchdowns)]
+		//public double? DstTouchdowns { get; set; }
 
-		[WeekStatColumn("dst_blocked_kicks", WeekStatType.DST_BlockedKicks)]
-		public double? DstBlockedKicks { get; set; }
+		//[WeekStatColumn("dst_blocked_kicks", WeekStatType.DST_BlockedKicks)]
+		//public double? DstBlockedKicks { get; set; }
 
-		[WeekStatColumn("dst_return_yards", WeekStatType.DST_ReturnYards)]
-		public double? DstReturnYards { get; set; }
+		//[WeekStatColumn("dst_return_yards", WeekStatType.DST_ReturnYards)]
+		//public double? DstReturnYards { get; set; }
 
-		[WeekStatColumn("dst_return_touchdowns", WeekStatType.DST_ReturnTouchdowns)]
-		public double? DstReturnTouchdowns { get; set; }
+		//[WeekStatColumn("dst_return_touchdowns", WeekStatType.DST_ReturnTouchdowns)]
+		//public double? DstReturnTouchdowns { get; set; }
 
-		[WeekStatColumn("dst_points_allowed", WeekStatType.DST_PointsAllowed)]
-		public double? DstPointsAllowed { get; set; }
+		//[WeekStatColumn("dst_points_allowed", WeekStatType.DST_PointsAllowed)]
+		//public double? DstPointsAllowed { get; set; }
 
-		[WeekStatColumn("dst_yards_allowed", WeekStatType.DST_YardsAllowed)]
-		public double? DstYardsAllowed { get; set; }
+		//[WeekStatColumn("dst_yards_allowed", WeekStatType.DST_YardsAllowed)]
+		//public double? DstYardsAllowed { get; set; }
 
-		[WeekStatColumn("idp_tackles", WeekStatType.IDP_Tackles)]
-		public double? IdpTackles { get; set; }
+		//[WeekStatColumn("idp_tackles", WeekStatType.IDP_Tackles)]
+		//public double? IdpTackles { get; set; }
 
-		[WeekStatColumn("idp_assisted_tackles", WeekStatType.IDP_AssistedTackles)]
-		public double? IdpAssistedTackles { get; set; }
+		//[WeekStatColumn("idp_assisted_tackles", WeekStatType.IDP_AssistedTackles)]
+		//public double? IdpAssistedTackles { get; set; }
 
-		[WeekStatColumn("idp_sacks", WeekStatType.IDP_Sacks)]
-		public double? IdpSacks { get; set; }
+		//[WeekStatColumn("idp_sacks", WeekStatType.IDP_Sacks)]
+		//public double? IdpSacks { get; set; }
 
-		[WeekStatColumn("idp_interceptions", WeekStatType.IDP_Interceptions)]
-		public double? IdpInterceptions { get; set; }
+		//[WeekStatColumn("idp_interceptions", WeekStatType.IDP_Interceptions)]
+		//public double? IdpInterceptions { get; set; }
 
-		[WeekStatColumn("idp_forced_fumbles", WeekStatType.IDP_ForcedFumbles)]
-		public double? IdpForcedFumbles { get; set; }
+		//[WeekStatColumn("idp_forced_fumbles", WeekStatType.IDP_ForcedFumbles)]
+		//public double? IdpForcedFumbles { get; set; }
 
-		[WeekStatColumn("idp_fumbles_recovered", WeekStatType.IDP_FumblesRecovered)]
-		public double? IdpFumblesRecovered { get; set; }
+		//[WeekStatColumn("idp_fumbles_recovered", WeekStatType.IDP_FumblesRecovered)]
+		//public double? IdpFumblesRecovered { get; set; }
 
-		[WeekStatColumn("idp_interception_touchdowns", WeekStatType.IDP_InterceptionTouchdowns)]
-		public double? IdpInterceptionTouchdowns { get; set; }
+		//[WeekStatColumn("idp_interception_touchdowns", WeekStatType.IDP_InterceptionTouchdowns)]
+		//public double? IdpInterceptionTouchdowns { get; set; }
 
-		[WeekStatColumn("idp_fumble_touchdowns", WeekStatType.IDP_FumbleTouchdowns)]
-		public double? IdpFumbleTouchdowns { get; set; }
+		//[WeekStatColumn("idp_fumble_touchdowns", WeekStatType.IDP_FumbleTouchdowns)]
+		//public double? IdpFumbleTouchdowns { get; set; }
 
-		[WeekStatColumn("idp_blocked_kick_touchdowns", WeekStatType.IDP_BlockedKickTouchdowns)]
-		public double? IdpBlockedKickTouchdowns { get; set; }
+		//[WeekStatColumn("idp_blocked_kick_touchdowns", WeekStatType.IDP_BlockedKickTouchdowns)]
+		//public double? IdpBlockedKickTouchdowns { get; set; }
 
-		[WeekStatColumn("idp_blocked_kicks", WeekStatType.IDP_BlockedKicks)]
-		public double? IdpBlockedKicks { get; set; }
+		//[WeekStatColumn("idp_blocked_kicks", WeekStatType.IDP_BlockedKicks)]
+		//public double? IdpBlockedKicks { get; set; }
 
-		[WeekStatColumn("idp_safeties", WeekStatType.IDP_Safeties)]
-		public double? IdpSafeties { get; set; }
+		//[WeekStatColumn("idp_safeties", WeekStatType.IDP_Safeties)]
+		//public double? IdpSafeties { get; set; }
 
-		[WeekStatColumn("idp_passes_defended", WeekStatType.IDP_PassesDefended)]
-		public double? IdpPassesDefended { get; set; }
+		//[WeekStatColumn("idp_passes_defended", WeekStatType.IDP_PassesDefended)]
+		//public double? IdpPassesDefended { get; set; }
 
-		[WeekStatColumn("idp_interception_return_yards", WeekStatType.IDP_InterceptionReturnYards)]
-		public double? IdpInterceptionReturnYards { get; set; }
+		//[WeekStatColumn("idp_interception_return_yards", WeekStatType.IDP_InterceptionReturnYards)]
+		//public double? IdpInterceptionReturnYards { get; set; }
 
-		[WeekStatColumn("idp_fumble_return_yards", WeekStatType.IDP_FumbleReturnYards)]
-		public double? IdpFumbleReturnYards { get; set; }
+		//[WeekStatColumn("idp_fumble_return_yards", WeekStatType.IDP_FumbleReturnYards)]
+		//public double? IdpFumbleReturnYards { get; set; }
 
-		[WeekStatColumn("idp_tackles_for_loss", WeekStatType.IDP_TacklesForLoss)]
-		public double? IdpTacklesForLoss { get; set; }
+		//[WeekStatColumn("idp_tackles_for_loss", WeekStatType.IDP_TacklesForLoss)]
+		//public double? IdpTacklesForLoss { get; set; }
 
-		[WeekStatColumn("idp_quarterback_hits", WeekStatType.IDP_QuarterBackHits)]
-		public double? IdpQuarterbackHits { get; set; }
+		//[WeekStatColumn("idp_quarterback_hits", WeekStatType.IDP_QuarterBackHits)]
+		//public double? IdpQuarterbackHits { get; set; }
 
-		[WeekStatColumn("idp_sack_yards", WeekStatType.IDP_SackYards)]
-		public double? IdpSackYards { get; set; }
+		//[WeekStatColumn("idp_sack_yards", WeekStatType.IDP_SackYards)]
+		//public double? IdpSackYards { get; set; }
 
-		public static WeekStatsSql FromCoreEntity(
-			Guid playerId, int teamId, int season, int week,
-			Dictionary<WeekStatType, double> stats)
+		public static WeekStatsSql FromCoreEntity(PlayerStats stats, 
+			Guid playerId, WeekInfo week)
 		{
 			var result = new WeekStatsSql
 			{
 				PlayerId = playerId,
-				TeamId = teamId,
-				Season = season,
-				Week = week
+				TeamId = stats.TeamId,
+				Season = week.Season,
+				Week = week.Week
 			};
 
-			foreach(KeyValuePair<WeekStatType, double> kv in stats)
+			foreach (KeyValuePair<WeekStatType, double> kv in stats.Stats)
 			{
 				PropertyInfo property = EntityInfoMap.GetPropertyByStat(kv.Key);
 				property.SetValue(result, kv.Value);
@@ -225,6 +204,27 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 
 			return result;
 		}
+
+		//public static WeekStatsSql FromCoreEntity(
+		//	Guid playerId, int? teamId, int season, int week,
+		//	Dictionary<WeekStatType, double> stats)
+		//{
+		//	var result = new WeekStatsSql
+		//	{
+		//		PlayerId = playerId,
+		//		TeamId = teamId,
+		//		Season = season,
+		//		Week = week
+		//	};
+
+		//	foreach(KeyValuePair<WeekStatType, double> kv in stats)
+		//	{
+		//		PropertyInfo property = EntityInfoMap.GetPropertyByStat(kv.Key);
+		//		property.SetValue(result, kv.Value);
+		//	}
+
+		//	return result;
+		//}
 
 		public override string InsertCommand()
 		{

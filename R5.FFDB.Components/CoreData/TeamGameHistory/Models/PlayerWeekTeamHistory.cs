@@ -15,8 +15,9 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 {
 	public interface IPlayerWeekTeamHistory
 	{
-		bool TryGetTeam(string nflId, int season, int week, out int teamId);
-		bool TryGetTeam(string nflId, WeekInfo week, out int teamId);
+		int? GetTeam(string nflId, WeekInfo week);
+		//bool TryGetTeam(string nflId, int season, int week, out int teamId);
+		//bool TryGetTeam(string nflId, WeekInfo week, out int teamId);
 	}
 	
 	public class PlayerWeekTeamHistory : IPlayerWeekTeamHistory
@@ -28,25 +29,38 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 			_map = map;
 		}
 
-		public bool TryGetTeam(string nflId, int season, int week, out int teamId)
-		{
-			var weekInfo = new WeekInfo(season, week);
-			return TryGetTeam(nflId, weekInfo, out teamId);
-		}
-
-		public bool TryGetTeam(string nflId, WeekInfo week, out int teamId)
+		public int? GetTeam(string nflId, WeekInfo week)
 		{
 			Dictionary<string, Dictionary<WeekInfo, int>> map = _map.Get();
 
 			if (!map.TryGetValue(nflId, out Dictionary<WeekInfo, int> weekMap)
 				|| !weekMap.TryGetValue(week, out int id))
 			{
-				teamId = -1;
-				return false;
+				return null;
 			}
 
-			teamId = id;
-			return true;
+			return id;
 		}
+
+		//public bool TryGetTeam(string nflId, int season, int week, out int teamId)
+		//{
+		//	var weekInfo = new WeekInfo(season, week);
+		//	return TryGetTeam(nflId, weekInfo, out teamId);
+		//}
+
+		//public bool TryGetTeam(string nflId, WeekInfo week, out int teamId)
+		//{
+		//	Dictionary<string, Dictionary<WeekInfo, int>> map = _map.Get();
+
+		//	if (!map.TryGetValue(nflId, out Dictionary<WeekInfo, int> weekMap)
+		//		|| !weekMap.TryGetValue(week, out int id))
+		//	{
+		//		teamId = -1;
+		//		return false;
+		//	}
+
+		//	teamId = id;
+		//	return true;
+		//}
 	}
 }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
-	[TableName("player_team_map")]
+	[TableName("ffdb.player_team_map")]
 	public class PlayerTeamMapSql : SqlEntity
 	{
 		[NotNull]

@@ -16,7 +16,7 @@ namespace R5.FFDB.Database
 		IPlayerDatabaseContext Player { get; }
 		IWeekStatsDatabaseContext Stats { get; }
 		Task TestInsertWithParamsAsync();
-		Task CreateTablesAsync();
+		Task InitializeAsync();
 	}
 
 	public interface ITeamDatabaseContext
@@ -40,7 +40,7 @@ namespace R5.FFDB.Database
 	public interface IWeekStatsDatabaseContext
 	{
 		Task<List<WeekInfo>> GetExistingWeeksAsync();
-		Task UpdateWeeksAsync(List<WeekStats> stats, bool overrideExisting);
+		Task UpdateWeeksAsync(List<WeekStats> stats);
 	}
 
 	// should be a class that configures and returns the 

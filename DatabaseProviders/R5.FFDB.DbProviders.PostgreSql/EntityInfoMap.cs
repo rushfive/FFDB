@@ -24,7 +24,16 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			typeof(TeamSql),
 			typeof(PlayerSql),
 			typeof(PlayerTeamMapSql),
-			typeof(WeekStatsSql)
+			typeof(WeekStatsSql),
+			typeof(WeekStatsKickerSql),
+			typeof(WeekStatsDstSql),
+			typeof(WeekStatsIdpSql)
+		};
+
+		private static HashSet<Type> _baseEntityTypes = new HashSet<Type>
+		{
+			typeof(SqlEntity),
+			typeof(WeekStatsSqlBase)
 		};
 
 		public static string TableName(Type entityType)
@@ -73,7 +82,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 
 		private static string GetTableName(Type entityType)
 		{
-			if (entityType.BaseType != typeof(SqlEntity))
+			if (!_baseEntityTypes.Contains(entityType.BaseType))
 			{
 				// is this too restrictive?
 				throw new ArgumentException($"EntityInfoMap should only deal with types deriving from '{typeof(SqlEntity).Name}'.");

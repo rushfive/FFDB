@@ -14,12 +14,7 @@ namespace R5.FFDB.Core.Models
 	{
 		public string NflId { get; set; }
 		public Dictionary<WeekStatType, double> Stats { get; set; }
-
-		// players dont have values for all stats 
-		public double GetValueFor(WeekStatType type)
-		{
-			return Stats.ContainsKey(type) ? Stats[type] : 0;
-		}
+		public int? TeamId { get; set; }
 	}
 
 	// key "pts" == null means DIDNT play
