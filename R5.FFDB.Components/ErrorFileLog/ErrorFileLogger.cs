@@ -11,11 +11,11 @@ namespace R5.FFDB.Components.ErrorFileLog
 	// todo: better structuring, by categories?
 	public interface IErrorFileLogger
 	{
-		// writing
-		void LogPlayerProfileFetchError(string nflId, Exception exception);
+		//// writing
+		//void LogPlayerProfileFetchError(string nflId, Exception exception);
 
-		// reading
-		List<PlayerProfileFetchError> GetPlayerProfileFetchErrors();
+		//// reading
+		//List<PlayerProfileFetchError> GetPlayerProfileFetchErrors();
 	}
 
 	public class ErrorFileLogger : IErrorFileLogger
@@ -27,37 +27,37 @@ namespace R5.FFDB.Components.ErrorFileLog
 			_dataPath = dataPath;
 		}
 
-		// Writing
-		public void LogPlayerProfileFetchError(string nflId, Exception exception)
-		{
-			var error = new PlayerProfileFetchError
-			{
-				NflId = nflId,
-				DateTime = DateTime.UtcNow,
-				Exception = ErrorFileException.FromException(exception)
-			};
+		//// Writing
+		//public void LogPlayerProfileFetchError(string nflId, Exception exception)
+		//{
+		//	var error = new PlayerProfileFetchError
+		//	{
+		//		NflId = nflId,
+		//		DateTime = DateTime.UtcNow,
+		//		Exception = ErrorFileException.FromException(exception)
+		//	};
 
-			string serializedErrorLog = JsonConvert.SerializeObject(error, Formatting.Indented);
+		//	string serializedErrorLog = JsonConvert.SerializeObject(error, Formatting.Indented);
 
-			string path = _dataPath.Error.PlayerProfileFetch + $"{nflId}.json";
-			File.WriteAllText(path, serializedErrorLog);
-		}
+		//	string path = _dataPath.Error.PlayerProfileFetch + $"{nflId}.json";
+		//	File.WriteAllText(path, serializedErrorLog);
+		//}
 
-		// Reading
-		public List<PlayerProfileFetchError> GetPlayerProfileFetchErrors()
-		{
-			var result = new List<PlayerProfileFetchError>();
+		//// Reading
+		//public List<PlayerProfileFetchError> GetPlayerProfileFetchErrors()
+		//{
+		//	var result = new List<PlayerProfileFetchError>();
 
-			var directory = new DirectoryInfo(_dataPath.Error.PlayerProfileFetch);
-			IEnumerable<string> errorFilePaths = directory.GetFiles().Select(f => f.FullName);
+		//	var directory = new DirectoryInfo(_dataPath.Error.PlayerProfileFetch);
+		//	IEnumerable<string> errorFilePaths = directory.GetFiles().Select(f => f.FullName);
 
-			foreach(string path in errorFilePaths)
-			{
-				PlayerProfileFetchError error = JsonConvert.DeserializeObject<PlayerProfileFetchError>(File.ReadAllText(path));
-				result.Add(error);
-			}
+		//	foreach(string path in errorFilePaths)
+		//	{
+		//		PlayerProfileFetchError error = JsonConvert.DeserializeObject<PlayerProfileFetchError>(File.ReadAllText(path));
+		//		result.Add(error);
+		//	}
 			
-			return result;
-		}
+		//	return result;
+		//}
 	}
 }

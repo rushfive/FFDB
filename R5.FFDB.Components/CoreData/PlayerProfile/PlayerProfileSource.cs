@@ -92,7 +92,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to fetch player profile for '{nflId}': {ex.Message}. Check the player_profile_fetch file error logs for more information.");
-					_errorFileLogger.LogPlayerProfileFetchError(nflId, ex);
+					//_errorFileLogger.LogPlayerProfileFetchError(nflId, ex);
 				}
 				finally
 				{

@@ -12,7 +12,6 @@ namespace R5.FFDB.Components
 		// static data
 		public StaticDataDirectoryPath Static { get; }
 		public TempDataDirectoryPath Temp { get; }
-		public ErrorFileLogDirectoryPath Error { get; }
 		//public string PlayerData => _root + @"player_data\";
 		//public string WeekStats => _root + @"week_stats\";
 
@@ -33,7 +32,6 @@ namespace R5.FFDB.Components
 
 			Static = new StaticDataDirectoryPath(_root);
 			Temp = new TempDataDirectoryPath(_root);
-			Error = new ErrorFileLogDirectoryPath(_root);
 
 			CreateMissing();
 		}
@@ -42,7 +40,6 @@ namespace R5.FFDB.Components
 		{
 			Static.CreateMissing();
 			Temp.CreateMissing();
-			Error.CreateMissing();
 		}
 
 		public class StaticDataDirectoryPath
@@ -80,22 +77,6 @@ namespace R5.FFDB.Components
 			public void CreateMissing()
 			{
 				Directory.CreateDirectory(RosterPages);
-			}
-		}
-
-		public class ErrorFileLogDirectoryPath
-		{
-			private string _root { get; }
-			public string PlayerProfileFetch => _root + @"error_file_logs\player_profile_fetch\";
-
-			public ErrorFileLogDirectoryPath(string rootPath)
-			{
-				_root = rootPath;
-			}
-
-			public void CreateMissing()
-			{
-				Directory.CreateDirectory(PlayerProfileFetch);
 			}
 		}
 	}

@@ -35,6 +35,7 @@ namespace R5.FFDB.Core.Models
 		Receive_Catches = 20, // targets?
 		Receive_Yards = 21,
 		Receive_Touchdowns = 22,
+		// Misc
 		Return_Yards = 27,
 		Return_Touchdowns = 28,
 		Fumble_Recover_Touchdowns = 29, // single player, eg mike evans week 12
