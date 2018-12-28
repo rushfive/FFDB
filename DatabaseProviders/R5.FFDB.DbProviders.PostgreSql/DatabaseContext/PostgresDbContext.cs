@@ -40,7 +40,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogInformation("Creating postgresql schema 'ffdb'.");
 
-			//await ExecuteNonQueryAsync("CREATE SCHEMA ffdb;");
+			await ExecuteNonQueryAsync("CREATE SCHEMA ffdb;");
 
 			logger.LogDebug("Starting creation of database tables..");
 

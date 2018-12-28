@@ -67,10 +67,5 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				College = player.College
 			};
 		}
-
-		public override string InsertCommand()
-		{
-			return SqlCommandBuilder.Rows.Insert(this);
-		}
 	}
 }

@@ -80,23 +80,23 @@ namespace DevTester.Testers
 
 		internal static void OutputInsertSqlCommandsForTeams(bool insertMany)
 		{
-			IEnumerable<TeamSql> teamSqls = TeamDataStore
-				.GetAll()
-				.Select(TeamSql.FromCoreEntity);
+			//IEnumerable<TeamSql> teamSqls = TeamDataStore
+			//	.GetAll()
+			//	.Select(TeamSql.FromCoreEntity);
 
-			if (insertMany)
-			{
-				string sql = SqlCommandBuilder.Rows.InsertMany(teamSqls);
-				Console.WriteLine(sql);
-			}
-			else
-			{
-				foreach (TeamSql team in teamSqls)
-				{
-					string insertSql = team.InsertCommand();
-					Console.WriteLine($"{insertSql}{Environment.NewLine}{Environment.NewLine}");
-				}
-			}
+			//if (insertMany)
+			//{
+			//	string sql = SqlCommandBuilder.Rows.InsertMany(teamSqls);
+			//	Console.WriteLine(sql);
+			//}
+			//else
+			//{
+			//	foreach (TeamSql team in teamSqls)
+			//	{
+			//		string insertSql = team.InsertCommand();
+			//		Console.WriteLine($"{insertSql}{Environment.NewLine}{Environment.NewLine}");
+			//	}
+			//}
 		}
 
 		internal static void OutputInsertSqlCommandsForPlayers()
@@ -104,15 +104,15 @@ namespace DevTester.Testers
 
 
 
-			IEnumerable<TeamSql> teamSqls = TeamDataStore
-				.GetAll()
-				.Select(TeamSql.FromCoreEntity);
+			//IEnumerable<TeamSql> teamSqls = TeamDataStore
+			//	.GetAll()
+			//	.Select(TeamSql.FromCoreEntity);
 
-			foreach (TeamSql team in teamSqls)
-			{
-				string insertSql = team.InsertCommand();
-				Console.WriteLine($"{insertSql}{Environment.NewLine}{Environment.NewLine}");
-			}
+			//foreach (TeamSql team in teamSqls)
+			//{
+			//	string insertSql = team.InsertCommand();
+			//	Console.WriteLine($"{insertSql}{Environment.NewLine}{Environment.NewLine}");
+			//}
 		}
 	}
 }

@@ -7,8 +7,26 @@ using System.Text;
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
 	[TableName("ffdb.week_stats_idp")]
-	public class WeekStatsIdpSql : WeekStatsSqlBase
+	public class WeekStatsIdpSql : WeekStatsPlayerSqlBase
 	{
+		[NotNull]
+		[ForeignKey(typeof(PlayerSql), "id")]
+		[Column("player_id", PostgresDataType.UUID)]
+		public override Guid PlayerId { get; set; }
+
+		// Can be null, as safety in case we can't resolve it from sources
+		[ForeignKey(typeof(TeamSql), "id")]
+		[Column("team_id", PostgresDataType.INT)]
+		public override int? TeamId { get; set; }
+
+		[NotNull]
+		[Column("season", PostgresDataType.INT)]
+		public override int Season { get; set; }
+
+		[NotNull]
+		[Column("week", PostgresDataType.INT)]
+		public override int Week { get; set; }
+
 		[WeekStatColumn("tackles", WeekStatType.IDP_Tackles)]
 		public double? Tackles { get; set; }
 
@@ -59,10 +77,5 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 
 		[WeekStatColumn("sack_yards", WeekStatType.IDP_SackYards)]
 		public double? SackYards { get; set; }
-
-		public override string InsertCommand()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

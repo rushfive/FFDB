@@ -33,7 +33,8 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		private static HashSet<Type> _baseEntityTypes = new HashSet<Type>
 		{
 			typeof(SqlEntity),
-			typeof(WeekStatsSqlBase)
+			typeof(WeekStatsSqlBase),
+			typeof(WeekStatsPlayerSqlBase)
 		};
 
 		public static string TableName(Type entityType)

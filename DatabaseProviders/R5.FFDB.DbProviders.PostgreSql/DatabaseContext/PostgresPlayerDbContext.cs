@@ -53,21 +53,28 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 					+ $"Will use '{tableName}' table id '{entitySql.Id}'.");
 			}
 
-			List<List<PlayerSql>> batches = Batch(playerSqls, insertBatchCount);
+			string sqlCommand = SqlCommandBuilder.Rows.InsertMany(playerSqls);
 
-			logger.LogInformation($"Adding {playerSqls.Count} player entries to '{tableName} table in batches of {insertBatchCount} "
-				+ $"(total insert commands: {batches.Count})");
-
-			for (int i = 0; i < batches.Count; i++)
-			{
-				var sqlCommand = SqlCommandBuilder.Rows.InsertMany(batches[i]);
-
-				logger.LogTrace($"Inserting batch {i + 1} using SQL command:" + Environment.NewLine + sqlCommand);
-
-				await ExecuteNonQueryAsync(sqlCommand);
-			}
+			logger.LogTrace($"Inserting players using SQL command:" + Environment.NewLine + sqlCommand);
+			await ExecuteNonQueryAsync(sqlCommand);
 
 			logger.LogInformation($"Successfully added players to the '{tableName}' table.");
+
+			//List<List<PlayerSql>> batches = Batch(playerSqls, insertBatchCount);
+
+			//logger.LogInformation($"Adding {playerSqls.Count} player entries to '{tableName} table in batches of {insertBatchCount} "
+			//	+ $"(total insert commands: {batches.Count})");
+
+			//for (int i = 0; i < batches.Count; i++)
+			//{
+			//	var sqlCommand = SqlCommandBuilder.Rows.InsertMany(batches[i]);
+
+			//	logger.LogTrace($"Inserting batch {i + 1} using SQL command:" + Environment.NewLine + sqlCommand);
+
+			//	await ExecuteNonQueryAsync(sqlCommand);
+			//}
+
+			//logger.LogInformation($"Successfully added players to the '{tableName}' table.");
 		}
 
 		// todo: move to shared/common

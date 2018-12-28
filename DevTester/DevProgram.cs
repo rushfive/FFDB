@@ -64,6 +64,9 @@ namespace DevTester
 			//	File.Delete(dataPath.Static.PlayerProfile + invalidP.NflId + ".json");
 			//}
 			//
+
+			var teamGameHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
+			await teamGameHistorySource.FetchAndSaveAsync();
 			
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			IDatabaseContext dbContext = dbProvider.GetContext();
@@ -125,12 +128,14 @@ namespace DevTester
 			Sources sources = await sourcesResolver.GetAsync();
 
 			//await sources.Roster.FetchAndSaveAsync();
-			List<Roster> rosters = sources.Roster.Get();
+			//List<Roster> rosters = sources.Roster.Get();
 
 			//await sources.WeekStats.FetchAndSaveAsync();
-			//List<WeekStats> weekStats = sources.WeekStats.GetAll();
+			List<WeekStats> weekStats = sources.WeekStats.GetAll()
+				.OrderBy(ws => ws.Week)
+				.ToList();
 
-			_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
+			//_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
 
 			//List<string> playerNflIds = rosters
 			//	.SelectMany(r => r.Players)
@@ -140,26 +145,24 @@ namespace DevTester
 
 			//await sources.PlayerProfile.FetchAndSaveAsync(playerNflIds);
 
-			_logger.LogInformation("Beginning persisting of player profiles to database..");
+			//_logger.LogInformation("Beginning persisting of player profiles to database..");
 
-			List<PlayerProfile> players = sources.PlayerProfile.Get();
-			await dbContext.Player.AddAsync(players, rosters);
+			//List<PlayerProfile> players = sources.PlayerProfile.Get();
+			//await dbContext.Player.AddAsync(players, rosters);
 
-			_logger.LogInformation("Beginning persisting of player-team mappings to database..");
+			//_logger.LogInformation("Beginning persisting of player-team mappings to database..");
 
 			// RESEARCH: should we have entries for all players, with potentially null TEAM id values?
 			//    OR only include entries for players CURRENTLY on a team?
 
-			await dbContext.Team.UpdateRostersAsync(rosters);
+			//await dbContext.Team.UpdateRostersAsync(rosters);
+			
 
-			// TESTING: week stat adds
-			//List<WeekStats> orderedWeeks = weekStats.OrderBy(ws => ws.Week).ToList();
-
+			// TEMP
 			//List<WeekStats> aCouple = orderedWeeks.Take(1).ToList();
-
 			//var current = orderedWeeks.Where(w => w.Week.Season == 2018 && w.Week.Week == 16).ToList();
 
-			//await dbContext.Stats.UpdateWeeksAsync(current);
+			await dbContext.Stats.UpdateWeeksAsync(weekStats);
 			
 		}
 

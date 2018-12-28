@@ -2,6 +2,8 @@
 using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
@@ -9,6 +11,19 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 	[TableName("ffdb.week_stats_dst")]
 	public class WeekStatsDstSql : WeekStatsSqlBase
 	{
+		[NotNull]
+		[ForeignKey(typeof(TeamSql), "id")]
+		[Column("team_id", PostgresDataType.INT)]
+		public int TeamId { get; set; }
+
+		[NotNull]
+		[Column("season", PostgresDataType.INT)]
+		public override int Season { get; set; }
+
+		[NotNull]
+		[Column("week", PostgresDataType.INT)]
+		public override int Week { get; set; }
+
 		[WeekStatColumn("sacks", WeekStatType.DST_Sacks)]
 		public double? Sacks { get; set; }
 
@@ -42,9 +57,43 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[WeekStatColumn("yards_allowed", WeekStatType.DST_YardsAllowed)]
 		public double? YardsAllowed { get; set; }
 
-		public override string InsertCommand()
+		public static WeekStatsDstSql FromCoreEntity(int teamId, WeekInfo week,
+			IEnumerable<KeyValuePair<WeekStatType, double>> stats)
 		{
-			throw new NotImplementedException();
+			var result = new WeekStatsDstSql
+			{
+				TeamId = teamId,
+				Season = week.Season,
+				Week = week.Week
+			};
+
+			foreach (var kv in stats)
+			{
+				PropertyInfo property = EntityInfoMap.GetPropertyByStat(kv.Key);
+				property.SetValue(result, kv.Value);
+			}
+
+			return result;
+		}
+
+		private static HashSet<WeekStatType> _weekStatDstTypes = new HashSet<WeekStatType>
+		{
+			WeekStatType.DST_Sacks,
+			WeekStatType.DST_Interceptions,
+			WeekStatType.DST_FumblesRecovered,
+			WeekStatType.DST_FumblesForced,
+			WeekStatType.DST_Safeties,
+			WeekStatType.DST_Touchdowns,
+			WeekStatType.DST_BlockedKicks,
+			WeekStatType.DST_ReturnYards,
+			WeekStatType.DST_ReturnTouchdowns,
+			WeekStatType.DST_PointsAllowed,
+			WeekStatType.DST_YardsAllowed
+		};
+
+		public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerStats stats)
+		{
+			return stats.Stats.Where(kv => _weekStatDstTypes.Contains(kv.Key));
 		}
 	}
 }

@@ -47,39 +47,75 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 
 		public async Task FetchAndSaveAsync()
 		{
+			_logger.LogInformation("Beginning fetching of team game history data.");
+
 			await FetchAndSaveWeekGamesAsync();
 			await FetchAndSaveGameStatsAsync();
+
+			_logger.LogInformation("Successfully finished fetching of team game history data.");
 		}
 
 		private async Task FetchAndSaveWeekGamesAsync()
 		{
+			_logger.LogDebug("Beginning fetching of weekly games information..");
+
 			HashSet<WeekInfo> existing = DirectoryFilesResolver
 				.GetWeeksFromXmlFiles(_dataPath.Static.TeamGameHistoryWeekGames)
 				.ToHashSet();
 
 			List<WeekInfo> missingWeeks = await _availableWeeks.GetAsync(excludeWeeks: existing);
 
+			if (!missingWeeks.Any())
+			{
+				_logger.LogInformation("Already have all available weekly game information.");
+				return;
+			}
+
+			_logger.LogInformation($"Already have weekly game information for {existing.Count} weeks. "
+				+ $"Will begin fetching of remaining {missingWeeks.Count}.");
+
 			foreach (WeekInfo week in missingWeeks)
 			{
 				string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
+
+				_logger.LogTrace($"Starting request for {week} at endpoint '{uri}'.");
 				string response = await _webRequestClient.GetStringAsync(uri, throttle: false);
 
-				string fileName = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
-				await File.WriteAllTextAsync(fileName, response);
+				string filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
+
+				_logger.LogTrace($"Saving XML response to '{filePath}'.");
+				await File.WriteAllTextAsync(filePath, response);
 
 				await _throttle.DelayAsync();
+
+				_logger.LogDebug($"Finished fetching weekly game information for {week}.");
 			}
+
+			_logger.LogInformation($"Finished fetching weekly game information for all {missingWeeks.Count} missing weeks.");
 		}
 
 		private async Task FetchAndSaveGameStatsAsync()
 		{
+			_logger.LogDebug("Beginning fetching of weekly game stats information..");
+
 			HashSet<string> existing = DirectoryFilesResolver
 				.GetFileNames(_dataPath.Static.TeamGameHistoryGameStats, excludeExtensions: true)
 				.ToHashSet();
 
-			List<string> gameIds = _gameWeekMap.Get().Keys.ToList();
+			List<string> missing = _gameWeekMap.Get().Keys
+				.Where(id => !existing.Contains(id))
+				.ToList();
 
-			foreach (string gameId in gameIds)
+			if (!missing.Any())
+			{
+				_logger.LogInformation("Already have all available stats information.");
+				return;
+			}
+
+			_logger.LogInformation($"Already have game stats information for {existing.Count} weeks. "
+				+ $"Will begin fetching of remaining {missing.Count}.");
+
+			foreach (string gameId in missing)
 			{
 				if (existing.Contains(gameId))
 				{
@@ -87,14 +123,22 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 				}
 
 				string uri = Endpoints.Api.GameCenterStats(gameId);
+
+				_logger.LogTrace($"Starting request for game {gameId} at endpoint '{uri}'.");
 				string response = await _webRequestClient.GetStringAsync(uri, throttle: false);
 
-				string fileName = _dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json";
-				await File.WriteAllTextAsync(fileName, response);
+				string filePath = _dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json";
+
+				_logger.LogTrace($"Saving JSON response to '{filePath}'.");
+				await File.WriteAllTextAsync(filePath, response);
 
 				existing.Add(gameId);
 				await _throttle.DelayAsync();
+
+				_logger.LogDebug($"Finished fetching stats information for game {gameId}.");
 			}
+
+			_logger.LogDebug("Finished fetching of weekly game stats information.");
 		}
 
 		public Task CheckHealthAsync()

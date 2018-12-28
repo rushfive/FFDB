@@ -27,10 +27,5 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				TeamId = teamId
 			};
 		}
-
-		public override string InsertCommand()
-		{
-			return SqlCommandBuilder.Rows.Insert(this);
-		}
 	}
 }
