@@ -19,6 +19,7 @@ using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using R5.FFDB.Engine.Source;
 using Serilog;
 using Serilog.Events;
@@ -121,21 +122,23 @@ namespace DevTester
 			IDatabaseContext dbContext = dbProvider.GetContext();
 			_logger.LogInformation($"Will run using database provider '{dbProvider.GetType().Name}'.");
 
-			//await dbContext.InitializeAsync();
-			//await dbContext.Team.AddTeamsAsync();
+			await dbContext.InitializeAsync();
+			await dbContext.Team.AddTeamsAsync();
 
 			var sourcesResolver = _serviceProvider.GetRequiredService<SourcesResolver>();
 			Sources sources = await sourcesResolver.GetAsync();
 
+			// ALSO: need to fetch latest team game history
+
 			//await sources.Roster.FetchAndSaveAsync();
-			//List<Roster> rosters = sources.Roster.Get();
+			List<Roster> rosters = sources.Roster.Get();
 
 			//await sources.WeekStats.FetchAndSaveAsync();
 			List<WeekStats> weekStats = sources.WeekStats.GetAll()
 				.OrderBy(ws => ws.Week)
 				.ToList();
 
-			//_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
+			_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
 
 			//List<string> playerNflIds = rosters
 			//	.SelectMany(r => r.Players)
@@ -145,23 +148,15 @@ namespace DevTester
 
 			//await sources.PlayerProfile.FetchAndSaveAsync(playerNflIds);
 
-			//_logger.LogInformation("Beginning persisting of player profiles to database..");
+			_logger.LogInformation("Beginning persisting of player profiles to database..");
 
-			//List<PlayerProfile> players = sources.PlayerProfile.Get();
-			//await dbContext.Player.AddAsync(players, rosters);
+			List<PlayerProfile> players = sources.PlayerProfile.Get();
+			await dbContext.Player.AddAsync(players, rosters);
 
-			//_logger.LogInformation("Beginning persisting of player-team mappings to database..");
+			_logger.LogInformation("Beginning persisting of player-team mappings to database..");
 
-			// RESEARCH: should we have entries for all players, with potentially null TEAM id values?
-			//    OR only include entries for players CURRENTLY on a team?
-
-			//await dbContext.Team.UpdateRostersAsync(rosters);
+			await dbContext.Team.UpdateRostersAsync(rosters);
 			
-
-			// TEMP
-			//List<WeekStats> aCouple = orderedWeeks.Take(1).ToList();
-			//var current = orderedWeeks.Where(w => w.Week.Season == 2018 && w.Week.Week == 16).ToList();
-
 			await dbContext.Stats.UpdateWeeksAsync(weekStats);
 			
 		}

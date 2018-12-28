@@ -9,6 +9,7 @@ using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
@@ -43,21 +44,33 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			{
 				logger.LogDebug($"Beginning stats update for week {update.Week}.");
 
-				if (update.WeekStats.Any())
+				if (update.PassStats.Any())
 				{
-					await updateStatsAsync(update.WeekStats, update.Week, "Week Stats");
+					await updateStatsAsync(update.PassStats, update.Week, "Week Stats (Pass)");
 				}
-				if (update.WeekStatsKicker.Any())
+				if (update.RushStats.Any())
 				{
-					await updateStatsAsync(update.WeekStatsKicker, update.Week, "Week Stats (Kicker)");
+					await updateStatsAsync(update.RushStats, update.Week, "Week Stats (Rush)");
 				}
-				if (update.WeekStatsDst.Any())
+				if (update.ReceiveStats.Any())
 				{
-					await updateStatsAsync(update.WeekStatsDst, update.Week, "Week Stats (DST)");
+					await updateStatsAsync(update.ReceiveStats, update.Week, "Week Stats (Receive)");
 				}
-				if (update.WeekStatsIdp.Any())
+				if (update.MiscStats.Any())
 				{
-					await updateStatsAsync(update.WeekStatsIdp, update.Week, "Week Stats (IDP)");
+					await updateStatsAsync(update.MiscStats, update.Week, "Week Stats (Misc)");
+				}
+				if (update.KickStats.Any())
+				{
+					await updateStatsAsync(update.KickStats, update.Week, "Week Stats (Kick)");
+				}
+				if (update.DstStats.Any())
+				{
+					await updateStatsAsync(update.DstStats, update.Week, "Week Stats (DST)");
+				}
+				if (update.IdpStats.Any())
+				{
+					await updateStatsAsync(update.IdpStats, update.Week, "Week Stats (IDP)");
 				}
 
 				logger.LogDebug($"Successfully updated stats for week {update.Week}.");
@@ -67,7 +80,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			// local functions
 			async Task updateStatsAsync<T>(List<T> items, WeekInfo week, string itemLabel)
-				where T : WeekStatsSqlBase
+				where T : WeekStatsSql
 			{
 				var sqlCommand = SqlCommandBuilder.Rows.InsertMany(items);
 
@@ -83,10 +96,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public class WeekStatsSqlUpdate
 		{
 			public WeekInfo Week { get; set; }
-			public List<WeekStatsSql> WeekStats { get; } = new List<WeekStatsSql>();
-			public List<WeekStatsKickerSql> WeekStatsKicker { get; } = new List<WeekStatsKickerSql>();
-			public List<WeekStatsDstSql> WeekStatsDst { get; } = new List<WeekStatsDstSql>();
-			public List<WeekStatsIdpSql> WeekStatsIdp { get; } = new List<WeekStatsIdpSql>();
+			public List<WeekStatsPassSql> PassStats { get; } = new List<WeekStatsPassSql>();
+			public List<WeekStatsRushSql> RushStats { get; } = new List<WeekStatsRushSql>();
+			public List<WeekStatsReceiveSql> ReceiveStats { get; } = new List<WeekStatsReceiveSql>();
+			public List<WeekStatsMiscSql> MiscStats { get; } = new List<WeekStatsMiscSql>();
+			public List<WeekStatsKickSql> KickStats { get; } = new List<WeekStatsKickSql>();
+			public List<WeekStatsDstSql> DstStats { get; } = new List<WeekStatsDstSql>();
+			public List<WeekStatsIdpSql> IdpStats { get; } = new List<WeekStatsIdpSql>();
 		}
 
 		private static List<WeekStatsSqlUpdate> GetStatsUpdates(
@@ -112,7 +128,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 						if (statValues.Any())
 						{
 							WeekStatsDstSql statsSql = WeekStatsDstSql.FromCoreEntity(teamId, weekStats.Week, statValues);
-							update.WeekStatsDst.Add(statsSql);
+							update.DstStats.Add(statsSql);
 						}
 
 						continue;
@@ -120,23 +136,32 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 					if (nflPlayerIdMap.TryGetValue(playerStats.NflId, out Guid playerId))
 					{
-						List<WeekStatsPlayerSqlBase> playerStatSqls = WeekStatsPlayerSqlBase.FromCoreEntity(playerStats, playerId, weekStats.Week);
+						List<WeekStatsPlayerSql> playerStatSqls = WeekStatsPlayerSql.FromCoreEntity(playerStats, playerId, weekStats.Week);
 
 						foreach (var sql in playerStatSqls)
 						{
 							switch (sql)
 							{
-								case WeekStatsSql ws:
-									update.WeekStats.Add(ws);
+								case WeekStatsPassSql pass:
+									update.PassStats.Add(pass);
 									break;
-								case WeekStatsKickerSql wsKicker:
-									update.WeekStatsKicker.Add(wsKicker);
+								case WeekStatsRushSql rush:
+									update.RushStats.Add(rush);
 									break;
-								case WeekStatsIdpSql wsIdp:
-									update.WeekStatsIdp.Add(wsIdp);
+								case WeekStatsReceiveSql receive:
+									update.ReceiveStats.Add(receive);
+									break;
+								case WeekStatsMiscSql misc:
+									update.MiscStats.Add(misc);
+									break;
+								case WeekStatsKickSql kick:
+									update.KickStats.Add(kick);
+									break;
+								case WeekStatsIdpSql idp:
+									update.IdpStats.Add(idp);
 									break;
 								default:
-									throw new ArgumentOutOfRangeException(nameof(sql), $"'{sql.GetType().Name}' is an invalid '{nameof(WeekStatsPlayerSqlBase)}' type.");
+									throw new ArgumentOutOfRangeException(nameof(sql), $"'{sql.GetType().Name}' is an invalid '{nameof(WeekStatsPlayerSql)}' type.");
 							}
 						}
 

@@ -31,6 +31,11 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				string nameSql = EntityInfoMap.TableName(entityType);
 				string columnsSql = string.Join(", ", columnsSqlList);
 
+				if (EntityInfoMap.TryGetCompositePrimaryKeys(entityType, out List<string> compositeKeys))
+				{
+					columnsSql += $", PRIMARY KEY({string.Join(", ", compositeKeys)})";
+				}
+
 				return $"CREATE TABLE {nameSql} ({columnsSql});";
 			}
 

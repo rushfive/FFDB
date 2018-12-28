@@ -5,6 +5,7 @@ using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseContext;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,12 +24,12 @@ namespace DevTester.Testers
 			string team = SqlCommandBuilder.Table.Create(typeof(TeamSql));
 			string player = SqlCommandBuilder.Table.Create(typeof(PlayerSql));
 			string playerTeamMap = SqlCommandBuilder.Table.Create(typeof(PlayerTeamMapSql));
-			string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
+			//string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
 
 			await dbContext.ExecuteNonQueryAsync(team);
 			await dbContext.ExecuteNonQueryAsync(player);
 			await dbContext.ExecuteNonQueryAsync(playerTeamMap);
-			await dbContext.ExecuteNonQueryAsync(weekStats);
+			//await dbContext.ExecuteNonQueryAsync(weekStats);
 
 			// insert teams
 			IEnumerable<TeamSql> teamSqls = TeamDataStore
@@ -72,10 +73,10 @@ namespace DevTester.Testers
 			string team = SqlCommandBuilder.Table.Create(typeof(TeamSql));
 			string player = SqlCommandBuilder.Table.Create(typeof(PlayerSql));
 			string playerTeamMap = SqlCommandBuilder.Table.Create(typeof(PlayerTeamMapSql));
-			string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
+			//string weekStats = SqlCommandBuilder.Table.Create(typeof(WeekStatsSql));
 
-			string breaks = Environment.NewLine + Environment.NewLine;
-			Console.WriteLine($"{team}{breaks}{player}{breaks}{playerTeamMap}{breaks}{weekStats}");
+			//string breaks = Environment.NewLine + Environment.NewLine;
+			//Console.WriteLine($"{team}{breaks}{player}{breaks}{playerTeamMap}{breaks}{weekStats}");
 		}
 
 		internal static void OutputInsertSqlCommandsForTeams(bool insertMany)

@@ -3,6 +3,7 @@ using Npgsql;
 using R5.FFDB.Database;
 using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,8 +48,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			await createTableAsync(typeof(TeamSql));
 			await createTableAsync(typeof(PlayerSql));
 			await createTableAsync(typeof(PlayerTeamMapSql));
-			await createTableAsync(typeof(WeekStatsSql));
-			await createTableAsync(typeof(WeekStatsKickerSql));
+			await createTableAsync(typeof(WeekStatsPassSql));
+			await createTableAsync(typeof(WeekStatsRushSql));
+			await createTableAsync(typeof(WeekStatsReceiveSql));
+			await createTableAsync(typeof(WeekStatsMiscSql));
+			await createTableAsync(typeof(WeekStatsKickSql));
 			await createTableAsync(typeof(WeekStatsDstSql));
 			await createTableAsync(typeof(WeekStatsIdpSql));
 

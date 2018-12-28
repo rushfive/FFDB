@@ -1,8 +1,10 @@
-﻿using R5.FFDB.Core.Models;
+﻿using R5.FFDB.Components;
+using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 	public static class EntityInfoMap
 	{
 		private static Dictionary<Type, string> _tableNames { get; } = new Dictionary<Type, string>();
+		private static Dictionary<Type, List<string>> _compositePrimaryKeys { get; } = new Dictionary<Type, List<string>>();
 		private static Dictionary<Type, List<ColumnInfo>> _tableColumnInfos { get; } = new Dictionary<Type, List<ColumnInfo>>();
 		private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; } = new Dictionary<WeekStatType, PropertyInfo>();
 
@@ -24,17 +27,13 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			typeof(TeamSql),
 			typeof(PlayerSql),
 			typeof(PlayerTeamMapSql),
-			typeof(WeekStatsSql),
-			typeof(WeekStatsKickerSql),
+			typeof(WeekStatsPassSql),
+			typeof(WeekStatsRushSql),
+			typeof(WeekStatsReceiveSql),
+			typeof(WeekStatsMiscSql),
+			typeof(WeekStatsKickSql),
 			typeof(WeekStatsDstSql),
 			typeof(WeekStatsIdpSql)
-		};
-
-		private static HashSet<Type> _baseEntityTypes = new HashSet<Type>
-		{
-			typeof(SqlEntity),
-			typeof(WeekStatsSqlBase),
-			typeof(WeekStatsPlayerSqlBase)
 		};
 
 		public static string TableName(Type entityType)
@@ -45,6 +44,11 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			}
 
 			return name;
+		}
+
+		public static bool TryGetCompositePrimaryKeys(Type entityType, out List<string> keys)
+		{
+			return _compositePrimaryKeys.TryGetValue(entityType, out keys);
 		}
 
 		public static List<ColumnInfo> ColumnInfos(Type entityType)
@@ -78,26 +82,37 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			{
 				_tableNames[t] = GetTableName(t);
 				_tableColumnInfos[t] = GetColumnInfos(t);
+
+				List<string> compositeKeys = GetCompositePrimaryKeys(t);
+				if (compositeKeys != null)
+				{
+					_compositePrimaryKeys[t] = compositeKeys;
+				}
 			});
 		}
 
 		private static string GetTableName(Type entityType)
 		{
-			if (!_baseEntityTypes.Contains(entityType.BaseType))
-			{
-				// is this too restrictive?
-				throw new ArgumentException($"EntityInfoMap should only deal with types deriving from '{typeof(SqlEntity).Name}'.");
-			}
-
-			CustomAttributeData attr = entityType.CustomAttributes
-				.SingleOrDefault(a => a.AttributeType == typeof(TableNameAttribute));
+			TableNameAttribute attr = entityType.GetCustomAttributeOrNull<TableNameAttribute>();
 
 			if (attr == null)
 			{
 				throw new InvalidOperationException($"Entity '{entityType.Name}' is missing its table name.");
 			}
 
-			return (string)attr.ConstructorArguments[0].Value;
+			return attr.Name;
+		}
+
+		private static List<string> GetCompositePrimaryKeys(Type entityType)
+		{
+			CompositePrimaryKeysAttribute attr = entityType.GetCustomAttributeOrNull<CompositePrimaryKeysAttribute>();
+
+			if (attr == null)
+			{
+				return null;
+			}
+
+			return attr.ColumnNames;
 		}
 
 		private static List<ColumnInfo> GetColumnInfos(Type entityType)

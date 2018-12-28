@@ -18,3 +18,5 @@ TODOS:
 - team game history information, like which games were played on a week, and the results
 
 - depth chart?
+
+- validation of db provider configs (and other configs)

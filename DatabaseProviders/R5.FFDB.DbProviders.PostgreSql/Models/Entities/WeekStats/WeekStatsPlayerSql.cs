@@ -6,41 +6,58 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
+namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 {
-	public abstract class WeekStatsPlayerSqlBase : WeekStatsSqlBase
+	public abstract class WeekStatsPlayerSql : WeekStatsSql
 	{
 		public abstract Guid PlayerId { get; set; }
+
+		// Can be null, as safety in case we can't resolve it from sources
 		public abstract int? TeamId { get; set; }
 
 		// returns a list because each player can have different week stat 
 		// entry types (eg scored a rushing td AND made a 50+ kick)
-		public static List<WeekStatsPlayerSqlBase> FromCoreEntity(PlayerStats stats,
+		public static List<WeekStatsPlayerSql> FromCoreEntity(PlayerStats stats,
 			Guid playerId, WeekInfo week)
 		{
-			var result = new List<WeekStatsPlayerSqlBase>();
+			var result = new List<WeekStatsPlayerSql>();
 
-			var weekStatValues = stats.Stats.Where(kv => _weekStatTypes.Contains(kv.Key));
-			var weekStatKickerValues = stats.Stats.Where(kv => _weekStatKickerTypes.Contains(kv.Key));
-			var weekStatIdpValues = stats.Stats.Where(kv => _weekStatIdpTypes.Contains(kv.Key));
+			var passStats = stats.Stats.Where(kv => _weekStatPassTypes.Contains(kv.Key));
+			var rushStats = stats.Stats.Where(kv => _weekStatRushTypes.Contains(kv.Key));
+			var receiveStats = stats.Stats.Where(kv => _weekStatReceiveTypes.Contains(kv.Key));
+			var miscStats = stats.Stats.Where(kv => _weekStatMiscTypes.Contains(kv.Key));
+			var kickStats = stats.Stats.Where(kv => _weekStatKickTypes.Contains(kv.Key));
+			var idpStats = stats.Stats.Where(kv => _weekStatIdpTypes.Contains(kv.Key));
 
-			if (weekStatValues.Any())
+			if (passStats.Any())
 			{
-				addWeekStatSql(new WeekStatsSql(), weekStatValues);
+				addWeekStatSql(new WeekStatsPassSql(), passStats);
 			}
-			if (weekStatKickerValues.Any())
+			if (rushStats.Any())
 			{
-				addWeekStatSql(new WeekStatsKickerSql(), weekStatKickerValues);
+				addWeekStatSql(new WeekStatsRushSql(), rushStats);
 			}
-			if (weekStatIdpValues.Any())
+			if (receiveStats.Any())
 			{
-				addWeekStatSql(new WeekStatsIdpSql(), weekStatIdpValues);
+				addWeekStatSql(new WeekStatsReceiveSql(), receiveStats);
+			}
+			if (miscStats.Any())
+			{
+				addWeekStatSql(new WeekStatsMiscSql(), miscStats);
+			}
+			if (kickStats.Any())
+			{
+				addWeekStatSql(new WeekStatsKickSql(), kickStats);
+			}
+			if (idpStats.Any())
+			{
+				addWeekStatSql(new WeekStatsIdpSql(), idpStats);
 			}
 
 			return result;
 
 			// local functions
-			void addWeekStatSql(WeekStatsPlayerSqlBase statsSql,
+			void addWeekStatSql(WeekStatsPlayerSql statsSql,
 				IEnumerable<KeyValuePair<WeekStatType, double>> statValues)
 			{
 				statsSql.PlayerId = playerId;
@@ -58,7 +75,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 			}
 		}
 
-		private static HashSet<WeekStatType> _weekStatTypes = new HashSet<WeekStatType>
+		private static HashSet<WeekStatType> _weekStatPassTypes = new HashSet<WeekStatType>
 		{
 			WeekStatType.Pass_Attempts,
 			WeekStatType.Pass_Completions,
@@ -66,36 +83,41 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 			WeekStatType.Pass_Touchdowns,
 			WeekStatType.Pass_Interceptions,
 			WeekStatType.Pass_Sacked,
+		};
 
+		private static HashSet<WeekStatType> _weekStatRushTypes = new HashSet<WeekStatType>
+		{
 			WeekStatType.Rush_Attempts,
 			WeekStatType.Rush_Yards,
 			WeekStatType.Rush_Touchdowns,
+		};
 
+		private static HashSet<WeekStatType> _weekStatReceiveTypes = new HashSet<WeekStatType>
+		{
 			WeekStatType.Receive_Catches,
 			WeekStatType.Receive_Yards,
 			WeekStatType.Receive_Touchdowns,
+		};
 
+		private static HashSet<WeekStatType> _weekStatMiscTypes = new HashSet<WeekStatType>
+		{
 			WeekStatType.Return_Yards,
 			WeekStatType.Return_Touchdowns,
-
 			WeekStatType.Fumble_Recover_Touchdowns,
 			WeekStatType.Fumbles_Lost,
 			WeekStatType.Fumbles_Total,
-
 			WeekStatType.TwoPointConversions
 		};
 
-		private static HashSet<WeekStatType> _weekStatKickerTypes = new HashSet<WeekStatType>
+		private static HashSet<WeekStatType> _weekStatKickTypes = new HashSet<WeekStatType>
 		{
 			WeekStatType.Kick_PAT_Makes,
 			WeekStatType.Kick_PAT_Misses,
-
 			WeekStatType.Kick_ZeroTwenty_Makes,
 			WeekStatType.Kick_TwentyThirty_Makes,
 			WeekStatType.Kick_ThirtyForty_Makes,
 			WeekStatType.Kick_FortyFifty_Makes,
 			WeekStatType.Kick_FiftyPlus_Makes,
-
 			WeekStatType.Kick_ZeroTwenty_Misses,
 			WeekStatType.Kick_TwentyThirty_Misses,
 			WeekStatType.Kick_ThirtyForty_Misses,

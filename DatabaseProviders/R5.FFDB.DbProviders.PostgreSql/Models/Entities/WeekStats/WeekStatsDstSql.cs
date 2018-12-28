@@ -6,10 +6,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
+namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 {
 	[TableName("ffdb.week_stats_dst")]
-	public class WeekStatsDstSql : WeekStatsSqlBase
+	[CompositePrimaryKeys("team_id", "season", "week")]
+	public class WeekStatsDstSql : WeekStatsSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(TeamSql), "id")]

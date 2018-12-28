@@ -4,17 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
+namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 {
 	[TableName("ffdb.week_stats_idp")]
-	public class WeekStatsIdpSql : WeekStatsPlayerSqlBase
+	[CompositePrimaryKeys("player_id", "season", "week")]
+	public class WeekStatsIdpSql : WeekStatsPlayerSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(PlayerSql), "id")]
 		[Column("player_id", PostgresDataType.UUID)]
 		public override Guid PlayerId { get; set; }
-
-		// Can be null, as safety in case we can't resolve it from sources
+		
 		[ForeignKey(typeof(TeamSql), "id")]
 		[Column("team_id", PostgresDataType.INT)]
 		public override int? TeamId { get; set; }
