@@ -85,7 +85,6 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
 				{
 					if (!_playerIdMapper.TryGetNflFromGsis(gsis, out string nflId))
 					{
-						// todo: file error log?
 						// most likely insignificant players that we dont care about
 						continue;
 					}

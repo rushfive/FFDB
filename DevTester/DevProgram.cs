@@ -43,6 +43,40 @@ namespace DevTester
 			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
 			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
+			string gameId = "2018122400";
+			JObject fileJson = JObject.Parse(File.ReadAllText(dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json"));
+
+			JToken score = fileJson.SelectToken($"{gameId}.home.score");
+			if (score != null)
+			{
+				int firstQtr = (int)score["1"];
+				int secondQtr = (int)score["2"];
+				int thirdQtr = (int)score["3"];
+				int fourtQtr = (int)score["4"];
+				int overTime = (int)score["5"];
+				int total = (int)score["T"];
+			}
+
+			if (fileJson.SelectToken($"{gameId}.home.stats").TryGetToken("team", out JToken teamStats))
+			{
+				int totalFirstDowns = (int)teamStats["totfd"];
+				int totalYards = (int)teamStats["totyds"];
+				int totalPassingYards = (int)teamStats["pyds"];
+				int totalRushingYards = (int)teamStats["ryds"];
+				int penaltiesCount = (int)teamStats["pen"];
+				int penaltyYards = (int)teamStats["penyds"];
+				int turnoversCount = (int)teamStats["trnovr"];
+				int puntsCount = (int)teamStats["pt"];
+				int totalPuntYards = (int)teamStats["ptyds"];
+				int puntAverageYards = (int)teamStats["ptavg"];
+				string timeOfPossession = (string)teamStats["top"];
+			}
+
+
+
+
+			return;
+
 			//
 			//var playerSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
 			//List<PlayerProfile> players = playerSource.Get();
