@@ -43,99 +43,37 @@ namespace DevTester
 			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
 			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
-			Func<List<(string, WeekInfo, JObject)>> loadAllFiles = () =>
-			{
-				var gameStatFiles = _serviceProvider.GetRequiredService<GameStatsFilesValue>();
-				return gameStatFiles.Get();
-			};
-
-			Func<List<(string, WeekInfo, JObject)>> loadPlayerWeekTeam = () =>
-			{
-				var valueProvider = _serviceProvider.GetRequiredService<GameStatsFilesValue>();
-				return valueProvider.Get();
-			};
-
-			Func<Dictionary<WeekInfo, Dictionary<int, TeamWeekStats>>> loadTeamWeekStats = () =>
-			{
-				var valueProvider = _serviceProvider.GetRequiredService<TeamWeekStatsMapValue>();
-				return valueProvider.Get();
-			};
-
-			var jsonFiles = Timer.Time("load json files", loadAllFiles, TimerUnit.Seconds);
-			var playerWeekTeamMap = Timer.Time("load player week team map", loadPlayerWeekTeam, TimerUnit.Seconds);
-			var teamWeekStats = Timer.Time("load team week stats", loadTeamWeekStats, TimerUnit.Seconds);
-
-
-
-
-
-			return;
-
-			//string gameId = "2018122400";
-			//JObject fileJson = JObject.Parse(File.ReadAllText(dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json"));
-
-			//JToken score = fileJson.SelectToken($"{gameId}.home.score");
-			//if (score != null)
-			//{
-			//	int firstQtr = (int)score["1"];
-			//	int secondQtr = (int)score["2"];
-			//	int thirdQtr = (int)score["3"];
-			//	int fourtQtr = (int)score["4"];
-			//	int overTime = (int)score["5"];
-			//	int total = (int)score["T"];
-			//}
-
-			//if (fileJson.SelectToken($"{gameId}.home.stats").TryGetToken("team", out JToken teamStats))
-			//{
-			//	int totalFirstDowns = (int)teamStats["totfd"];
-			//	int totalYards = (int)teamStats["totyds"];
-			//	int totalPassingYards = (int)teamStats["pyds"];
-			//	int totalRushingYards = (int)teamStats["ryds"];
-			//	int penaltiesCount = (int)teamStats["pen"];
-			//	int penaltyYards = (int)teamStats["penyds"];
-			//	int turnoversCount = (int)teamStats["trnovr"];
-			//	int puntsCount = (int)teamStats["pt"];
-			//	int totalPuntYards = (int)teamStats["ptyds"];
-			//	int puntAverageYards = (int)teamStats["ptavg"];
-			//	string timeOfPossession = (string)teamStats["top"];
-			//}
-
-
-
-
-			return;
-
-			//
-			//var playerSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
-			//List<PlayerProfile> players = playerSource.Get();
-
-			//var invalidPlayers = new List<PlayerProfile>();
-			//foreach (var p in players)
-			//{
-			//	if (p.FirstName.Contains('#')
-			//		|| p.LastName.Contains('#')
-			//		|| p.College.Contains('#'))
-			//	{
-			//		invalidPlayers.Add(p);
-			//	}
-			//}
-
-			//Console.WriteLine($"INVALID nflids: ");
-			//foreach (var invalidP in invalidPlayers)
-			//{
-			//	Console.WriteLine(invalidP.NflId);
-			//	File.Delete(dataPath.Static.PlayerProfile + invalidP.NflId + ".json");
-			//}
-			//
-
-			var teamGameHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
-			await teamGameHistorySource.FetchAndSaveAsync();
 			
+
+			//Func<List<(string, WeekInfo, JObject)>> loadAllFiles = () =>
+			//{
+			//	var gameStatFiles = _serviceProvider.GetRequiredService<GameStatsFilesValue>();
+			//	return gameStatFiles.Get();
+			//};
+
+			//Func<List<(string, WeekInfo, JObject)>> loadPlayerWeekTeam = () =>
+			//{
+			//	var valueProvider = _serviceProvider.GetRequiredService<GameStatsFilesValue>();
+			//	return valueProvider.Get();
+			//};
+
+			//Func<Dictionary<WeekInfo, Dictionary<int, TeamWeekStats>>> loadTeamWeekStats = () =>
+			//{
+			//	var valueProvider = _serviceProvider.GetRequiredService<TeamWeekStatsMapValue>();
+			//	return valueProvider.Get();
+			//};
+
+			//var jsonFiles = Timer.Time("load json files", loadAllFiles, TimerUnit.Seconds);
+			//var playerWeekTeamMap = Timer.Time("load player week team map", loadPlayerWeekTeam, TimerUnit.Seconds);
+			//var teamWeekStats = Timer.Time("load team week stats", loadTeamWeekStats, TimerUnit.Seconds);
+
+			//return;
+
+
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			IDatabaseContext dbContext = dbProvider.GetContext();
 
 			await InitialSetupTestAsync();
-			//await dbContext.TestInsertWithParamsAsync();
 
 			return;
 
@@ -184,19 +122,23 @@ namespace DevTester
 			IDatabaseContext dbContext = dbProvider.GetContext();
 			_logger.LogInformation($"Will run using database provider '{dbProvider.GetType().Name}'.");
 
-			await dbContext.InitializeAsync();
-			await dbContext.Team.AddTeamsAsync();
+			//await dbContext.InitializeAsync();
+			//await dbContext.Team.AddTeamsAsync();
 
 			var sourcesResolver = _serviceProvider.GetRequiredService<CoreDataSourcesResolver>();
 			CoreDataSources sources = await sourcesResolver.GetAsync();
 
 			// ALSO: need to fetch latest team game history
+			//await sources.TeamGameHistory.FetchAndSaveAsync();
 
-			//await sources.Roster.FetchAndSaveAsync();
+			var gameStatsParser = _serviceProvider.GetRequiredService<IGameStatsParser>();
+			gameStatsParser.ParseFilesToMapValues();
+
+			await sources.Roster.FetchAndSaveAsync();
 			var rosterService = _serviceProvider.GetRequiredService<IRosterService>();
 			List<Roster> rosters = rosterService.Get();
 
-			//await sources.WeekStats.FetchAndSaveAsync();
+			await sources.WeekStats.FetchAndSaveAsync();
 			var weekStatsService = _serviceProvider.GetRequiredService<IWeekStatsService>();
 			List<WeekStats> weekStats = weekStatsService.Get()
 				.OrderBy(ws => ws.Week)
@@ -204,13 +146,7 @@ namespace DevTester
 
 			_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
 
-			//List<string> playerNflIds = rosters
-			//	.SelectMany(r => r.Players)
-			//	.Select(p => p.NflId)
-			//	.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
-			//	.ToList();
-
-			//await sources.PlayerProfile.FetchAndSaveAsync(playerNflIds);
+			await sources.PlayerProfile.FetchAndSaveAsync();
 
 			_logger.LogInformation("Beginning persisting of player profiles to database..");
 
@@ -221,9 +157,12 @@ namespace DevTester
 			_logger.LogInformation("Beginning persisting of player-team mappings to database..");
 
 			await dbContext.Team.UpdateRostersAsync(rosters);
-			
+
 			await dbContext.Stats.UpdateWeeksAsync(weekStats);
-			
+
+			var gameStatsService = _serviceProvider.GetRequiredService<ITeamGameStatsService>();
+			List<TeamWeekStats> teamGameStats = gameStatsService.Get();
+			await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
 		}
 
 

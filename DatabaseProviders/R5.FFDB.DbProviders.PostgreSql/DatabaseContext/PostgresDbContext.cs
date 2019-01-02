@@ -28,11 +28,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			Player = new PostgresPlayerDbContext(getConnection, loggerFactory);
 			Stats = new PostgresWeekStatsDbContext(getConnection, loggerFactory);
 		}
-
-		public async Task TestInsertWithParamsAsync()
-		{
-
-		}
 		
 
 		public async Task InitializeAsync()
@@ -55,6 +50,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			await createTableAsync(typeof(WeekStatsKickSql));
 			await createTableAsync(typeof(WeekStatsDstSql));
 			await createTableAsync(typeof(WeekStatsIdpSql));
+			await createTableAsync(typeof(TeamGameStatsSql));
 
 			// local functions
 			async Task createTableAsync(Type entityType)

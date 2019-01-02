@@ -40,8 +40,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogInformation($"Successfully added team entries to '{tableName}' table.");
 		}
-
-		// todo: DELETE all first??
+		
 		public async Task UpdateRostersAsync(List<Roster> rosters)
 		{
 			string playerTeamMapTableName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
@@ -59,7 +58,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			{
 				foreach(RosterPlayer player in roster.Players)
 				{
-					Guid id = nflIdMap[player.NflId];
+					if (!nflIdMap.TryGetValue(player.NflId, out Guid id))
+					{
+						logger.LogWarning($"Player with NFL id '{player.NflId}' was found on the team '{roster.TeamAbbreviation}' page "
+							+ "but the player profile was unable to be fetched and resolved. Try updating rosters again later.");
+						continue;
+					}
+					
 					sqlEntries.Add(PlayerTeamMapSql.ToSqlEntity(id, roster.TeamId));
 				}
 			}
@@ -73,6 +78,21 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			});
 
 			logger.LogInformation($"Successfully added player-team mapping entries to '{playerTeamMapTableName}' table.");
+		}
+
+		public async Task UpdateGameStatsAsync(List<TeamWeekStats> stats)
+		{
+			string tableName = EntityInfoMap.TableName(typeof(TeamGameStatsSql));
+			var logger = GetLogger<PostgresTeamDbContext>();
+
+			logger.LogDebug($"Adding team game stats to '{tableName}' table.");
+
+			List<TeamGameStatsSql> sqlEntries = stats.Select(TeamGameStatsSql.FromCoreEntity).ToList();
+
+			var sqlCommand = SqlCommandBuilder.Rows.InsertMany(sqlEntries);
+
+			await ExecuteNonQueryAsync(sqlCommand);
+			logger.LogInformation($"Successfully added team game stats to '{tableName}' table.");
 		}
 	}
 }

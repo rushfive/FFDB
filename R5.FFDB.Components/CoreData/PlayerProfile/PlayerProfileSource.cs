@@ -49,6 +49,8 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 		
 		public async Task FetchAndSaveAsync()
 		{
+			_logger.LogInformation("Beginning fetching of player profiles based on ids found from team rosters and week stats.");
+
 			List<Core.Models.Roster> rosters = _rosterService.Get();
 			List<Core.Models.WeekStats> weekStats = _weekStatsService.Get();
 

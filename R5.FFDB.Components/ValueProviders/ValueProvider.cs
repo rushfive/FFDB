@@ -35,6 +35,17 @@ namespace R5.FFDB.Components.ValueProviders
 			}
 		}
 
+		public void Set(T value)
+		{
+			if (_isSet)
+			{
+				throw new InvalidOperationException("Value has already been set.");
+			}
+
+			_value = value;
+			_isSet = true;
+		}
+
 		protected abstract T ResolveValue();
 	}
 }

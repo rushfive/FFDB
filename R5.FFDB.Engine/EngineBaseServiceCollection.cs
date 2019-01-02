@@ -51,7 +51,7 @@ namespace R5.FFDB.Engine
 				.AddScoped<CoreDataSourcesResolver>()
 				.AddScoped<LatestWeekValue>()
 				.AddScoped<PlayerProfilesValue>()
-				.AddScoped<GameStatsFilesValue>()
+				//.AddScoped<GameStatsFilesValue>()
 				.AddScoped<GameWeekMapValue>()
 				.AddScoped<PlayerWeekTeamMapValue>()
 				.AddScoped<TeamWeekStatsMapValue>()
@@ -71,7 +71,8 @@ namespace R5.FFDB.Engine
 				.AddScoped<IWeekStatsSource, WeekStatsSource>()
 				.AddScoped<IWeekStatsService, WeekStatsService>()
 				.AddScoped<ITeamGameHistorySource, TeamGameHistorySource>()
-				.AddScoped<ITeamWeekStatsService, TeamWeekStatsService>()
+				.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
+				.AddScoped<IGameStatsParser, GameStatsParser>()
 				.AddScoped<IPlayerWeekTeamMap, PlayerWeekTeamMap>()
 				.AddScoped<IAvailableWeeksResolver, AvailableWeeksResolver>()
 				.AddScoped<IPlayerIdMapper, PlayerIdMapper>();

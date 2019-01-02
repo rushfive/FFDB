@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
@@ -36,22 +38,30 @@ namespace R5.FFDB.Engine
 		private ILogger<FfdbEngine> _logger { get; }
 		private CoreDataSourcesResolver _sourcesResolver { get; }
 		private IDatabaseProvider _databaseProvider { get; }
-
 		private IWeekStatsService _weekStatsService { get; }
 		private IRosterService _rosterService { get; }
+		private IGameStatsParser _gameStatsParser { get; }
+		private IPlayerProfileService _playerProfileService { get; }
+		private ITeamGameStatsService _teamGameStatsService { get; }
 
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
 			CoreDataSourcesResolver sourcesResolver,
 			IDatabaseProvider databaseProvider,
 			IWeekStatsService weekStatsService,
-			IRosterService rosterService)
+			IRosterService rosterService,
+			IGameStatsParser gameStatsParser,
+			IPlayerProfileService playerProfileService,
+			ITeamGameStatsService teamGameStatsService)
 		{
 			_logger = logger;
 			_sourcesResolver = sourcesResolver;
 			_databaseProvider = databaseProvider;
 			_weekStatsService = weekStatsService;
 			_rosterService = rosterService;
+			_gameStatsParser = gameStatsParser;
+			_playerProfileService = playerProfileService;
+			_teamGameStatsService = teamGameStatsService;
 		}
 
 		// can be run more than once, in case of failure
@@ -59,87 +69,43 @@ namespace R5.FFDB.Engine
 		{
 			_logger.LogInformation("Running initial setup..");
 
-			// todo:
-			// 1. config validation
-			// 2. intiialize DB
-			// 3. verify/check sources (all must have AT LEAST one working source)
-			// 4. get all latest weekstats
-			// 5. download all rosters to temp
-			// 6. fetch and save player profiles from ROSTERS first, WEEKSTATS next
-
-			// config validation already happens during engine setup
-
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
 			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
-
-			// VERIFIED working
-			//await dbContext.CreateTablesAsync();
-			//await dbContext.Team.AddTeamsAsync();
+			
+			await dbContext.InitializeAsync();
+			await dbContext.Team.AddTeamsAsync();
 
 			CoreDataSources sources = await _sourcesResolver.GetAsync();
+
+			await sources.TeamGameHistory.FetchAndSaveAsync();
+			
+			_gameStatsParser.ParseFilesToMapValues();
 
 			await sources.Roster.FetchAndSaveAsync();
 			List<Roster> rosters = _rosterService.Get();
 
-			await sources.WeekStats.FetchAndSaveAsync();
-
-			List<WeekStats> weekStats = _weekStatsService.Get();
-
-			_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
-
-			//List<string> playerNflIds = rosters
-			//	.SelectMany(r => r.Players)
-			//	.Select(p => p.NflId)
-			//	.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
-			//	.ToList();
-
 			await sources.PlayerProfile.FetchAndSaveAsync();
 
+			_logger.LogInformation("Persisting player profiles to database..");
+			
+			List<PlayerProfile> players = _playerProfileService.Get();
+			await dbContext.Player.AddAsync(players, rosters);
 
-			return;
+			_logger.LogInformation("Persisting player-team mappings (roster) to database..");
+			await dbContext.Team.UpdateRostersAsync(rosters);
 
-			// OLD
+			await sources.WeekStats.FetchAndSaveAsync();
+			List<WeekStats> weekStats = _weekStatsService.Get()
+				.OrderBy(ws => ws.Week)
+				.ToList();
 
+			_logger.LogInformation("Persisting week stats to database..");
+			await dbContext.Stats.UpdateWeeksAsync(weekStats);
+			
+			List<TeamWeekStats> teamGameStats = _teamGameStatsService.Get();
+			await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
 
-
-			// get all available week stats
-			//try
-			//{
-			//	List<Roster> rosters = sources.Roster.Get();
-
-			//	List<string> rosterPlayerIds = rosters
-			//		.SelectMany(r => r.Players)
-			//		.Select(p => p.NflId)
-			//		.Distinct()
-			//		.ToList();
-
-			//	_logger.LogInformation($"Found '{rosterPlayerIds.Count}' players from rosters to fetch profile data for.");
-			//	await sources.PlayerProfile.FetchAndSaveAsync(rosterPlayerIds);
-			//	_logger.LogInformation("Finished fetching player profile data by rosters.");
-
-			//	await sources.WeekStats.FetchAndSaveAsync();
-
-			//	List<WeekStats> weekStats = sources.WeekStats.GetAll();
-
-			//	List<string> weekStatsPlayerIds = weekStats
-			//		.SelectMany(ws => ws.Players)
-			//		.Select(p => p.NflId)
-			//		.Distinct()
-			//		.ToList();
-
-			//	_logger.LogInformation($"Found '{weekStatsPlayerIds.Count}' players from week stats to fetch profile data for.");
-			//	await sources.PlayerProfile.FetchAndSaveAsync(weekStatsPlayerIds);
-			//	_logger.LogInformation("Finished fetching player profile data by week stats.");
-
-			//}
-			//catch (Exception ex)
-			//{
-			//	_logger.LogError(ex, "There was an error running the initial setup.");
-			//	throw;
-			//}
-
-			// fetch and save current team roster pages
-
+			_logger.LogInformation("Successfully finished running initial setup.");
 		}
 
 	}

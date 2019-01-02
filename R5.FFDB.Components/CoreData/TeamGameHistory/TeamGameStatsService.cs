@@ -8,18 +8,18 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.TeamGameHistory
 {
-	public interface ITeamWeekStatsService
+	public interface ITeamGameStatsService
 	{
 		List<TeamWeekStats> Get();
 	}
 
-	public class TeamWeekStatsService : ITeamWeekStatsService
+	public class TeamGameStatsService : ITeamGameStatsService
 	{
-		private ILogger<TeamWeekStatsService> _logger { get; }
+		private ILogger<TeamGameStatsService> _logger { get; }
 		private TeamWeekStatsMapValue _teamWeekStatsMap { get; }
 
-		public TeamWeekStatsService(
-			ILogger<TeamWeekStatsService> logger,
+		public TeamGameStatsService(
+			ILogger<TeamGameStatsService> logger,
 			TeamWeekStatsMapValue teamWeekStatsMap)
 		{
 			_logger = logger;

@@ -33,7 +33,8 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			typeof(WeekStatsMiscSql),
 			typeof(WeekStatsKickSql),
 			typeof(WeekStatsDstSql),
-			typeof(WeekStatsIdpSql)
+			typeof(WeekStatsIdpSql),
+			typeof(TeamGameStatsSql)
 		};
 
 		public static string TableName(Type entityType)

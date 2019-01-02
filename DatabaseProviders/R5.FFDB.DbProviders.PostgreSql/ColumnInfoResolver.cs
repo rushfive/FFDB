@@ -72,6 +72,12 @@ namespace R5.FFDB.DbProviders.PostgreSql
 							throw new InvalidOperationException($"Column properties with '{PostgresDataType.DATE}' data type must have a 'DateTimeOffset' type.");
 						}
 						break;
+					case PostgresDataType.BOOLEAN:
+						if (propertyType != typeof(bool) && propertyType != typeof(bool?))
+						{
+							throw new InvalidOperationException($"Column properties with '{PostgresDataType.BOOLEAN}' data type must have a 'bool' or 'bool?' type.");
+						}
+						break;
 					default:
 						throw new ArgumentOutOfRangeException($"'{columnAttr.DataType}' is not a valid postgres data type.");
 				}

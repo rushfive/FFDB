@@ -15,7 +15,6 @@ namespace R5.FFDB.Database
 		ITeamDatabaseContext Team { get; }
 		IPlayerDatabaseContext Player { get; }
 		IWeekStatsDatabaseContext Stats { get; }
-		Task TestInsertWithParamsAsync();
 		Task InitializeAsync();
 	}
 
@@ -23,6 +22,7 @@ namespace R5.FFDB.Database
 	{
 		Task AddTeamsAsync();
 		Task UpdateRostersAsync(List<Roster> rosters);
+		Task UpdateGameStatsAsync(List<TeamWeekStats> stats);
 		
 		// todo/roadmap
 		//Task UpdateDepthChartsAsync();

@@ -100,6 +100,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 					object value = info.Property.GetValue(entity);
 
 					// column based validations for value
+					// REFACTOR into better validating strategy
 					switch (info)
 					{
 						case PropertyColumnInfo property:
@@ -150,6 +151,11 @@ namespace R5.FFDB.DbProviders.PostgreSql
 						return $"'{((DateTimeOffset)value).ToUniversalTime().ToString("yyyy-MM-dd")}'";
 					case PostgresDataType.TIMESTAMPTZ:
 						throw new NotImplementedException();
+					case PostgresDataType.BOOLEAN:
+						{
+							bool boolVal = (bool)value;
+							return boolVal ? "true" : "false";
+						}
 					default:
 						throw new ArgumentOutOfRangeException($"'{dataType}' is not a valid postgres data type.");
 				}
