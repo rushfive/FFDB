@@ -2,8 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using R5.FFDB.Components.CoreData.PlayerProfile.Models;
+using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.TeamData.Models;
-using R5.FFDB.Components.ErrorFileLog;
+using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Http;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
 	public interface IPlayerProfileSource : ICoreDataSource
 	{
-		Task FetchAndSaveAsync(List<string> playerNflIds);
-		List<Core.Models.PlayerProfile> Get();
 	}
 
 	public class PlayerProfileSource : IPlayerProfileSource
@@ -28,24 +27,37 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
-		private IErrorFileLogger _errorFileLogger { get; }
+
+		private IWeekStatsService _weekStatsService { get; }
+		private IRosterService _rosterService { get; }
 
 		public PlayerProfileSource(
 			ILogger<PlayerProfileSource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
-			IErrorFileLogger errorFileLogger)
+			IWeekStatsService weekStatsService,
+			IRosterService rosterService)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_throttle = throttle;
-			_errorFileLogger = errorFileLogger;
+			_weekStatsService = weekStatsService;
+			_rosterService = rosterService;
 		}
 		
-		public async Task FetchAndSaveAsync(List<string> nflIds)
+		public async Task FetchAndSaveAsync()
 		{
+			List<Core.Models.Roster> rosters = _rosterService.Get();
+			List<Core.Models.WeekStats> weekStats = _weekStatsService.Get();
+
+			List<string> nflIds = rosters
+				.SelectMany(r => r.Players)
+				.Select(p => p.NflId)
+				.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
+				.ToList();
+
 			HashSet<string> existing = GetPlayersWithExistingProfileData();
 
 			// skip teams, no profile data to fetch
@@ -73,9 +85,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			{
 				_logger.LogTrace($"Fetching profile data for '{nflId}'.");
 
-				// no longer needed since we get this info from rosters
-				//NgsContentPlayer ngsContent = await GetNgsContentInfoAsync(id);
-
 				PlayerProfileJson playerProfile = null;
 				try
 				{
@@ -92,7 +101,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Failed to fetch player profile for '{nflId}': {ex.Message}. Check the player_profile_fetch file error logs for more information.");
-					//_errorFileLogger.LogPlayerProfileFetchError(nflId, ex);
 				}
 				finally
 				{
@@ -163,45 +171,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 				College = college
 			};
 		}
-
-		public List<Core.Models.PlayerProfile> Get()
-		{
-			return new DirectoryInfo(_dataPath.Static.PlayerProfile)
-				.GetFiles()
-				.Select(f =>
-				{
-					var json = JsonConvert.DeserializeObject<PlayerProfileJson>(File.ReadAllText(f.ToString()));
-					return PlayerProfileJson.ToCoreEntity(json);
-				})
-				.ToList();
-		}
-
-		//private async Task<NgsContentPlayer> GetNgsContentInfoAsync(string nflId)
-		//{
-		//	string uri = $"http://api.fantasy.nfl.com/v2/player/ngs-content?playerId={nflId}";
-
-		//	string response;
-		//	try
-		//	{
-		//		response = await _webRequestClient.GetStringAsync(uri, throttle: false);
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		_logger.LogError(ex, $"Failed to fetch data for '{nflId}' at '{uri}'.");
-		//		throw;
-		//	}
-
-		//	try
-		//	{
-		//		var json = JsonConvert.DeserializeObject<NgsContentJson>(response);
-		//		return NgsContentJson.ToEntity(json);
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		_logger.LogError(ex, $"Failed to deserialize fetched data for '{nflId}'.", response);
-		//		throw;
-		//	}
-		//}
 
 		public Task CheckHealthAsync()
 		{

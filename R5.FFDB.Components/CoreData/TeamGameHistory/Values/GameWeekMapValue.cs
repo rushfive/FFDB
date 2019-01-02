@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
-namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
+namespace R5.FFDB.Components.CoreData.TeamGameHistory.Values
 {
-	public class GameWeekMap : ValueProvider<Dictionary<string, WeekInfo>>
+	public class GameWeekMapValue : ValueProvider<Dictionary<string, WeekInfo>>
 	{
 		private DataDirectoryPath _dataPath { get; }
 
-		public GameWeekMap(DataDirectoryPath dataPath)
+		public GameWeekMapValue(DataDirectoryPath dataPath)
 			: base("Game Week Map")
 		{
 			_dataPath = dataPath;

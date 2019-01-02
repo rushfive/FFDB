@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.TeamData.Models;
-using R5.FFDB.Components.Mappers;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Models;
@@ -10,62 +10,51 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace R5.FFDB.Components.CoreData.TeamGameHistory.Models
+namespace R5.FFDB.Components.CoreData.TeamGameHistory.Values
 {
 	// Value: Map of player's NFL Id to map of Season+Week to Team Id
-	public class PlayerWeekTeamMap : ValueProvider<Dictionary<string, Dictionary<WeekInfo, int>>>
+	public class PlayerWeekTeamMapValue : ValueProvider<Dictionary<string, Dictionary<WeekInfo, int>>>
 	{
 		private static List<string> _statKeys = new List<string>
 		{
 			"passing", "rushing", "receiving", "fumbles", "kicking", "punting", "kickret", "puntret", "defense"
 		};
-
-		private DataDirectoryPath _dataPath { get; }
-		private GameWeekMap _gameWeekMap { get; }
+		
 		private IPlayerIdMapper _playerIdMapper { get; }
-		private ILogger<PlayerWeekTeamMap> _logger { get; }
+		private ILogger<PlayerWeekTeamMapValue> _logger { get; }
+		private GameStatsFilesValue _gameStatsFiles { get; }
 
-		public PlayerWeekTeamMap(
-			DataDirectoryPath dataPath,
-			GameWeekMap gameWeekMap,
+		public PlayerWeekTeamMapValue(
 			IPlayerIdMapper playerIdMapper,
-			ILogger<PlayerWeekTeamMap> logger)
+			ILogger<PlayerWeekTeamMapValue> logger,
+			GameStatsFilesValue gameStatsFiles)
 			: base("Player Week Team Map")
 		{
-			_dataPath = dataPath;
-			_gameWeekMap = gameWeekMap;
 			_playerIdMapper = playerIdMapper;
 			_logger = logger;
+			_gameStatsFiles = gameStatsFiles;
 		}
 
 		protected override Dictionary<string, Dictionary<WeekInfo, int>> ResolveValue()
 		{
-			_logger.LogDebug("Resolving player week team mapping information..");
+			_logger.LogDebug("Resolving player week team mappings.");
 
-			int capacity = (DateTime.UtcNow.Year - 2010) * 300;
-			var result = new Dictionary<string, Dictionary<WeekInfo, int>>(
-				PrimeGenerator.StartingAt(capacity));
+			var result = new Dictionary<string, Dictionary<WeekInfo, int>>();
 
-			Dictionary<string, WeekInfo> gameWeekMap = _gameWeekMap.Get();
-
-			List<string> gameStatFiles = DirectoryFilesResolver.GetFileNames(_dataPath.Static.TeamGameHistoryGameStats, excludeExtensions: true);
-			foreach (string gameId in gameStatFiles)
+			List<(string, WeekInfo, JObject)> gameStats = _gameStatsFiles.Get();
+			foreach((string id, WeekInfo week, JObject json) in gameStats)
 			{
-				WeekInfo week = gameWeekMap[gameId];
-
-				AddFromGame(gameId, week, result);
+				AddFromGame(id, week, json, result);
 			}
 
-			_logger.LogDebug("Finished resolving player week team mapping information.");
+			_logger.LogDebug("Finished resolving player week team mappings.");
 			return result;
 		}
 
-		private void AddFromGame(string gameId, WeekInfo week, Dictionary<string, Dictionary<WeekInfo, int>> map)
+		private void AddFromGame(string gameId, WeekInfo week, JObject json, Dictionary<string, Dictionary<WeekInfo, int>> map)
 		{
-			JObject fileJson = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json"));
-
-			AddForTeam("home", gameId, fileJson, week, map);
-			AddForTeam("away", gameId, fileJson, week, map);
+			AddForTeam("home", gameId, json, week, map);
+			AddForTeam("away", gameId, json, week, map);
 		}
 
 		private void AddForTeam(string teamType, string gameId, JObject fileJson, WeekInfo week, Dictionary<string, Dictionary<WeekInfo, int>> map)

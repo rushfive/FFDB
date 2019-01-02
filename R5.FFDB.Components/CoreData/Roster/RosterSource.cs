@@ -13,8 +13,6 @@ namespace R5.FFDB.Components.CoreData.Roster
 {
 	public interface IRosterSource : ICoreDataSource
 	{
-		Task FetchAndSaveAsync();
-		List<Core.Models.Roster> Get();
 	}
 
 	public class RosterSource : IRosterSource
@@ -24,18 +22,15 @@ namespace R5.FFDB.Components.CoreData.Roster
 		private ILogger<RosterSource> _logger { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private DataDirectoryPath _dataPath { get; }
-		private IRosterScraper _scraper { get; }
 
 		public RosterSource(
 			ILogger<RosterSource> logger,
 			IWebRequestClient webRequestClient,
-			DataDirectoryPath dataPath,
-			IRosterScraper scraper)
+			DataDirectoryPath dataPath)
 		{
 			_logger = logger;
 			_webRequestClient = webRequestClient;
 			_dataPath = dataPath;
-			_scraper = scraper;
 		}
 
 		public async Task FetchAndSaveAsync()
@@ -78,58 +73,6 @@ namespace R5.FFDB.Components.CoreData.Roster
 			await File.WriteAllTextAsync(savePath, html);
 
 			_logger.LogTrace($"Successfully saved team '{team.Abbreviation}' roster page to '{savePath}'.");
-		}
-
-		public List<Core.Models.Roster> Get()
-		{
-			_logger.LogInformation("Getting team roster information.");
-
-			var result = new List<Core.Models.Roster>();
-
-			List<Team> teams = TeamDataStore.GetAll();
-
-			foreach(Team team in teams)
-			{
-				_logger.LogTrace($"Getting team roster information for'{team.Abbreviation}.'");
-
-				Core.Models.Roster roster = GetTeam(team);
-
-				result.Add(roster);
-
-				_logger.LogDebug($"Successfully extracted team roster information for '{team.Abbreviation}'.");
-			}
-
-			_logger.LogInformation("Successfully extracted roster information for all teams.");
-			return result;
-		}
-
-		
-
-		private Core.Models.Roster GetTeam(Team team)
-		{
-			string pagePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
-			var pageHtml = File.ReadAllText(pagePath);
-
-			return GetForTeam(team, pageHtml);
-		}
-
-		private Core.Models.Roster GetForTeam(Team team, string pageHtml)
-		{
-			_logger.LogTrace($"Beginning scraping of team '{team.Abbreviation}' roster page.");
-
-			var page = new HtmlDocument();
-			page.LoadHtml(pageHtml);
-
-			List<RosterPlayer> players = _scraper.ExtractPlayers(page);
-
-			_logger.LogTrace($"Successfully scraped team '{team.Abbreviation}' roster information.");
-
-			return new Core.Models.Roster
-			{
-				TeamId = team.Id,
-				TeamAbbreviation = team.Abbreviation,
-				Players = players
-			};
 		}
 
 		public Task CheckHealthAsync()

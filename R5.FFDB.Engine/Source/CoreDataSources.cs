@@ -5,7 +5,7 @@ using R5.FFDB.Components.CoreData.WeekStats;
 
 namespace R5.FFDB.Engine.Source
 {
-	public class Sources
+	public class CoreDataSources
 	{
 		public IPlayerProfileSource PlayerProfile { get; set; }
 		public IRosterSource Roster { get; set; }

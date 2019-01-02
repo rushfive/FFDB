@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using R5.FFDB.Components.CoreData.TeamGameHistory.Models;
+using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
@@ -17,9 +17,6 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 {
 	public interface IWeekStatsSource : ICoreDataSource
 	{
-		Core.Models.WeekStats GetStats(WeekInfo week);
-		List<Core.Models.WeekStats> GetAll();
-		Task FetchAndSaveAsync();
 	}
 
 	public class WeekStatsSource : IWeekStatsSource
@@ -31,7 +28,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 		private IWebRequestClient _webRequestClient { get; }
 		private IAvailableWeeksResolver _availableWeeks { get; }
 		private LatestWeekValue _latestWeek { get; }
-		private IPlayerWeekTeamHistory _playerWeekTeamHistory { get; }
+		private IPlayerWeekTeamMap _playerWeekTeamHistory { get; }
 
 		public WeekStatsSource(
 			ILogger<WeekStatsSource> logger,
@@ -39,7 +36,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			IWebRequestClient webRequestClient,
 			IAvailableWeeksResolver availableWeeks,
 			LatestWeekValue latestWeek,
-			IPlayerWeekTeamHistory playerWeekTeamHistory)
+			IPlayerWeekTeamMap playerWeekTeamHistory)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
@@ -47,33 +44,6 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			_availableWeeks = availableWeeks;
 			_latestWeek = latestWeek;
 			_playerWeekTeamHistory = playerWeekTeamHistory;
-		}
-
-		private static string GetJsonPath(WeekInfo week, string downloadPath)
-		{
-			if (!downloadPath.EndsWith(@"\"))
-			{
-				downloadPath += @"\";
-			}
-
-			return downloadPath + $"{week.Season}-{week.Week}.json";
-		}
-
-		public Core.Models.WeekStats GetStats(WeekInfo week)
-		{
-			string path = GetJsonPath(week, _dataPath.Static.WeekStats);
-
-			var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
-
-			return WeekStatsJson.ToCoreEntity(json, week, _playerWeekTeamHistory.GetTeam);
-		}
-
-		public List<Core.Models.WeekStats> GetAll()
-		{
-			return DirectoryFilesResolver
-				.GetWeeksFromJsonFiles(_dataPath.Static.WeekStats)
-				.Select(w => GetStats(w))
-				.ToList();
 		}
 
 		public async Task FetchAndSaveAsync()
@@ -132,7 +102,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			// local functions
 			void saveFile(string statsJson, WeekInfo week)
 			{
-				string path = GetJsonPath(week, _dataPath.Static.WeekStats);
+				string path = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
 
 				if (File.Exists(path))
 				{

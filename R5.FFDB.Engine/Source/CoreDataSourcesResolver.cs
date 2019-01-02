@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine.Source
 {
-	public class SourcesResolver : AsyncValueProvider<Sources>
+	public class CoreDataSourcesResolver : AsyncValueProvider<CoreDataSources>
 	{
 		private IPlayerProfileSource _playerProfile { get; }
 		private IRosterSource _roster { get; }
 		private IWeekStatsSource _weekStats { get; }
 		private ITeamGameHistorySource _teamGameHistory { get; }
 
-		public SourcesResolver(
+		public CoreDataSourcesResolver(
 			IPlayerProfileSource playerProfile,
 			IRosterSource roster,
 			IWeekStatsSource weekStats,
@@ -31,11 +31,11 @@ namespace R5.FFDB.Engine.Source
 			_teamGameHistory = teamGameHistory;
 		}
 
-		protected override async Task<Sources> ResolveValueAsync()
+		protected override async Task<CoreDataSources> ResolveValueAsync()
 		{
 			await CheckSourcesHealthyAsync();
 
-			return new Sources
+			return new CoreDataSources
 			{
 				PlayerProfile = _playerProfile,
 				Roster = _roster,

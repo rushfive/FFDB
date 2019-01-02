@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.Engine.Source;
@@ -28,23 +30,30 @@ namespace R5.FFDB.Engine
 		--- update profile pictures 
 		      player data currently has a static link, the link can be derived using the esbId
 
-	 */ 
+	 */
 	public class FfdbEngine
 	{
 		private ILogger<FfdbEngine> _logger { get; }
-		private SourcesResolver _sourcesResolver { get; }
+		private CoreDataSourcesResolver _sourcesResolver { get; }
 		private IDatabaseProvider _databaseProvider { get; }
+
+		private IWeekStatsService _weekStatsService { get; }
+		private IRosterService _rosterService { get; }
 
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
-			SourcesResolver sourcesResolver,
-			IDatabaseProvider databaseProvider)
+			CoreDataSourcesResolver sourcesResolver,
+			IDatabaseProvider databaseProvider,
+			IWeekStatsService weekStatsService,
+			IRosterService rosterService)
 		{
 			_logger = logger;
 			_sourcesResolver = sourcesResolver;
 			_databaseProvider = databaseProvider;
+			_weekStatsService = weekStatsService;
+			_rosterService = rosterService;
 		}
-		
+
 		// can be run more than once, in case of failure
 		public async Task RunInitialSetupAsync()
 		{
@@ -67,30 +76,31 @@ namespace R5.FFDB.Engine
 			//await dbContext.CreateTablesAsync();
 			//await dbContext.Team.AddTeamsAsync();
 
-			Sources sources = await _sourcesResolver.GetAsync();
+			CoreDataSources sources = await _sourcesResolver.GetAsync();
 
 			await sources.Roster.FetchAndSaveAsync();
-			List<Roster> rosters = sources.Roster.Get();
+			List<Roster> rosters = _rosterService.Get();
 
 			await sources.WeekStats.FetchAndSaveAsync();
-			List<WeekStats> weekStats = sources.WeekStats.GetAll();
+
+			List<WeekStats> weekStats = _weekStatsService.Get();
 
 			_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
 
-			List<string> playerNflIds = rosters
-				.SelectMany(r => r.Players)
-				.Select(p => p.NflId)
-				.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
-				.ToList();
+			//List<string> playerNflIds = rosters
+			//	.SelectMany(r => r.Players)
+			//	.Select(p => p.NflId)
+			//	.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
+			//	.ToList();
 
-			await sources.PlayerProfile.FetchAndSaveAsync(playerNflIds);
+			await sources.PlayerProfile.FetchAndSaveAsync();
 
 
 			return;
 
 			// OLD
 
-			
+
 
 			// get all available week stats
 			//try
@@ -131,6 +141,6 @@ namespace R5.FFDB.Engine
 			// fetch and save current team roster pages
 
 		}
-		
-	}	
+
+	}
 }

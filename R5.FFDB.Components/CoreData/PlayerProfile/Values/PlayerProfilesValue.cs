@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using R5.FFDB.Components.CoreData.PlayerProfile.Models;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Models;
 using System;
@@ -7,13 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.CoreData.PlayerProfile.Models
+namespace R5.FFDB.Components.CoreData.PlayerProfile.Values
 {
-	public class PlayerProfiles : ValueProvider<List<Core.Models.PlayerProfile>>
+	public class PlayerProfilesValue : ValueProvider<List<Core.Models.PlayerProfile>>
 	{
 		private DataDirectoryPath _dataPath { get; }
 
-		public PlayerProfiles(DataDirectoryPath dataPath)
+		public PlayerProfilesValue(DataDirectoryPath dataPath)
 			: base("Player Profiles")
 		{
 			_dataPath = dataPath;

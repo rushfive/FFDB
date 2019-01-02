@@ -3,14 +3,12 @@ using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.PlayerProfile;
-using R5.FFDB.Components.CoreData.PlayerProfile.Models;
+using R5.FFDB.Components.CoreData.PlayerProfile.Values;
 using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.TeamGameHistory;
-using R5.FFDB.Components.CoreData.TeamGameHistory.Models;
+using R5.FFDB.Components.CoreData.TeamGameHistory.Values;
 using R5.FFDB.Components.CoreData.WeekStats;
-using R5.FFDB.Components.ErrorFileLog;
 using R5.FFDB.Components.Http;
-using R5.FFDB.Components.Mappers;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Database;
@@ -50,11 +48,13 @@ namespace R5.FFDB.Engine
 				.AddScoped(sp => dataPath)
 				.AddScoped(sp => _webRequestConfig)
 				.AddScoped(sp => throttle)
-				.AddScoped<SourcesResolver>()
+				.AddScoped<CoreDataSourcesResolver>()
 				.AddScoped<LatestWeekValue>()
-				.AddScoped<PlayerProfiles>()
-				.AddScoped<GameWeekMap>()
-				.AddScoped<PlayerWeekTeamMap>()
+				.AddScoped<PlayerProfilesValue>()
+				.AddScoped<GameStatsFilesValue>()
+				.AddScoped<GameWeekMapValue>()
+				.AddScoped<PlayerWeekTeamMapValue>()
+				.AddScoped<TeamWeekStatsMapValue>()
 				.AddScoped<IDatabaseProvider>(sp =>
 				{
 					var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
@@ -64,14 +64,17 @@ namespace R5.FFDB.Engine
 			services
 				.AddScoped<IWebRequestClient, WebRequestClient>()
 				.AddScoped<IPlayerProfileSource, PlayerProfileSource>()
+				.AddScoped<IPlayerProfileService, PlayerProfileService>()
+				.AddScoped<IRosterService, RosterService>()
 				.AddScoped<IRosterSource, RosterSource>()
 				.AddScoped<IRosterScraper, RosterScraper>()
 				.AddScoped<IWeekStatsSource, WeekStatsSource>()
+				.AddScoped<IWeekStatsService, WeekStatsService>()
 				.AddScoped<ITeamGameHistorySource, TeamGameHistorySource>()
-				.AddScoped<IPlayerWeekTeamHistory, PlayerWeekTeamHistory>()
+				.AddScoped<ITeamWeekStatsService, TeamWeekStatsService>()
+				.AddScoped<IPlayerWeekTeamMap, PlayerWeekTeamMap>()
 				.AddScoped<IAvailableWeeksResolver, AvailableWeeksResolver>()
-				.AddScoped<IPlayerIdMapper, PlayerIdMapper>()
-				.AddScoped<IErrorFileLogger, ErrorFileLogger>();
+				.AddScoped<IPlayerIdMapper, PlayerIdMapper>();
 
 			return services;
 		}

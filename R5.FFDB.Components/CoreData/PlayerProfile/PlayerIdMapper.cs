@@ -1,5 +1,6 @@
 ﻿using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.PlayerProfile.Models;
+using R5.FFDB.Components.CoreData.PlayerProfile.Values;
 using R5.FFDB.Components.ValueProviders;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.Mappers
+namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
 	public interface IPlayerIdMapper
 	{
@@ -18,10 +19,10 @@ namespace R5.FFDB.Components.Mappers
 	}
 	public class PlayerIdMapper : IPlayerIdMapper
 	{
-		private PlayerProfiles _playerProfiles { get; }
+		private PlayerProfilesValue _playerProfiles { get; }
 		private Mappings _mappings { get; set; }
 
-		public PlayerIdMapper(PlayerProfiles playerProfiles)
+		public PlayerIdMapper(PlayerProfilesValue playerProfiles)
 		{
 			_playerProfiles = playerProfiles;
 		}
