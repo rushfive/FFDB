@@ -33,7 +33,10 @@ namespace R5.FFDB.Database
 	{
 		Task AddAsync(List<PlayerProfile> players, List<Roster> rosters,
 			int insertBatchCount = 500);
-		Task<List<PlayerProfile>> GetExistingAsync();
+
+		Task<List<Guid>> GetExistingIdsAsync();
+		Task<List<string>> GetExistingNflIdsAsync();
+
 		Task UpdateAsync(List<PlayerProfile> players, bool overrideExisting);
 	}
 

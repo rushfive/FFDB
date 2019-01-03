@@ -17,7 +17,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
 
-		[Column("date_of_birth", PostgresDataType.TIMESTAMPTZ)]
-		public DateTimeOffset DateOfBirth { get; set; }
+		[Column("update_time", PostgresDataType.TIMESTAMPTZ)]
+		public DateTimeOffset UpdateTime { get; set; }
 	}
 }

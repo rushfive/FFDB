@@ -61,7 +61,7 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 
 		public async Task FetchForWeeksAsync(List<WeekInfo> weeks)
 		{
-			_logger.LogInformation($"Beginning fetching of team game history data for {weeks.Count} weeks.");
+			_logger.LogInformation($"Beginning fetching of team game history data for {weeks.Count} week(s).");
 			_logger.LogTrace($"Fetching for weeks: {string.Join(", ", weeks)}");
 
 			foreach(WeekInfo week in weeks)

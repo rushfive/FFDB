@@ -13,6 +13,7 @@ namespace R5.FFDB.Components.CoreData.Roster
 {
 	public interface IRosterSource : ICoreDataSource
 	{
+		Task FetchAsync();
 	}
 
 	public class RosterSource : IRosterSource
@@ -33,7 +34,7 @@ namespace R5.FFDB.Components.CoreData.Roster
 			_dataPath = dataPath;
 		}
 
-		public async Task FetchAndSaveAsync()
+		public async Task FetchAsync()
 		{
 			_logger.LogInformation("Beginning fetching of Team Rosters.");
 

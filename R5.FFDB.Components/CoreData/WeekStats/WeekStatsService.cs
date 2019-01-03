@@ -14,6 +14,9 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 {
 	public interface IWeekStatsService
 	{
+		Core.Models.WeekStats GetForWeek(WeekInfo week);
+		List<string> GetNflIdsForWeek(WeekInfo week);
+		//
 		List<Core.Models.WeekStats> Get();
 
 	}
@@ -32,6 +35,24 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			_dataPath = dataPath;
 			_playerWeekTeamMap = playerWeekTeamHistory;
 		}
+
+		public List<string> GetNflIdsForWeek(WeekInfo week)
+		{
+			string path = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
+
+			var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
+
+			WeekStatsGameJson games = json.Games.Single().Value;
+
+			return games.Players.Keys.ToList();
+		}
+
+		public Core.Models.WeekStats GetForWeek(WeekInfo week)
+		{
+			return GetStats(week);
+		}
+
+		// pre per-week below
 
 		public List<Core.Models.WeekStats> Get()
 		{

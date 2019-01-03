@@ -90,9 +90,16 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			return result;
 		}
 
-		public Task<List<PlayerProfile>> GetExistingAsync()
+		public async Task<List<Guid>> GetExistingIdsAsync()
 		{
-			throw new NotImplementedException();
+			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>();
+			return playerSqls.Select(p => p.Id).ToList();
+		}
+
+		public async Task<List<string>> GetExistingNflIdsAsync()
+		{
+			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>();
+			return playerSqls.Select(p => p.NflId).ToList();
 		}
 
 		public Task UpdateAsync(List<PlayerProfile> players, bool overrideExisting)

@@ -24,7 +24,7 @@ namespace DevTester
 			var webRequestConfig = new WebRequestConfig(1000, null, webRequestHeaders);
 
 			var loggingConfig = new LoggingConfig(
-				@"D:\Repos\ffdb_data\dev_test_logs\",
+				@"D:\Repos\ffdb_data_2\dev_test_logs\",
 				maxBytes: null,
 				RollingInterval.Day,
 				rollOnFileSizeLimit: false,
@@ -41,7 +41,7 @@ namespace DevTester
 			var baseServiceCollection = new EngineBaseServiceCollection();
 
 			ServiceCollection services = baseServiceCollection
-				.SetRootDataPath(@"D:\Repos\ffdb_data\")
+				.SetRootDataPath(@"D:\Repos\ffdb_data_2\")
 				.AddWebRequestConfig(webRequestConfig)
 				.AddLoggingConfig(loggingConfig)
 				.AddDatabaseProviderFactory(loggerFactory => new PostgresDbProvider(postgresConfig, loggerFactory))

@@ -17,6 +17,8 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 {
 	public interface IWeekStatsSource : ICoreDataSource
 	{
+		Task FetchAllAsync();
+		Task FetchForWeeksAsync(List<WeekInfo> weeks);
 	}
 
 	public class WeekStatsSource : IWeekStatsSource
@@ -45,6 +47,63 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			_latestWeek = latestWeek;
 			_playerWeekTeamHistory = playerWeekTeamHistory;
 		}
+
+		public async Task FetchAllAsync()
+		{
+			_logger.LogInformation("Beginning fetching of week stats for all available weeks.");
+
+			List<WeekInfo> availableWeeks = await _availableWeeks.GetAsync();
+
+			await FetchForWeeksAsync(availableWeeks);
+
+			_logger.LogInformation("Finished fetching week stats for all available weeks.");
+		}
+
+		public async Task FetchForWeeksAsync(List<WeekInfo> weeks)
+		{
+			_logger.LogInformation($"Beginning fetching of week stats for {weeks.Count} week(s).");
+			_logger.LogTrace($"Fetching for weeks: {string.Join(", ", weeks)}");
+
+			foreach (WeekInfo week in weeks)
+			{
+				string filePath = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
+				if (File.Exists(filePath))
+				{
+					_logger.LogInformation($"Week stats file already exists for {week}. Will not fetch.");
+					return;
+				}
+
+				string stats = await FetchWeekAsync(week);
+
+				_logger.LogTrace($"Saving week stats JSON response for {week} to '{filePath}'.");
+				File.WriteAllText(filePath, stats);
+
+				_logger.LogInformation($"Finished saving week stats for {week}.");
+			}
+
+			_logger.LogInformation("Finished fetching week stats.");
+		}
+
+		private async Task<string> FetchWeekAsync(WeekInfo week)
+		{
+			string uri = Endpoints.Api.WeekStats(week.Season, week.Week);
+			_logger.LogDebug($"Beginning week stats fetch for {week} from '{uri}'.");
+
+			try
+			{
+				string stats = await _webRequestClient.GetStringAsync(uri);
+				_logger.LogInformation($"Finished fetching week stats for {week}.");
+				return stats;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to fetch week stats for {week} from '{uri}'.");
+				throw;
+			}
+		}
+
+
+		// PRE per-week below
 
 		public async Task FetchAndSaveAsync()
 		{

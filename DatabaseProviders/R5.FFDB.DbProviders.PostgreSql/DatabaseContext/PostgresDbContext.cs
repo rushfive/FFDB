@@ -40,6 +40,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogDebug("Starting creation of database tables..");
 
+			await createTableAsync(typeof(UpdateLogSql));
 			await createTableAsync(typeof(TeamSql));
 			await createTableAsync(typeof(PlayerSql));
 			await createTableAsync(typeof(PlayerTeamMapSql));

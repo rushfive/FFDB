@@ -17,6 +17,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
 	public interface IPlayerProfileSource : ICoreDataSource
 	{
+		Task FetchAsync(List<string> nIds);
 	}
 
 	public class PlayerProfileSource : IPlayerProfileSource
@@ -46,6 +47,36 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			_weekStatsService = weekStatsService;
 			_rosterService = rosterService;
 		}
+
+		public async Task FetchAsync(List<string> nIds)
+		{
+			// skip teams, no profile data to fetch
+			var teamIds = TeamDataStore.GetAll().Select(t => t.NflId);
+			nIds = nIds.Where(id => !teamIds.Contains(id)).Distinct().ToList();
+
+			_logger.LogInformation($"Beginning fetching of profile data for {nIds.Count} player(s).");
+			_logger.LogTrace($"Fetching for players (nfl ids): {string.Join(", ", nIds)}");
+
+			foreach (string id in nIds)
+			{
+				_logger.LogTrace($"Fetching player profile data for '{id}'.");
+
+				PlayerProfileJson playerProfile = await FetchForPlayerAsync(id);
+
+				string serializedPlayerData = JsonConvert.SerializeObject(playerProfile);
+
+				string path = _dataPath.Static.PlayerProfile + $"{id}.json";
+				File.WriteAllText(path, serializedPlayerData);
+
+				await _throttle.DelayAsync();
+				_logger.LogDebug($"Finished fetching player profile for '{id}'.");
+			}
+
+			_logger.LogInformation("Finished fetching player profiles.");
+		}
+
+
+		// pre per-week below
 		
 		public async Task FetchAndSaveAsync()
 		{

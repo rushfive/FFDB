@@ -42,11 +42,14 @@ namespace DevTester
 		{
 			_serviceProvider = DevTestServiceProvider.Build();
 			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
-			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
+			//var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
-			var teamGameHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
-			var week = new WeekInfo(2018, 17);
-			await teamGameHistorySource.FetchAndSaveForWeekAsync(week);
+			var rSource = _serviceProvider.GetRequiredService<IRosterSource>();
+			await rSource.FetchAsync();
+
+
+			//await InitDbAsync();
+			await TestUpdateAsync(new WeekInfo(2010, 1));
 
 			return;
 			
@@ -54,13 +57,54 @@ namespace DevTester
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			IDatabaseContext dbContext = dbProvider.GetContext();
 
-			await InitialSetupTestAsync();
+			//await InitialSetupTestAsync();
 
 			return;
 
 			
 			Console.ReadKey();
 		}
+
+		private static async Task InitDbAsync()
+		{
+			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
+			IDatabaseContext dbContext = dbProvider.GetContext();
+			await dbContext.InitializeAsync();
+			await dbContext.Team.AddTeamsAsync();
+		}
+
+		// things that need to happen before this:
+		// assumes db initializes with tbls and tms
+		// get latest rosters
+		private static async Task TestUpdateAsync(WeekInfo week)
+		{
+			var wks = new List<WeekInfo> { week };
+
+			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
+			IDatabaseContext dbContext = dbProvider.GetContext();
+			var tgHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
+			var wsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
+			var wsSvc = _serviceProvider.GetRequiredService<IWeekStatsService>();
+			var pSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
+			var pSvc = _serviceProvider.GetRequiredService<IPlayerProfileService>();
+			//var rSource = _serviceProvider.GetRequiredService<IRosterSource>();
+			var rSvc = _serviceProvider.GetRequiredService<IRosterService>();
+			
+			await tgHistorySource.FetchForWeeksAsync(wks);
+			await wsSource.FetchForWeeksAsync(wks);
+			
+			HashSet<string> existingNflIds = (await dbContext.Player.GetExistingNflIdsAsync()).ToHashSet();
+			List<string> idsFromWeek = wsSvc.GetNflIdsForWeek(week);
+			var idsToFetch = idsFromWeek.Where(id => !existingNflIds.Contains(id)).ToList();
+			await pSource.FetchAsync(idsToFetch);
+
+
+			var t = "test";
+		}
+
+
+
+
 
 		private static async Task TestEngineInitialSetupAsync()
 		{
@@ -101,56 +145,56 @@ namespace DevTester
 
 		// TODO: this will all be copied to the ENGINEs initial setup method
 		//       after done and tested
-		private static async Task InitialSetupTestAsync()
-		{
-			_logger.LogInformation("Running initial setup..");
+		//private static async Task InitialSetupTestAsync()
+		//{
+		//	_logger.LogInformation("Running initial setup..");
 
-			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-			IDatabaseContext dbContext = dbProvider.GetContext();
-			_logger.LogInformation($"Will run using database provider '{dbProvider.GetType().Name}'.");
+		//	var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
+		//	IDatabaseContext dbContext = dbProvider.GetContext();
+		//	_logger.LogInformation($"Will run using database provider '{dbProvider.GetType().Name}'.");
 
-			//await dbContext.InitializeAsync();
-			//await dbContext.Team.AddTeamsAsync();
+		//	//await dbContext.InitializeAsync();
+		//	//await dbContext.Team.AddTeamsAsync();
 
-			var sourcesResolver = _serviceProvider.GetRequiredService<CoreDataSourcesResolver>();
-			CoreDataSources sources = await sourcesResolver.GetAsync();
+		//	var sourcesResolver = _serviceProvider.GetRequiredService<CoreDataSourcesResolver>();
+		//	CoreDataSources sources = await sourcesResolver.GetAsync();
 
-			// ALSO: need to fetch latest team game history
-			//await sources.TeamGameHistory.FetchAndSaveAsync();
+		//	// ALSO: need to fetch latest team game history
+		//	//await sources.TeamGameHistory.FetchAndSaveAsync();
 
-			var gameStatsParser = _serviceProvider.GetRequiredService<IGameStatsParser>();
-			gameStatsParser.ParseFilesToMapValues();
+		//	var gameStatsParser = _serviceProvider.GetRequiredService<IGameStatsParser>();
+		//	gameStatsParser.ParseFilesToMapValues();
 
-			await sources.Roster.FetchAndSaveAsync();
-			var rosterService = _serviceProvider.GetRequiredService<IRosterService>();
-			List<Roster> rosters = rosterService.Get();
+		//	await sources.Roster.FetchAndSaveAsync();
+		//	var rosterService = _serviceProvider.GetRequiredService<IRosterService>();
+		//	List<Roster> rosters = rosterService.Get();
 
-			await sources.WeekStats.FetchAndSaveAsync();
-			var weekStatsService = _serviceProvider.GetRequiredService<IWeekStatsService>();
-			List<WeekStats> weekStats = weekStatsService.Get()
-				.OrderBy(ws => ws.Week)
-				.ToList();
+		//	await sources.WeekStats.FetchAndSaveAsync();
+		//	var weekStatsService = _serviceProvider.GetRequiredService<IWeekStatsService>();
+		//	List<WeekStats> weekStats = weekStatsService.Get()
+		//		.OrderBy(ws => ws.Week)
+		//		.ToList();
 
-			_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
+		//	_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
 
-			await sources.PlayerProfile.FetchAndSaveAsync();
+		//	await sources.PlayerProfile.FetchAndSaveAsync();
 
-			_logger.LogInformation("Beginning persisting of player profiles to database..");
+		//	_logger.LogInformation("Beginning persisting of player profiles to database..");
 
-			var playerProfileService = _serviceProvider.GetRequiredService<IPlayerProfileService>();
-			List<PlayerProfile> players = playerProfileService.Get();
-			await dbContext.Player.AddAsync(players, rosters);
+		//	var playerProfileService = _serviceProvider.GetRequiredService<IPlayerProfileService>();
+		//	List<PlayerProfile> players = playerProfileService.Get();
+		//	await dbContext.Player.AddAsync(players, rosters);
 
-			_logger.LogInformation("Beginning persisting of player-team mappings to database..");
+		//	_logger.LogInformation("Beginning persisting of player-team mappings to database..");
 
-			await dbContext.Team.UpdateRostersAsync(rosters);
+		//	await dbContext.Team.UpdateRostersAsync(rosters);
 
-			await dbContext.Stats.UpdateWeeksAsync(weekStats);
+		//	await dbContext.Stats.UpdateWeeksAsync(weekStats);
 
-			var gameStatsService = _serviceProvider.GetRequiredService<ITeamGameStatsService>();
-			List<TeamWeekStats> teamGameStats = gameStatsService.Get();
-			await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
-		}
+		//	var gameStatsService = _serviceProvider.GetRequiredService<ITeamGameStatsService>();
+		//	List<TeamWeekStats> teamGameStats = gameStatsService.Get();
+		//	await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
+		//}
 
 
 
