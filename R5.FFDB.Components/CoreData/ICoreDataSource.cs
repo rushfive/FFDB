@@ -9,8 +9,6 @@ namespace R5.FFDB.Components.CoreData
 	{
 		string Label { get; }
 
-		Task FetchAndSaveAsync();
-
 		// should throw if NOT healthy and be logged
 		Task CheckHealthAsync();
 	}

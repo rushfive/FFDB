@@ -77,14 +77,14 @@ namespace R5.FFDB.Engine
 
 			CoreDataSources sources = await _sourcesResolver.GetAsync();
 
-			await sources.TeamGameHistory.FetchAndSaveAsync();
+			//await sources.TeamGameHistory.FetchAndSaveAsync();
 			
 			_gameStatsParser.ParseFilesToMapValues();
 
-			await sources.Roster.FetchAndSaveAsync();
+			//await sources.Roster.FetchAndSaveAsync();
 			List<Roster> rosters = _rosterService.Get();
 
-			await sources.PlayerProfile.FetchAndSaveAsync();
+			//await sources.PlayerProfile.FetchAndSaveAsync();
 
 			_logger.LogInformation("Persisting player profiles to database..");
 			
@@ -94,7 +94,7 @@ namespace R5.FFDB.Engine
 			_logger.LogInformation("Persisting player-team mappings (roster) to database..");
 			await dbContext.Team.UpdateRostersAsync(rosters);
 
-			await sources.WeekStats.FetchAndSaveAsync();
+			//await sources.WeekStats.FetchAndSaveAsync();
 			List<WeekStats> weekStats = _weekStatsService.Get()
 				.OrderBy(ws => ws.Week)
 				.ToList();
@@ -108,5 +108,11 @@ namespace R5.FFDB.Engine
 			_logger.LogInformation("Successfully finished running initial setup.");
 		}
 
+		public async Task UpdateForWeekAsync(int season, int week)
+		{
+			_logger.LogInformation($"Starting update for {season}-{week}.");
+
+
+		}
 	}
 }

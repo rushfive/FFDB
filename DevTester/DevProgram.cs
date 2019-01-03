@@ -20,6 +20,7 @@ using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
+using R5.FFDB.Engine;
 using R5.FFDB.Engine.Source;
 using Serilog;
 using Serilog.Events;
@@ -43,32 +44,12 @@ namespace DevTester
 			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
 			var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
+			var teamGameHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
+			var week = new WeekInfo(2018, 17);
+			await teamGameHistorySource.FetchAndSaveForWeekAsync(week);
+
+			return;
 			
-
-			//Func<List<(string, WeekInfo, JObject)>> loadAllFiles = () =>
-			//{
-			//	var gameStatFiles = _serviceProvider.GetRequiredService<GameStatsFilesValue>();
-			//	return gameStatFiles.Get();
-			//};
-
-			//Func<List<(string, WeekInfo, JObject)>> loadPlayerWeekTeam = () =>
-			//{
-			//	var valueProvider = _serviceProvider.GetRequiredService<GameStatsFilesValue>();
-			//	return valueProvider.Get();
-			//};
-
-			//Func<Dictionary<WeekInfo, Dictionary<int, TeamWeekStats>>> loadTeamWeekStats = () =>
-			//{
-			//	var valueProvider = _serviceProvider.GetRequiredService<TeamWeekStatsMapValue>();
-			//	return valueProvider.Get();
-			//};
-
-			//var jsonFiles = Timer.Time("load json files", loadAllFiles, TimerUnit.Seconds);
-			//var playerWeekTeamMap = Timer.Time("load player week team map", loadPlayerWeekTeam, TimerUnit.Seconds);
-			//var teamWeekStats = Timer.Time("load team week stats", loadTeamWeekStats, TimerUnit.Seconds);
-
-			//return;
-
 
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			IDatabaseContext dbContext = dbProvider.GetContext();
@@ -77,40 +58,46 @@ namespace DevTester
 
 			return;
 
-
-
-
-
-
-
-
-
-
-
-			// get GSIS to NFL id mapping
-
-
-			//var teamHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
-			//await teamHistorySource.FetchAndSaveAsync();
-
-
-
-			//var postgresConfig = new PostgresConfig
-			//{
-			//	DatabaseName = "ffdb_test_1",
-			//	Host = "localhost",
-			//	Username = "ffdb",
-			//	Password = "welc0me!"
-			//};
-
-			//var postgresProvider = new PostgresDbProvider(postgresConfig);
-			//IDatabaseContext context = postgresProvider.GetContext();
-
-			//await context.RunInitialSetupAsync();
-
-
+			
 			Console.ReadKey();
 		}
+
+		private static async Task TestEngineInitialSetupAsync()
+		{
+			var setup = new EngineSetup();
+
+			setup
+				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data\")
+				.UsePostgreSql(new PostgresConfig
+				{
+					DatabaseName = "ffdb_test_1",
+					Host = "localhost",
+					Username = "ffdb",
+					Password = "welc0me!"
+				});
+
+			setup.WebRequest
+				.SetThrottle(1000)
+				.AddDefaultBrowserHeaders();
+
+			setup.Logging
+				.SetLogDirectory(@"D:\Repos\ffdb_data\dev_test_logs\")
+				.SetRollingInterval(RollingInterval.Day)
+				.SetLogLevel(LogEventLevel.Debug);
+
+			FfdbEngine engine = setup.Create();
+			await engine.RunInitialSetupAsync();
+		}
+
+
+
+
+
+
+
+
+
+
 
 		// TODO: this will all be copied to the ENGINEs initial setup method
 		//       after done and tested
