@@ -11,7 +11,6 @@ using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.Roster.Values;
 using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.CoreData.TeamGameHistory;
-using R5.FFDB.Components.CoreData.TeamGameHistory.Values;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Core.Models;

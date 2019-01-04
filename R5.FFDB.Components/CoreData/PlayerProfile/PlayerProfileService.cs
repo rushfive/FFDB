@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using R5.FFDB.Components.CoreData.PlayerProfile.Models;
-using R5.FFDB.Components.CoreData.PlayerProfile.Values;
 using R5.FFDB.Components.Resolvers;
 using System.Collections.Generic;
 using System.IO;
@@ -17,14 +16,11 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 	public class PlayerProfileService : IPlayerProfileService
 	{
 		private DataDirectoryPath _dataPath { get; }
-		private PlayerProfilesValue _playerProfiles { get; }
 
 		public PlayerProfileService(
-			DataDirectoryPath dataPath,
-			PlayerProfilesValue playerProfiles)
+			DataDirectoryPath dataPath)
 		{
 			_dataPath = dataPath;
-			_playerProfiles = playerProfiles;
 		}
 
 		public List<Core.Models.PlayerProfile> Get(List<string> nflIds)

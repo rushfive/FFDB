@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using R5.FFDB.Components.CoreData.TeamData.Models;
-using R5.FFDB.Components.CoreData.TeamGameHistory.Values;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;

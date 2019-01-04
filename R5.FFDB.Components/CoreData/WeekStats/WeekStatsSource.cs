@@ -30,22 +30,19 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 		private IWebRequestClient _webRequestClient { get; }
 		private IAvailableWeeksResolver _availableWeeks { get; }
 		private LatestWeekValue _latestWeek { get; }
-		private IPlayerWeekTeamMap _playerWeekTeamHistory { get; }
 
 		public WeekStatsSource(
 			ILogger<WeekStatsSource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			IAvailableWeeksResolver availableWeeks,
-			LatestWeekValue latestWeek,
-			IPlayerWeekTeamMap playerWeekTeamHistory)
+			LatestWeekValue latestWeek)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_availableWeeks = availableWeeks;
 			_latestWeek = latestWeek;
-			_playerWeekTeamHistory = playerWeekTeamHistory;
 		}
 
 		public async Task FetchAllAsync()

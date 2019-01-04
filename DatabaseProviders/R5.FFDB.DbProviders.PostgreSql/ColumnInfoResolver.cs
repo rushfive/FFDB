@@ -58,18 +58,19 @@ namespace R5.FFDB.DbProviders.PostgreSql
 							throw new InvalidOperationException($"Column properties with '{PostgresDataType.INT}' data type must have a 'int' or 'int?' type.");
 						}
 						break;
-					case PostgresDataType.TIMESTAMPTZ:
-						break;
+					//case PostgresDataType.TIMESTAMPTZ:
+					//	break;
 					case PostgresDataType.FLOAT8:
 						if (propertyType != typeof(double) && property != typeof(double?))
 						{
 							throw new InvalidOperationException($"Column properties with '{PostgresDataType.FLOAT8}' data type must have a 'double' or 'double?' type.");
 						}
 						break;
+					case PostgresDataType.TIMESTAMPTZ:
 					case PostgresDataType.DATE:
 						if (propertyType != typeof(DateTimeOffset) && propertyType != typeof(DateTimeOffset?))
 						{
-							throw new InvalidOperationException($"Column properties with '{PostgresDataType.DATE}' data type must have a 'DateTimeOffset' type.");
+							throw new InvalidOperationException($"Column properties with '{PostgresDataType.DATE}' or '{PostgresDataType.TIMESTAMPTZ}' data type must have a 'DateTimeOffset' type.");
 						}
 						break;
 					case PostgresDataType.BOOLEAN:

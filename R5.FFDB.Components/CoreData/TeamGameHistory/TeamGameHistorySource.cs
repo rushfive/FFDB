@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using R5.FFDB.Components.CoreData.TeamData.Models;
-using R5.FFDB.Components.CoreData.TeamGameHistory.Values;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Core.Models;
@@ -30,22 +27,19 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
 		private IAvailableWeeksResolver _availableWeeks { get; }
-		private GameWeekMapValue _gameWeekMap { get; }
 
 		public TeamGameHistorySource(
 			ILogger<TeamGameHistorySource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
-			IAvailableWeeksResolver availableWeeks,
-			GameWeekMapValue gameWeekMap)
+			IAvailableWeeksResolver availableWeeks)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_throttle = throttle;
 			_availableWeeks = availableWeeks;
-			_gameWeekMap = gameWeekMap;
 		}
 
 		public async Task FetchAllAsync()

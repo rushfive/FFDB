@@ -1,3 +1,29 @@
+getting player's team history on a week by week basis:
+
+use NFL player profiles gamelogs pages:
+http://www.nfl.com/player/demaryiusthomas/497328/gamelogs
+http://www.nfl.com/player/demaryiusthomas/497328/gamelogs?season=2017   for random teams, omitting season takes you to latest
+
+on the RESULT column, it has a link (with text score), and the last segment of the URL
+indicates the two teams that have played
+
+The previous column, opponent, can be used to derive which team the player was on 
+eg:
+demaryius thomas, 2018, week3:
+opp: @ BAL
+Result: L 14-27, where the link uri is:
+   http://www.nfl.com/gamecenter/2018092301/2018/REG3/broncos@ravens
+
+we know he was on the broncos for this game because the opp was specified as BAL
+
+we'll need to add a prop to all teams, "short name"? that maps to "broncos@ravens" these values
+
+-- watch out for bye weeks
+      the second col, game date, sshows dates, but if it shows BYE, make sure to log it as such
+
+
+---------------------------------
+
 https://api.nfl.com/v1/currentWeek
 
 http://feeds.nfl.com/feeds-rs/depthChartClub/byTeam/SEA.json

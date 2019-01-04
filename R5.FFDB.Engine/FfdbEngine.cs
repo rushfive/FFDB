@@ -40,7 +40,6 @@ namespace R5.FFDB.Engine
 		private IDatabaseProvider _databaseProvider { get; }
 		private IWeekStatsService _weekStatsService { get; }
 		private IRosterService _rosterService { get; }
-		private IGameStatsParser _gameStatsParser { get; }
 		private IPlayerProfileService _playerProfileService { get; }
 		private ITeamGameStatsService _teamGameStatsService { get; }
 
@@ -50,7 +49,6 @@ namespace R5.FFDB.Engine
 			IDatabaseProvider databaseProvider,
 			IWeekStatsService weekStatsService,
 			IRosterService rosterService,
-			IGameStatsParser gameStatsParser,
 			IPlayerProfileService playerProfileService,
 			ITeamGameStatsService teamGameStatsService)
 		{
@@ -59,7 +57,6 @@ namespace R5.FFDB.Engine
 			_databaseProvider = databaseProvider;
 			_weekStatsService = weekStatsService;
 			_rosterService = rosterService;
-			_gameStatsParser = gameStatsParser;
 			_playerProfileService = playerProfileService;
 			_teamGameStatsService = teamGameStatsService;
 		}
@@ -67,45 +64,45 @@ namespace R5.FFDB.Engine
 		// can be run more than once, in case of failure
 		public async Task RunInitialSetupAsync()
 		{
-			_logger.LogInformation("Running initial setup..");
+			//_logger.LogInformation("Running initial setup..");
 
-			IDatabaseContext dbContext = _databaseProvider.GetContext();
-			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
+			//IDatabaseContext dbContext = _databaseProvider.GetContext();
+			//_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
 			
-			await dbContext.InitializeAsync();
-			await dbContext.Team.AddTeamsAsync();
+			//await dbContext.InitializeAsync();
+			//await dbContext.Team.AddTeamsAsync();
 
-			CoreDataSources sources = await _sourcesResolver.GetAsync();
+			//CoreDataSources sources = await _sourcesResolver.GetAsync();
 
-			//await sources.TeamGameHistory.FetchAndSaveAsync();
+			////await sources.TeamGameHistory.FetchAndSaveAsync();
 			
-			_gameStatsParser.ParseFilesToMapValues();
+			//_gameStatsParser.ParseFilesToMapValues();
 
-			//await sources.Roster.FetchAndSaveAsync();
-			List<Roster> rosters = _rosterService.Get();
+			////await sources.Roster.FetchAndSaveAsync();
+			//List<Roster> rosters = _rosterService.Get();
 
-			//await sources.PlayerProfile.FetchAndSaveAsync();
+			////await sources.PlayerProfile.FetchAndSaveAsync();
 
-			_logger.LogInformation("Persisting player profiles to database..");
+			//_logger.LogInformation("Persisting player profiles to database..");
 			
-			List<PlayerProfile> players = _playerProfileService.Get();
-			await dbContext.Player.UpdateAsync(players, rosters);
+			//List<PlayerProfile> players = _playerProfileService.Get();
+			//await dbContext.Player.UpdateAsync(players, rosters);
 
-			_logger.LogInformation("Persisting player-team mappings (roster) to database..");
-			await dbContext.Team.UpdateRostersAsync(rosters);
+			//_logger.LogInformation("Persisting player-team mappings (roster) to database..");
+			//await dbContext.Team.UpdateRostersAsync(rosters);
 
-			//await sources.WeekStats.FetchAndSaveAsync();
-			List<WeekStats> weekStats = (await _weekStatsService.GetAsync())
-				.OrderBy(ws => ws.Week)
-				.ToList();
+			////await sources.WeekStats.FetchAndSaveAsync();
+			//List<WeekStats> weekStats = (await _weekStatsService.GetAsync())
+			//	.OrderBy(ws => ws.Week)
+			//	.ToList();
 
-			_logger.LogInformation("Persisting week stats to database..");
-			await dbContext.Stats.UpdateWeeksAsync(weekStats);
+			//_logger.LogInformation("Persisting week stats to database..");
+			//await dbContext.Stats.UpdateWeeksAsync(weekStats);
 			
-			//List<TeamWeekStats> teamGameStats = _teamGameStatsService.Get();
-			//await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
+			////List<TeamWeekStats> teamGameStats = _teamGameStatsService.Get();
+			////await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
 
-			_logger.LogInformation("Successfully finished running initial setup.");
+			//_logger.LogInformation("Successfully finished running initial setup.");
 		}
 
 		public async Task UpdateForWeekAsync(int season, int week)

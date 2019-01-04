@@ -8,11 +8,6 @@
 
 
 	<ItemGroup>
-		<Folder Include="Temp\" />
-	</ItemGroup>
-
-
-	<ItemGroup>
 		<ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
 	</ItemGroup>
 
