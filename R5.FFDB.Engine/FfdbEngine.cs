@@ -95,7 +95,7 @@ namespace R5.FFDB.Engine
 			await dbContext.Team.UpdateRostersAsync(rosters);
 
 			//await sources.WeekStats.FetchAndSaveAsync();
-			List<WeekStats> weekStats = _weekStatsService.Get()
+			List<WeekStats> weekStats = (await _weekStatsService.GetAsync())
 				.OrderBy(ws => ws.Week)
 				.ToList();
 

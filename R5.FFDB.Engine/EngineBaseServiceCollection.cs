@@ -5,6 +5,7 @@ using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.PlayerProfile.Values;
 using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.CoreData.Roster.Values;
 using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Components.CoreData.TeamGameHistory.Values;
 using R5.FFDB.Components.CoreData.WeekStats;
@@ -51,6 +52,7 @@ namespace R5.FFDB.Engine
 				.AddScoped<CoreDataSourcesResolver>()
 				.AddScoped<LatestWeekValue>()
 				.AddScoped<PlayerProfilesValue>()
+				.AddScoped<RostersValue>()
 				//.AddScoped<GameStatsFilesValue>()
 				.AddScoped<GameWeekMapValue>()
 				.AddScoped<PlayerWeekTeamMapValue>()
@@ -75,6 +77,7 @@ namespace R5.FFDB.Engine
 				.AddScoped<IGameStatsParser, GameStatsParser>()
 				.AddScoped<IPlayerWeekTeamMap, PlayerWeekTeamMap>()
 				.AddScoped<IAvailableWeeksResolver, AvailableWeeksResolver>()
+				.AddScoped<IPlayerWeekTeamResolverFactory, PlayerWeekTeamResolverFactory>()
 				.AddScoped<IPlayerIdMapper, PlayerIdMapper>();
 
 			return services;

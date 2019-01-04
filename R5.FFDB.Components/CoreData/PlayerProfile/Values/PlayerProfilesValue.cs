@@ -22,7 +22,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile.Values
 
 		protected override List<Core.Models.PlayerProfile> ResolveValue()
 		{
-			var directory = new DirectoryInfo(_dataPath.Static.PlayerProfile);
+			var directory = new DirectoryInfo(_dataPath.Temp.PlayerProfile);
 
 			return directory
 				.GetFiles()

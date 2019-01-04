@@ -8,6 +8,7 @@ namespace R5.FFDB.Core.Models
 	// unlikely to change
 	public class PlayerProfile
 	{
+		public Guid Id { get; set; }
 		// Id examples are for Davantae Adams
 
 		// Newest standard NFL Id.

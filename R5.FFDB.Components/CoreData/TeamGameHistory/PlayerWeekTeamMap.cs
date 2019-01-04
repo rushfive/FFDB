@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace R5.FFDB.Components.CoreData.TeamGameHistory
 {
+	// TODO: OLD?
 	public interface IPlayerWeekTeamMap
 	{
 		int? GetTeam(string nflId, WeekInfo week);

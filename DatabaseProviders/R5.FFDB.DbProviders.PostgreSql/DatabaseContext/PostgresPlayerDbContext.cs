@@ -90,10 +90,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			return result;
 		}
 
-		public async Task<List<Guid>> GetExistingIdsAsync()
+		public async Task<List<PlayerProfile>> GetAllAsync()
 		{
 			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>();
-			return playerSqls.Select(p => p.Id).ToList();
+			return playerSqls.Select(PlayerSql.ToCoreEntity).ToList();
 		}
 
 		public async Task<List<string>> GetExistingNflIdsAsync()

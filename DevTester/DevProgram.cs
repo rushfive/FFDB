@@ -8,6 +8,7 @@ using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.PlayerProfile.Models;
 using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.CoreData.Roster.Values;
 using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Components.CoreData.TeamGameHistory.Values;
@@ -37,15 +38,18 @@ namespace DevTester
 	{
 		private static IServiceProvider _serviceProvider { get; set; }
 		private static ILogger<DevProgram> _logger { get; set; }
+		private static IDatabaseContext _dbContext { get; set; }
 
 		public static async Task Main(string[] args)
 		{
 			_serviceProvider = DevTestServiceProvider.Build();
 			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
-			//var dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
+			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
+			_dbContext = dbProvider.GetContext();
+			/// DONT TOUCH ABOVE ///
 
-			var rSource = _serviceProvider.GetRequiredService<IRosterSource>();
-			await rSource.FetchAsync();
+			//var rSource = _serviceProvider.GetRequiredService<IRosterSource>();
+			//await rSource.FetchAsync();
 
 
 			//await InitDbAsync();
@@ -54,8 +58,7 @@ namespace DevTester
 			return;
 			
 
-			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-			IDatabaseContext dbContext = dbProvider.GetContext();
+			
 
 			//await InitialSetupTestAsync();
 
@@ -88,23 +91,70 @@ namespace DevTester
 			var pSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
 			var pSvc = _serviceProvider.GetRequiredService<IPlayerProfileService>();
 			//var rSource = _serviceProvider.GetRequiredService<IRosterSource>();
-			var rSvc = _serviceProvider.GetRequiredService<IRosterService>();
-			
+			//var rSvc = _serviceProvider.GetRequiredService<IRosterService>();
+
+
+
 			await tgHistorySource.FetchForWeeksAsync(wks);
 			await wsSource.FetchForWeeksAsync(wks);
+
+			var rostersValue = _serviceProvider.GetRequiredService<RostersValue>();
+			List<Roster> rosters = await rostersValue.GetAsync();
+
+			// Add player profiles
+
+			List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
+			await AddNewPlayersAsync(rosterNflIds);
 			
-			HashSet<string> existingNflIds = (await dbContext.Player.GetExistingNflIdsAsync()).ToHashSet();
-			List<string> idsFromWeek = wsSvc.GetNflIdsForWeek(week);
-			var idsToFetch = idsFromWeek.Where(id => !existingNflIds.Contains(id)).ToList();
-			await pSource.FetchAsync(idsToFetch);
+			List<string> weekStatNflIds = wsSvc.GetNflIdsForWeek(week);
+			await AddNewPlayersAsync(weekStatNflIds);
+
+			// Add week stats
 
 
 			var t = "test";
 		}
 
+		private static async Task AddNewPlayersAsync(List<string> nflIds)
+		{
+			var profileSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
+			var profileService = _serviceProvider.GetRequiredService<IPlayerProfileService>();
+			var rostersValue = _serviceProvider.GetRequiredService<RostersValue>();
+
+			HashSet<string> existingIds = (await _dbContext.Player.GetExistingNflIdsAsync()).ToHashSet();
+			
+			List<string> newIds = nflIds.Where(id => !existingIds.Contains(id)).ToList();
+			await profileSource.FetchAsync(newIds);
+
+			List<PlayerProfile> playerProfiles = profileService.Get(newIds);
+
+			List<Roster> rosters = await rostersValue.GetAsync();
+			await _dbContext.Player.AddAsync(playerProfiles, rosters);
+		}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		// PRE per-week below
 
 		private static async Task TestEngineInitialSetupAsync()
 		{

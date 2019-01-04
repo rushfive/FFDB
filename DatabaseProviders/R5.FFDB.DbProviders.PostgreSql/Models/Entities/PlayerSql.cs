@@ -67,5 +67,22 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				College = player.College
 			};
 		}
+
+		public static PlayerProfile ToCoreEntity(PlayerSql sql)
+		{
+			return new PlayerProfile
+			{
+				Id = sql.Id,
+				NflId = sql.NflId,
+				EsbId = sql.EsbId,
+				GsisId = sql.GsisId,
+				FirstName = sql.FirstName,
+				LastName = sql.LastName,
+				Height = sql.Height,
+				Weight = sql.Weight,
+				DateOfBirth = sql.DateOfBirth,
+				College = sql.College
+			};
+		}
 	}
 }

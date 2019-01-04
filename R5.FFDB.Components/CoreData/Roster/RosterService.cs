@@ -13,7 +13,7 @@ namespace R5.FFDB.Components.CoreData.Roster
 	{
 		List<Core.Models.Roster> Get();
 	}
-
+	// TODO: CAN probably DUMP this entire svc
 	public class RosterService : IRosterService
 	{
 		private ILogger<RosterService> _logger { get; }

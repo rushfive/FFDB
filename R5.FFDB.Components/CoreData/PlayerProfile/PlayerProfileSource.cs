@@ -65,7 +65,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 
 				string serializedPlayerData = JsonConvert.SerializeObject(playerProfile);
 
-				string path = _dataPath.Static.PlayerProfile + $"{id}.json";
+				string path = _dataPath.Temp.PlayerProfile + $"{id}.json";
 				File.WriteAllText(path, serializedPlayerData);
 
 				await _throttle.DelayAsync();
@@ -83,7 +83,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			_logger.LogInformation("Beginning fetching of player profiles based on ids found from team rosters and week stats.");
 
 			List<Core.Models.Roster> rosters = _rosterService.Get();
-			List<Core.Models.WeekStats> weekStats = _weekStatsService.Get();
+			List<Core.Models.WeekStats> weekStats = await _weekStatsService.GetAsync();
 
 			List<string> nflIds = rosters
 				.SelectMany(r => r.Players)
@@ -125,7 +125,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 
 					string serializedPlayerData = JsonConvert.SerializeObject(playerProfile);
 
-					string path = _dataPath.Static.PlayerProfile + $"{nflId}.json";
+					string path = _dataPath.Temp.PlayerProfile + $"{nflId}.json";
 					File.WriteAllText(path, serializedPlayerData);
 
 					_logger.LogDebug($"Successfully fetched profile data for '{nflId}' ({playerProfile.FirstName} {playerProfile.LastName}) "
@@ -146,7 +146,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 
 		private HashSet<string> GetPlayersWithExistingProfileData()
 		{
-			var directory = new DirectoryInfo(_dataPath.Static.PlayerProfile);
+			var directory = new DirectoryInfo(_dataPath.Temp.PlayerProfile);
 
 			var existing = directory
 				.GetFiles()
