@@ -102,8 +102,8 @@ namespace R5.FFDB.Engine
 			_logger.LogInformation("Persisting week stats to database..");
 			await dbContext.Stats.UpdateWeeksAsync(weekStats);
 			
-			List<TeamWeekStats> teamGameStats = _teamGameStatsService.Get();
-			await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
+			//List<TeamWeekStats> teamGameStats = _teamGameStatsService.Get();
+			//await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
 
 			_logger.LogInformation("Successfully finished running initial setup.");
 		}

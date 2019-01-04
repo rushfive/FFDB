@@ -6,6 +6,7 @@ using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Http;
+using R5.FFDB.Components.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,23 +51,40 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 
 		public async Task FetchAsync(List<string> nIds)
 		{
-			// skip teams, no profile data to fetch
+			HashSet<string> existing = DirectoryFilesResolver
+				.GetFileNames(_dataPath.Temp.PlayerProfile, excludeExtensions: true)
+				.ToHashSet();
+
+			_logger.LogInformation($"Profile files already exist for {existing.Count} players. Will skip fetching for them. "
+				+ "Clear the files first before running if you'd like to re-fetch.");
+
+			// also skip teams, no profile data to fetch
 			var teamIds = TeamDataStore.GetAll().Select(t => t.NflId);
-			nIds = nIds.Where(id => !teamIds.Contains(id)).Distinct().ToList();
+
+			nIds = nIds
+				.Where(id => !teamIds.Contains(id) && !existing.Contains(id))
+				.Distinct()
+				.ToList();
 
 			_logger.LogInformation($"Beginning fetching of profile data for {nIds.Count} player(s).");
 			_logger.LogTrace($"Fetching for players (nfl ids): {string.Join(", ", nIds)}");
 
 			foreach (string id in nIds)
 			{
+				string filePath = _dataPath.Temp.PlayerProfile + $"{id}.json";
+				if (File.Exists(filePath))
+				{
+					_logger.LogInformation($"Player profile file already exists for '{id}'. Will not fetch.");
+					continue;
+				}
+
 				_logger.LogTrace($"Fetching player profile data for '{id}'.");
 
 				PlayerProfileJson playerProfile = await FetchForPlayerAsync(id);
 
 				string serializedPlayerData = JsonConvert.SerializeObject(playerProfile);
-
-				string path = _dataPath.Temp.PlayerProfile + $"{id}.json";
-				File.WriteAllText(path, serializedPlayerData);
+				
+				File.WriteAllText(filePath, serializedPlayerData);
 
 				await _throttle.DelayAsync();
 				_logger.LogDebug($"Finished fetching player profile for '{id}'.");
@@ -146,6 +164,10 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 
 		private HashSet<string> GetPlayersWithExistingProfileData()
 		{
+			return DirectoryFilesResolver
+				.GetFileNames(_dataPath.Temp.PlayerProfile, excludeExtensions: true)
+				.ToHashSet();
+
 			var directory = new DirectoryInfo(_dataPath.Temp.PlayerProfile);
 
 			var existing = directory

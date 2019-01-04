@@ -44,7 +44,7 @@ namespace R5.FFDB.Database
 
 	public interface IWeekStatsDatabaseContext
 	{
-		Task<List<WeekInfo>> GetExistingWeeksAsync();
+		Task UpdateWeekAsync(WeekStats stats);
 		Task UpdateWeeksAsync(List<WeekStats> stats);
 	}
 

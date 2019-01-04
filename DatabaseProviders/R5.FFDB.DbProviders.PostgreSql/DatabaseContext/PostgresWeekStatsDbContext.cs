@@ -27,6 +27,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			throw new NotImplementedException();
 		}
 
+		public Task UpdateWeekAsync(WeekStats stats)
+		{
+			return UpdateWeeksAsync(new List<WeekStats> { stats });
+		}
+
 		public async Task UpdateWeeksAsync(List<WeekStats> stats)
 		{
 			var logger = GetLogger<PostgresWeekStatsDbContext>();
@@ -38,7 +43,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			List<WeekStatsSqlUpdate> updates = GetStatsUpdates(stats, nflPlayerIdMap, teamNflIdMap, logger);
 
-			logger.LogInformation($"Updating game stats for {updates.Count} weeks.");
+			logger.LogInformation($"Updating game stats for {updates.Count} week(s).");
 
 			foreach(var update in updates)
 			{

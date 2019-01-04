@@ -20,3 +20,6 @@ TODOS:
 - depth chart?
 
 - validation of db provider configs (and other configs)
+
+--- sources should ALWAYS skip fetching IF the file already exists.
+------- for temp data, we'll provide an option to clear temp files BEFORE updates are run

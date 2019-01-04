@@ -33,7 +33,7 @@ namespace R5.FFDB.Components.CoreData.Roster.Values
 
 		protected override async Task<List<Core.Models.Roster>> ResolveValueAsync()
 		{
-			await _source.FetchAsync();
+			//await _source.FetchAsync();
 
 			return Get();
 		}

@@ -47,24 +47,21 @@ namespace DevTester
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			_dbContext = dbProvider.GetContext();
 			/// DONT TOUCH ABOVE ///
-
-			//var rSource = _serviceProvider.GetRequiredService<IRosterSource>();
-			//await rSource.FetchAsync();
-
-
+			
 			//await InitDbAsync();
-			await TestUpdateAsync(new WeekInfo(2010, 1));
+
+			// add players from rosters first
+			//var rostersValue = _serviceProvider.GetRequiredService<RostersValue>();
+			//List<Roster> rosters = await rostersValue.GetAsync();
+			//List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
+			//await AddNewPlayersAsync(rosterNflIds);
+
+			await TestUpdateWeekAsync(new WeekInfo(2010, 1));
+
+			// updating roster needs to happen outside a "week" context
+			//await _dbContext.Team.UpdateRostersAsync(rosters);
 
 			return;
-			
-
-			
-
-			//await InitialSetupTestAsync();
-
-			return;
-
-			
 			Console.ReadKey();
 		}
 
@@ -79,13 +76,14 @@ namespace DevTester
 		// things that need to happen before this:
 		// assumes db initializes with tbls and tms
 		// get latest rosters
-		private static async Task TestUpdateAsync(WeekInfo week)
+		private static async Task TestUpdateWeekAsync(WeekInfo week)
 		{
 			var wks = new List<WeekInfo> { week };
 
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			IDatabaseContext dbContext = dbProvider.GetContext();
 			var tgHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
+			var tgStatsSvc = _serviceProvider.GetRequiredService<ITeamGameStatsService>();
 			var wsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
 			var wsSvc = _serviceProvider.GetRequiredService<IWeekStatsService>();
 			var pSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
@@ -93,7 +91,7 @@ namespace DevTester
 			//var rSource = _serviceProvider.GetRequiredService<IRosterSource>();
 			//var rSvc = _serviceProvider.GetRequiredService<IRosterService>();
 
-
+			// need overwrite option with a check first on update_log
 
 			await tgHistorySource.FetchForWeeksAsync(wks);
 			await wsSource.FetchForWeeksAsync(wks);
@@ -103,13 +101,20 @@ namespace DevTester
 
 			// Add player profiles
 
-			List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
-			await AddNewPlayersAsync(rosterNflIds);
+			//List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
+			//await AddNewPlayersAsync(rosterNflIds);
 			
 			List<string> weekStatNflIds = wsSvc.GetNflIdsForWeek(week);
 			await AddNewPlayersAsync(weekStatNflIds);
 
 			// Add week stats
+			WeekStats weekStats = await wsSvc.GetForWeekAsync(week);
+			await _dbContext.Stats.UpdateWeekAsync(weekStats);
+
+			// team stats
+			List<TeamWeekStats> teamStats = tgStatsSvc.GetForWeek(week);
+			await _dbContext.Team.UpdateGameStatsAsync(teamStats);
+
 
 
 			var t = "test";
@@ -127,6 +132,11 @@ namespace DevTester
 			await profileSource.FetchAsync(newIds);
 
 			List<PlayerProfile> playerProfiles = profileService.Get(newIds);
+			if (!playerProfiles.Any())
+			{
+				_logger.LogInformation("No new player profiles to add.");
+				return;
+			}
 
 			List<Roster> rosters = await rostersValue.GetAsync();
 			await _dbContext.Player.AddAsync(playerProfiles, rosters);
