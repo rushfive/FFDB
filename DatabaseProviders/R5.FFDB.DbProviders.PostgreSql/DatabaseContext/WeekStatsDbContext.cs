@@ -8,14 +8,15 @@ using Npgsql;
 using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
+using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public class PostgresWeekStatsDbContext : PostgresDbContextBase, IWeekStatsDatabaseContext
+	public class WeekStatsDbContext : DbContextBase, IWeekStatsDatabaseContext
 	{
-		public PostgresWeekStatsDbContext(
+		public WeekStatsDbContext(
 			Func<NpgsqlConnection> getConnection,
 			ILoggerFactory loggerFactory)
 			: base(getConnection, loggerFactory)
@@ -34,7 +35,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task UpdateWeeksAsync(List<WeekStats> stats)
 		{
-			var logger = GetLogger<PostgresWeekStatsDbContext>();
+			var logger = GetLogger<WeekStatsDbContext>();
 
 			List<PlayerSql> players = await SelectAsEntitiesAsync<PlayerSql>($"SELECT id, nfl_id FROM {EntityInfoMap.TableName(typeof(PlayerSql))};");
 
@@ -98,23 +99,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			}
 		}
 
-		public class WeekStatsSqlUpdate
-		{
-			public WeekInfo Week { get; set; }
-			public List<WeekStatsPassSql> PassStats { get; } = new List<WeekStatsPassSql>();
-			public List<WeekStatsRushSql> RushStats { get; } = new List<WeekStatsRushSql>();
-			public List<WeekStatsReceiveSql> ReceiveStats { get; } = new List<WeekStatsReceiveSql>();
-			public List<WeekStatsMiscSql> MiscStats { get; } = new List<WeekStatsMiscSql>();
-			public List<WeekStatsKickSql> KickStats { get; } = new List<WeekStatsKickSql>();
-			public List<WeekStatsDstSql> DstStats { get; } = new List<WeekStatsDstSql>();
-			public List<WeekStatsIdpSql> IdpStats { get; } = new List<WeekStatsIdpSql>();
-		}
-
 		private static List<WeekStatsSqlUpdate> GetStatsUpdates(
 			List<WeekStats> stats,
 			Dictionary<string, Guid> nflPlayerIdMap,
 			Dictionary<string, int> teamNflIdMap,
-			ILogger<PostgresWeekStatsDbContext> logger)
+			ILogger<WeekStatsDbContext> logger)
 		{
 			var result = new List<WeekStatsSqlUpdate>();
 

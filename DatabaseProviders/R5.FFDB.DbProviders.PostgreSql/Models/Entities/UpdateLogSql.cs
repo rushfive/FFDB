@@ -5,7 +5,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
-	[TableName("ffdb.update_log")]
+	[TableName(Table.UpdateLog)]
 	[CompositePrimaryKeys("season", "week")]
 	public class UpdateLogSql : SqlEntity
 	{

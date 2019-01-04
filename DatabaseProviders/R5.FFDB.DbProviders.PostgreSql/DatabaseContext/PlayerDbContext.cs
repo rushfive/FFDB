@@ -11,19 +11,18 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public class PostgresPlayerDbContext : PostgresDbContextBase, IPlayerDatabaseContext
+	public class PlayerDbContext : DbContextBase, IPlayerDatabaseContext
 	{
-		public PostgresPlayerDbContext(
+		public PlayerDbContext(
 			Func<NpgsqlConnection> getConnection,
 			ILoggerFactory loggerFactory)
 			: base(getConnection, loggerFactory)
 		{
 		}
 
-		public async Task AddAsync(List<PlayerProfile> players, List<Roster> rosters, 
-			int insertBatchCount = 500)
+		public async Task UpdateAsync(List<PlayerProfile> players, List<Roster> rosters)
 		{
-			var logger = GetLogger<PostgresPlayerDbContext>();
+			var logger = GetLogger<PlayerDbContext>();
 			string tableName = EntityInfoMap.TableName(typeof(PlayerSql));
 
 			logger.LogInformation($"Adding {players.Count} players to the '{tableName}' table.");
@@ -59,52 +58,12 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			await ExecuteNonQueryAsync(sqlCommand);
 
 			logger.LogInformation($"Successfully added players to the '{tableName}' table.");
-
-			//List<List<PlayerSql>> batches = Batch(playerSqls, insertBatchCount);
-
-			//logger.LogInformation($"Adding {playerSqls.Count} player entries to '{tableName} table in batches of {insertBatchCount} "
-			//	+ $"(total insert commands: {batches.Count})");
-
-			//for (int i = 0; i < batches.Count; i++)
-			//{
-			//	var sqlCommand = SqlCommandBuilder.Rows.InsertMany(batches[i]);
-
-			//	logger.LogTrace($"Inserting batch {i + 1} using SQL command:" + Environment.NewLine + sqlCommand);
-
-			//	await ExecuteNonQueryAsync(sqlCommand);
-			//}
-
-			//logger.LogInformation($"Successfully added players to the '{tableName}' table.");
-		}
-
-		// todo: move to shared/common
-		private static List<List<T>> Batch<T>(List<T> items, int batchSize)
-		{
-			var result = new List<List<T>>();
-
-			for (int i = 0; i < items.Count; i += batchSize)
-			{
-				result.Add(items.GetRange(i, Math.Min(batchSize, items.Count - i)));
-			}
-
-			return result;
 		}
 
 		public async Task<List<PlayerProfile>> GetAllAsync()
 		{
 			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>();
 			return playerSqls.Select(PlayerSql.ToCoreEntity).ToList();
-		}
-
-		public async Task<List<string>> GetExistingNflIdsAsync()
-		{
-			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>();
-			return playerSqls.Select(p => p.NflId).ToList();
-		}
-
-		public Task UpdateAsync(List<PlayerProfile> players, bool overrideExisting)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

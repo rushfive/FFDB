@@ -15,7 +15,10 @@ namespace R5.FFDB.Database
 		ITeamDatabaseContext Team { get; }
 		IPlayerDatabaseContext Player { get; }
 		IWeekStatsDatabaseContext Stats { get; }
+
 		Task InitializeAsync();
+		Task AddUpdateLogAsync(WeekInfo week);
+		Task<List<WeekInfo>> GetUpdatedWeeksAsync();
 	}
 
 	public interface ITeamDatabaseContext
@@ -31,15 +34,9 @@ namespace R5.FFDB.Database
 
 	public interface IPlayerDatabaseContext
 	{
-		Task AddAsync(List<PlayerProfile> players, List<Roster> rosters,
-			int insertBatchCount = 500);
+		Task UpdateAsync(List<PlayerProfile> players, List<Roster> rosters);
 
 		Task<List<PlayerProfile>> GetAllAsync();
-
-		//todo remove nd use getallasync
-		Task<List<string>> GetExistingNflIdsAsync();
-
-		Task UpdateAsync(List<PlayerProfile> players, bool overrideExisting);
 	}
 
 	public interface IWeekStatsDatabaseContext

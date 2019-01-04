@@ -3,6 +3,7 @@ using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -150,7 +151,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 					case PostgresDataType.DATE:
 						return $"'{((DateTimeOffset)value).ToUniversalTime().ToString("yyyy-MM-dd")}'";
 					case PostgresDataType.TIMESTAMPTZ:
-						throw new NotImplementedException();
+						return $"'{((DateTimeOffset)value).ToUniversalTime().ToString("o", CultureInfo.InvariantCulture)}'";
 					case PostgresDataType.BOOLEAN:
 						{
 							bool boolVal = (bool)value;

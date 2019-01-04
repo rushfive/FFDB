@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public abstract class PostgresDbContextBase
+	public abstract class DbContextBase
 	{
 		protected Func<NpgsqlConnection> _getConnection { get; }
 		protected ILoggerFactory _loggerFactory { get; }
 
-		protected PostgresDbContextBase(
+		protected DbContextBase(
 			Func<NpgsqlConnection> getConnection,
 			ILoggerFactory loggerFactory)
 		{
@@ -196,6 +196,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 					}
 					break;
 				case PostgresDataType.DATE:
+				case PostgresDataType.TIMESTAMPTZ:
 					DateTime dt = (DateTime)columnValue;
 					dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
 
@@ -204,7 +205,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 					break;
 				case PostgresDataType.UUID:
 				case PostgresDataType.INT:
-				case PostgresDataType.TIMESTAMPTZ:
 				case PostgresDataType.FLOAT8:
 					break;
 				default:

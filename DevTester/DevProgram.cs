@@ -47,6 +47,13 @@ namespace DevTester
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			_dbContext = dbProvider.GetContext();
 			/// DONT TOUCH ABOVE ///
+			/// 
+
+			List<WeekInfo> updated = null;
+			updated = await _dbContext.GetUpdatedWeeksAsync();
+			await _dbContext.AddUpdateLogAsync(new WeekInfo(2010, 1));
+			updated = await _dbContext.GetUpdatedWeeksAsync();
+			return;
 			
 			//await InitDbAsync();
 
@@ -115,7 +122,7 @@ namespace DevTester
 			List<TeamWeekStats> teamStats = tgStatsSvc.GetForWeek(week);
 			await _dbContext.Team.UpdateGameStatsAsync(teamStats);
 
-
+			await _dbContext.AddUpdateLogAsync(week);
 
 			var t = "test";
 		}
@@ -126,7 +133,8 @@ namespace DevTester
 			var profileService = _serviceProvider.GetRequiredService<IPlayerProfileService>();
 			var rostersValue = _serviceProvider.GetRequiredService<RostersValue>();
 
-			HashSet<string> existingIds = (await _dbContext.Player.GetExistingNflIdsAsync()).ToHashSet();
+			List<PlayerProfile> existing = await _dbContext.Player.GetAllAsync();
+			HashSet<string> existingIds = existing.Select(p => p.NflId).ToHashSet();
 			
 			List<string> newIds = nflIds.Where(id => !existingIds.Contains(id)).ToList();
 			await profileSource.FetchAsync(newIds);
@@ -139,7 +147,7 @@ namespace DevTester
 			}
 
 			List<Roster> rosters = await rostersValue.GetAsync();
-			await _dbContext.Player.AddAsync(playerProfiles, rosters);
+			await _dbContext.Player.UpdateAsync(playerProfiles, rosters);
 		}
 
 

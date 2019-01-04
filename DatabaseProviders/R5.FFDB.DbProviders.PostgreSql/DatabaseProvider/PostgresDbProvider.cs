@@ -20,7 +20,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseProvider
 
 		public IDatabaseContext GetContext()
 		{
-			return new PostgresDbContext(GetConnection, _loggerFactory);
+			return new DbContext(GetConnection, _loggerFactory);
 		}
 
 		private NpgsqlConnection GetConnection()

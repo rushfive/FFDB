@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 {
-	[TableName("ffdb.week_stats_misc")]
+	[TableName(Table.WeekStats.Misc)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
 	public class WeekStatsMiscSql : WeekStatsPlayerSql
 	{

@@ -89,7 +89,7 @@ namespace R5.FFDB.Engine
 			_logger.LogInformation("Persisting player profiles to database..");
 			
 			List<PlayerProfile> players = _playerProfileService.Get();
-			await dbContext.Player.AddAsync(players, rosters);
+			await dbContext.Player.UpdateAsync(players, rosters);
 
 			_logger.LogInformation("Persisting player-team mappings (roster) to database..");
 			await dbContext.Team.UpdateRostersAsync(rosters);

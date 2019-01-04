@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public class PostgresTeamDbContext : PostgresDbContextBase, ITeamDatabaseContext
+	public class TeamDbContext : DbContextBase, ITeamDatabaseContext
 	{
-		public PostgresTeamDbContext(
+		public TeamDbContext(
 			Func<NpgsqlConnection> getConnection,
 			ILoggerFactory loggerFactory)
 			: base(getConnection, loggerFactory)
@@ -24,7 +24,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public async Task AddTeamsAsync()
 		{
 			string tableName = EntityInfoMap.TableName(typeof(TeamSql));
-			ILogger<PostgresTeamDbContext> logger = GetLogger<PostgresTeamDbContext>();
+			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
 
 			logger.LogDebug($"Adding NFL team entries to '{tableName}' table.");
 
@@ -44,7 +44,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public async Task UpdateRostersAsync(List<Roster> rosters)
 		{
 			string playerTeamMapTableName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
-			var logger = GetLogger<PostgresTeamDbContext>();
+			var logger = GetLogger<TeamDbContext>();
 
 			logger.LogDebug($"Adding player-team mapping entries to '{playerTeamMapTableName}' table (will first remove all existing entries).");
 
@@ -83,7 +83,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public async Task UpdateGameStatsAsync(List<TeamWeekStats> stats)
 		{
 			string tableName = EntityInfoMap.TableName(typeof(TeamGameStatsSql));
-			var logger = GetLogger<PostgresTeamDbContext>();
+			var logger = GetLogger<TeamDbContext>();
 
 			logger.LogDebug($"Adding team game stats to '{tableName}' table.");
 
