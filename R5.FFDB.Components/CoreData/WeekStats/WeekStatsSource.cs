@@ -17,6 +17,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 {
 	public interface IWeekStatsSource : ICoreDataSource
 	{
+		Task FetchForWeekAsync(WeekInfo week);
 		Task FetchAllAsync();
 		Task FetchForWeeksAsync(List<WeekInfo> weeks);
 	}
@@ -28,21 +29,39 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 		private ILogger<WeekStatsSource> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
-		private IAvailableWeeksResolver _availableWeeks { get; }
-		private LatestWeekValue _latestWeek { get; }
+		private AvailableWeeksValue _availableWeeks { get; }
 
 		public WeekStatsSource(
 			ILogger<WeekStatsSource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
-			IAvailableWeeksResolver availableWeeks,
-			LatestWeekValue latestWeek)
+			AvailableWeeksValue availableWeeks)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_availableWeeks = availableWeeks;
-			_latestWeek = latestWeek;
+		}
+
+		public async Task FetchForWeekAsync(WeekInfo week)
+		{
+			_logger.LogInformation($"Beginning fetching of week stats for {week}.");
+
+			string filePath = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
+			if (File.Exists(filePath))
+			{
+				_logger.LogInformation($"Week stats file already exists for {week}. Will not fetch.");
+				return;
+			}
+
+			string stats = await FetchWeekAsync(week);
+
+			_logger.LogTrace($"Saving week stats JSON response for {week} to '{filePath}'.");
+			File.WriteAllText(filePath, stats);
+
+			_logger.LogInformation($"Finished saving week stats for {week}.");
+
+			_logger.LogInformation("Finished fetching week stats.");
 		}
 
 		public async Task FetchAllAsync()
@@ -102,72 +121,72 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 
 		// PRE per-week below
 
-		public async Task FetchAndSaveAsync()
-		{
-			WeekInfo latestCompleted = await _latestWeek.GetAsync();
+		//public async Task FetchAndSaveAsync()
+		//{
+		//	WeekInfo latestCompleted = await _latestWeek.GetAsync();
 
-			_logger.LogInformation($"Fetching all available week stats for players up to and including week {latestCompleted.Week}, {latestCompleted.Season}.");
+		//	_logger.LogInformation($"Fetching all available week stats for players up to and including week {latestCompleted.Week}, {latestCompleted.Season}.");
 
-			HashSet<WeekInfo> existingWeeks = DirectoryFilesResolver
-				.GetWeeksFromJsonFiles(_dataPath.Static.WeekStats)
-				.ToHashSet();
+		//	HashSet<WeekInfo> existingWeeks = DirectoryFilesResolver
+		//		.GetWeeksFromJsonFiles(_dataPath.Static.WeekStats)
+		//		.ToHashSet();
 
-			List<WeekInfo> missingWeeks = await _availableWeeks.GetAsync(excludeWeeks: existingWeeks);
+		//	List<WeekInfo> missingWeeks = await _availableWeeks.GetAsync(excludeWeeks: existingWeeks);
 
-			if (!missingWeeks.Any())
-			{
-				_logger.LogInformation("Already have all available week stats - no fetching necessary.");
-				return;
-			}
+		//	if (!missingWeeks.Any())
+		//	{
+		//		_logger.LogInformation("Already have all available week stats - no fetching necessary.");
+		//		return;
+		//	}
 
-			IEnumerable<string> missing = missingWeeks.Select(w => $"{w.Season}-{w.Week}");
-			_logger.LogDebug($"Fetching for {missingWeeks.Count} weeks that are missing: {string.Join(", ", missing)}");
+		//	IEnumerable<string> missing = missingWeeks.Select(w => $"{w.Season}-{w.Week}");
+		//	_logger.LogDebug($"Fetching for {missingWeeks.Count} weeks that are missing: {string.Join(", ", missing)}");
 
-			foreach (WeekInfo week in missingWeeks)
-			{
-				_logger.LogDebug($"Beginning week stats fetch for {week.Season}-{week.Week}.");
+		//	foreach (WeekInfo week in missingWeeks)
+		//	{
+		//		_logger.LogDebug($"Beginning week stats fetch for {week.Season}-{week.Week}.");
 
-				string uri = Endpoints.Api.WeekStats(week.Season, week.Week);
+		//		string uri = Endpoints.Api.WeekStats(week.Season, week.Week);
 
-				string weekStats = null;
-				try
-				{
-					weekStats = await _webRequestClient.GetStringAsync(uri);
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, $"Failed to fetch week stats from '{uri}'.");
-					throw;
-				}
+		//		string weekStats = null;
+		//		try
+		//		{
+		//			weekStats = await _webRequestClient.GetStringAsync(uri);
+		//		}
+		//		catch (Exception ex)
+		//		{
+		//			_logger.LogError(ex, $"Failed to fetch week stats from '{uri}'.");
+		//			throw;
+		//		}
 
-				try
-				{
-					saveFile(weekStats, week);
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Failed to save week stats to disk.", weekStats);
-					throw;
-				}
+		//		try
+		//		{
+		//			saveFile(weekStats, week);
+		//		}
+		//		catch (Exception ex)
+		//		{
+		//			_logger.LogError(ex, "Failed to save week stats to disk.", weekStats);
+		//			throw;
+		//		}
 
-				_logger.LogInformation($"Successfully saved week stats for {week.Season}-{week.Week}.");
-			}
+		//		_logger.LogInformation($"Successfully saved week stats for {week.Season}-{week.Week}.");
+		//	}
 
-			_logger.LogInformation("Successfully fetched all available week stats.");
+		//	_logger.LogInformation("Successfully fetched all available week stats.");
 
-			// local functions
-			void saveFile(string statsJson, WeekInfo week)
-			{
-				string path = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
+		//	// local functions
+		//	void saveFile(string statsJson, WeekInfo week)
+		//	{
+		//		string path = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
 
-				if (File.Exists(path))
-				{
-					throw new InvalidOperationException($"Week stats file already exists for {week.Season}-{week.Week} at path '{path}'.");
-				}
+		//		if (File.Exists(path))
+		//		{
+		//			throw new InvalidOperationException($"Week stats file already exists for {week.Season}-{week.Week} at path '{path}'.");
+		//		}
 
-				File.WriteAllText(path, statsJson);
-			}
-		}
+		//		File.WriteAllText(path, statsJson);
+		//	}
+		//}
 
 		public Task CheckHealthAsync()
 		{

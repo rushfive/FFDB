@@ -91,7 +91,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				return sql + ";";
 			}
 
-			public static string EntityValues<T>(List<ColumnInfo> columnInfos, T entity)
+			private static string EntityValues<T>(List<ColumnInfo> columnInfos, T entity)
 				where T : SqlEntity
 			{
 				var values = new List<string>();
@@ -132,7 +132,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				return $"({string.Join(", ", values)})";
 			}
 
-			public static string ValueStringByDataType(PostgresDataType dataType, object value)
+			private static string ValueStringByDataType(PostgresDataType dataType, object value)
 			{
 				if (value == null)
 				{

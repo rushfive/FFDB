@@ -33,6 +33,15 @@ using System.Threading.Tasks;
 
 namespace DevTester
 {
+	public class Test
+	{
+		public IDatabaseProvider DbProvider { get; }
+
+		public Test(IDatabaseProvider dbProvider)
+		{
+			DbProvider = dbProvider;
+		}
+	}
 	public class DevProgram
 	{
 		private static IServiceProvider _serviceProvider { get; set; }
@@ -48,24 +57,12 @@ namespace DevTester
 			/// DONT TOUCH ABOVE ///
 			/// 
 
-			List<WeekInfo> updated = null;
-			updated = await _dbContext.GetUpdatedWeeksAsync();
-			await _dbContext.AddUpdateLogAsync(new WeekInfo(2010, 1));
-			updated = await _dbContext.GetUpdatedWeeksAsync();
-			return;
+
+			FfdbEngine engine = GetConfiguredEngine();
+			//await engine.Update.UpdateRostersAsync();
+			await engine.Update.UpdateStatsForWeekAsync(new WeekInfo(2010, 2));
+		
 			
-			//await InitDbAsync();
-
-			// add players from rosters first
-			//var rostersValue = _serviceProvider.GetRequiredService<RostersValue>();
-			//List<Roster> rosters = await rostersValue.GetAsync();
-			//List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
-			//await AddNewPlayersAsync(rosterNflIds);
-
-			await TestUpdateWeekAsync(new WeekInfo(2010, 1));
-
-			// updating roster needs to happen outside a "week" context
-			//await _dbContext.Team.UpdateRostersAsync(rosters);
 
 			return;
 			Console.ReadKey();
@@ -109,7 +106,7 @@ namespace DevTester
 
 			//List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
 			//await AddNewPlayersAsync(rosterNflIds);
-			
+
 			List<string> weekStatNflIds = wsSvc.GetNflIdsForWeek(week);
 			await AddNewPlayersAsync(weekStatNflIds);
 
@@ -134,7 +131,7 @@ namespace DevTester
 
 			List<PlayerProfile> existing = await _dbContext.Player.GetAllAsync();
 			HashSet<string> existingIds = existing.Select(p => p.NflId).ToHashSet();
-			
+
 			List<string> newIds = nflIds.Where(id => !existingIds.Contains(id)).ToList();
 			await profileSource.FetchAsync(newIds);
 
@@ -149,36 +146,13 @@ namespace DevTester
 			await _dbContext.Player.UpdateAsync(playerProfiles, rosters);
 		}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		// PRE per-week below
-
-		private static async Task TestEngineInitialSetupAsync()
+		
+		private static FfdbEngine GetConfiguredEngine()
 		{
 			var setup = new EngineSetup();
 
 			setup
-				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data\")
+				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_2\")
 				.UsePostgreSql(new PostgresConfig
 				{
 					DatabaseName = "ffdb_test_1",
@@ -196,137 +170,9 @@ namespace DevTester
 				.SetRollingInterval(RollingInterval.Day)
 				.SetLogLevel(LogEventLevel.Debug);
 
-			FfdbEngine engine = setup.Create();
-			await engine.RunInitialSetupAsync();
+			return setup.Create();
 		}
-
-
-
-
-
-
-
-
-
-
-
-		// TODO: this will all be copied to the ENGINEs initial setup method
-		//       after done and tested
-		//private static async Task InitialSetupTestAsync()
-		//{
-		//	_logger.LogInformation("Running initial setup..");
-
-		//	var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-		//	IDatabaseContext dbContext = dbProvider.GetContext();
-		//	_logger.LogInformation($"Will run using database provider '{dbProvider.GetType().Name}'.");
-
-		//	//await dbContext.InitializeAsync();
-		//	//await dbContext.Team.AddTeamsAsync();
-
-		//	var sourcesResolver = _serviceProvider.GetRequiredService<CoreDataSourcesResolver>();
-		//	CoreDataSources sources = await sourcesResolver.GetAsync();
-
-		//	// ALSO: need to fetch latest team game history
-		//	//await sources.TeamGameHistory.FetchAndSaveAsync();
-
-		//	var gameStatsParser = _serviceProvider.GetRequiredService<IGameStatsParser>();
-		//	gameStatsParser.ParseFilesToMapValues();
-
-		//	await sources.Roster.FetchAndSaveAsync();
-		//	var rosterService = _serviceProvider.GetRequiredService<IRosterService>();
-		//	List<Roster> rosters = rosterService.Get();
-
-		//	await sources.WeekStats.FetchAndSaveAsync();
-		//	var weekStatsService = _serviceProvider.GetRequiredService<IWeekStatsService>();
-		//	List<WeekStats> weekStats = weekStatsService.Get()
-		//		.OrderBy(ws => ws.Week)
-		//		.ToList();
-
-		//	_logger.LogInformation("Fetching player profiles for players resolved from roster and week stats.");
-
-		//	await sources.PlayerProfile.FetchAndSaveAsync();
-
-		//	_logger.LogInformation("Beginning persisting of player profiles to database..");
-
-		//	var playerProfileService = _serviceProvider.GetRequiredService<IPlayerProfileService>();
-		//	List<PlayerProfile> players = playerProfileService.Get();
-		//	await dbContext.Player.AddAsync(players, rosters);
-
-		//	_logger.LogInformation("Beginning persisting of player-team mappings to database..");
-
-		//	await dbContext.Team.UpdateRostersAsync(rosters);
-
-		//	await dbContext.Stats.UpdateWeeksAsync(weekStats);
-
-		//	var gameStatsService = _serviceProvider.GetRequiredService<ITeamGameStatsService>();
-		//	List<TeamWeekStats> teamGameStats = gameStatsService.Get();
-		//	await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
-		//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		// REMOVE all existing files first to ensure updated copies
-		//private static async Task UpdatePlayerProfileFilesAsync()
-		//{
-		//	var nflIdsToFetch = new HashSet<string>();
-
-		//	var weekStatSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
-		//	await weekStatSource.FetchAndSaveAsync();
-		//	weekStatSource.GetAll()
-		//		.SelectMany(s => s.Players)
-		//		.ToList()
-		//		.ForEach(p => nflIdsToFetch.Add(p.NflId));
-
-		//	var rosterSource = _serviceProvider.GetRequiredService<IRosterSource>();
-		//	List<Roster> rosters = rosterSource.Get();
-		//	rosters
-		//		.SelectMany(r => r.Players)
-		//		.ToList()
-		//		.ForEach(p => nflIdsToFetch.Add(p.NflId));
-
-		//	var playerProfileSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
-		//	await playerProfileSource.FetchAndSaveAsync(nflIdsToFetch.ToList());
-		//}
-
-		//private static async Task UpdateAllSourceFilesAsync()
-		//{
-		//	var weekStatsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
-		//	await weekStatsSource.FetchAndSaveAsync();
-		//	var ids = weekStatsSource.GetAll()
-		//		.SelectMany(s => s.Players)
-		//		.Select(p => p.NflId)
-		//		.ToList();
-
-
-		//	var profileSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
-		//	await profileSource.FetchAndSaveAsync(ids);
-		//}
-
-
-
-
-
-
-
-
-
-
-
+		
 
 		private static Task FetchPlayerProfilesFromRostersAsync(bool downloadRosterPages)
 		{

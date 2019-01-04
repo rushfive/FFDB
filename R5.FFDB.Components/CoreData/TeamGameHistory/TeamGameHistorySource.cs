@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
+using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 {
 	public interface ITeamGameHistorySource : ICoreDataSource
 	{
+		Task FetchForWeekAsync(WeekInfo week);
 		Task FetchAllAsync();
 		Task FetchForWeeksAsync(List<WeekInfo> weeks);
 	}
@@ -26,20 +28,30 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
-		private IAvailableWeeksResolver _availableWeeks { get; }
+		private AvailableWeeksValue _availableWeeks { get; }
 
 		public TeamGameHistorySource(
 			ILogger<TeamGameHistorySource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
-			IAvailableWeeksResolver availableWeeks)
+			AvailableWeeksValue availableWeeks)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_throttle = throttle;
 			_availableWeeks = availableWeeks;
+		}
+
+		public async Task FetchForWeekAsync(WeekInfo week)
+		{
+			_logger.LogInformation($"Beginning fetching of team game history data for {week}.");
+
+			await FetchGamesForWeekAsync(week);
+			await FetchSaveGameStatsAsync(week);
+
+			_logger.LogInformation("Finished fetching team game history data.");
 		}
 
 		public async Task FetchAllAsync()

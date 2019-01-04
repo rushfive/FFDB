@@ -49,6 +49,7 @@ namespace R5.FFDB.Engine
 				.AddScoped(sp => throttle)
 				.AddScoped<CoreDataSourcesResolver>()
 				.AddScoped<LatestWeekValue>()
+				.AddScoped<AvailableWeeksValue>()
 				.AddScoped<RostersValue>()
 				.AddScoped<IDatabaseProvider>(sp =>
 				{
@@ -67,7 +68,6 @@ namespace R5.FFDB.Engine
 				.AddScoped<IWeekStatsService, WeekStatsService>()
 				.AddScoped<ITeamGameHistorySource, TeamGameHistorySource>()
 				.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
-				.AddScoped<IAvailableWeeksResolver, AvailableWeeksResolver>()
 				.AddScoped<IPlayerWeekTeamResolverFactory, PlayerWeekTeamResolverFactory>();
 
 			return services;

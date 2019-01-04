@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
+using R5.FFDB.Engine.Processors;
 using R5.FFDB.Engine.Source;
 using System;
 using System.Collections.Generic;
@@ -43,6 +45,8 @@ namespace R5.FFDB.Engine
 		private IPlayerProfileService _playerProfileService { get; }
 		private ITeamGameStatsService _teamGameStatsService { get; }
 
+		public UpdateProcessor Update { get; }
+
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
 			CoreDataSourcesResolver sourcesResolver,
@@ -50,7 +54,9 @@ namespace R5.FFDB.Engine
 			IWeekStatsService weekStatsService,
 			IRosterService rosterService,
 			IPlayerProfileService playerProfileService,
-			ITeamGameStatsService teamGameStatsService)
+			ITeamGameStatsService teamGameStatsService,
+			
+			IServiceProvider serviceProvider)
 		{
 			_logger = logger;
 			_sourcesResolver = sourcesResolver;
@@ -59,57 +65,27 @@ namespace R5.FFDB.Engine
 			_rosterService = rosterService;
 			_playerProfileService = playerProfileService;
 			_teamGameStatsService = teamGameStatsService;
+
+			Update = ActivatorUtilities.CreateInstance<UpdateProcessor>(serviceProvider);
 		}
 
 		// can be run more than once, in case of failure
 		public async Task RunInitialSetupAsync()
 		{
-			//_logger.LogInformation("Running initial setup..");
+			_logger.LogInformation("Running initial setup..");
 
-			//IDatabaseContext dbContext = _databaseProvider.GetContext();
-			//_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
+			IDatabaseContext dbContext = _databaseProvider.GetContext();
+			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
+
+			await dbContext.InitializeAsync();
+			await dbContext.Team.AddTeamsAsync();
+
+			await Update.UpdateAllStatsAsync();
+
+			CoreDataSources sources = await _sourcesResolver.GetAsync();
 			
-			//await dbContext.InitializeAsync();
-			//await dbContext.Team.AddTeamsAsync();
-
-			//CoreDataSources sources = await _sourcesResolver.GetAsync();
-
-			////await sources.TeamGameHistory.FetchAndSaveAsync();
-			
-			//_gameStatsParser.ParseFilesToMapValues();
-
-			////await sources.Roster.FetchAndSaveAsync();
-			//List<Roster> rosters = _rosterService.Get();
-
-			////await sources.PlayerProfile.FetchAndSaveAsync();
-
-			//_logger.LogInformation("Persisting player profiles to database..");
-			
-			//List<PlayerProfile> players = _playerProfileService.Get();
-			//await dbContext.Player.UpdateAsync(players, rosters);
-
-			//_logger.LogInformation("Persisting player-team mappings (roster) to database..");
-			//await dbContext.Team.UpdateRostersAsync(rosters);
-
-			////await sources.WeekStats.FetchAndSaveAsync();
-			//List<WeekStats> weekStats = (await _weekStatsService.GetAsync())
-			//	.OrderBy(ws => ws.Week)
-			//	.ToList();
-
-			//_logger.LogInformation("Persisting week stats to database..");
-			//await dbContext.Stats.UpdateWeeksAsync(weekStats);
-			
-			////List<TeamWeekStats> teamGameStats = _teamGameStatsService.Get();
-			////await dbContext.Team.UpdateGameStatsAsync(teamGameStats);
-
-			//_logger.LogInformation("Successfully finished running initial setup.");
+			_logger.LogInformation("Successfully finished running initial setup.");
 		}
-
-		public async Task UpdateForWeekAsync(int season, int week)
-		{
-			_logger.LogInformation($"Starting update for {season}-{week}.");
-
-
-		}
+		
 	}
 }
