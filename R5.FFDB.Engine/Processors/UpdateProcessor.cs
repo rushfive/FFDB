@@ -56,7 +56,7 @@ namespace R5.FFDB.Engine.Processors
 			List<WeekInfo> available = await _availableWeeksValue.GetAsync();
 
 			_logger.LogInformation($"Updating stats for all available weeks ({available.Count} total).");
-
+			
 			foreach(var week in available)
 			{
 				_logger.LogDebug($"Begin updating stats for {week}.");
@@ -82,7 +82,7 @@ namespace R5.FFDB.Engine.Processors
 			}
 
 			_logger.LogInformation($"Updating stats for {missing.Count} missing weeks.");
-
+			
 			foreach (var week in missing)
 			{
 				_logger.LogDebug($"Begin updating stats for {week}.");
@@ -119,7 +119,6 @@ namespace R5.FFDB.Engine.Processors
 			await dbContext.Team.UpdateGameStatsAsync(teamStats);
 
 			await dbContext.AddUpdateLogAsync(week);
-
 		}
 
 		public async Task UpdateRostersAsync()
@@ -152,6 +151,12 @@ namespace R5.FFDB.Engine.Processors
 			await _profileSource.FetchAsync(newIds);
 
 			List<PlayerProfile> playerProfiles = _profileService.Get(newIds);
+			if (!playerProfiles.Any())
+			{
+				_logger.LogInformation("No player profiles resolved from files. Skipping database update.");
+				return;
+			}
+
 			List<Roster> rosters = await _rostersValue.GetAsync();
 
 			await dbContext.Player.UpdateAsync(playerProfiles, rosters);

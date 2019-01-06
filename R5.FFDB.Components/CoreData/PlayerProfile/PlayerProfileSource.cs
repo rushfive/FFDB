@@ -29,9 +29,9 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
-
 		private IWeekStatsService _weekStatsService { get; }
 		private IRosterService _rosterService { get; }
+		private IPlayerProfileScraper _scraper { get; }
 
 		public PlayerProfileSource(
 			ILogger<PlayerProfileSource> logger,
@@ -39,7 +39,8 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
 			IWeekStatsService weekStatsService,
-			IRosterService rosterService)
+			IRosterService rosterService,
+			IPlayerProfileScraper scraper)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
@@ -47,6 +48,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			_throttle = throttle;
 			_weekStatsService = weekStatsService;
 			_rosterService = rosterService;
+			_scraper = scraper;
 		}
 
 		public async Task FetchAsync(List<string> nIds)
@@ -205,12 +207,12 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			var page = new HtmlDocument();
 			page.LoadHtml(html);
 
-			(string firstName, string lastName) = PlayerProfileScraper.ExtractNames(page);
-			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);
-			DateTimeOffset dateOfBirth = PlayerProfileScraper.ExtractDateOfBirth(page);
-			string college = PlayerProfileScraper.ExtractCollege(page);
-			(string esbId, string gsisId) = PlayerProfileScraper.ExtractIds(page);
-			string pictureUri = PlayerProfileScraper.ExtractPictureUri(page);
+			(string firstName, string lastName) = _scraper.ExtractNames(page);
+			(int height, int weight) = _scraper.ExtractHeightWeight(page);
+			DateTimeOffset dateOfBirth = _scraper.ExtractDateOfBirth(page);
+			string college = _scraper.ExtractCollege(page);
+			(string esbId, string gsisId) = _scraper.ExtractIds(page);
+			string pictureUri = _scraper.ExtractPictureUri(page);
 
 			return new PlayerProfileJson
 			{

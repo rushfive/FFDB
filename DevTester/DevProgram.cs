@@ -56,12 +56,13 @@ namespace DevTester
 			_dbContext = dbProvider.GetContext();
 			/// DONT TOUCH ABOVE ///
 			/// 
+			
 
 
 			FfdbEngine engine = GetConfiguredEngine();
 			//await engine.Update.UpdateRostersAsync();
-			await engine.Update.UpdateStatsForWeekAsync(new WeekInfo(2010, 2));
-		
+			//await engine.Update.UpdateStatsForWeekAsync(new WeekInfo(2010, 2));
+			await engine.Update.UpdateMissingStatsAsync();
 			
 
 			return;
@@ -166,7 +167,7 @@ namespace DevTester
 				.AddDefaultBrowserHeaders();
 
 			setup.Logging
-				.SetLogDirectory(@"D:\Repos\ffdb_data\dev_test_logs\")
+				.SetLogDirectory(@"D:\Repos\ffdb_data_2\dev_test_logs\")
 				.SetRollingInterval(RollingInterval.Day)
 				.SetLogLevel(LogEventLevel.Debug);
 

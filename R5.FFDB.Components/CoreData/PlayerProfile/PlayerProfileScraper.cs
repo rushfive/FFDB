@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,126 +8,259 @@ using System.Text.RegularExpressions;
 
 namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
+	public interface IPlayerProfileScraper
+	{
+		(string esbId, string gsisId) ExtractIds(HtmlDocument page);
+		string ExtractPictureUri(HtmlDocument page);
+		(int height, int weight) ExtractHeightWeight(HtmlDocument page);
+		DateTimeOffset ExtractDateOfBirth(HtmlDocument page);
+		string ExtractCollege(HtmlDocument page);
+		(string firstName, string lastName) ExtractNames(HtmlDocument page);
+	}
+
+
 	// todo: should all be internal
 	// todo: integrate to IOC with logging
-	public static class PlayerProfileScraper
+	public class PlayerProfileScraper : IPlayerProfileScraper
 	{
-		public static (string esbId, string gsisId) ExtractIds(HtmlDocument page)
+		private ILogger<PlayerProfileScraper> _logger { get; }
+
+		public PlayerProfileScraper(ILogger<PlayerProfileScraper> logger)
 		{
-			string[] idCommentLines = page.DocumentNode
-				.SelectSingleNode("//comment()[contains(., 'GSIS')]")
-				.InnerHtml
-				.Split("\n\t");
+			_logger = logger;
+		}
+
+		public (string esbId, string gsisId) ExtractIds(HtmlDocument page)
+		{
+			string[] idCommentLines = null;
+			try
+			{
+				idCommentLines = page.DocumentNode
+					.SelectSingleNode("//comment()[contains(., 'GSIS')]")
+					.InnerHtml
+					.Split("\n\t");
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find HTML comments on page containing player's ESB and GSIS id.");
+				throw;
+			}
 
 			// "ESB ID: ADA218591"
-			string esbId = idCommentLines
-				.Single(l => l.Contains("ESB"))
-				.Split(":")[1]
-				.Trim();
+			string esbId = null;
+			try
+			{
+				esbId = idCommentLines
+					.Single(l => l.Contains("ESB"))
+					.Split(":")[1]
+					.Trim();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find ESB id.");
+				throw;
+			}
 
 			// "GSIS ID: 00-0031381"
-			string gsisId = idCommentLines
-				.Single(l => l.Contains("GSIS"))
-				.Split(":")[1]
-				.Trim();
+			string gsisId = null;
+			try
+			{
+				gsisId = idCommentLines
+					.Single(l => l.Contains("GSIS"))
+					.Split(":")[1]
+					.Trim();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find GSIS id.");
+				throw;
+			}
 
 			return (esbId, gsisId);
 		}
 
-		public static string ExtractPictureUri(HtmlDocument page)
+		public string ExtractPictureUri(HtmlDocument page)
 		{
-			return page.DocumentNode.SelectNodes("//meta")
-				.SingleOrDefault(n => n.Attributes.Contains("property") && n.Attributes["property"].Value == "og:image")
-				?.Attributes["content"].Value;
+			try
+			{
+				return page.DocumentNode.SelectNodes("//meta")
+					.SingleOrDefault(n => n.Attributes.Contains("property") && n.Attributes["property"].Value == "og:image")
+					?.Attributes["content"].Value;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find player's picture URI.");
+				throw;
+			}
 		}
 
-		public static (int height, int weight) ExtractHeightWeight(HtmlDocument page)
+		public (int height, int weight) ExtractHeightWeight(HtmlDocument page)
 		{
 			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-
-			// InnerText:
-			// "\r\n\t\t\t\t\tHeight: 5-10 &nbsp; \r\n\t\t\t\t\tWeight: 192 &nbsp; \r\n\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\t\tAge: 30\r\n\t\t\t\t\t\t\r\n\t\t\t\t\t\r\n\t\t\t\t"
-			HtmlNode heightWeightParagraph = infoParagraphs
-				.FirstOrDefault(p => p.InnerText.Contains("Height") && p.InnerText.Contains("Weight"));
-			if (heightWeightParagraph == null)
+			
+			HtmlNode heightWeightParagraph = null;
+			try
 			{
-				throw new InvalidOperationException("Failed to scrape height and weight.");
+				heightWeightParagraph = infoParagraphs
+					.FirstOrDefault(p => p.InnerText.Contains("Height") && p.InnerText.Contains("Weight"));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find paragraph containing player's height and weight.");
+				throw;
 			}
 
 			string[] colonSplit = heightWeightParagraph.InnerText.Split(":");
 
-			int height = extractHeight(colonSplit[1]);
-			int weight = extractWeight(colonSplit[2]);
-
-			return (height, weight);
-
-			int extractHeight(string segmentContainingHeight)
+			int height = -1;
+			try
 			{
-				var spaceSplit = segmentContainingHeight.Trim().Split(" ");
+				var spaceSplit = colonSplit[1].Trim().Split(" ");
 				var dashSplit = spaceSplit[0].Split("-"); // "5-10"
 
-				return int.Parse(dashSplit[0]) * 12 + int.Parse(dashSplit[1]);
+				height = int.Parse(dashSplit[0]) * 12 + int.Parse(dashSplit[1]);
 			}
-
-			int extractWeight(string segmentContainingWeight)
+			catch (Exception ex)
 			{
-				var spaceSplit = segmentContainingWeight.Trim().Split(" ");
-				return int.Parse(spaceSplit[0]);
+				_logger.LogError(ex, "Failed to find player's height.");
+				throw;
 			}
-		}
 
-		public static DateTimeOffset ExtractDateOfBirth(HtmlDocument page)
-		{
-			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-
-			HtmlNode dateOfBirthParagraph = infoParagraphs.FirstOrDefault(p => p.InnerText.Contains("Born:", StringComparison.OrdinalIgnoreCase));
-			if (dateOfBirthParagraph == null)
+			int weight = -1;
+			try
 			{
-				throw new InvalidOperationException("Failed to scrape date of birth.");
+				var spaceSplit = colonSplit[2].Trim().Split(" ");
+				weight =  int.Parse(spaceSplit[0]);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find player's weight.");
+				throw;
 			}
 
-			var spaceSplit = dateOfBirthParagraph.InnerText.Split(" ");
-			return DateTimeOffset.Parse(spaceSplit[1]);
+			return (height, weight);
 		}
 
-		public static string ExtractCollege(HtmlDocument page)
+		public DateTimeOffset ExtractDateOfBirth(HtmlDocument page)
 		{
 			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-			HtmlNode collegeParagraph = infoParagraphs[4];
-
-			var spaceSplit = collegeParagraph.InnerText.Trim().Split(" ");
-			return HtmlEntity.DeEntitize(spaceSplit[1]);
+			
+			HtmlNode dateOfBirthParagraph = null;
+			try
+			{
+				dateOfBirthParagraph = infoParagraphs
+					.First(p => p.InnerText.Contains("Born:", StringComparison.OrdinalIgnoreCase));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find paragraph containing player's date of birth.");
+				throw;
+			}
+			
+			try
+			{
+				var spaceSplit = dateOfBirthParagraph.InnerText.Split(" ");
+				return DateTimeOffset.Parse(spaceSplit[1]);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to parse player's date of birth.");
+				throw;
+			}
 		}
 
-		public static (string firstName, string lastName) ExtractNames(HtmlDocument page)
+		public string ExtractCollege(HtmlDocument page)
 		{
 			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-			HtmlNode nameParagraph = infoParagraphs[0];
-			HtmlNode name = nameParagraph.ChildNodes.Single(n => n.HasClass("player-name"));
+
+			HtmlNode collegeParagraph = null;
+			try
+			{
+				collegeParagraph = infoParagraphs[4];
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find paragraph containing player's college.");
+				throw;
+			}
+
+			try
+			{
+				var spaceSplit = collegeParagraph.InnerText.Trim().Split(" ");
+
+				return HtmlEntity.DeEntitize(spaceSplit[1]);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to parser player's college.");
+				throw;
+			}
+		}
+
+		public (string firstName, string lastName) ExtractNames(HtmlDocument page)
+		{
+			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
+
+			HtmlNode name = null;
+			try
+			{
+				HtmlNode nameParagraph = infoParagraphs[0];
+				name = nameParagraph.ChildNodes.Single(n => n.HasClass("player-name"));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find paragraph containing player's first and last name.");
+				throw;
+			}
 
 			string fullName = name.InnerText;
 			string stripped = Regex.Replace(fullName, @"&nbsp;", "").Trim();
 
 			var split = stripped.Split(" ");
 
-			string firstName = split[0];
+			string firstName = null;
+			try
+			{
+				firstName = split[0];
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to parse player's first name.");
+				throw;
+			}
 
 			string lastName = null;
 			if (split.Length > 1)
 			{
-				lastName = string.Join(" ", split.Skip(1)).Trim();
+				try
+				{
+					lastName = string.Join(" ", split.Skip(1)).Trim();
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Failed to find parser player's last name.");
+					throw;
+				}
 			}
-
+			
 			return (
 				HtmlEntity.DeEntitize(firstName), 
 				HtmlEntity.DeEntitize(lastName));
 		}
 
-		private static HtmlNodeCollection GetInfoParagraphNodes(HtmlDocument page)
+		private HtmlNodeCollection GetInfoParagraphNodes(HtmlDocument page)
 		{
-			HtmlNode bio = page.GetElementbyId("player-bio");
-			HtmlNode info = bio.ChildNodes.Single(n => n.HasClass("player-info"));
-			return info.SelectNodes("p"); ;
+			try
+			{
+				HtmlNode bio = page.GetElementbyId("player-bio");
+				HtmlNode info = bio.ChildNodes.Single(n => n.HasClass("player-info"));
+				return info.SelectNodes("p"); ;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to find player info paragraph nodes.");
+				throw;
+			}
 		}
 
 	}
