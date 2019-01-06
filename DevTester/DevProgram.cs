@@ -21,7 +21,6 @@ using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using R5.FFDB.Engine;
-using R5.FFDB.Engine.Source;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -56,101 +55,18 @@ namespace DevTester
 			_dbContext = dbProvider.GetContext();
 			/// DONT TOUCH ABOVE ///
 			/// 
-
-			var source = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
-			await source.CheckHealthAsync();
-
-			return;
-
-
+			
+			
 			FfdbEngine engine = GetConfiguredEngine();
 			//await engine.Update.UpdateRostersAsync();
 			//await engine.Update.UpdateStatsForWeekAsync(new WeekInfo(2010, 2));
-			await engine.Update.UpdateMissingStatsAsync();
-			
+			await engine.Stats.UpdateMissingAsync();
+			//await engine.CheckSourcesHealthAsync();
 
 			return;
 			Console.ReadKey();
 		}
-
-		private static async Task InitDbAsync()
-		{
-			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-			IDatabaseContext dbContext = dbProvider.GetContext();
-			await dbContext.InitializeAsync();
-			await dbContext.Team.AddTeamsAsync();
-		}
-
-		// things that need to happen before this:
-		// assumes db initializes with tbls and tms
-		// get latest rosters
-		private static async Task TestUpdateWeekAsync(WeekInfo week)
-		{
-			var wks = new List<WeekInfo> { week };
-
-			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-			IDatabaseContext dbContext = dbProvider.GetContext();
-			var tgHistorySource = _serviceProvider.GetRequiredService<ITeamGameHistorySource>();
-			var tgStatsSvc = _serviceProvider.GetRequiredService<ITeamGameStatsService>();
-			var wsSource = _serviceProvider.GetRequiredService<IWeekStatsSource>();
-			var wsSvc = _serviceProvider.GetRequiredService<IWeekStatsService>();
-			var pSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
-			var pSvc = _serviceProvider.GetRequiredService<IPlayerProfileService>();
-			//var rSource = _serviceProvider.GetRequiredService<IRosterSource>();
-			//var rSvc = _serviceProvider.GetRequiredService<IRosterService>();
-
-			// need overwrite option with a check first on update_log
-
-			await tgHistorySource.FetchForWeeksAsync(wks);
-			await wsSource.FetchForWeeksAsync(wks);
-
-			var rostersValue = _serviceProvider.GetRequiredService<RostersValue>();
-			List<Roster> rosters = await rostersValue.GetAsync();
-
-			// Add player profiles
-
-			//List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
-			//await AddNewPlayersAsync(rosterNflIds);
-
-			List<string> weekStatNflIds = wsSvc.GetNflIdsForWeek(week);
-			await AddNewPlayersAsync(weekStatNflIds);
-
-			// Add week stats
-			WeekStats weekStats = await wsSvc.GetForWeekAsync(week);
-			await _dbContext.Stats.UpdateWeekAsync(weekStats);
-
-			// team stats
-			List<TeamWeekStats> teamStats = tgStatsSvc.GetForWeek(week);
-			await _dbContext.Team.UpdateGameStatsAsync(teamStats);
-
-			await _dbContext.AddUpdateLogAsync(week);
-
-			var t = "test";
-		}
-
-		private static async Task AddNewPlayersAsync(List<string> nflIds)
-		{
-			var profileSource = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
-			var profileService = _serviceProvider.GetRequiredService<IPlayerProfileService>();
-			var rostersValue = _serviceProvider.GetRequiredService<RostersValue>();
-
-			List<PlayerProfile> existing = await _dbContext.Player.GetAllAsync();
-			HashSet<string> existingIds = existing.Select(p => p.NflId).ToHashSet();
-
-			List<string> newIds = nflIds.Where(id => !existingIds.Contains(id)).ToList();
-			await profileSource.FetchAsync(newIds);
-
-			List<PlayerProfile> playerProfiles = profileService.Get(newIds);
-			if (!playerProfiles.Any())
-			{
-				_logger.LogInformation("No new player profiles to add.");
-				return;
-			}
-
-			List<Roster> rosters = await rostersValue.GetAsync();
-			await _dbContext.Player.UpdateAsync(playerProfiles, rosters);
-		}
-
+		
 		
 		private static FfdbEngine GetConfiguredEngine()
 		{
@@ -179,25 +95,9 @@ namespace DevTester
 		}
 		
 
-		private static Task FetchPlayerProfilesFromRostersAsync(bool downloadRosterPages)
-		{
-			try
-			{
-				IPlayerProfileTester tester = _serviceProvider.GetRequiredService<IPlayerProfileTester>();
-				return tester.FetchSavePlayerProfilesAsync(downloadRosterPages);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "There was an error fetching player profile from roster.");
-				throw;
-			}
-		}
-
 		private static async Task<HtmlDocument> DownloadPageAsync(
 			string pageUri, string filePath, bool skipFetch)
 		{
-			// Save 
-
 			//string uri = "http://www.nfl.com/player/mikemitchell/238227/gamelogs?season=2018";
 			//string filePath = @"D:\Repos\ffdb_data\temp\debug.html";
 
@@ -207,9 +107,7 @@ namespace DevTester
 				HtmlDocument doc = await web.LoadFromWebAsync(pageUri);
 				doc.Save(filePath);
 			}
-
-
-			// Read
+			
 			string html = File.ReadAllText(filePath);
 			var page = new HtmlDocument();
 			page.LoadHtml(html);

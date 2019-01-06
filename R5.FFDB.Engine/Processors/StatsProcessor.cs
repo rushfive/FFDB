@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.PlayerProfile;
-using R5.FFDB.Components.CoreData.Roster.Values;
 using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.ValueProviders;
@@ -14,44 +12,38 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine.Processors
 {
-	public class UpdateProcessor
+	public class StatsProcessor
 	{
-		private ILogger<UpdateProcessor> _logger { get; }
+		private ILogger<StatsProcessor> _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
-		private RostersValue _rostersValue { get; }
 		private AvailableWeeksValue _availableWeeksValue { get; }
-		private IPlayerProfileSource _profileSource { get; }
-		private IPlayerProfileService _profileService { get; }
 		private ITeamGameHistorySource _teamGameHistorySource { get; }
 		private IWeekStatsSource _weekStatsSource { get; }
 		private IWeekStatsService _weekStatsService { get; }
 		private ITeamGameStatsService _teamStatsService { get; }
+		private IProcessorHelper _helper { get; }
 
-		public UpdateProcessor(
-			ILogger<UpdateProcessor> logger,
+		public StatsProcessor(
+			ILogger<StatsProcessor> logger,
 			IDatabaseProvider dbProvider,
-			RostersValue rostersValue,
 			AvailableWeeksValue availableWeeksValue,
-			IPlayerProfileSource profileSource,
-			IPlayerProfileService profileService,
 			ITeamGameHistorySource teamGameHistorySource,
 			IWeekStatsSource weekStatsSource,
 			IWeekStatsService weekStatsService,
-			ITeamGameStatsService teamStatsService)
+			ITeamGameStatsService teamStatsService,
+			IProcessorHelper helper)
 		{
 			_logger = logger;
 			_dbProvider = dbProvider;
-			_rostersValue = rostersValue;
 			_availableWeeksValue = availableWeeksValue;
-			_profileSource = profileSource;
-			_profileService = profileService;
 			_teamGameHistorySource = teamGameHistorySource;
 			_weekStatsSource = weekStatsSource;
 			_weekStatsService = weekStatsService;
 			_teamStatsService = teamStatsService;
+			_helper = helper;
 		}
 
-		public async Task UpdateAllStatsAsync()
+		public async Task UpdateAllAsync()
 		{
 			List<WeekInfo> available = await _availableWeeksValue.GetAsync();
 
@@ -67,7 +59,7 @@ namespace R5.FFDB.Engine.Processors
 			_logger.LogInformation("Finished updating stats for all available weeks.");
 		}
 
-		public async Task UpdateMissingStatsAsync()
+		public async Task UpdateMissingAsync()
 		{
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 			HashSet<WeekInfo> alreadyUpdated = (await dbContext.GetUpdatedWeeksAsync()).ToHashSet();
@@ -93,7 +85,7 @@ namespace R5.FFDB.Engine.Processors
 			_logger.LogInformation("Finished updating stats for missing weeks.");
 		}
 
-		public async Task UpdateStatsForWeekAsync(WeekInfo week)
+		public async Task UpdateForWeekAsync(WeekInfo week)
 		{
 			_logger.LogInformation($"Updating stats for {week}.");
 
@@ -110,7 +102,7 @@ namespace R5.FFDB.Engine.Processors
 			await _weekStatsSource.FetchForWeekAsync(week);
 
 			List<string> weekStatNflIds = _weekStatsService.GetNflIdsForWeek(week);
-			await AddPlayerProfilesAsync(weekStatNflIds, dbContext);
+			await _helper.AddPlayerProfilesAsync(weekStatNflIds, dbContext);
 
 			WeekStats weekStats = await _weekStatsService.GetForWeekAsync(week);
 			await dbContext.Stats.UpdateWeekAsync(weekStats);
@@ -119,47 +111,6 @@ namespace R5.FFDB.Engine.Processors
 			await dbContext.Team.UpdateGameStatsAsync(teamStats);
 
 			await dbContext.AddUpdateLogAsync(week);
-		}
-
-		public async Task UpdateRostersAsync()
-		{
-			IDatabaseContext dbContext = _dbProvider.GetContext();
-			List<Roster> rosters = await _rostersValue.GetAsync();
-
-			List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
-			await AddPlayerProfilesAsync(rosterNflIds, dbContext);
-			
-			await dbContext.Team.UpdateRostersAsync(rosters);
-		}
-
-		private async Task AddPlayerProfilesAsync(List<string> nflIds, IDatabaseContext dbContext)
-		{
-			HashSet<string> existingIds = (await dbContext.Player.GetAllAsync())
-				.Select(p => p.NflId)
-				.ToHashSet();
-
-			List<string> newIds = nflIds.Where(id => !existingIds.Contains(id)).ToList();
-			if (!newIds.Any())
-			{
-				_logger.LogInformation($"No new player profiles to add. "
-					+ $"The {nflIds.Count} players already exist in the database.");
-				return;
-			}
-
-			_logger.LogInformation($"Adding {newIds.Count} player profiles to database.");
-
-			await _profileSource.FetchAsync(newIds);
-
-			List<PlayerProfile> playerProfiles = _profileService.Get(newIds);
-			if (!playerProfiles.Any())
-			{
-				_logger.LogInformation("No player profiles resolved from files. Skipping database update.");
-				return;
-			}
-
-			List<Roster> rosters = await _rostersValue.GetAsync();
-
-			await dbContext.Player.UpdateAsync(playerProfiles, rosters);
 		}
 	}
 }

@@ -11,7 +11,7 @@ using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Database;
-using R5.FFDB.Engine.Source;
+using R5.FFDB.Engine.Processors;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -47,7 +47,6 @@ namespace R5.FFDB.Engine
 				.AddScoped(sp => dataPath)
 				.AddScoped(sp => _webRequestConfig)
 				.AddScoped(sp => throttle)
-				.AddScoped<CoreDataSourcesResolver>()
 				.AddScoped<LatestWeekValue>()
 				.AddScoped<AvailableWeeksValue>()
 				.AddScoped<RostersValue>()
@@ -62,13 +61,13 @@ namespace R5.FFDB.Engine
 				.AddScoped<IPlayerProfileSource, PlayerProfileSource>()
 				.AddScoped<IPlayerProfileService, PlayerProfileService>()
 				.AddScoped<IPlayerProfileScraper, PlayerProfileScraper>()
-				.AddScoped<IRosterService, RosterService>()
 				.AddScoped<IRosterSource, RosterSource>()
 				.AddScoped<IRosterScraper, RosterScraper>()
 				.AddScoped<IWeekStatsSource, WeekStatsSource>()
 				.AddScoped<IWeekStatsService, WeekStatsService>()
 				.AddScoped<ITeamGameHistorySource, TeamGameHistorySource>()
 				.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
+				.AddScoped<IProcessorHelper, ProcessorHelper>()
 				.AddScoped<IPlayerWeekTeamResolverFactory, PlayerWeekTeamResolverFactory>();
 
 			return services;

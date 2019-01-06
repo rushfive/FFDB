@@ -6,6 +6,7 @@ using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,15 +24,18 @@ namespace R5.FFDB.Components.CoreData.Roster
 		private ILogger<RosterSource> _logger { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private DataDirectoryPath _dataPath { get; }
+		private IRosterScraper _scraper { get; }
 
 		public RosterSource(
 			ILogger<RosterSource> logger,
 			IWebRequestClient webRequestClient,
-			DataDirectoryPath dataPath)
+			DataDirectoryPath dataPath,
+			IRosterScraper scraper)
 		{
 			_logger = logger;
 			_webRequestClient = webRequestClient;
 			_dataPath = dataPath;
+			_scraper = scraper;
 		}
 
 		public async Task FetchAsync()
@@ -76,10 +80,50 @@ namespace R5.FFDB.Components.CoreData.Roster
 			_logger.LogTrace($"Successfully saved team '{team.Abbreviation}' roster page to '{savePath}'.");
 		}
 
-		public Task CheckHealthAsync()
+		public async Task CheckHealthAsync()
 		{
-			// Todo:
-			return Task.CompletedTask;
+			var teams = TeamDataStore.GetAll();
+
+			var testTeams = new List<Team>
+			{
+				teams.First(),
+				teams.Last()
+			};
+
+			_logger.LogInformation($"Beginning health check for '{Label}' source. "
+				+ $"Will perform checks on teams: {string.Join(", ", testTeams)}");
+
+			foreach (var team in testTeams)
+			{
+				_logger.LogDebug($"Checking health using team {team}.");
+
+				await CheckHealthForTeamAsync(team);
+
+				_logger.LogInformation($"Health check passed for team {team}.");
+			}
+
+			_logger.LogInformation($"Health check successfully passed for '{Label}' source.");
+		}
+
+		private async Task CheckHealthForTeamAsync(Team team)
+		{
+			string uri = Endpoints.Page.TeamRoster(team.ShortName, team.Abbreviation);
+
+			string html = null;
+			try
+			{
+				html = await _webRequestClient.GetStringAsync(uri);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to fetch team '{team.Abbreviation}' roster page at '{uri}'.");
+				throw;
+			}
+
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
+
+			_scraper.ExtractPlayers(page);
 		}
 	}
 }

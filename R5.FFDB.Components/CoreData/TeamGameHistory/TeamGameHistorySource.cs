@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
@@ -152,138 +153,87 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 
 			return result;
 		}
-
-		//
-
-		//public async Task FetchAndSaveForWeekAsync(WeekInfo week)
-		//{
-		//	string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
-
-		//	_logger.LogInformation($"Beginning fetching of team game history data for {week} from '{uri}'.");
-
-		//	await FetchSaveWeekGamesForWeekAsync(week, uri);
-
-		//	List<string> gameIds = GetGameIdsForWeek(week);
-		//	await FetchAndSaveGameStatsAsync(gameIds);
-
-		//	_logger.LogInformation($"Successfully finished fetching team game history data for {week}.");
-		//}
-
-		//private List<string> GetGameIdsForWeek(WeekInfo week)
-		//{
-		//	var result = new List<string>();
-
-		//	var filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
-
-		//	XElement weekGameXml = XElement.Load(filePath);
-
-		//	XElement gameNode = weekGameXml.Elements("gms").Single();
-
-		//	foreach (XElement game in gameNode.Elements("g"))
-		//	{
-		//		string gameId = game.Attribute("eid").Value;
-		//		result.Add(gameId);
-		//	}
-
-		//	return result;
-		//}
-
-		//public async Task FetchAndSaveAsync()
-		//{
-		//	_logger.LogInformation("Beginning fetching of team game history data.");
-
-		//	await FetchAndSaveWeekGamesAsync();
-
-		//	List<string> gameIds = _gameWeekMap.Get().Keys.ToList();
-		//	await FetchAndSaveGameStatsAsync(gameIds);
-
-		//	_logger.LogInformation("Successfully finished fetching of team game history data.");
-		//}
-
-		//private async Task FetchAndSaveWeekGamesAsync()
-		//{
-		//	_logger.LogDebug("Beginning fetching of weekly games information..");
-
-		//	HashSet<WeekInfo> existing = DirectoryFilesResolver
-		//		.GetWeeksFromXmlFiles(_dataPath.Static.TeamGameHistoryWeekGames)
-		//		.ToHashSet();
-
-		//	List<WeekInfo> missingWeeks = await _availableWeeks.GetAsync(excludeWeeks: existing);
-
-		//	if (!missingWeeks.Any())
-		//	{
-		//		_logger.LogInformation("Already have all available weekly game information.");
-		//		return;
-		//	}
-
-		//	_logger.LogInformation($"Already have weekly game information for {existing.Count} weeks. "
-		//		+ $"Will begin fetching of remaining {missingWeeks.Count}.");
-
-		//	foreach (WeekInfo week in missingWeeks)
-		//	{
-		//		string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
-
-		//		_logger.LogTrace($"Starting request for {week} at endpoint '{uri}'.");
-
-		//		await FetchSaveWeekGamesForWeekAsync(week, uri);
-		//		await _throttle.DelayAsync();
-
-		//		_logger.LogDebug($"Finished fetching weekly game information for {week}.");
-		//	}
-
-		//	_logger.LogInformation($"Finished fetching weekly game information for all {missingWeeks.Count} missing weeks.");
-		//}
-
-
-
-		//private async Task FetchAndSaveGameStatsAsync(List<string> gameIds)
-		//{
-		//	_logger.LogDebug("Beginning fetching of weekly game stats data..");
-
-		//	HashSet<string> existing = DirectoryFilesResolver
-		//		.GetFileNames(_dataPath.Static.TeamGameHistoryGameStats, excludeExtensions: true)
-		//		.ToHashSet();
-
-		//	List<string> missing = gameIds
-		//		.Where(id => !existing.Contains(id))
-		//		.ToList();
-
-		//	if (!missing.Any())
-		//	{
-		//		_logger.LogInformation("Already have all requested game stats data.");
-		//		return;
-		//	}
-
-		//	foreach (string gameId in missing)
-		//	{
-		//		if (existing.Contains(gameId))
-		//		{
-		//			continue;
-		//		}
-
-		//		string uri = Endpoints.Api.GameCenterStats(gameId);
-
-		//		_logger.LogTrace($"Starting request for game {gameId} at endpoint '{uri}'.");
-		//		string response = await _webRequestClient.GetStringAsync(uri, throttle: false);
-
-		//		string filePath = _dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json";
-
-		//		_logger.LogTrace($"Saving JSON response to '{filePath}'.");
-		//		await File.WriteAllTextAsync(filePath, response);
-
-		//		existing.Add(gameId);
-		//		await _throttle.DelayAsync();
-
-		//		_logger.LogDebug($"Finished fetching stats data for game {gameId}.");
-		//	}
-
-		//	_logger.LogDebug("Finished fetching of weekly game stats data.");
-		//}
-
-		public Task CheckHealthAsync()
+		
+		public async Task CheckHealthAsync()
 		{
-			// Todo:
-			return Task.CompletedTask;
+			var testWeeks = new List<WeekInfo>
+			{
+				new WeekInfo(2010, 1),
+				new WeekInfo(2018, 1)
+			};
+
+			_logger.LogInformation($"Beginning health check for '{Label}' source. "
+				+ $"Will perform checks on weeks: {string.Join(", ", testWeeks)}");
+
+			foreach (var week in testWeeks)
+			{
+				_logger.LogDebug($"Checking health using week {week}.");
+
+				await CheckHealthForWeekAsync(week);
+
+				_logger.LogInformation($"Health check passed for week {week}.");
+			}
+
+			_logger.LogInformation($"Health check successfully passed for '{Label}' source.");
+		}
+
+		private async Task CheckHealthForWeekAsync(WeekInfo week)
+		{
+			string gamesXml = null;
+			try
+			{
+				string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
+				gamesXml = await _webRequestClient.GetStringAsync(uri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to fetch games xml for week {week}.");
+				throw;
+			}
+
+			string gameId = null;
+			try
+			{
+				XElement weekGameXml = XElement.Parse(gamesXml);
+				XElement gameNode = weekGameXml.Elements("gms").Single();
+				
+				gameId = gameNode.Elements("g").First().Attribute("eid").Value;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to parse games from XML for week {week}.");
+				throw;
+			}
+
+			string statsJson = null;
+			try
+			{
+				string statsUri = Endpoints.Api.GameCenterStats(gameId);
+				statsJson = await _webRequestClient.GetStringAsync(statsUri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to fetch game stats for game {gameId}.");
+				throw;
+			}
+			
+			try
+			{
+				JObject statsJObject = JObject.Parse(statsJson);
+
+				var stats = new TeamWeekStats(-1, true, week);
+
+				JToken score = statsJObject.SelectToken($"{gameId}.home.score");
+				stats.SetPointsScored(score);
+
+				JToken teamStats = statsJObject.SelectToken($"{gameId}.home.stats.team");
+				stats.SetTeamStats(teamStats);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to parse game stats for game {gameId} into expected model.");
+				throw;
+			}
 		}
 	}
 }

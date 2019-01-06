@@ -30,7 +30,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
 		private IWeekStatsService _weekStatsService { get; }
-		private IRosterService _rosterService { get; }
 		private IPlayerProfileScraper _scraper { get; }
 
 		public PlayerProfileSource(
@@ -39,7 +38,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
 			IWeekStatsService weekStatsService,
-			IRosterService rosterService,
 			IPlayerProfileScraper scraper)
 		{
 			_logger = logger;
@@ -47,7 +45,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			_webRequestClient = webRequestClient;
 			_throttle = throttle;
 			_weekStatsService = weekStatsService;
-			_rosterService = rosterService;
 			_scraper = scraper;
 		}
 
