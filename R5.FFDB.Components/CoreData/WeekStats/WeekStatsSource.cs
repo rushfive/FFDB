@@ -118,80 +118,53 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			}
 		}
 
-
-		// PRE per-week below
-
-		//public async Task FetchAndSaveAsync()
-		//{
-		//	WeekInfo latestCompleted = await _latestWeek.GetAsync();
-
-		//	_logger.LogInformation($"Fetching all available week stats for players up to and including week {latestCompleted.Week}, {latestCompleted.Season}.");
-
-		//	HashSet<WeekInfo> existingWeeks = DirectoryFilesResolver
-		//		.GetWeeksFromJsonFiles(_dataPath.Static.WeekStats)
-		//		.ToHashSet();
-
-		//	List<WeekInfo> missingWeeks = await _availableWeeks.GetAsync(excludeWeeks: existingWeeks);
-
-		//	if (!missingWeeks.Any())
-		//	{
-		//		_logger.LogInformation("Already have all available week stats - no fetching necessary.");
-		//		return;
-		//	}
-
-		//	IEnumerable<string> missing = missingWeeks.Select(w => $"{w.Season}-{w.Week}");
-		//	_logger.LogDebug($"Fetching for {missingWeeks.Count} weeks that are missing: {string.Join(", ", missing)}");
-
-		//	foreach (WeekInfo week in missingWeeks)
-		//	{
-		//		_logger.LogDebug($"Beginning week stats fetch for {week.Season}-{week.Week}.");
-
-		//		string uri = Endpoints.Api.WeekStats(week.Season, week.Week);
-
-		//		string weekStats = null;
-		//		try
-		//		{
-		//			weekStats = await _webRequestClient.GetStringAsync(uri);
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//			_logger.LogError(ex, $"Failed to fetch week stats from '{uri}'.");
-		//			throw;
-		//		}
-
-		//		try
-		//		{
-		//			saveFile(weekStats, week);
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//			_logger.LogError(ex, "Failed to save week stats to disk.", weekStats);
-		//			throw;
-		//		}
-
-		//		_logger.LogInformation($"Successfully saved week stats for {week.Season}-{week.Week}.");
-		//	}
-
-		//	_logger.LogInformation("Successfully fetched all available week stats.");
-
-		//	// local functions
-		//	void saveFile(string statsJson, WeekInfo week)
-		//	{
-		//		string path = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
-
-		//		if (File.Exists(path))
-		//		{
-		//			throw new InvalidOperationException($"Week stats file already exists for {week.Season}-{week.Week} at path '{path}'.");
-		//		}
-
-		//		File.WriteAllText(path, statsJson);
-		//	}
-		//}
-
-		public Task CheckHealthAsync()
+		public async Task CheckHealthAsync()
 		{
-			// Todo:
-			return Task.CompletedTask;
+			var testWeeks = new List<WeekInfo>
+			{
+				new WeekInfo(2010, 1),
+				new WeekInfo(2018, 1)
+			};
+
+			_logger.LogInformation($"Beginning health check for '{Label}' source. "
+				+ $"Will perform checks on weeks: {string.Join(", ", testWeeks)}");
+			
+			foreach(var week in testWeeks)
+			{
+				_logger.LogDebug($"Checking health using week {week}.");
+
+				await CheckHealthForWeekAsync(week);
+
+				_logger.LogInformation($"Health check passed for week {week}.");
+			}
+
+			_logger.LogInformation($"Health check successfully passed for '{Label}' source.");
+		}
+
+		private async Task CheckHealthForWeekAsync(WeekInfo week)
+		{
+			string jsonResponse = null;
+			try
+			{
+				string uri = Endpoints.Api.WeekStats(week.Season, week.Week);
+				jsonResponse = await _webRequestClient.GetStringAsync(uri);
+				
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"API request for week stats for {week} failed.");
+				throw;
+			}
+			
+			try
+			{
+				JsonConvert.DeserializeObject<WeekStatsJson>(jsonResponse);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to deserialize week stats API response to expected model.");
+				throw;
+			}
 		}
 	}
 }

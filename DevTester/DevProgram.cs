@@ -56,7 +56,11 @@ namespace DevTester
 			_dbContext = dbProvider.GetContext();
 			/// DONT TOUCH ABOVE ///
 			/// 
-			
+
+			var source = _serviceProvider.GetRequiredService<IPlayerProfileSource>();
+			await source.CheckHealthAsync();
+
+			return;
 
 
 			FfdbEngine engine = GetConfiguredEngine();
