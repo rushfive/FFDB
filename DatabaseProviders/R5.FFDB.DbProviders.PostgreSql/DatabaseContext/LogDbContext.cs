@@ -46,5 +46,29 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			var logs = await SelectAsEntitiesAsync<UpdateLogSql>();
 			return logs.Select(sql => new WeekInfo(sql.Season, sql.Week)).ToList();
 		}
+
+		public async Task RemoveAllAsync()
+		{
+			var logger = GetLogger<UpdateLogSql>();
+			logger.LogInformation("Removing all update log rows from database.");
+
+			await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(typeof(UpdateLogSql)));
+
+			logger.LogInformation("Successfully removed all update log rows from database.");
+		}
+
+		public async Task RemoveForWeekAsync(WeekInfo week)
+		{
+			var logger = GetLogger<UpdateLogSql>();
+			logger.LogInformation($"Removing update log rows for {week} from database.");
+
+			string tableName = EntityInfoMap.TableName(typeof(UpdateLogSql));
+
+			string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
+
+			await ExecuteNonQueryAsync(sqlCommand);
+
+			logger.LogInformation($"Successfully removed update log rows for {week} from database.");
+		}
 	}
 }

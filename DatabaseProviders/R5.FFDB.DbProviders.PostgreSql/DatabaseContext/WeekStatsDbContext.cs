@@ -17,6 +17,17 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
 	public class WeekStatsDbContext : DbContextBase, IWeekStatsDatabaseContext
 	{
+		private static List<Type> _weekStatTypes = new List<Type>
+		{
+			typeof(WeekStatsPassSql),
+			typeof(WeekStatsRushSql),
+			typeof(WeekStatsReceiveSql),
+			typeof(WeekStatsMiscSql),
+			typeof(WeekStatsKickSql),
+			typeof(WeekStatsDstSql),
+			typeof(WeekStatsIdpSql)
+		};
+
 		public WeekStatsDbContext(
 			Func<NpgsqlConnection> getConnection,
 			ILoggerFactory loggerFactory)
@@ -170,6 +181,36 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			await ExecuteNonQueryAsync(sqlCommand);
 
 			logger.LogDebug($"Successfully updated '{itemLabel}' for {week} ({items.Count} total rows).");
+		}
+
+		public async Task RemoveAllAsync()
+		{
+			var logger = GetLogger<WeekStatsDbContext>();
+			logger.LogInformation("Removing all week stats rows from database.");
+
+			foreach(Type type in _weekStatTypes)
+			{
+				await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(type));
+			}
+
+			logger.LogInformation("Successfully removed all week stats rows from database.");
+		}
+
+		public async Task RemoveForWeekAsync(WeekInfo week)
+		{
+			var logger = GetLogger<WeekStatsDbContext>();
+			logger.LogInformation($"Removing week stats rows for {week} from database.");
+
+			foreach(Type type in _weekStatTypes)
+			{
+				string tableName = EntityInfoMap.TableName(type);
+
+				string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
+
+				await ExecuteNonQueryAsync(sqlCommand);
+			}
+
+			logger.LogInformation($"Successfully removed week stats rows for {week} from database.");
 		}
 	}
 }

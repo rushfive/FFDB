@@ -95,5 +95,29 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			await ExecuteNonQueryAsync(sqlCommand);
 			logger.LogInformation($"Successfully added team game stats to '{tableName}' table.");
 		}
+
+		public async Task RemoveAllGameStatsAsync()
+		{
+			var logger = GetLogger<TeamDbContext>();
+			logger.LogInformation("Removing all team game stats rows from database.");
+
+			await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(typeof(TeamGameStatsSql)));
+
+			logger.LogInformation("Successfully removed all team game stats rows from database.");
+		}
+
+		public async Task RemoveGameStatsForWeekAsync(WeekInfo week)
+		{
+			var logger = GetLogger<TeamDbContext>();
+			logger.LogInformation($"Removing team game stats rows for {week} from database.");
+
+			string tableName = EntityInfoMap.TableName(typeof(TeamGameStatsSql));
+
+			string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
+
+			await ExecuteNonQueryAsync(sqlCommand);
+
+			logger.LogInformation($"Successfully removed team game stats rows for {week} from database.");
+		}
 	}
 }

@@ -100,12 +100,28 @@ namespace R5.FFDB.Engine.Processors
 
 		public async Task RemoveAllAsync()
 		{
+			_logger.LogInformation("Removing all stats (WeekStats and TeamGameStats) and logs.");
 
+			IDatabaseContext dbContext = _dbProvider.GetContext();
+
+			await dbContext.Stats.RemoveAllAsync();
+			await dbContext.Team.RemoveAllGameStatsAsync();
+			await dbContext.Log.RemoveAllAsync();
+
+			_logger.LogInformation("Finished removing all stats and logs.");
 		}
 
 		public async Task RemoveForWeekAsync(WeekInfo week)
 		{
+			_logger.LogInformation($"Removing stats (WeekStats and TeamGameStats) and logs for {week}.");
 
+			IDatabaseContext dbContext = _dbProvider.GetContext();
+
+			await dbContext.Stats.RemoveForWeekAsync(week);
+			await dbContext.Team.RemoveGameStatsForWeekAsync(week);
+			await dbContext.Log.RemoveForWeekAsync(week);
+
+			_logger.LogInformation($"Finished removing stats and logs for {week}.");
 		}
 	}
 }

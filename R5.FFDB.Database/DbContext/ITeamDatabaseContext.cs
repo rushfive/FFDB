@@ -9,5 +9,7 @@ namespace R5.FFDB.Database.DbContext
 		Task AddTeamsAsync();
 		Task UpdateRostersAsync(List<Roster> rosters);
 		Task UpdateGameStatsAsync(List<TeamWeekStats> stats);
+		Task RemoveAllGameStatsAsync();
+		Task RemoveGameStatsForWeekAsync(WeekInfo week);
 	}
 }

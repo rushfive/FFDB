@@ -195,10 +195,10 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				}
 			}
 
-			public static string DeleteAll<T>()
-				where T : SqlEntity
+			public static string DeleteAll(Type entityType)
 			{
-				string tableName = EntityInfoMap.TableName(typeof(T));
+				// todo: validate entityType is SqlEntity
+				string tableName = EntityInfoMap.TableName(entityType);
 				return $"DELETE FROM {tableName};";
 			}
 
