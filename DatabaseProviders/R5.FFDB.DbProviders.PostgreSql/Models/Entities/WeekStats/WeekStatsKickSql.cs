@@ -63,9 +63,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 		[WeekStatColumn("fifty_plus_misses", WeekStatType.Kick_FiftyPlus_Misses)]
 		public double? FiftyPlusMisses { get; set; }
 
-		public override string UpdateWhereClause()
+		public override string PrimaryKeyMatchCondition()
 		{
-			throw new NotImplementedException();
+			return $"player_id = '{PlayerId}' AND season = {Season} AND week = {Week}";
 		}
 	}
 }

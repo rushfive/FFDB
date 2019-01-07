@@ -97,5 +97,15 @@ namespace R5.FFDB.Engine.Processors
 
 			await dbContext.Log.AddUpdateForWeekAsync(week);
 		}
+
+		public async Task RemoveAllAsync()
+		{
+
+		}
+
+		public async Task RemoveForWeekAsync(WeekInfo week)
+		{
+
+		}
 	}
 }

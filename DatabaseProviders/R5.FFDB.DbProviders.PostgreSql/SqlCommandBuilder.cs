@@ -121,7 +121,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				string columnsSql = string.Join(", ", columnInfos.Select(i => i.Name));
 				string values = EntityValues(columnInfos, entity, excludeKeys: true);
 
-				return $"UPDATE {tableName} SET ({columnsSql}) = {values} {entity.UpdateWhereClause()};";
+				return $"UPDATE {tableName} SET ({columnsSql}) = {values} WHERE {entity.PrimaryKeyMatchCondition()};";
 			}
 
 			private static string EntityValues<T>(List<ColumnInfo> columnInfos, T entity, bool excludeKeys)
@@ -193,6 +193,20 @@ namespace R5.FFDB.DbProviders.PostgreSql
 					default:
 						throw new ArgumentOutOfRangeException($"'{dataType}' is not a valid postgres data type.");
 				}
+			}
+
+			public static string DeleteAll<T>()
+				where T : SqlEntity
+			{
+				string tableName = EntityInfoMap.TableName(typeof(T));
+				return $"DELETE FROM {tableName};";
+			}
+
+			public static string Delete<T>(T entity)
+				where T : SqlEntity
+			{
+				string tableName = EntityInfoMap.TableName(typeof(T));
+				return $"DELETE FROM {tableName} WHERE {entity.PrimaryKeyMatchCondition()};";
 			}
 		}
 	}

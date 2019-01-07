@@ -29,9 +29,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 			};
 		}
 
-		public override string UpdateWhereClause()
+		public override string PrimaryKeyMatchCondition()
 		{
-			throw new NotImplementedException();
+			return $"player_id = '{PlayerId}' AND team_id = {TeamId}";
 		}
 	}
 }

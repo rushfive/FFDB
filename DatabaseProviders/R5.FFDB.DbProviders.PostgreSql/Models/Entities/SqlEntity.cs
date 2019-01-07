@@ -2,7 +2,6 @@
 {
 	public abstract class SqlEntity
 	{
-		// will return the proper SQL condition for the 'WHERE' clause
-		public abstract string UpdateWhereClause();
+		public abstract string PrimaryKeyMatchCondition();
 	}
 }

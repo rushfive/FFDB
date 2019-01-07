@@ -36,9 +36,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 			};
 		}
 
-		public override string UpdateWhereClause()
+		public override string PrimaryKeyMatchCondition()
 		{
-			throw new NotImplementedException();
+			return $"id = {Id}";
 		}
 	}
 }

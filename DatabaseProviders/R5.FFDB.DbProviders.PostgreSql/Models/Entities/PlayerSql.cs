@@ -89,9 +89,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 			};
 		}
 
-		public override string UpdateWhereClause()
+		public override string PrimaryKeyMatchCondition()
 		{
-			return $"WHERE id = '{Id}'";
+			return $"id = '{Id}'";
 		}
 	}
 }
