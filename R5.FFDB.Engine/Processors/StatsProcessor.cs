@@ -43,23 +43,23 @@ namespace R5.FFDB.Engine.Processors
 			_helper = helper;
 		}
 
-		public async Task UpdateAllAsync()
-		{
-			List<WeekInfo> available = await _availableWeeksValue.GetAsync();
+		//public async Task AddAllAsync()
+		//{
+		//	List<WeekInfo> available = await _availableWeeksValue.GetAsync();
 
-			_logger.LogInformation($"Updating stats for all available weeks ({available.Count} total).");
+		//	_logger.LogInformation($"Adding stats for all available weeks ({available.Count} total).");
 			
-			foreach(var week in available)
-			{
-				_logger.LogDebug($"Begin updating stats for {week}.");
-				await UpdateStatsForWeekInternalAsync(week);
-				_logger.LogInformation($"Finished updating stats for {week}.");
-			}
+		//	foreach(var week in available)
+		//	{
+		//		_logger.LogDebug($"Begin adding stats for {week}.");
+		//		await UpdateStatsForWeekInternalAsync(week);
+		//		_logger.LogInformation($"Finished adding stats for {week}.");
+		//	}
 
-			_logger.LogInformation("Finished updating stats for all available weeks.");
-		}
+		//	_logger.LogInformation("Finished adding stats for all available weeks.");
+		//}
 
-		public async Task UpdateMissingAsync()
+		public async Task AddMissingAsync()
 		{
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 			HashSet<WeekInfo> alreadyUpdated = (await dbContext.GetUpdatedWeeksAsync()).ToHashSet();
@@ -69,32 +69,32 @@ namespace R5.FFDB.Engine.Processors
 			List<WeekInfo> missing = available.Where(w => !alreadyUpdated.Contains(w)).ToList();
 			if (!missing.Any())
 			{
-				_logger.LogInformation($"There are no missing weeks to update. A total of {available.Count} weeks of stats already exists.");
+				_logger.LogInformation($"There are no missing weeks to add. A total of {available.Count} weeks of stats already exists.");
 				return;
 			}
 
-			_logger.LogInformation($"Updating stats for {missing.Count} missing weeks.");
+			_logger.LogInformation($"Adding stats for {missing.Count} missing weeks.");
 			
 			foreach (var week in missing)
 			{
-				_logger.LogDebug($"Begin updating stats for {week}.");
-				await UpdateStatsForWeekInternalAsync(week);
-				_logger.LogInformation($"Finished updating stats for {week}.");
+				_logger.LogDebug($"Begin adding stats for {week}.");
+				await AddStatsForWeekInternalAsync(week);
+				_logger.LogInformation($"Finished adding stats for {week}.");
 			}
 
-			_logger.LogInformation("Finished updating stats for missing weeks.");
+			_logger.LogInformation("Finished adding stats for missing weeks.");
 		}
 
-		public async Task UpdateForWeekAsync(WeekInfo week)
+		public async Task AddForWeekAsync(WeekInfo week)
 		{
-			_logger.LogInformation($"Updating stats for {week}.");
+			_logger.LogInformation($"Adding stats for {week}.");
 
-			await UpdateStatsForWeekInternalAsync(week);
+			await AddStatsForWeekInternalAsync(week);
 
-			_logger.LogInformation($"Finished updating stats for {week}.");
+			_logger.LogInformation($"Finished adding stats for {week}.");
 		}
 
-		private async Task UpdateStatsForWeekInternalAsync(WeekInfo week)
+		private async Task AddStatsForWeekInternalAsync(WeekInfo week)
 		{
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 

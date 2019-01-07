@@ -18,7 +18,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
 	public interface IPlayerProfileSource : ICoreDataSource
 	{
-		Task FetchAsync(List<string> nIds);
+		Task FetchAsync(List<string> nflIds, bool overwriteExisting = false);
 	}
 
 	public class PlayerProfileSource : IPlayerProfileSource
@@ -48,30 +48,34 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			_scraper = scraper;
 		}
 
-		public async Task FetchAsync(List<string> nflIds)
+		public async Task FetchAsync(List<string> nflIds, bool overwriteExisting = false)
 		{
-			HashSet<string> existing = DirectoryFilesResolver
-				.GetFileNames(_dataPath.Temp.PlayerProfile, excludeExtensions: true)
-				.ToHashSet();
+			// dont fetch teams, no profile data to fetch
+			HashSet<string> teamIds = TeamDataStore.GetAll().Select(t => t.NflId).ToHashSet();
 
-			_logger.LogInformation($"Profile files already exist for {existing.Count} players. Will skip fetching for them. "
-				+ "Clear the files first before running if you'd like to re-fetch.");
+			IEnumerable<string> idsToFetch = nflIds.Where(id => !teamIds.Contains(id));
+			
+			if (!overwriteExisting)
+			{
+				HashSet<string>  existing = DirectoryFilesResolver
+					.GetFileNames(_dataPath.Temp.PlayerProfile, excludeExtensions: true)
+					.ToHashSet();
 
-			// also skip teams, no profile data to fetch
-			var teamIds = TeamDataStore.GetAll().Select(t => t.NflId);
+				_logger.LogInformation($"Profile files already exist for {existing.Count} players. Will skip fetching for them. "
+					+ "Clear the files first before running if you'd like to re-fetch.");
 
-			nflIds = nflIds
-				.Where(id => !teamIds.Contains(id) && !existing.Contains(id))
-				.Distinct()
-				.ToList();
+				idsToFetch = idsToFetch.Where(id => !existing.Contains(id));
+			}
 
-			_logger.LogInformation($"Beginning fetching of profile data for {nflIds.Count} player(s).");
-			_logger.LogTrace($"Fetching for players (nfl ids): {string.Join(", ", nflIds)}");
+			idsToFetch = idsToFetch.Distinct().ToList();
 
-			foreach (string id in nflIds)
+			_logger.LogInformation($"Beginning fetching of profile data for {idsToFetch.Count()} player(s).");
+			_logger.LogTrace($"Fetching for players (nfl ids): {string.Join(", ", idsToFetch)}");
+
+			foreach (string id in idsToFetch)
 			{
 				string filePath = _dataPath.Temp.PlayerProfile + $"{id}.json";
-				if (File.Exists(filePath))
+				if (File.Exists(filePath) && !overwriteExisting)
 				{
 					_logger.LogInformation($"Player profile file already exists for '{id}'. Will not fetch.");
 					continue;

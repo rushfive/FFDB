@@ -85,13 +85,46 @@ namespace R5.FFDB.DbProviders.PostgreSql
 
 				string sql = $"INSERT INTO {tableName} ({columnsSql}) VALUES ";
 
-				IEnumerable<string> entityValues = entities.Select(e => EntityValues(columnInfos, e));
+				IEnumerable<string> entityValues = entities.Select(e => EntityValues(columnInfos, e, excludeKeys: false));
 				sql += string.Join(", ", entityValues);
 
 				return sql + ";";
 			}
 
-			private static string EntityValues<T>(List<ColumnInfo> columnInfos, T entity)
+			public static string Update<T>(T entity)
+				where T : SqlEntity
+			{
+				string tableName = EntityInfoMap.TableName(typeof(T));
+
+				var compositePrimaryKeys = new HashSet<string>();
+				if (EntityInfoMap.TryGetCompositePrimaryKeys(typeof(T), out List<string> compositeKeys))
+				{
+					compositePrimaryKeys = compositeKeys.ToHashSet();
+				}
+
+				List<ColumnInfo> columnInfos = EntityInfoMap.ColumnInfos(typeof(T));
+
+				// dont update columns that are primary keys, or used as composite primary keys
+				Func<ColumnInfo, bool> usedAsKey = info =>
+				{
+					var propertyInfo = info as PropertyColumnInfo;
+					if (propertyInfo == null)
+					{
+						return false;
+					}
+
+					return propertyInfo.PrimaryKey || compositePrimaryKeys.Contains(propertyInfo.Name);
+				};
+
+				columnInfos = columnInfos.Where(i => !usedAsKey(i)).ToList();
+
+				string columnsSql = string.Join(", ", columnInfos.Select(i => i.Name));
+				string values = EntityValues(columnInfos, entity, excludeKeys: true);
+
+				return $"UPDATE {tableName} SET ({columnsSql}) = {values} {entity.UpdateWhereClause()};";
+			}
+
+			private static string EntityValues<T>(List<ColumnInfo> columnInfos, T entity, bool excludeKeys)
 				where T : SqlEntity
 			{
 				var values = new List<string>();

@@ -35,5 +35,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 
 		[WeekStatColumn("rush_touchdowns", WeekStatType.Rush_Touchdowns)]
 		public double? RushTouchdowns { get; set; }
+
+		public override string UpdateWhereClause()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

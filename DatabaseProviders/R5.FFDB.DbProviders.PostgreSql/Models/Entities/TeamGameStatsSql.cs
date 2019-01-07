@@ -117,5 +117,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				TimeOfPossessionSeconds = stats.TimeOfPossessionSeconds
 			};
 		}
+
+		public override string UpdateWhereClause()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

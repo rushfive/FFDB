@@ -44,5 +44,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 
 		[WeekStatColumn("pass_sacked", WeekStatType.Pass_Sacked)]
 		public double? PassSacked { get; set; }
+
+		public override string UpdateWhereClause()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

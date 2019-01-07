@@ -36,6 +36,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("number", PostgresDataType.INT)]
 		public int? Number { get; set; }
 
+		[Column("status", PostgresDataType.TEXT)]
+		public RosterStatus? Status { get; set; }
+
 		[Column("height", PostgresDataType.INT)]
 		public int Height { get; set; }
 
@@ -49,17 +52,18 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		public string College { get; set; }
 
 		public static PlayerSql FromCoreEntity(PlayerProfile player,
-			int? number, Position? position)
+			int? number, Position? position, RosterStatus? status)
 		{
 			return new PlayerSql
 			{
-				Id = Guid.NewGuid(),
+				Id =  player.Id == Guid.Empty ? Guid.NewGuid() : player.Id,
 				NflId = player.NflId,
 				EsbId = player.EsbId,
 				GsisId = player.GsisId,
 				FirstName = player.FirstName,
 				LastName = player.LastName,
 				Position = position,
+				Status = status,
 				Number = number,
 				Height = player.Height,
 				Weight = player.Weight,
@@ -83,6 +87,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				DateOfBirth = sql.DateOfBirth,
 				College = sql.College
 			};
+		}
+
+		public override string UpdateWhereClause()
+		{
+			return $"WHERE id = '{Id}'";
 		}
 	}
 }

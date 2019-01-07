@@ -77,5 +77,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 
 		[WeekStatColumn("sack_yards", WeekStatType.IDP_SackYards)]
 		public double? SackYards { get; set; }
+
+		public override string UpdateWhereClause()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -17,24 +17,17 @@ namespace R5.FFDB.Engine
 {
 	public class FfdbEngine
 	{
-		private ILogger<FfdbEngine> _logger { get; }
-		private IDatabaseProvider _databaseProvider { get; }
-		private IWeekStatsService _weekStatsService { get; }
-		private IPlayerProfileService _playerProfileService { get; }
-		private ITeamGameStatsService _teamGameStatsService { get; }
-		
-		private List<ICoreDataSource> _coreDataSources { get; }
-
 		public StatsProcessor Stats { get; }
 		public TeamsProcessor Teams { get; }
+		public PlayersProcessor Players { get; }
+
+		private ILogger<FfdbEngine> _logger { get; }
+		private IDatabaseProvider _databaseProvider { get; }
+		private List<ICoreDataSource> _coreDataSources { get; }
 
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
 			IDatabaseProvider databaseProvider,
-			IWeekStatsService weekStatsService,
-			IPlayerProfileService playerProfileService,
-			ITeamGameStatsService teamGameStatsService,
-
 			IPlayerProfileSource playerProfileSource,
 			IRosterSource rosterSource,
 			IWeekStatsSource weekStatsSource,
@@ -43,9 +36,6 @@ namespace R5.FFDB.Engine
 		{
 			_logger = logger;
 			_databaseProvider = databaseProvider;
-			_weekStatsService = weekStatsService;
-			_playerProfileService = playerProfileService;
-			_teamGameStatsService = teamGameStatsService;
 
 			_coreDataSources = new List<ICoreDataSource>
 			{
@@ -57,12 +47,14 @@ namespace R5.FFDB.Engine
 
 			Stats = ActivatorUtilities.CreateInstance<StatsProcessor>(serviceProvider);
 			Teams = ActivatorUtilities.CreateInstance<TeamsProcessor>(serviceProvider);
+			Players = ActivatorUtilities.CreateInstance<PlayersProcessor>(serviceProvider);
 		}
 
-		// can be run more than once, in case of failure
 		public async Task RunInitialSetupAsync()
 		{
 			_logger.LogInformation("Running initial setup..");
+
+			await CheckSourcesHealthAsync();
 
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
 			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
@@ -70,17 +62,17 @@ namespace R5.FFDB.Engine
 			await dbContext.InitializeAsync();
 			await dbContext.Team.AddTeamsAsync();
 
-			await Stats.UpdateAllAsync();
+			await Stats.AddMissingAsync();
+			await Teams.UpdateRostersAsync();
 
-			
 			_logger.LogInformation("Successfully finished running initial setup.");
 		}
-		
+
 		public async Task CheckSourcesHealthAsync()
 		{
 			_logger.LogInformation("Starting health checks for all core data sources.");
 
-			foreach(ICoreDataSource source in _coreDataSources)
+			foreach (ICoreDataSource source in _coreDataSources)
 			{
 				await source.CheckHealthAsync();
 			}

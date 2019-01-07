@@ -58,10 +58,13 @@ namespace DevTester
 			
 			
 			FfdbEngine engine = GetConfiguredEngine();
+			//await engine.RunInitialSetupAsync();
 			//await engine.Update.UpdateRostersAsync();
 			//await engine.Update.UpdateStatsForWeekAsync(new WeekInfo(2010, 2));
-			await engine.Stats.UpdateMissingAsync();
+			//await engine.Stats.AddMissingAsync();
 			//await engine.CheckSourcesHealthAsync();
+
+			await engine.Players.UpdateCurrentlyRosteredAsync();
 
 			return;
 			Console.ReadKey();

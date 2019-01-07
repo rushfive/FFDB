@@ -96,5 +96,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 		{
 			return stats.Stats.Where(kv => _weekStatDstTypes.Contains(kv.Key));
 		}
+
+		public override string UpdateWhereClause()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

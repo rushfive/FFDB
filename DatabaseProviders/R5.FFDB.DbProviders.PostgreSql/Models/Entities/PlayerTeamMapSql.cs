@@ -28,5 +28,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				TeamId = teamId
 			};
 		}
+
+		public override string UpdateWhereClause()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

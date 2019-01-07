@@ -34,6 +34,7 @@ namespace R5.FFDB.Database
 
 	public interface IPlayerDatabaseContext
 	{
+		Task AddAsync(List<PlayerProfile> players, List<Roster> rosters);
 		Task UpdateAsync(List<PlayerProfile> players, List<Roster> rosters);
 
 		Task<List<PlayerProfile>> GetAllAsync();

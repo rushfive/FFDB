@@ -19,5 +19,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 
 		[Column("update_time", PostgresDataType.TIMESTAMPTZ)]
 		public DateTimeOffset UpdateTime { get; set; }
+
+		public override string UpdateWhereClause()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -20,37 +20,14 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 		}
 
-		public async Task UpdateAsync(List<PlayerProfile> players, List<Roster> rosters)
+		public async Task AddAsync(List<PlayerProfile> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
 			string tableName = EntityInfoMap.TableName(typeof(PlayerSql));
 
 			logger.LogInformation($"Adding {players.Count} players to the '{tableName}' table.");
 
-			// need latest player team, position and number from roster info
-			logger.LogTrace("Building roster player map to resolve necessary information for player adds.");
-
-			Dictionary<string, RosterPlayer> rosterPlayerMap = rosters
-				.SelectMany(r => r.Players)
-				.ToDictionary(p => p.NflId, p => p);
-
-			var playerSqls = new List<PlayerSql>();
-			foreach (var player in players)
-			{
-				int? number = null;
-				Position? position = null;
-				if (rosterPlayerMap.TryGetValue(player.NflId, out RosterPlayer rosterPlayer))
-				{
-					number = rosterPlayer.Number;
-					position = rosterPlayer.Position;
-				}
-
-				PlayerSql entitySql = PlayerSql.FromCoreEntity(player, number, position);
-				playerSqls.Add(entitySql);
-
-				logger.LogTrace($"Successfully mapped player information for {player.FirstName} {player.LastName} ({player.NflId}). "
-					+ $"Will use '{tableName}' table id '{entitySql.Id}'.");
-			}
+			List<PlayerSql> playerSqls = ResolveSqlEntities(players, rosters);
 
 			string sqlCommand = SqlCommandBuilder.Rows.InsertMany(playerSqls);
 
@@ -58,6 +35,54 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			await ExecuteNonQueryAsync(sqlCommand);
 
 			logger.LogInformation($"Successfully added players to the '{tableName}' table.");
+		}
+
+		public async Task UpdateAsync(List<PlayerProfile> players, List<Roster> rosters)
+		{
+			var logger = GetLogger<PlayerDbContext>();
+			string tableName = EntityInfoMap.TableName(typeof(PlayerSql));
+
+			logger.LogInformation($"Updating {players.Count} players in the '{tableName}' table.");
+
+			List<PlayerSql> playerSqls = ResolveSqlEntities(players, rosters);
+
+			foreach(PlayerSql player in playerSqls)
+			{
+				string sqlCommand = SqlCommandBuilder.Rows.Update(player);
+
+				logger.LogTrace($"Updating player '{player.Id}' using SQL command:" + Environment.NewLine + sqlCommand);
+
+				await ExecuteNonQueryAsync(sqlCommand);
+			}
+
+			logger.LogInformation($"Successfully updated players in the '{tableName}' table.");
+		}
+
+		private List<PlayerSql> ResolveSqlEntities(List<PlayerProfile> players, List<Roster> rosters)
+		{
+			var result = new List<PlayerSql>();
+
+			Dictionary<string, RosterPlayer> rosterPlayerMap = rosters
+				.SelectMany(r => r.Players)
+				.ToDictionary(p => p.NflId, p => p);
+			
+			foreach (var player in players)
+			{
+				int? number = null;
+				Position? position = null;
+				RosterStatus? status = null;
+				if (rosterPlayerMap.TryGetValue(player.NflId, out RosterPlayer rosterPlayer))
+				{
+					number = rosterPlayer.Number;
+					position = rosterPlayer.Position;
+					status = rosterPlayer.Status;
+				}
+
+				PlayerSql entitySql = PlayerSql.FromCoreEntity(player, number, position, status);
+				result.Add(entitySql);
+			}
+
+			return result;
 		}
 
 		public async Task<List<PlayerProfile>> GetAllAsync()
