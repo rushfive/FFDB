@@ -25,8 +25,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			_getConnection = getConnection;
 			_loggerFactory = loggerFactory;
 		}
-
-		// todo transactions
+		
 		public async Task ExecuteNonQueryAsync(string sqlCommand, List<(string key, string value)> parameters = null)
 		{
 			using (NpgsqlConnection connection = _getConnection())

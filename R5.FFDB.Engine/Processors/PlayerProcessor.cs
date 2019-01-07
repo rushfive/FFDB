@@ -3,6 +3,7 @@ using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.Roster.Values;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
+using R5.FFDB.Database.DbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +12,16 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine.Processors
 {
-	public class PlayersProcessor
+	public class PlayerProcessor
 	{
-		private ILogger<PlayersProcessor> _logger { get; }
+		private ILogger<PlayerProcessor> _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private RostersValue _rostersValue { get; }
 		private IPlayerProfileSource _playerSource { get; }
 		private IPlayerProfileService _playerService { get; }
 
-		public PlayersProcessor(
-			ILogger<PlayersProcessor> logger,
+		public PlayerProcessor(
+			ILogger<PlayerProcessor> logger,
 			IDatabaseProvider dbProvider,
 			RostersValue rostersValue,
 			IPlayerProfileSource playerSource,
@@ -42,7 +43,7 @@ namespace R5.FFDB.Engine.Processors
 			List<Roster> rosters = await _rostersValue.GetAsync();
 			List<string> nflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
 
-			await _playerSource.FetchAsync(nflIds, overwriteExisting: false); // overwrite shuld be true
+			await _playerSource.FetchAsync(nflIds, overwriteExisting: false);
 
 			List<PlayerProfile> players = (await dbContext.Player.GetAllAsync())
 				.Where(p => nflIds.Contains(p.NflId))

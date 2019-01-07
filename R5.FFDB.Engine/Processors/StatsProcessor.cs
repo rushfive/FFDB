@@ -4,6 +4,7 @@ using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
+using R5.FFDB.Database.DbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,26 +44,10 @@ namespace R5.FFDB.Engine.Processors
 			_helper = helper;
 		}
 
-		//public async Task AddAllAsync()
-		//{
-		//	List<WeekInfo> available = await _availableWeeksValue.GetAsync();
-
-		//	_logger.LogInformation($"Adding stats for all available weeks ({available.Count} total).");
-			
-		//	foreach(var week in available)
-		//	{
-		//		_logger.LogDebug($"Begin adding stats for {week}.");
-		//		await UpdateStatsForWeekInternalAsync(week);
-		//		_logger.LogInformation($"Finished adding stats for {week}.");
-		//	}
-
-		//	_logger.LogInformation("Finished adding stats for all available weeks.");
-		//}
-
 		public async Task AddMissingAsync()
 		{
 			IDatabaseContext dbContext = _dbProvider.GetContext();
-			HashSet<WeekInfo> alreadyUpdated = (await dbContext.GetUpdatedWeeksAsync()).ToHashSet();
+			HashSet<WeekInfo> alreadyUpdated = (await dbContext.Log.GetUpdatedWeeksAsync()).ToHashSet();
 
 			List<WeekInfo> available = await _availableWeeksValue.GetAsync();
 
@@ -110,7 +95,7 @@ namespace R5.FFDB.Engine.Processors
 			List<TeamWeekStats> teamStats = _teamStatsService.GetForWeek(week);
 			await dbContext.Team.UpdateGameStatsAsync(teamStats);
 
-			await dbContext.AddUpdateLogAsync(week);
+			await dbContext.Log.AddUpdateForWeekAsync(week);
 		}
 	}
 }

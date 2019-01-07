@@ -15,6 +15,7 @@ using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
+using R5.FFDB.Database.DbContext;
 using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql.Models;
@@ -32,15 +33,6 @@ using System.Threading.Tasks;
 
 namespace DevTester
 {
-	public class Test
-	{
-		public IDatabaseProvider DbProvider { get; }
-
-		public Test(IDatabaseProvider dbProvider)
-		{
-			DbProvider = dbProvider;
-		}
-	}
 	public class DevProgram
 	{
 		private static IServiceProvider _serviceProvider { get; set; }
@@ -64,7 +56,7 @@ namespace DevTester
 			//await engine.Stats.AddMissingAsync();
 			//await engine.CheckSourcesHealthAsync();
 
-			await engine.Players.UpdateCurrentlyRosteredAsync();
+			await engine.Player.UpdateCurrentlyRosteredAsync();
 
 			return;
 			Console.ReadKey();

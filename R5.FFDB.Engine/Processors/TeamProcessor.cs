@@ -2,6 +2,7 @@
 using R5.FFDB.Components.CoreData.Roster.Values;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
+using R5.FFDB.Database.DbContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,15 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine.Processors
 {
-	public class TeamsProcessor
+	public class TeamProcessor
 	{
-		private ILogger<TeamsProcessor> _logger { get; }
+		private ILogger<TeamProcessor> _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private RostersValue _rostersValue { get; }
 		private IProcessorHelper _helper { get; }
 
-		public TeamsProcessor(
-			ILogger<TeamsProcessor> logger,
+		public TeamProcessor(
+			ILogger<TeamProcessor> logger,
 			IDatabaseProvider dbProvider,
 			RostersValue rostersValue,
 			IProcessorHelper helper)

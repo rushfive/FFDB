@@ -11,7 +11,6 @@ namespace R5.FFDB.Core.Models
 		public string Name { get; set; }
 		public string ShortName { get; set; }
 		public string Abbreviation { get; set; }
-		// todo: remove initialization after setting for all teams
 		public HashSet<string> PriorAbbreviations { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public override string ToString()

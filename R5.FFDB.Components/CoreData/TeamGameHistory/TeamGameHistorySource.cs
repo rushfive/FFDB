@@ -222,12 +222,9 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 				JObject statsJObject = JObject.Parse(statsJson);
 
 				var stats = new TeamWeekStats(-1, true, week);
-
-				JToken score = statsJObject.SelectToken($"{gameId}.home.score");
-				stats.SetPointsScored(score);
-
-				JToken teamStats = statsJObject.SelectToken($"{gameId}.home.stats.team");
-				stats.SetTeamStats(teamStats);
+				
+				stats.SetPointsScored(statsJObject, gameId, "home");
+				stats.SetTeamStats(statsJObject, gameId, "home");
 			}
 			catch (Exception ex)
 			{

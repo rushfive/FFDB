@@ -1,15 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
-using R5.FFDB.Core.Models;
-using R5.FFDB.Database;
-using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
-using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
-using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
+using R5.FFDB.Database.DbContext;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
@@ -19,6 +11,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public ITeamDatabaseContext Team { get; }
 		public IPlayerDatabaseContext Player { get; }
 		public IWeekStatsDatabaseContext Stats { get; }
+		public ILogDatabaseContext Log { get; }
 
 		public DbContext(
 			Func<NpgsqlConnection> getConnection,
@@ -28,6 +21,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			Team = new TeamDbContext(getConnection, loggerFactory);
 			Player = new PlayerDbContext(getConnection, loggerFactory);
 			Stats = new WeekStatsDbContext(getConnection, loggerFactory);
+			Log = new LogDbContext(getConnection, loggerFactory);
 		}
 		
 
@@ -41,58 +35,24 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogDebug("Starting creation of database tables..");
 
-			await createTableAsync(typeof(UpdateLogSql));
-			await createTableAsync(typeof(TeamSql));
-			await createTableAsync(typeof(PlayerSql));
-			await createTableAsync(typeof(PlayerTeamMapSql));
-			await createTableAsync(typeof(WeekStatsPassSql));
-			await createTableAsync(typeof(WeekStatsRushSql));
-			await createTableAsync(typeof(WeekStatsReceiveSql));
-			await createTableAsync(typeof(WeekStatsMiscSql));
-			await createTableAsync(typeof(WeekStatsKickSql));
-			await createTableAsync(typeof(WeekStatsDstSql));
-			await createTableAsync(typeof(WeekStatsIdpSql));
-			await createTableAsync(typeof(TeamGameStatsSql));
-
-			// local functions
-			async Task createTableAsync(Type entityType)
+			foreach(Type entity in EntityInfoMap.EntityTypes)
 			{
-				string tableName = EntityInfoMap.TableName(entityType);
-				logger.LogDebug($"Creating table '{tableName}'.");
-
-				string sql = SqlCommandBuilder.Table.Create(entityType);
-				logger.LogTrace($"Adding using SQL command:" + Environment.NewLine + sql);
-
-				await ExecuteNonQueryAsync(sql);
-				logger.LogInformation($"Successfully added table '{tableName}'.");
+				await CreateTableAsync(entity, logger);
 			}
+
+			logger.LogInformation("Successfully initialized database by creating schema and creating tables.");
 		}
 
-		public async Task AddUpdateLogAsync(WeekInfo week)
+		private async Task CreateTableAsync(Type entityType, ILogger<DbContext> logger)
 		{
-			string tableName = EntityInfoMap.TableName(typeof(UpdateLogSql));
-			var logger = GetLogger<DbContext>();
+			string tableName = EntityInfoMap.TableName(entityType);
+			logger.LogDebug($"Creating table '{tableName}'.");
 
-			var log = new UpdateLogSql
-			{
-				Season = week.Season,
-				Week = week.Week,
-				UpdateTime = DateTime.UtcNow
-			};
-
-			var sql = SqlCommandBuilder.Rows.Insert(log);
-
-			logger.LogTrace($"Adding update log for {week} using SQL command: " + Environment.NewLine + sql);
+			string sql = SqlCommandBuilder.Table.Create(entityType);
+			logger.LogTrace($"Adding using SQL command:" + Environment.NewLine + sql);
 
 			await ExecuteNonQueryAsync(sql);
-
-			logger.LogInformation($"Successfully added update log for {week} to '{tableName}' table.");
-		}
-
-		public async Task<List<WeekInfo>> GetUpdatedWeeksAsync()
-		{
-			var logs = await SelectAsEntitiesAsync<UpdateLogSql>();
-			return logs.Select(sql => new WeekInfo(sql.Season, sql.Week)).ToList();
+			logger.LogInformation($"Successfully added table '{tableName}'.");
 		}
 	}
 }

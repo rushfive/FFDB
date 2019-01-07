@@ -7,6 +7,7 @@ using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
+using R5.FFDB.Database.DbContext;
 using R5.FFDB.Engine.Processors;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,8 @@ namespace R5.FFDB.Engine
 	public class FfdbEngine
 	{
 		public StatsProcessor Stats { get; }
-		public TeamsProcessor Teams { get; }
-		public PlayersProcessor Players { get; }
+		public TeamProcessor Team { get; }
+		public PlayerProcessor Player { get; }
 
 		private ILogger<FfdbEngine> _logger { get; }
 		private IDatabaseProvider _databaseProvider { get; }
@@ -46,8 +47,8 @@ namespace R5.FFDB.Engine
 			};
 
 			Stats = ActivatorUtilities.CreateInstance<StatsProcessor>(serviceProvider);
-			Teams = ActivatorUtilities.CreateInstance<TeamsProcessor>(serviceProvider);
-			Players = ActivatorUtilities.CreateInstance<PlayersProcessor>(serviceProvider);
+			Team = ActivatorUtilities.CreateInstance<TeamProcessor>(serviceProvider);
+			Player = ActivatorUtilities.CreateInstance<PlayerProcessor>(serviceProvider);
 		}
 
 		public async Task RunInitialSetupAsync()
@@ -63,7 +64,7 @@ namespace R5.FFDB.Engine
 			await dbContext.Team.AddTeamsAsync();
 
 			await Stats.AddMissingAsync();
-			await Teams.UpdateRostersAsync();
+			await Team.UpdateRostersAsync();
 
 			_logger.LogInformation("Successfully finished running initial setup.");
 		}

@@ -74,21 +74,24 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 
 			var stats = new TeamWeekStats(teamId, teamType == "home", week);
 
-			JToken score = json.SelectToken($"{gameId}.{teamType}.score");
-			if (score == null)
-			{
-				throw new InvalidOperationException($"Failed to parse score object for {teamType} team in game '{gameId}'.");
-			}
+			stats.SetPointsScored(json, gameId, teamType);
+			stats.SetTeamStats(json, gameId, teamType);
 
-			stats.SetPointsScored(score);
+			//JToken score = json.SelectToken($"{gameId}.{teamType}.score");
+			//if (score == null)
+			//{
+			//	throw new InvalidOperationException($"Failed to parse score object for {teamType} team in game '{gameId}'.");
+			//}
 
-			JToken teamStats = json.SelectToken($"{gameId}.home.stats.team");
-			if (teamStats == null)
-			{
-				throw new InvalidOperationException($"Failed to parse team stats object for {teamType} team in game '{gameId}'.");
-			}
+			//stats.SetPointsScored(score);
 
-			stats.SetTeamStats(teamStats);
+			//JToken teamStats = json.SelectToken($"{gameId}.{teamType}.stats.team");
+			//if (teamStats == null)
+			//{
+			//	throw new InvalidOperationException($"Failed to parse team stats object for {teamType} team in game '{gameId}'.");
+			//}
+
+			//stats.SetTeamStats(teamStats);
 
 			result.Add(stats);
 		}

@@ -8,6 +8,7 @@ using Npgsql;
 using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
+using R5.FFDB.Database.DbContext;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
@@ -52,51 +53,37 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 				if (update.PassStats.Any())
 				{
-					await updateStatsAsync(update.PassStats, update.Week, "Week Stats (Pass)");
+					await UpdateStatsAsync(update.PassStats, update.Week, "Week Stats (Pass)", logger);
 				}
 				if (update.RushStats.Any())
 				{
-					await updateStatsAsync(update.RushStats, update.Week, "Week Stats (Rush)");
+					await UpdateStatsAsync(update.RushStats, update.Week, "Week Stats (Rush)", logger);
 				}
 				if (update.ReceiveStats.Any())
 				{
-					await updateStatsAsync(update.ReceiveStats, update.Week, "Week Stats (Receive)");
+					await UpdateStatsAsync(update.ReceiveStats, update.Week, "Week Stats (Receive)", logger);
 				}
 				if (update.MiscStats.Any())
 				{
-					await updateStatsAsync(update.MiscStats, update.Week, "Week Stats (Misc)");
+					await UpdateStatsAsync(update.MiscStats, update.Week, "Week Stats (Misc)", logger);
 				}
 				if (update.KickStats.Any())
 				{
-					await updateStatsAsync(update.KickStats, update.Week, "Week Stats (Kick)");
+					await UpdateStatsAsync(update.KickStats, update.Week, "Week Stats (Kick)", logger);
 				}
 				if (update.DstStats.Any())
 				{
-					await updateStatsAsync(update.DstStats, update.Week, "Week Stats (DST)");
+					await UpdateStatsAsync(update.DstStats, update.Week, "Week Stats (DST)", logger);
 				}
 				if (update.IdpStats.Any())
 				{
-					await updateStatsAsync(update.IdpStats, update.Week, "Week Stats (IDP)");
+					await UpdateStatsAsync(update.IdpStats, update.Week, "Week Stats (IDP)", logger);
 				}
 
 				logger.LogDebug($"Successfully updated stats for week {update.Week}.");
 			}
 
 			logger.LogInformation($"Successfully finished updating game stats for {updates.Count} weeks.");
-
-			// local functions
-			async Task updateStatsAsync<T>(List<T> items, WeekInfo week, string itemLabel)
-				where T : WeekStatsSql
-			{
-				var sqlCommand = SqlCommandBuilder.Rows.InsertMany(items);
-
-				logger.LogTrace($"Updating '{itemLabel}' for {week} using SQL command:"
-					+ Environment.NewLine + sqlCommand);
-
-				await ExecuteNonQueryAsync(sqlCommand);
-
-				logger.LogDebug($"Successfully updated '{itemLabel}' for {week} ({items.Count} total rows).");
-			}
 		}
 
 		private static List<WeekStatsSqlUpdate> GetStatsUpdates(
@@ -170,6 +157,19 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			}
 
 			return result;
+		}
+
+		private async Task UpdateStatsAsync<T>(List<T> items, WeekInfo week, string itemLabel, ILogger<WeekStatsDbContext> logger)
+				where T : WeekStatsSql
+		{
+			var sqlCommand = SqlCommandBuilder.Rows.InsertMany(items);
+
+			logger.LogTrace($"Updating '{itemLabel}' for {week} using SQL command:"
+				+ Environment.NewLine + sqlCommand);
+
+			await ExecuteNonQueryAsync(sqlCommand);
+
+			logger.LogDebug($"Successfully updated '{itemLabel}' for {week} ({items.Count} total rows).");
 		}
 	}
 }
