@@ -15,8 +15,8 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
 	public abstract class DbContextBase
 	{
-		protected Func<NpgsqlConnection> _getConnection { get; }
-		protected ILoggerFactory _loggerFactory { get; }
+		private Func<NpgsqlConnection> _getConnection { get; }
+		private ILoggerFactory _loggerFactory { get; }
 
 		protected DbContextBase(
 			Func<NpgsqlConnection> getConnection,

@@ -59,7 +59,8 @@ namespace DevTester
 			//await engine.Player.UpdateCurrentlyRosteredAsync();
 
 			//await engine.Stats.RemoveForWeekAsync(new WeekInfo(2018, 5));
-			await engine.Stats.RemoveAllAsync();
+			//await engine.Stats.RemoveAllAsync();
+			await engine.Stats.AddMissingAsync();
 
 			return;
 			Console.ReadKey();

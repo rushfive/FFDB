@@ -37,7 +37,15 @@ namespace R5.FFDB.Engine
 
 		public EngineSetup UsePostgreSql(PostgresConfig config)
 		{
-			// todo: validate config
+			if (string.IsNullOrEmpty(config.Host))
+			{
+				throw new ArgumentException("PostgreSql hostname must be provided in the config.");
+			}
+			if (string.IsNullOrEmpty(config.DatabaseName))
+			{
+				throw new ArgumentException("PostgreSql database name must be provided in the config.");
+			}
+
 			_postgresConfig = config;
 			return this;
 		}
