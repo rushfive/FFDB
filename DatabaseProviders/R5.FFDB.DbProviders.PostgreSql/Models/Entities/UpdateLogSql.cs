@@ -17,7 +17,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
 
-		[Column("update_time", PostgresDataType.TIMESTAMPTZ)]
+		[Column("datetime", PostgresDataType.TIMESTAMPTZ)]
 		public DateTimeOffset UpdateTime { get; set; }
 
 		public override string PrimaryKeyMatchCondition()

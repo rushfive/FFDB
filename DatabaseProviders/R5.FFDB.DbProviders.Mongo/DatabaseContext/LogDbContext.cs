@@ -20,6 +20,12 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 		public Task AddUpdateForWeekAsync(WeekInfo week)
 		{
+			var logger = GetLogger<LogDbContext>();
+
+			MongoDbContext mongoDbContext = GetMongoDbContext();
+
+
+
 			throw new NotImplementedException();
 		}
 

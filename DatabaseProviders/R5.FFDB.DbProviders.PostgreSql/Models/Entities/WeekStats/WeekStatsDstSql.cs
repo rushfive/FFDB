@@ -1,4 +1,5 @@
-﻿using R5.FFDB.Core.Models;
+﻿using R5.FFDB.Core;
+using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using System;
 using System.Collections.Generic;
@@ -77,24 +78,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 			return result;
 		}
 
-		private static HashSet<WeekStatType> _weekStatDstTypes = new HashSet<WeekStatType>
-		{
-			WeekStatType.DST_Sacks,
-			WeekStatType.DST_Interceptions,
-			WeekStatType.DST_FumblesRecovered,
-			WeekStatType.DST_FumblesForced,
-			WeekStatType.DST_Safeties,
-			WeekStatType.DST_Touchdowns,
-			WeekStatType.DST_BlockedKicks,
-			WeekStatType.DST_ReturnYards,
-			WeekStatType.DST_ReturnTouchdowns,
-			WeekStatType.DST_PointsAllowed,
-			WeekStatType.DST_YardsAllowed
-		};
-
 		public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerStats stats)
 		{
-			return stats.Stats.Where(kv => _weekStatDstTypes.Contains(kv.Key));
+			return stats.Stats.Where(kv => WeekStatCategory.DST.Contains(kv.Key));
 		}
 
 		public override string PrimaryKeyMatchCondition()
