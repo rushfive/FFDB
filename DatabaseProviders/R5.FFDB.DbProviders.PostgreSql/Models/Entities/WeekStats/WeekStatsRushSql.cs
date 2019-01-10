@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 {
-	[TableName("ffdb.week_stats_rush")]
+	[TableName(Table.WeekStats.Rush)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
 	public class WeekStatsRushSql : WeekStatsPlayerSql
 	{
@@ -35,5 +35,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 
 		[WeekStatColumn("rush_touchdowns", WeekStatType.Rush_Touchdowns)]
 		public double? RushTouchdowns { get; set; }
+
+		public override string PrimaryKeyMatchCondition()
+		{
+			return $"player_id = '{PlayerId}' AND season = {Season} AND week = {Week}";
+		}
 	}
 }

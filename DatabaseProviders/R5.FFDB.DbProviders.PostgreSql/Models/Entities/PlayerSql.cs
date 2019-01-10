@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
-	[TableName("ffdb.player")]
+	[TableName(Table.Player)]
 	public class PlayerSql : SqlEntity
 	{
 		[PrimaryKey]
@@ -36,6 +36,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("number", PostgresDataType.INT)]
 		public int? Number { get; set; }
 
+		[Column("status", PostgresDataType.TEXT)]
+		public RosterStatus? Status { get; set; }
+
 		[Column("height", PostgresDataType.INT)]
 		public int Height { get; set; }
 
@@ -49,23 +52,46 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		public string College { get; set; }
 
 		public static PlayerSql FromCoreEntity(PlayerProfile player,
-			int? number, Position? position)
+			int? number, Position? position, RosterStatus? status)
 		{
 			return new PlayerSql
 			{
-				Id = Guid.NewGuid(),
+				Id =  player.Id == Guid.Empty ? Guid.NewGuid() : player.Id,
 				NflId = player.NflId,
 				EsbId = player.EsbId,
 				GsisId = player.GsisId,
 				FirstName = player.FirstName,
 				LastName = player.LastName,
 				Position = position,
+				Status = status,
 				Number = number,
 				Height = player.Height,
 				Weight = player.Weight,
 				DateOfBirth = player.DateOfBirth,
 				College = player.College
 			};
+		}
+
+		public static PlayerProfile ToCoreEntity(PlayerSql sql)
+		{
+			return new PlayerProfile
+			{
+				Id = sql.Id,
+				NflId = sql.NflId,
+				EsbId = sql.EsbId,
+				GsisId = sql.GsisId,
+				FirstName = sql.FirstName,
+				LastName = sql.LastName,
+				Height = sql.Height,
+				Weight = sql.Weight,
+				DateOfBirth = sql.DateOfBirth,
+				College = sql.College
+			};
+		}
+
+		public override string PrimaryKeyMatchCondition()
+		{
+			return $"id = '{Id}'";
 		}
 	}
 }

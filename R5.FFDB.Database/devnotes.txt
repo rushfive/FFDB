@@ -1,9 +1,0 @@
-current plan: provide direct support for 2 databases (Postgres and Mongo)
-each should simply be its own library/package that provides the necesary DatabaseProvider<TDbContext>
-
-the engine, during setup/config, needs to either select one of the built-in ones, OR optionally accept any random one.
-This allows users to customize and create their own, and possibly have community built db providers for other databases like sql server, etc. !!
-
-each db provider would obvioisly have their own DB models/classes, so their projects
-would need to handle those as well. Anything on the interfaces would reference
-the core FFDB models.

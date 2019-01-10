@@ -15,6 +15,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
+		<ProjectReference Include="..\R5.FFDB.Database\R5.FFDB.Database.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,7 +1,0 @@
-tables
-- teams (static data)
-- players (static data)
-- week stats
-- rosters (players.Id <-> teams.Id)
-
-todo: figure out static files/storage

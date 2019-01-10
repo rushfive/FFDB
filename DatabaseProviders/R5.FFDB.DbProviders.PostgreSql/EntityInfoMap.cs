@@ -17,12 +17,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 	// so pre-cache everything for better performance
 	public static class EntityInfoMap
 	{
-		private static Dictionary<Type, string> _tableNames { get; } = new Dictionary<Type, string>();
-		private static Dictionary<Type, List<string>> _compositePrimaryKeys { get; } = new Dictionary<Type, List<string>>();
-		private static Dictionary<Type, List<ColumnInfo>> _tableColumnInfos { get; } = new Dictionary<Type, List<ColumnInfo>>();
-		private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; } = new Dictionary<WeekStatType, PropertyInfo>();
-
-		private static List<Type> _entityTypes = new List<Type>
+		public static List<Type> EntityTypes = new List<Type>
 		{
 			typeof(TeamSql),
 			typeof(PlayerSql),
@@ -34,8 +29,14 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			typeof(WeekStatsKickSql),
 			typeof(WeekStatsDstSql),
 			typeof(WeekStatsIdpSql),
-			typeof(TeamGameStatsSql)
+			typeof(TeamGameStatsSql),
+			typeof(UpdateLogSql)
 		};
+
+		private static Dictionary<Type, string> _tableNames { get; } = new Dictionary<Type, string>();
+		private static Dictionary<Type, List<string>> _compositePrimaryKeys { get; } = new Dictionary<Type, List<string>>();
+		private static Dictionary<Type, List<ColumnInfo>> _tableColumnInfos { get; } = new Dictionary<Type, List<ColumnInfo>>();
+		private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; } = new Dictionary<WeekStatType, PropertyInfo>();
 
 		public static string TableName(Type entityType)
 		{
@@ -79,7 +80,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 
 		private static void ResolveMapData()
 		{
-			_entityTypes.ForEach(t =>
+			EntityTypes.ForEach(t =>
 			{
 				_tableNames[t] = GetTableName(t);
 				_tableColumnInfos[t] = GetColumnInfos(t);

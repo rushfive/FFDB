@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
-	[TableName("ffdb.team_game_stats")]
+	[TableName(Table.TeamGameStats)]
 	[CompositePrimaryKeys("team_id", "season", "week")]
 	public class TeamGameStatsSql : SqlEntity
 	{
@@ -116,6 +116,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				PuntYards = stats.PuntYards,
 				TimeOfPossessionSeconds = stats.TimeOfPossessionSeconds
 			};
+		}
+
+		public override string PrimaryKeyMatchCondition()
+		{
+			return $"team_id = {TeamId} AND season = {Season} AND week = {Week}";
 		}
 	}
 }

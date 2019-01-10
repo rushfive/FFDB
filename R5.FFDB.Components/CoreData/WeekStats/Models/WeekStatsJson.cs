@@ -22,7 +22,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 		public Dictionary<string, WeekStatsGameJson> Games { get; set; }
 
 		public static Core.Models.WeekStats ToCoreEntity(WeekStatsJson model, WeekInfo week,
-			Func<string, WeekInfo, int?> resolvePlayerWeekTeam)
+			Func<string, int?> weekTeamResolver)
 		{
 			var players = new List<Core.Models.PlayerStats>();
 
@@ -60,11 +60,12 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 					}
 				}
 
-				int? teamId = resolvePlayerWeekTeam(player.Key, week);
+				string nflId = player.Key;
+				int? teamId = weekTeamResolver(nflId);
 
 				players.Add(new Core.Models.PlayerStats
 				{
-					NflId = player.Key,
+					NflId = nflId,
 					Stats = stats,
 					TeamId = teamId
 				});

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 {
-	[TableName("ffdb.update_log")]
+	[TableName(Table.UpdateLog)]
 	[CompositePrimaryKeys("season", "week")]
 	public class UpdateLogSql : SqlEntity
 	{
@@ -17,7 +17,12 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
 
-		[Column("date_of_birth", PostgresDataType.TIMESTAMPTZ)]
-		public DateTimeOffset DateOfBirth { get; set; }
+		[Column("datetime", PostgresDataType.TIMESTAMPTZ)]
+		public DateTimeOffset UpdateTime { get; set; }
+
+		public override string PrimaryKeyMatchCondition()
+		{
+			return $"season = {Season} AND week = {Week}";
+		}
 	}
 }

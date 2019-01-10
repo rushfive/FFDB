@@ -6,6 +6,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="MongoDB.Driver" Version="2.7.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\R5.FFDB.Components\R5.FFDB.Components.csproj" />
 		<ProjectReference Include="..\..\R5.FFDB.Database\R5.FFDB.Database.csproj" />
 	</ItemGroup>
 

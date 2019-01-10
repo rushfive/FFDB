@@ -19,7 +19,7 @@ namespace DevTester.Testers
 		internal static async Task TestSetupAsync(IServiceProvider serviceProvider)
 		{
 			var dbProvider = serviceProvider.GetRequiredService<IDatabaseProvider>();
-			var dbContext = (PostgresDbContext)dbProvider.GetContext();
+			var dbContext = (DbContext)dbProvider.GetContext();
 
 			string team = SqlCommandBuilder.Table.Create(typeof(TeamSql));
 			string player = SqlCommandBuilder.Table.Create(typeof(PlayerSql));
@@ -44,7 +44,7 @@ namespace DevTester.Testers
 		internal static async Task SetupTablesAsync(IServiceProvider serviceProvider)
 		{
 			var dbProvider = serviceProvider.GetRequiredService<IDatabaseProvider>();
-			var dbContext = (PostgresDbContext)dbProvider.GetContext();
+			var dbContext = (DbContext)dbProvider.GetContext();
 
 			//await dbContext.ExecuteCommandAsync(SetupCommands.CreateTeamsTable);
 			//await dbContext.ExecuteCommandAsync(SetupCommands.CreatePlayersTable);
@@ -55,7 +55,7 @@ namespace DevTester.Testers
 		internal static async Task InsertTeamsAsync(IServiceProvider serviceProvider)
 		{
 			var dbProvider = serviceProvider.GetRequiredService<IDatabaseProvider>();
-			var dbContext = (PostgresDbContext)dbProvider.GetContext();
+			var dbContext = (DbContext)dbProvider.GetContext();
 
 			// "INSERT INTO teams (id, nfl_id, name, abbreviation) VALUES (1, 100001, Atlanta Falcons, ATL)"
 			List<Team> teams = TeamDataStore.GetAll();

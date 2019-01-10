@@ -6,6 +6,7 @@ using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Http;
+using R5.FFDB.Components.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +18,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 {
 	public interface IPlayerProfileSource : ICoreDataSource
 	{
+		Task FetchAsync(List<string> nflIds, bool overwriteExisting = false);
 	}
 
 	public class PlayerProfileSource : IPlayerProfileSource
@@ -27,9 +29,8 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
-
 		private IWeekStatsService _weekStatsService { get; }
-		private IRosterService _rosterService { get; }
+		private IPlayerProfileScraper _scraper { get; }
 
 		public PlayerProfileSource(
 			ILogger<PlayerProfileSource> logger,
@@ -37,101 +38,63 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
 			IWeekStatsService weekStatsService,
-			IRosterService rosterService)
+			IPlayerProfileScraper scraper)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_throttle = throttle;
 			_weekStatsService = weekStatsService;
-			_rosterService = rosterService;
+			_scraper = scraper;
 		}
-		
-		public async Task FetchAndSaveAsync()
+
+		public async Task FetchAsync(List<string> nflIds, bool overwriteExisting = false)
 		{
-			_logger.LogInformation("Beginning fetching of player profiles based on ids found from team rosters and week stats.");
+			// dont fetch teams, no profile data to fetch
+			HashSet<string> teamIds = TeamDataStore.GetAll().Select(t => t.NflId).ToHashSet();
 
-			List<Core.Models.Roster> rosters = _rosterService.Get();
-			List<Core.Models.WeekStats> weekStats = _weekStatsService.Get();
-
-			List<string> nflIds = rosters
-				.SelectMany(r => r.Players)
-				.Select(p => p.NflId)
-				.Concat(weekStats.SelectMany(ws => ws.Players).Select(p => p.NflId))
-				.ToList();
-
-			HashSet<string> existing = GetPlayersWithExistingProfileData();
-
-			// skip teams, no profile data to fetch
-			TeamDataStore.GetAll().ForEach(t => existing.Add(t.NflId));
-
-			List<string> newPlayers = nflIds
-				.Where(id => !existing.Contains(id))
-				.Distinct()
-				.ToList();
-
-			if (!newPlayers.Any())
+			IEnumerable<string> idsToFetch = nflIds.Where(id => !teamIds.Contains(id));
+			
+			if (!overwriteExisting)
 			{
-				_logger.LogInformation("Already have player profile data for all - no fetching necessary.");
-				return;
+				HashSet<string>  existing = DirectoryFilesResolver
+					.GetFileNames(_dataPath.Temp.PlayerProfile, excludeExtensions: true)
+					.ToHashSet();
+
+				_logger.LogInformation($"Profile files already exist for {existing.Count} players. Will skip fetching for them. "
+					+ "Clear the files first before running if you'd like to re-fetch.");
+
+				idsToFetch = idsToFetch.Where(id => !existing.Contains(id));
 			}
 
-			int alreadyExistingCount = nflIds.Count - newPlayers.Count;
-			if (alreadyExistingCount > 0)
+			idsToFetch = idsToFetch.Distinct().ToList();
+
+			_logger.LogInformation($"Beginning fetching of profile data for {idsToFetch.Count()} player(s).");
+			_logger.LogTrace($"Fetching for players (nfl ids): {string.Join(", ", idsToFetch)}");
+
+			foreach (string id in idsToFetch)
 			{
-				_logger.LogInformation($"Already have profile data for {nflIds.Count - newPlayers.Count} players.");
-			}
-
-			int remaining = newPlayers.Count;
-			foreach (string nflId in newPlayers)
-			{
-				_logger.LogTrace($"Fetching profile data for '{nflId}'.");
-
-				PlayerProfileJson playerProfile = null;
-				try
+				string filePath = _dataPath.Temp.PlayerProfile + $"{id}.json";
+				if (File.Exists(filePath) && !overwriteExisting)
 				{
-					playerProfile = await FetchForPlayerAsync(nflId);
-
-					string serializedPlayerData = JsonConvert.SerializeObject(playerProfile);
-
-					string path = _dataPath.Static.PlayerProfile + $"{nflId}.json";
-					File.WriteAllText(path, serializedPlayerData);
-
-					_logger.LogDebug($"Successfully fetched profile data for '{nflId}' ({playerProfile.FirstName} {playerProfile.LastName}) "
-						+ $"(remaining: {remaining - 1})");
+					_logger.LogInformation($"Player profile file already exists for '{id}'. Will not fetch.");
+					continue;
 				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, $"Failed to fetch player profile for '{nflId}': {ex.Message}. Check the player_profile_fetch file error logs for more information.");
-				}
-				finally
-				{
-					remaining--;
-				}
+
+				_logger.LogTrace($"Fetching player profile data for '{id}'.");
+
+				PlayerProfileJson playerProfile = await FetchForPlayerAsync(id);
+
+				string serializedPlayerData = JsonConvert.SerializeObject(playerProfile);
+				
+				File.WriteAllText(filePath, serializedPlayerData);
 
 				await _throttle.DelayAsync();
+				_logger.LogDebug($"Finished fetching player profile for '{id}'.");
 			}
-		}
 
-		private HashSet<string> GetPlayersWithExistingProfileData()
-		{
-			var directory = new DirectoryInfo(_dataPath.Static.PlayerProfile);
-
-			var existing = directory
-				.GetFiles()
-				.Select(f =>
-				{
-					string fileName = f.Name;
-					var split = fileName.Split(".");
-					return split[0];
-				})
-				.ToHashSet();
-
-			// skip teams, no profile data to fetch
-			TeamDataStore.GetAll().ForEach(t => existing.Add(t.NflId));
-
-			return existing;
-		}
+			_logger.LogInformation("Finished fetching player profiles.");
+		}	
 
 		private async Task<PlayerProfileJson> FetchForPlayerAsync(string nflId)
 		{
@@ -145,19 +108,19 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, $"Failed to player profile page for '{nflId}' at '{uri}'.");
+				_logger.LogError(ex, $"Failed to fetch player profile page for '{nflId}' at '{uri}'.");
 				throw;
 			}
 
 			var page = new HtmlDocument();
 			page.LoadHtml(html);
 
-			(string firstName, string lastName) = PlayerProfileScraper.ExtractNames(page);
-			(int height, int weight) = PlayerProfileScraper.ExtractHeightWeight(page);
-			DateTimeOffset dateOfBirth = PlayerProfileScraper.ExtractDateOfBirth(page);
-			string college = PlayerProfileScraper.ExtractCollege(page);
-			(string esbId, string gsisId) = PlayerProfileScraper.ExtractIds(page);
-			string pictureUri = PlayerProfileScraper.ExtractPictureUri(page);
+			(string firstName, string lastName) = _scraper.ExtractNames(page);
+			(int height, int weight) = _scraper.ExtractHeightWeight(page);
+			DateTimeOffset dateOfBirth = _scraper.ExtractDateOfBirth(page);
+			string college = _scraper.ExtractCollege(page);
+			(string esbId, string gsisId) = _scraper.ExtractIds(page);
+			string pictureUri = _scraper.ExtractPictureUri(page);
 
 			return new PlayerProfileJson
 			{
@@ -174,10 +137,61 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			};
 		}
 
-		public Task CheckHealthAsync()
+		public async Task CheckHealthAsync()
 		{
-			// Todo:
-			return Task.CompletedTask;
+			var testPlayers = new List<string>
+			{
+				"2532975", // russell wilson
+				"2532966" // bobby wagner
+			};
+
+			_logger.LogInformation($"Beginning health check for '{Label}' source. "
+				+ $"Will perform checks on players: {string.Join(", ", testPlayers)}");
+
+			foreach (var nflId in testPlayers)
+			{
+				_logger.LogDebug($"Checking health using player {nflId}.");
+
+				await CheckHealthForPlayerAsync(nflId);
+
+				_logger.LogInformation($"Health check passed for player {nflId}.");
+			}
+
+			_logger.LogInformation($"Health check successfully passed for '{Label}' source.");
+		}
+
+		private async Task CheckHealthForPlayerAsync(string nflId)
+		{
+			string uri = Endpoints.Page.PlayerProfile(nflId);
+
+			string html;
+			try
+			{
+				html = await _webRequestClient.GetStringAsync(uri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to player profile page for '{nflId}' at '{uri}'.");
+				throw;
+			}
+
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
+
+			try
+			{
+				_scraper.ExtractNames(page);
+				_scraper.ExtractHeightWeight(page);
+				_scraper.ExtractDateOfBirth(page);
+				_scraper.ExtractCollege(page);
+				_scraper.ExtractIds(page);
+				_scraper.ExtractPictureUri(page);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to scrape profile data for '{nflId}'.");
+				throw;
+			}
 		}
 	}
 }
