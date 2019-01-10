@@ -28,7 +28,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogInformation($"Adding {players.Count} players to the '{tableName}' table.");
 
-			List<PlayerSql> playerSqls = ResolveSqlEntities(players, rosters);
+			List<PlayerSql> playerSqls = MapToSqlEntities(players, rosters);
 
 			string sqlCommand = SqlCommandBuilder.Rows.InsertMany(playerSqls);
 
@@ -45,7 +45,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogInformation($"Updating {players.Count} players in the '{tableName}' table.");
 
-			List<PlayerSql> playerSqls = ResolveSqlEntities(players, rosters);
+			List<PlayerSql> playerSqls = MapToSqlEntities(players, rosters);
 
 			foreach(PlayerSql player in playerSqls)
 			{
@@ -59,7 +59,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogInformation($"Successfully updated players in the '{tableName}' table.");
 		}
 
-		private List<PlayerSql> ResolveSqlEntities(List<PlayerProfile> players, List<Roster> rosters)
+		private List<PlayerSql> MapToSqlEntities(List<PlayerProfile> players, List<Roster> rosters)
 		{
 			var result = new List<PlayerSql>();
 

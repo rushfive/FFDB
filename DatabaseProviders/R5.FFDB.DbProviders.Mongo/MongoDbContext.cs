@@ -172,5 +172,21 @@ namespace R5.FFDB.DbProviders.Mongo
 			var collection = CollectionResolver.GetCollectionFor<T>(_database);
 			return collection.UpdateManyAsync(filter, updateDefinition, updateOptions);
 		}
+
+		public Task<ReplaceOneResult> ReplaceOneAsync<T>(FilterDefinition<T> filter, T document,
+			UpdateOptions updateOptions = null)
+			where T : DocumentBase
+		{
+			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			return collection.ReplaceOneAsync(filter, document, updateOptions);
+		}
+
+		public Task<ReplaceOneResult> ReplaceOneAsync<T>(Expression<Func<T, bool>> filter, T document,
+			UpdateOptions updateOptions = null)
+			where T : DocumentBase
+		{
+			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			return collection.ReplaceOneAsync(filter, document, updateOptions);
+		}
 	}
 }

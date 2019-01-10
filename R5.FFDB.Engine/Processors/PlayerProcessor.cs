@@ -49,6 +49,9 @@ namespace R5.FFDB.Engine.Processors
 				.Where(p => nflIds.Contains(p.NflId))
 				.ToList();
 
+			// todo: first add players that currently dont exist in db?
+			// then, run an update on the diff
+
 			await dbContext.Player.UpdateAsync(players, rosters);
 
 			_logger.LogInformation("Successfully updated players currently rostered on a team.");
