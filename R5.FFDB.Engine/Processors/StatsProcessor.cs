@@ -93,7 +93,7 @@ namespace R5.FFDB.Engine.Processors
 			await dbContext.Stats.UpdateWeekAsync(weekStats);
 
 			List<TeamWeekStats> teamStats = _teamStatsService.GetForWeek(week);
-			await dbContext.Team.UpdateGameStatsAsync(teamStats);
+			await dbContext.Team.AddGameStatsAsync(teamStats);
 
 			await dbContext.Log.AddUpdateForWeekAsync(week);
 		}

@@ -48,6 +48,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			var logger = GetLogger<TeamDbContext>();
 
 			logger.LogDebug($"Adding player-team mapping entries to '{playerTeamMapTableName}' table (will first remove all existing entries).");
+			logger.LogTrace($"Updating rosters for: {string.Join(", ", rosters.Select(r => r.TeamAbbreviation))}");
 
 			string playerTableName = EntityInfoMap.TableName(typeof(PlayerSql));
 
@@ -81,12 +82,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogInformation($"Successfully added player-team mapping entries to '{playerTeamMapTableName}' table.");
 		}
 
-		public async Task UpdateGameStatsAsync(List<TeamWeekStats> stats)
+		public async Task AddGameStatsAsync(List<TeamWeekStats> stats)
 		{
 			string tableName = EntityInfoMap.TableName(typeof(TeamGameStatsSql));
 			var logger = GetLogger<TeamDbContext>();
 
 			logger.LogDebug($"Adding team game stats to '{tableName}' table.");
+			logger.LogTrace($"Adding team game stats for: {string.Join(", ", stats.Select(s => s.Week))}");
 
 			List<TeamGameStatsSql> sqlEntries = stats.Select(TeamGameStatsSql.FromCoreEntity).ToList();
 

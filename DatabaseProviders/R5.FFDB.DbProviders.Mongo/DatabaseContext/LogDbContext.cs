@@ -2,8 +2,10 @@
 using MongoDB.Driver;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database.DbContext;
+using R5.FFDB.DbProviders.Mongo.Documents;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,30 +20,59 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 		}
 
-		public Task AddUpdateForWeekAsync(WeekInfo week)
+		public async Task AddUpdateForWeekAsync(WeekInfo week)
 		{
 			var logger = GetLogger<LogDbContext>();
+			var collectionName = CollectionResolver.CollectionNameFor<UpdateLogDocument>();
 
-			MongoDbContext mongoDbContext = GetMongoDbContext();
+			var log = new UpdateLogDocument
+			{
+				Season = week.Season,
+				Week = week.Week,
+				UpdateTime = DateTime.UtcNow
+			};
+			
+			await GetMongoDbContext().InsertOneAsync(log);
 
-
-
-			throw new NotImplementedException();
+			logger.LogInformation($"Successfully added update log for {week} to '{collectionName}' collection.");
 		}
 
-		public Task<List<WeekInfo>> GetUpdatedWeeksAsync()
+		public async Task<List<WeekInfo>> GetUpdatedWeeksAsync()
 		{
-			throw new NotImplementedException();
+			var logger = GetLogger<LogDbContext>();
+			var collectionName = CollectionResolver.CollectionNameFor<UpdateLogDocument>();
+
+			logger.LogInformation($"Getting updated weeks from '{collectionName}' collection.");
+
+			var logs = await GetMongoDbContext().FindAsync<UpdateLogDocument>();
+
+			return logs.Select(l => new WeekInfo(l.Season, l.Week)).ToList();
 		}
 
-		public Task RemoveAllAsync()
+		public async Task RemoveAllAsync()
 		{
-			throw new NotImplementedException();
+			var logger = GetLogger<LogDbContext>();
+			var collectionName = CollectionResolver.CollectionNameFor<UpdateLogDocument>();
+
+			await GetMongoDbContext().DeleteManyAsync<UpdateLogDocument>();
+
+			logger.LogInformation($"Deleted all log documents from '{collectionName}' collection.");
 		}
 
-		public Task RemoveForWeekAsync(WeekInfo week)
+		public async Task RemoveForWeekAsync(WeekInfo week)
 		{
-			throw new NotImplementedException();
+			var logger = GetLogger<LogDbContext>();
+			var collectionName = CollectionResolver.CollectionNameFor<UpdateLogDocument>();
+
+			logger.LogDebug($"Deleting log document for {week} from '{collectionName}' collection.");
+
+			DeleteResult result = await GetMongoDbContext().DeleteOneAsync<UpdateLogDocument>(l => l.Season == week.Season && l.Week == week.Week);
+			if (result.DeletedCount != 1)
+			{
+				throw new InvalidOperationException($"Failed to delete log document for {week} from '{collectionName}' collection.");
+			}
+
+			logger.LogInformation($"Successfully deleted log document for {week} from '{collectionName}' collection.");
 		}
 	}
 }

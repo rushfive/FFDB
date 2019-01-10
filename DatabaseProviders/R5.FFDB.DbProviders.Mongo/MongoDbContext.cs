@@ -1,5 +1,7 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using R5.FFDB.DbProviders.Mongo.Documents;
+using R5.FFDB.DbProviders.Mongo.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -12,11 +14,15 @@ namespace R5.FFDB.DbProviders.Mongo
 	{
 		private IMongoDatabase _database { get; }
 
+		static MongoDbContext()
+		{
+			MongoSerializers.Register();
+		}
+
 		public MongoDbContext(IMongoDatabase database)
 		{
 			_database = database;
 		}
-
 
 		public Task InsertOneAsync<T>(T document)
 			where T : DocumentBase
@@ -108,9 +114,15 @@ namespace R5.FFDB.DbProviders.Mongo
 			return collection.DeleteOneAsync(filter);
 		}
 
-		public Task<DeleteResult> DeleteManyAsync<T>(FilterDefinition<T> filter)
+		public Task<DeleteResult> DeleteManyAsync<T>(FilterDefinition<T> filter = null)
 			where T : DocumentBase
 		{
+			if (filter == null)
+			{
+				// empty filter to delete all
+				filter = new BsonDocumentFilterDefinition<T>(new MongoDB.Bson.BsonDocument());
+			}
+
 			var collection = CollectionResolver.GetCollectionFor<T>(_database);
 			return collection.DeleteManyAsync(filter);
 		}
@@ -120,6 +132,45 @@ namespace R5.FFDB.DbProviders.Mongo
 		{
 			var collection = CollectionResolver.GetCollectionFor<T>(_database);
 			return collection.DeleteManyAsync(filter);
+		}
+
+		public Task<UpdateResult> UpdateOneAsync<T>(FilterDefinition<T> filter, UpdateDefinition<T> updateDefinition,
+			UpdateOptions updateOptions = null)
+			where T : DocumentBase
+		{
+			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			return collection.UpdateOneAsync(filter, updateDefinition, updateOptions);
+		}
+
+		public Task<UpdateResult> UpdateOneAsync<T>(Expression<Func<T, bool>> filter,
+			UpdateDefinition<T> updateDefinition, UpdateOptions updateOptions = null)
+			where T : DocumentBase
+		{
+			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			return collection.UpdateOneAsync(filter, updateDefinition, updateOptions);
+		}
+
+		public Task<UpdateResult> UpdateAsync<T>(Expression<Func<T, bool>> filter, UpdateDefinition<T> updateDefinition,
+			UpdateOptions updateOptions = null)
+			where T : DocumentBase
+		{
+			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			return collection.UpdateManyAsync(filter, updateDefinition, updateOptions);
+		}
+
+		public Task<UpdateResult> UpdateAsync<T>(UpdateDefinition<T> updateDefinition,
+			FilterDefinition<T> filter = null,
+			UpdateOptions updateOptions = null)
+			where T : DocumentBase
+		{
+			if (filter == null)
+			{
+				//empty filter
+				filter = new BsonDocumentFilterDefinition<T>(new BsonDocument());
+			}
+
+			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			return collection.UpdateManyAsync(filter, updateDefinition, updateOptions);
 		}
 	}
 }
