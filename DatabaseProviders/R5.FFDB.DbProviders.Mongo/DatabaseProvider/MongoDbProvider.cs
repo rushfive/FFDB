@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using R5.FFDB.Database;
 using R5.FFDB.Database.DbContext;
 using R5.FFDB.DbProviders.Mongo.DatabaseContext;
+using R5.FFDB.DbProviders.Mongo.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,6 +26,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseProvider
 			_config = config;
 			_loggerFactory = loggerFactory;
 
+			MongoSerializers.Register();
 			_client = new MongoClient(config.ConnectionString);
 		}
 

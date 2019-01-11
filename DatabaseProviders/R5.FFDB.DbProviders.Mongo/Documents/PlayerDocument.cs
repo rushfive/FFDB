@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using R5.FFDB.Core.Models;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName("ffdb.player")]
+	[CollectionName(CollectionConstants.FfdbPrefix + "player")]
 	public class PlayerDocument : DocumentBase
 	{
 		[BsonId]
@@ -93,12 +94,11 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 			};
 		}
 
-		public override Task CreateIndexAsync(IMongoDatabase database)
+		public static Task CreateIndexAsync(IMongoDatabase database)
 		{
 			var keys = Builders<PlayerDocument>.IndexKeys.Ascending(t => t.Id);
-			var options = new CreateIndexOptions { Unique = true };
 
-			var model = new CreateIndexModel<PlayerDocument>(keys, options);
+			var model = new CreateIndexModel<PlayerDocument>(keys);
 
 			var collection = CollectionResolver.GetCollectionFor<PlayerDocument>(database);
 			collection.Indexes.CreateOne(model);

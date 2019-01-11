@@ -1,3 +1,7 @@
+need a mongo stat type enum, that maps directly 1:1 to WeekStatType
+that has proper casing and stuff for mongo
+
+-----------------
 getting player's team history on a week by week basis:
 
 use NFL player profiles gamelogs pages:
@@ -59,3 +63,10 @@ http://api.fantasy.nfl.com/v2/player/ngs-content?playerId=2495186
 
 nfl player link:
 http://www.nfl.com/player/dougbaldwin/2530747/profile
+
+-------------------
+
+possible roadmap featuers:
+- depth chart
+- team's defensive/offensive rankings
+- static file sfor teams/players, ie images, logos etc

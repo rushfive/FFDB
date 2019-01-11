@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database.DbContext;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Documents;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task AddTeamsAsync()
 		{
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<TeamDocument>();
+			var collectionName = CollectionNames.GetForType<TeamDocument>();
 
 			logger.LogDebug($"Adding NFL team documents to '{collectionName}' collection.");
 
@@ -42,7 +43,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task UpdateRostersAsync(List<Roster> rosters)
 		{
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<PlayerDocument>();
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
 
 			logger.LogDebug($"Updating player's team associations in '{collectionName}' collection.");
 			logger.LogTrace($"Updating rosters for: {string.Join(", ", rosters.Select(r => r.TeamAbbreviation))}");
@@ -86,7 +87,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task AddGameStatsAsync(List<TeamWeekStats> stats)
 		{
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<TeamGameStatsDocument>();
+			var collectionName = CollectionNames.GetForType<TeamGameStatsDocument>();
 
 			logger.LogDebug($"Adding team game stats to '{collectionName}' collection.");
 			logger.LogTrace($"Adding team game stats for: {string.Join(", ", stats.Select(s => s.Week))}");
@@ -101,7 +102,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task RemoveAllGameStatsAsync()
 		{
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<TeamGameStatsDocument>();
+			var collectionName = CollectionNames.GetForType<TeamGameStatsDocument>();
 
 			logger.LogDebug($"Removing all team game stats documents from '{collectionName}' collection.");
 
@@ -113,7 +114,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task RemoveGameStatsForWeekAsync(WeekInfo week)
 		{
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<TeamGameStatsDocument>();
+			var collectionName = CollectionNames.GetForType<TeamGameStatsDocument>();
 
 			logger.LogDebug($"Removing team game stats documents for {week} from '{collectionName}' collection.");
 

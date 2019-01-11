@@ -34,18 +34,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			: base(getConnection, loggerFactory)
 		{
 		}
-
-		public Task<List<WeekInfo>> GetExistingWeeksAsync()
+		
+		public Task AddWeekAsync(WeekStats stats)
 		{
-			throw new NotImplementedException();
+			return AddWeeksAsync(new List<WeekStats> { stats });
 		}
 
-		public Task UpdateWeekAsync(WeekStats stats)
-		{
-			return UpdateWeeksAsync(new List<WeekStats> { stats });
-		}
-
-		public async Task UpdateWeeksAsync(List<WeekStats> stats)
+		public async Task AddWeeksAsync(List<WeekStats> stats)
 		{
 			var logger = GetLogger<WeekStatsDbContext>();
 
@@ -54,60 +49,61 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			var nflPlayerIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
 			var teamNflIdMap = TeamDataStore.GetAll().ToDictionary(t => t.NflId, t => t.Id);
 
-			List<WeekStatsSqlUpdate> updates = GetStatsUpdates(stats, nflPlayerIdMap, teamNflIdMap, logger);
+			List<WeekStatsSqlAdd> statsAdd = GetStatsAdd(stats, nflPlayerIdMap, teamNflIdMap, logger);
 
-			logger.LogInformation($"Updating game stats for {updates.Count} week(s).");
+			logger.LogInformation($"Adding week stats stats for {statsAdd.Count} week(s).");
+			logger.LogTrace($"Adding week stats for: {string.Join(", ", stats.Select(s => s.Week))}");
 
-			foreach(var update in updates)
+			foreach(WeekStatsSqlAdd add in statsAdd)
 			{
-				logger.LogDebug($"Beginning stats update for week {update.Week}.");
+				logger.LogDebug($"Beginning stats add for week {add.Week}.");
 
-				if (update.PassStats.Any())
+				if (add.PassStats.Any())
 				{
-					await UpdateStatsAsync(update.PassStats, update.Week, "Week Stats (Pass)", logger);
+					await AddStatsAsync(add.PassStats, add.Week, "Week Stats (Pass)", logger);
 				}
-				if (update.RushStats.Any())
+				if (add.RushStats.Any())
 				{
-					await UpdateStatsAsync(update.RushStats, update.Week, "Week Stats (Rush)", logger);
+					await AddStatsAsync(add.RushStats, add.Week, "Week Stats (Rush)", logger);
 				}
-				if (update.ReceiveStats.Any())
+				if (add.ReceiveStats.Any())
 				{
-					await UpdateStatsAsync(update.ReceiveStats, update.Week, "Week Stats (Receive)", logger);
+					await AddStatsAsync(add.ReceiveStats, add.Week, "Week Stats (Receive)", logger);
 				}
-				if (update.MiscStats.Any())
+				if (add.MiscStats.Any())
 				{
-					await UpdateStatsAsync(update.MiscStats, update.Week, "Week Stats (Misc)", logger);
+					await AddStatsAsync(add.MiscStats, add.Week, "Week Stats (Misc)", logger);
 				}
-				if (update.KickStats.Any())
+				if (add.KickStats.Any())
 				{
-					await UpdateStatsAsync(update.KickStats, update.Week, "Week Stats (Kick)", logger);
+					await AddStatsAsync(add.KickStats, add.Week, "Week Stats (Kick)", logger);
 				}
-				if (update.DstStats.Any())
+				if (add.DstStats.Any())
 				{
-					await UpdateStatsAsync(update.DstStats, update.Week, "Week Stats (DST)", logger);
+					await AddStatsAsync(add.DstStats, add.Week, "Week Stats (DST)", logger);
 				}
-				if (update.IdpStats.Any())
+				if (add.IdpStats.Any())
 				{
-					await UpdateStatsAsync(update.IdpStats, update.Week, "Week Stats (IDP)", logger);
+					await AddStatsAsync(add.IdpStats, add.Week, "Week Stats (IDP)", logger);
 				}
 
-				logger.LogDebug($"Successfully updated stats for week {update.Week}.");
+				logger.LogDebug($"Successfully added stats for week {add.Week}.");
 			}
 
-			logger.LogInformation($"Successfully finished updating game stats for {updates.Count} weeks.");
+			logger.LogInformation($"Successfully finished adding week stats for {statsAdd.Count} weeks.");
 		}
 
-		private static List<WeekStatsSqlUpdate> GetStatsUpdates(
+		private static List<WeekStatsSqlAdd> GetStatsAdd(
 			List<WeekStats> stats,
 			Dictionary<string, Guid> nflPlayerIdMap,
 			Dictionary<string, int> teamNflIdMap,
 			ILogger<WeekStatsDbContext> logger)
 		{
-			var result = new List<WeekStatsSqlUpdate>();
+			var result = new List<WeekStatsSqlAdd>();
 
 			foreach (WeekStats weekStats in stats)
 			{
-				var update = new WeekStatsSqlUpdate
+				var update = new WeekStatsSqlAdd
 				{
 					Week = weekStats.Week
 				};
@@ -170,17 +166,17 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			return result;
 		}
 
-		private async Task UpdateStatsAsync<T>(List<T> items, WeekInfo week, string itemLabel, ILogger<WeekStatsDbContext> logger)
+		private async Task AddStatsAsync<T>(List<T> items, WeekInfo week, string itemLabel, ILogger<WeekStatsDbContext> logger)
 				where T : WeekStatsSql
 		{
 			var sqlCommand = SqlCommandBuilder.Rows.InsertMany(items);
 
-			logger.LogTrace($"Updating '{itemLabel}' for {week} using SQL command:"
+			logger.LogTrace($"Adding '{itemLabel}' for {week} using SQL command:"
 				+ Environment.NewLine + sqlCommand);
 
 			await ExecuteNonQueryAsync(sqlCommand);
 
-			logger.LogDebug($"Successfully updated '{itemLabel}' for {week} ({items.Count} total rows).");
+			logger.LogDebug($"Successfully added '{itemLabel}' for {week} ({items.Count} total rows).");
 		}
 
 		public async Task RemoveAllAsync()

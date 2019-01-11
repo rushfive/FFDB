@@ -115,6 +115,32 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			return ExecuteNonQueryAsync(sqlCommand);
 		}
 
+		public async Task<bool> ExecuteAsBoolAsync(string sqlCommand)
+		{
+			using (NpgsqlConnection connection = _getConnection())
+			{
+				await connection.OpenAsync();
+
+				using (var command = new NpgsqlCommand())
+				{
+					command.Connection = connection;
+					command.CommandText = sqlCommand;
+
+					object result = await command.ExecuteScalarAsync();
+					try
+					{
+						return Convert.ToBoolean(result);
+					}
+					catch (Exception ex)
+					{
+						_loggerFactory.CreateLogger<DbContextBase>()
+							.LogError(ex, "Failed to convert returned object to bool.");
+						throw;
+					}
+				}
+			}
+		}
+
 		protected ILogger<T> GetLogger<T>()
 		{
 			return _loggerFactory.CreateLogger<T>();

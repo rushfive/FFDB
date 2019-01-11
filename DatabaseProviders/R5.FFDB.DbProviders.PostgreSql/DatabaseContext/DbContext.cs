@@ -25,7 +25,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		}
 		
 
-		public async Task InitializeAsync()
+		public Task<bool> HasBeenInitializedAsync()
+		{
+			string sqlCommand = "SELECT exists(select schema_name FROM information_schema.schemata WHERE schema_name = 'ffdb');";
+			return ExecuteAsBoolAsync(sqlCommand);
+		}
+
+		public async Task InitializeAsync(bool force)
 		{
 			var logger = GetLogger<DbContext>();
 

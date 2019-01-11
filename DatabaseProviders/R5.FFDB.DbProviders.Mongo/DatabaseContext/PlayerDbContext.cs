@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database.DbContext;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Documents;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task AddAsync(List<PlayerProfile> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<PlayerDocument>();
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
 
 			logger.LogInformation($"Adding {players.Count} players to the '{collectionName}' collection.");
 
@@ -37,7 +38,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task UpdateAsync(List<PlayerProfile> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<PlayerDocument>();
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
 
 			logger.LogInformation($"Updating {players.Count} players in the '{collectionName}' collection.");
 
@@ -82,7 +83,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task<List<PlayerProfile>> GetAllAsync()
 		{
 			var logger = GetLogger<PlayerDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<PlayerDocument>();
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
 
 			List<PlayerDocument> documents = await GetMongoDbContext().FindAsync<PlayerDocument>();
 			var result = documents.Select(PlayerDocument.ToCoreEntity).ToList();

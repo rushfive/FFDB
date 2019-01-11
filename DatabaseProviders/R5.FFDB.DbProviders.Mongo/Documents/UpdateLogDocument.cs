@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
@@ -20,7 +21,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("dateTime")]
 		public DateTimeOffset UpdateTime { get; set; }
 
-		public override Task CreateIndexAsync(IMongoDatabase database)
+		public static Task CreateIndexAsync(IMongoDatabase database)
 		{
 			// compound index
 			var keys = Builders<UpdateLogDocument>.IndexKeys

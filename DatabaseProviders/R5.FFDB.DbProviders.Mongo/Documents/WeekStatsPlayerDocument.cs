@@ -6,6 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Models;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
@@ -97,7 +98,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 			return result;
 		}
 
-		public override Task CreateIndexAsync(IMongoDatabase database)
+		public static Task CreateIndexAsync(IMongoDatabase database)
 		{
 			// compound index
 			var keys = Builders<WeekStatsPlayerDocument>.IndexKeys

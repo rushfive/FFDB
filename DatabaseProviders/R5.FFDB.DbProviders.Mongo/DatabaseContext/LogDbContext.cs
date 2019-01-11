@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database.DbContext;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Documents;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task AddUpdateForWeekAsync(WeekInfo week)
 		{
 			var logger = GetLogger<LogDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<UpdateLogDocument>();
+			var collectionName = CollectionNames.GetForType<UpdateLogDocument>();
 
 			var log = new UpdateLogDocument
 			{
@@ -40,7 +41,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task<List<WeekInfo>> GetUpdatedWeeksAsync()
 		{
 			var logger = GetLogger<LogDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<UpdateLogDocument>();
+			var collectionName = CollectionNames.GetForType<UpdateLogDocument>();
 
 			logger.LogInformation($"Getting updated weeks from '{collectionName}' collection.");
 
@@ -52,7 +53,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task RemoveAllAsync()
 		{
 			var logger = GetLogger<LogDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<UpdateLogDocument>();
+			var collectionName = CollectionNames.GetForType<UpdateLogDocument>();
 
 			await GetMongoDbContext().DeleteManyAsync<UpdateLogDocument>();
 
@@ -62,7 +63,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task RemoveForWeekAsync(WeekInfo week)
 		{
 			var logger = GetLogger<LogDbContext>();
-			var collectionName = CollectionResolver.CollectionNameFor<UpdateLogDocument>();
+			var collectionName = CollectionNames.GetForType<UpdateLogDocument>();
 
 			logger.LogDebug($"Deleting log document for {week} from '{collectionName}' collection.");
 

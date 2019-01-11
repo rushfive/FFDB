@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Documents;
 using R5.FFDB.DbProviders.Mongo.Serialization;
 using System;
@@ -14,10 +15,10 @@ namespace R5.FFDB.DbProviders.Mongo
 	{
 		private IMongoDatabase _database { get; }
 
-		static MongoDbContext()
-		{
-			MongoSerializers.Register();
-		}
+		//static MongoDbContext()
+		//{
+		//	MongoSerializers.Register();
+		//}
 
 		public MongoDbContext(IMongoDatabase database)
 		{

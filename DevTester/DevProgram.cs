@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Npgsql;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.PlayerProfile.Models;
@@ -16,6 +17,7 @@ using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.Database.DbContext;
+using R5.FFDB.DbProviders.Mongo.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql.Models;
@@ -47,39 +49,101 @@ namespace DevTester
 			_dbContext = dbProvider.GetContext();
 			/// DONT TOUCH ABOVE ///
 			/// 
-			
-			
-			FfdbEngine engine = GetConfiguredEngine();
-			//await engine.RunInitialSetupAsync();
-			//await engine.Update.UpdateRostersAsync();
-			//await engine.Update.UpdateStatsForWeekAsync(new WeekInfo(2010, 2));
-			//await engine.Stats.AddMissingAsync();
-			//await engine.CheckSourcesHealthAsync();
 
-			//await engine.Player.UpdateCurrentlyRosteredAsync();
+			//var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
+			//MongoDbProvider mongoProvider = GetMongoDbProvider(loggerFactory);
+			//IDatabaseContext mongoContext = mongoProvider.GetContext();
 
+			//List<WeekInfo> logs = await mongoContext.Log.GetUpdatedWeeksAsync();
+
+
+			FfdbEngine engine = GetConfiguredMongoEngine();
+			//await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 5));
+			//await engine.Team.UpdateRostersAsync();
 			//await engine.Stats.RemoveForWeekAsync(new WeekInfo(2018, 5));
-			//await engine.Stats.RemoveAllAsync();
-			await engine.Stats.AddMissingAsync();
+			await engine.RunInitialSetupAsync();
+
+			//await engine.Stats.AddMissingAsync();
+
+
 
 			return;
 			Console.ReadKey();
 		}
-		
-		
-		private static FfdbEngine GetConfiguredEngine()
+
+		private static MongoDbProvider GetMongoDbProvider(ILoggerFactory loggerFactory)
+		{
+			var config = new MongoConfig
+			{
+				ConnectionString = "mongodb://localhost:27017/FFDB_Test_1?replicaSet=rs_local",
+				DatabaseName = "FFDB_Test_1"
+			};
+
+			return new MongoDbProvider(config, loggerFactory);
+		}
+
+
+		private static NpgsqlConnection GetConnection()
+		{
+			var _config = new PostgresConfig
+			{
+				DatabaseName = "ffdb_test_1",
+				Host = "localhost",
+				Username = "ffdb",
+				Password = "welc0me!"
+			};
+
+			string connectionString = $"Host={_config.Host};Database={_config.DatabaseName};";
+
+			if (_config.IsSecured)
+			{
+				connectionString += $"Username={_config.Username};Password={_config.Password}";
+			}
+
+			return new NpgsqlConnection(connectionString);
+		}
+
+		private static FfdbEngine GetConfiguredPostgresEngine()
 		{
 			var setup = new EngineSetup();
 
+			setup.UsePostgreSql(new PostgresConfig
+			{
+				DatabaseName = "ffdb_test_1",
+				Host = "localhost",
+				Username = "ffdb",
+				Password = "welc0me!"
+			});
+
+			return GetConfiguredEngine(setup);
+		}
+
+		private static FfdbEngine GetConfiguredMongoEngine()
+		{
+			var setup = new EngineSetup();
+
+			setup.UseMongo(new MongoConfig
+			{
+				ConnectionString = "mongodb://localhost:27017/FFDB_Test_1?replicaSet=rs_local",
+				DatabaseName = "FFDB_Test_1"
+			});
+
+			return GetConfiguredEngine(setup);
+		}
+
+		private static FfdbEngine GetConfiguredEngine(EngineSetup setup)
+		{
+			//var setup = new EngineSetup();
+
 			setup
-				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_2\")
-				.UsePostgreSql(new PostgresConfig
-				{
-					DatabaseName = "ffdb_test_1",
-					Host = "localhost",
-					Username = "ffdb",
-					Password = "welc0me!"
-				});
+				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_2\");
+				//.UsePostgreSql(new PostgresConfig
+				//{
+				//	DatabaseName = "ffdb_test_1",
+				//	Host = "localhost",
+				//	Username = "ffdb",
+				//	Password = "welc0me!"
+				//});
 
 			setup.WebRequest
 				.SetThrottle(1000)

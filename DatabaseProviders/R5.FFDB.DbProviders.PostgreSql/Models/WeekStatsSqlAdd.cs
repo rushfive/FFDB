@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models
 {
-	public class WeekStatsSqlUpdate
+	public class WeekStatsSqlAdd
 	{
 		public WeekInfo Week { get; set; }
 		public List<WeekStatsPassSql> PassStats { get; } = new List<WeekStatsPassSql>();

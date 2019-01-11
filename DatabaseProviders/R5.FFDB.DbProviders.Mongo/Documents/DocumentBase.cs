@@ -10,6 +10,6 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 {
 	public abstract class DocumentBase
 	{
-		public abstract Task CreateIndexAsync(IMongoDatabase database);
+		//public abstract Task CreateIndexAsync(IMongoDatabase database);
 	}
 }

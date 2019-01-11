@@ -2,9 +2,11 @@
 using MongoDB.Driver;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Models;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,11 +27,11 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("stats")]
 		public Dictionary<WeekStatType, double> Stats { get; set; }
 
-		public static WeekStatsDstDocument FromCoreEntity(PlayerStats stats,
-			int teamId, WeekInfo week)
+		public static WeekStatsDstDocument FromCoreEntity(int teamId, WeekInfo week, 
+			IEnumerable<KeyValuePair<WeekStatType, double>> stats)
 		{
 			var dstStats = new Dictionary<WeekStatType, double>();
-			foreach (KeyValuePair<WeekStatType, double> statKv in stats.Stats)
+			foreach (KeyValuePair<WeekStatType, double> statKv in stats)
 			{
 				if (WeekStatCategory.DST.Contains(statKv.Key))
 				{
@@ -46,7 +48,12 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 			};
 		}
 
-		public override Task CreateIndexAsync(IMongoDatabase database)
+		public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerStats stats)
+		{
+			return stats.Stats.Where(kv => WeekStatCategory.DST.Contains(kv.Key));
+		}
+
+		public static Task CreateIndexAsync(IMongoDatabase database)
 		{
 			// compound index
 			var keys = Builders<WeekStatsDstDocument>.IndexKeys

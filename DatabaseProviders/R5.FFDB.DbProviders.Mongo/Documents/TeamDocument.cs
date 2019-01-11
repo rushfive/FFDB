@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using R5.FFDB.Core.Models;
+using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Models;
 using System;
 using System.Collections.Generic;
@@ -35,12 +36,11 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 			};
 		}
 
-		public override Task CreateIndexAsync(IMongoDatabase database)
+		public static Task CreateIndexAsync(IMongoDatabase database)
 		{
 			var keys = Builders<TeamDocument>.IndexKeys.Ascending(t => t.Id);
-			var options = new CreateIndexOptions { Unique = true };
 
-			var model = new CreateIndexModel<TeamDocument>(keys, options);
+			var model = new CreateIndexModel<TeamDocument>(keys);
 
 			var collection = CollectionResolver.GetCollectionFor<TeamDocument>(database);
 			collection.Indexes.CreateOne(model);
