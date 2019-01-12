@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName("ffdb.team")]
+	[CollectionName(CollectionConstants.FfdbPrefix + "team")]
 	public class TeamDocument : DocumentBase
 	{
 		[BsonId]

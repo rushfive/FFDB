@@ -15,11 +15,6 @@ namespace R5.FFDB.DbProviders.Mongo
 	{
 		private IMongoDatabase _database { get; }
 
-		//static MongoDbContext()
-		//{
-		//	MongoSerializers.Register();
-		//}
-
 		public MongoDbContext(IMongoDatabase database)
 		{
 			_database = database;

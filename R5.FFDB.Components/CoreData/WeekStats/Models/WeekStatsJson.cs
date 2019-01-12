@@ -24,7 +24,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 		public static Core.Models.WeekStats ToCoreEntity(WeekStatsJson model, WeekInfo week,
 			Func<string, int?> weekTeamResolver)
 		{
-			var players = new List<Core.Models.PlayerStats>();
+			var players = new List<Core.Models.PlayerWeekStats>();
 
 			WeekStatsGameJson games = model.Games.Single().Value;
 			foreach (KeyValuePair<string, WeekStatsPlayerJson> player in games.Players)
@@ -63,7 +63,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 				string nflId = player.Key;
 				int? teamId = weekTeamResolver(nflId);
 
-				players.Add(new Core.Models.PlayerStats
+				players.Add(new Core.Models.PlayerWeekStats
 				{
 					NflId = nflId,
 					Stats = stats,

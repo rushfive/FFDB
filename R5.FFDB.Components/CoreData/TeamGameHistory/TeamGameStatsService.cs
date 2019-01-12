@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -14,7 +13,6 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 	public interface ITeamGameStatsService
 	{
 		List<TeamWeekStats> GetForWeek(WeekInfo week);
-		//List<TeamWeekStats> Get();
 	}
 
 	public class TeamGameStatsService : ITeamGameStatsService
@@ -34,32 +32,13 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 		{
 			var result = new List<TeamWeekStats>();
 
-			List<string> gameIds = GetGameIds(week);
+			List<string> gameIds = GameFilesUtil.GetGameIdsForWeek(week, _dataPath);
 			foreach (var gameId in gameIds)
 			{
 				JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json"));
 
 				AddForTeam("home", gameId, json, week, result);
 				AddForTeam("away", gameId, json, week, result);
-			}
-
-			return result;
-		}
-
-		private List<string> GetGameIds(WeekInfo week)
-		{
-			var result = new List<string>();
-
-			var filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
-
-			XElement weekGameXml = XElement.Load(filePath);
-
-			XElement gameNode = weekGameXml.Elements("gms").Single();
-
-			foreach (XElement game in gameNode.Elements("g"))
-			{
-				string gameId = game.Attribute("eid").Value;
-				result.Add(gameId);
 			}
 
 			return result;
@@ -72,43 +51,12 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 				(string)json.SelectToken($"{gameId}.{teamType}.abbr"),
 				includePriorLookup: true);
 
-			var stats = new TeamWeekStats(teamId, teamType == "home", week);
+			var stats = new TeamWeekStats(teamId, week);
 
 			stats.SetPointsScored(json, gameId, teamType);
 			stats.SetTeamStats(json, gameId, teamType);
 
-			//JToken score = json.SelectToken($"{gameId}.{teamType}.score");
-			//if (score == null)
-			//{
-			//	throw new InvalidOperationException($"Failed to parse score object for {teamType} team in game '{gameId}'.");
-			//}
-
-			//stats.SetPointsScored(score);
-
-			//JToken teamStats = json.SelectToken($"{gameId}.{teamType}.stats.team");
-			//if (teamStats == null)
-			//{
-			//	throw new InvalidOperationException($"Failed to parse team stats object for {teamType} team in game '{gameId}'.");
-			//}
-
-			//stats.SetTeamStats(teamStats);
-
 			result.Add(stats);
 		}
-
-		// pre per-week below
-
-		//public List<TeamWeekStats> Get()
-		//{
-		//	var result = new List<TeamWeekStats>();
-
-		//	Dictionary<WeekInfo, Dictionary<int, TeamWeekStats>> map = _teamWeekStatsMap.Get();
-		//	foreach (Dictionary<int, TeamWeekStats> innerMap in map.Values)
-		//	{
-		//		result.AddRange(innerMap.Values);
-		//	}
-
-		//	return result;
-		//}
 	}
 }

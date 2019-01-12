@@ -57,7 +57,15 @@ namespace R5.FFDB.Engine
 
 		public EngineSetup UseMongo(MongoConfig config)
 		{
-			// todo: validations
+			if (string.IsNullOrWhiteSpace(config.ConnectionString))
+			{
+				throw new ArgumentException("Mongo connection string must be provided in the config.");
+			}
+			if (string.IsNullOrWhiteSpace(config.DatabaseName))
+			{
+				throw new ArgumentException("Mongo database name must be provided in the config.");
+			}
+
 			_mongoConfig = config;
 			return this;
 		}
@@ -71,7 +79,6 @@ namespace R5.FFDB.Engine
 				.SetRootDataPath(_rootDataPath)
 				.AddWebRequestConfig(WebRequest.Build())
 				.AddLoggingConfig(Logging.Build())
-				//.AddDatabaseProviderFactory(loggerFactory => new PostgresDbProvider(_postgresConfig, loggerFactory))
 				.Create();
 			
 			return services

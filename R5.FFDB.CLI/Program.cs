@@ -78,7 +78,7 @@ namespace R5.FFDB.CLI
 
 			FfdbEngine engine = setup.Create();
 
-			await engine.RunInitialSetupAsync();
+			await engine.RunInitialSetupAsync(false);
 			
 			return;
 		}

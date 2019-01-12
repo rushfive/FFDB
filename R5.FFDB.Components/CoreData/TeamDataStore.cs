@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.CoreData.TeamData.Models
+namespace R5.FFDB.Components.CoreData
 {
 	public static class TeamDataStore
 	{

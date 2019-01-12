@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using R5.FFDB.Components.CoreData.TeamData.Models;
+using R5.FFDB.Components.CoreData;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database.DbContext;
 using R5.FFDB.DbProviders.Mongo.Collections;
@@ -126,6 +126,20 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			await GetMongoDbContext().DeleteManyAsync(filter);
 
 			logger.LogInformation($"Successfully removed team game stats documents for {week} from '{collectionName}' collection.");
+		}
+
+		public async Task AddGameMatchupsAsync(List<WeekGameMatchup> gameMatchups)
+		{
+			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
+			var collectionName = CollectionNames.GetForType<WeekGameMatchupDocument>();
+
+			logger.LogDebug($"Adding week game matchup documents to '{collectionName}' collection.");
+
+			List<WeekGameMatchupDocument> documents = gameMatchups.Select(WeekGameMatchupDocument.FromCoreEntity).ToList();
+
+			await GetMongoDbContext().InsertManyAsync(documents);
+
+			logger.LogInformation($"Successfully added week game matchup documents to '{collectionName}' collection.");
 		}
 	}
 }

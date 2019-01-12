@@ -6,11 +6,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using R5.FFDB.Components;
+using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.PlayerProfile;
 using R5.FFDB.Components.CoreData.PlayerProfile.Models;
 using R5.FFDB.Components.CoreData.Roster;
 using R5.FFDB.Components.CoreData.Roster.Values;
-using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.CoreData.TeamGameHistory;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Resolvers;
@@ -32,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DevTester
 {
@@ -40,6 +41,7 @@ namespace DevTester
 		private static IServiceProvider _serviceProvider { get; set; }
 		private static ILogger<DevProgram> _logger { get; set; }
 		private static IDatabaseContext _dbContext { get; set; }
+		private static DataDirectoryPath _dataPath { get; set; }
 
 		public static async Task Main(string[] args)
 		{
@@ -47,6 +49,7 @@ namespace DevTester
 			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			_dbContext = dbProvider.GetContext();
+			_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 			/// DONT TOUCH ABOVE ///
 			/// 
 
@@ -56,12 +59,14 @@ namespace DevTester
 
 			//List<WeekInfo> logs = await mongoContext.Log.GetUpdatedWeeksAsync();
 
+			//var matchups = GetMatchups(new WeekInfo(2018, 17));
+			
 
 			FfdbEngine engine = GetConfiguredMongoEngine();
 			//await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 5));
 			//await engine.Team.UpdateRostersAsync();
 			//await engine.Stats.RemoveForWeekAsync(new WeekInfo(2018, 5));
-			await engine.RunInitialSetupAsync();
+			await engine.RunInitialSetupAsync(forceReinitialize: false);
 
 			//await engine.Stats.AddMissingAsync();
 
@@ -70,6 +75,42 @@ namespace DevTester
 			return;
 			Console.ReadKey();
 		}
+
+
+		private static List<WeekGameMatchup> GetMatchups(WeekInfo week)
+		{
+			var result = new List<WeekGameMatchup>();
+
+			var filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
+
+			XElement weekGameXml = XElement.Load(filePath);
+
+			XElement gameNode = weekGameXml.Elements("gms").Single();
+
+			foreach (XElement game in gameNode.Elements("g"))
+			{
+				var matchup = new WeekGameMatchup
+				{
+					Season = week.Season,
+					Week = week.Week
+				};
+
+				matchup.HomeTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("h").Value, includePriorLookup: true);
+				matchup.AwayTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("v").Value, includePriorLookup: true);
+				matchup.NflGameId = game.Attribute("eid").Value;
+				matchup.GsisGameId = game.Attribute("gsis").Value;
+
+				result.Add(matchup);
+			}
+
+			return result;
+		}
+
+
+
+
+
+
 
 		private static MongoDbProvider GetMongoDbProvider(ILoggerFactory loggerFactory)
 		{

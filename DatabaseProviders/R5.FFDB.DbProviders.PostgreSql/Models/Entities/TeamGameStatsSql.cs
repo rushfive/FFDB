@@ -22,11 +22,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[NotNull]
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
-
-		[NotNull]
-		[Column("is_home_team", PostgresDataType.BOOLEAN)]
-		public bool IsHomeTeam { get; set; }
-
+		
 		[NotNull]
 		[Column("points_first_quarter", PostgresDataType.INT)]
 		public int PointsFirstQuarter { get; set; }
@@ -98,7 +94,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				TeamId = stats.TeamId,
 				Season = stats.Week.Season,
 				Week = stats.Week.Week,
-				IsHomeTeam = stats.IsHomeTeam,
 				PointsFirstQuarter = stats.PointsFirstQuarter,
 				PointsSecondQuarter = stats.PointsSecondQuarter,
 				PointsThirdQuarter = stats.PointsThirdQuarter,

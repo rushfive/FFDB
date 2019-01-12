@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Npgsql;
-using R5.FFDB.Components.CoreData.TeamData.Models;
+using R5.FFDB.Components.CoreData;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.Database.DbContext;
@@ -108,7 +108,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 					Week = weekStats.Week
 				};
 
-				foreach (PlayerStats playerStats in weekStats.Players)
+				foreach (PlayerWeekStats playerStats in weekStats.Players)
 				{
 					if (teamNflIdMap.TryGetValue(playerStats.NflId, out int teamId))
 					{

@@ -10,7 +10,7 @@ using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName("ffdb.teamGameStats")]
+	[CollectionName(CollectionConstants.FfdbPrefix + "teamGameStats")]
 	public class TeamGameStatsDocument : DocumentBase
 	{
 		[BsonElement("teamId")]
@@ -21,10 +21,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 
 		[BsonElement("week")]
 		public int Week { get; set; }
-
-		[BsonElement("isHomeTeam")]
-		public bool IsHomeTeam { get; set; }
-
+		
 		[BsonElement("pointsFirstQuarter")]
 		public int PointsFirstQuarter { get; set; }
 
@@ -80,7 +77,6 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 				TeamId = stats.TeamId,
 				Season = stats.Week.Season,
 				Week = stats.Week.Week,
-				IsHomeTeam = stats.IsHomeTeam,
 				PointsFirstQuarter = stats.PointsFirstQuarter,
 				PointsSecondQuarter = stats.PointsSecondQuarter,
 				PointsThirdQuarter = stats.PointsThirdQuarter,

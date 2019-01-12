@@ -18,7 +18,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 
 		// returns a list because each player can have different week stat 
 		// entry types (eg scored a rushing td AND made a 50+ kick)
-		public static List<WeekStatsPlayerSql> FromCoreEntity(PlayerStats stats,
+		public static List<WeekStatsPlayerSql> FromCoreEntity(PlayerWeekStats stats,
 			Guid playerId, WeekInfo week)
 		{
 			var result = new List<WeekStatsPlayerSql>();

@@ -45,7 +45,6 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile.Models
 				NflId = json.NflId,
 				EsbId = json.EsbId,
 				GsisId = json.GsisId,
-				PictureUri = json.PictureUri,
 				FirstName = json.FirstName,
 				LastName = json.LastName,
 				Height = json.Height,

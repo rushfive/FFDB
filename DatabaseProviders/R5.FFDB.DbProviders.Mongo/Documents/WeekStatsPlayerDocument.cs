@@ -11,7 +11,7 @@ using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName("ffdb.weekStatsPlayer")]
+	[CollectionName(CollectionConstants.FfdbPrefix + "weekStatsPlayer")]
 	public class WeekStatsPlayerDocument : DocumentBase
 	{
 		[BsonElement("playerId")]
@@ -27,7 +27,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		public int Week { get; set; }
 
 		[BsonElement("stats")]
-		public Dictionary<WeekStatType, double> Stats { get; set; }
+		public Dictionary<MongoWeekStatType, double> Stats { get; set; }
 
 		[BsonElement("hasPass")]
 		public bool HasPass { get; set; }
@@ -47,7 +47,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("hasIdp")]
 		public bool HasIdp { get; set; }
 
-		public static WeekStatsPlayerDocument FromCoreEntity(PlayerStats stats,
+		public static WeekStatsPlayerDocument FromCoreEntity(PlayerWeekStats stats,
 			Guid playerId, WeekInfo week)
 		{
 			var result = new WeekStatsPlayerDocument
@@ -58,7 +58,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 				Week = week.Week
 			};
 
-			var playerStats = new Dictionary<WeekStatType, double>();
+			var playerStats = new Dictionary<MongoWeekStatType, double>();
 			foreach (KeyValuePair<WeekStatType, double> statKv in stats.Stats)
 			{
 				if (WeekStatCategory.DST.Contains(statKv.Key))
@@ -91,7 +91,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 					result.HasIdp = true;
 				}
 
-				playerStats[statKv.Key] = statKv.Value;
+				playerStats[(MongoWeekStatType)statKv.Key] = statKv.Value;
 			}
 
 			result.Stats = playerStats;

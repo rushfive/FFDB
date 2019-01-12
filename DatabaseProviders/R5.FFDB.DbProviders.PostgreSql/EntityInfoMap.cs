@@ -30,7 +30,8 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			typeof(WeekStatsDstSql),
 			typeof(WeekStatsIdpSql),
 			typeof(TeamGameStatsSql),
-			typeof(UpdateLogSql)
+			typeof(UpdateLogSql),
+			typeof(WeekGameMatchupSql)
 		};
 
 		private static Dictionary<Type, string> _tableNames { get; } = new Dictionary<Type, string>();

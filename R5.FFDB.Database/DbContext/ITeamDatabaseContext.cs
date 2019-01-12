@@ -11,5 +11,6 @@ namespace R5.FFDB.Database.DbContext
 		Task AddGameStatsAsync(List<TeamWeekStats> stats);
 		Task RemoveAllGameStatsAsync();
 		Task RemoveGameStatsForWeekAsync(WeekInfo week);
+		Task AddGameMatchupsAsync(List<WeekGameMatchup> gameMatchups);
 	}
 }

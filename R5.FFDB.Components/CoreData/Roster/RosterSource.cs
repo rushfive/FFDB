@@ -1,6 +1,5 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.TeamData.Models;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Models;
 using System;

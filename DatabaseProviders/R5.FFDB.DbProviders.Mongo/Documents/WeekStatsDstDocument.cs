@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName("ffdb.weekStatsDst")]
+	[CollectionName(CollectionConstants.FfdbPrefix + "weekStatsDst")]
 	public class WeekStatsDstDocument : DocumentBase
 	{
 		[BsonElement("teamId")]
@@ -25,17 +25,17 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		public int Week { get; set; }
 
 		[BsonElement("stats")]
-		public Dictionary<WeekStatType, double> Stats { get; set; }
+		public Dictionary<MongoWeekStatType, double> Stats { get; set; }
 
 		public static WeekStatsDstDocument FromCoreEntity(int teamId, WeekInfo week, 
 			IEnumerable<KeyValuePair<WeekStatType, double>> stats)
 		{
-			var dstStats = new Dictionary<WeekStatType, double>();
+			var dstStats = new Dictionary<MongoWeekStatType, double>();
 			foreach (KeyValuePair<WeekStatType, double> statKv in stats)
 			{
 				if (WeekStatCategory.DST.Contains(statKv.Key))
 				{
-					dstStats[statKv.Key] = statKv.Value;
+					dstStats[(MongoWeekStatType)statKv.Key] = statKv.Value;
 				}
 			}
 
@@ -48,7 +48,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 			};
 		}
 
-		public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerStats stats)
+		public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerWeekStats stats)
 		{
 			return stats.Stats.Where(kv => WeekStatCategory.DST.Contains(kv.Key));
 		}

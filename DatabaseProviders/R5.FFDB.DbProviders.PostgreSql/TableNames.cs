@@ -7,6 +7,7 @@
 		public const string TeamGameStats = "ffdb.team_game_stats";
 		public const string Team = "ffdb.team";
 		public const string UpdateLog = "ffdb.update_log";
+		public const string WeekGameMatchup = "ffdb.week_game_matchup";
 
 		public static class WeekStats
 		{

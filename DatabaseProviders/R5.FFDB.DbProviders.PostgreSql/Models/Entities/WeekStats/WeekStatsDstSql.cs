@@ -78,7 +78,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 			return result;
 		}
 
-		public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerStats stats)
+		public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerWeekStats stats)
 		{
 			return stats.Stats.Where(kv => WeekStatCategory.DST.Contains(kv.Key));
 		}

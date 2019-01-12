@@ -9,7 +9,7 @@ using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName("ffdb.updateLog")]
+	[CollectionName(CollectionConstants.FfdbPrefix + "updateLog")]
 	public class UpdateLogDocument : DocumentBase
 	{
 		[BsonElement("season")]

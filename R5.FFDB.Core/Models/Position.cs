@@ -32,11 +32,10 @@
 		S,
 		P,
 		PR,
-
 		// added from scraping NFL roster pages
 		OT,
 		OG,
 		LS,
-		SAF // ???
+		SAF
 	}
 }

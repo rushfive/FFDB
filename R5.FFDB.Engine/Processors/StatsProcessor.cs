@@ -23,6 +23,7 @@ namespace R5.FFDB.Engine.Processors
 		private IWeekStatsService _weekStatsService { get; }
 		private ITeamGameStatsService _teamStatsService { get; }
 		private IProcessorHelper _helper { get; }
+		private IWeekGameMatchupService _gameMatchupService { get; }
 
 		public StatsProcessor(
 			ILogger<StatsProcessor> logger,
@@ -32,7 +33,8 @@ namespace R5.FFDB.Engine.Processors
 			IWeekStatsSource weekStatsSource,
 			IWeekStatsService weekStatsService,
 			ITeamGameStatsService teamStatsService,
-			IProcessorHelper helper)
+			IProcessorHelper helper,
+			IWeekGameMatchupService gameMatchupService)
 		{
 			_logger = logger;
 			_dbProvider = dbProvider;
@@ -42,6 +44,7 @@ namespace R5.FFDB.Engine.Processors
 			_weekStatsService = weekStatsService;
 			_teamStatsService = teamStatsService;
 			_helper = helper;
+			_gameMatchupService = gameMatchupService;
 		}
 
 		public async Task AddMissingAsync()
@@ -94,6 +97,9 @@ namespace R5.FFDB.Engine.Processors
 
 			List<TeamWeekStats> teamStats = _teamStatsService.GetForWeek(week);
 			await dbContext.Team.AddGameStatsAsync(teamStats);
+
+			List<WeekGameMatchup> gameMatchups = _gameMatchupService.GetForWeek(week);
+			await dbContext.Team.AddGameMatchupsAsync(gameMatchups);
 
 			await dbContext.Log.AddUpdateForWeekAsync(week);
 		}

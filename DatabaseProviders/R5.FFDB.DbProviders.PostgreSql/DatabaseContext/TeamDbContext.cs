@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
-using R5.FFDB.Components.CoreData.TeamData.Models;
+using R5.FFDB.Components.CoreData;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.Database.DbContext;
@@ -120,6 +120,22 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			await ExecuteNonQueryAsync(sqlCommand);
 
 			logger.LogInformation($"Successfully removed team game stats rows for {week} from database.");
+		}
+
+		public async Task AddGameMatchupsAsync(List<WeekGameMatchup> gameMatchups)
+		{
+			string tableName = EntityInfoMap.TableName(typeof(WeekGameMatchupSql));
+
+			var logger = GetLogger<TeamDbContext>();
+			logger.LogInformation($"Adding {gameMatchups.Count} week game matchup rows into '{tableName}' table.");
+
+			List<WeekGameMatchupSql> sqlEntries = gameMatchups.Select(WeekGameMatchupSql.FromCoreEntity).ToList();
+
+			var sqlCommand = SqlCommandBuilder.Rows.InsertMany(sqlEntries);
+
+			await ExecuteNonQueryAsync(sqlCommand);
+
+			logger.LogInformation($"Successfully added week game matchup rows to '{tableName}' table.");
 		}
 	}
 }

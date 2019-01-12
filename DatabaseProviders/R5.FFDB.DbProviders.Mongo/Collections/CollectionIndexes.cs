@@ -26,7 +26,8 @@ namespace R5.FFDB.DbProviders.Mongo.Collections
 			{ typeof(TeamGameStatsDocument), db => TeamGameStatsDocument.CreateIndexAsync(db) },
 			{ typeof(UpdateLogDocument), db => UpdateLogDocument.CreateIndexAsync(db) },
 			{ typeof(WeekStatsPlayerDocument), db => WeekStatsPlayerDocument.CreateIndexAsync(db) },
-			{ typeof(WeekStatsDstDocument), db => WeekStatsDstDocument.CreateIndexAsync(db) }
+			{ typeof(WeekStatsDstDocument), db => WeekStatsDstDocument.CreateIndexAsync(db) },
+			{ typeof(WeekGameMatchupDocument), db => WeekGameMatchupDocument.CreateIndexAsync(db) }
 		};
 	}
 }

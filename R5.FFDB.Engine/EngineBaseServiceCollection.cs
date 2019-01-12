@@ -67,6 +67,7 @@ namespace R5.FFDB.Engine
 				.AddScoped<IWeekStatsService, WeekStatsService>()
 				.AddScoped<ITeamGameHistorySource, TeamGameHistorySource>()
 				.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
+				.AddScoped<IWeekGameMatchupService, WeekGameMatchupService>()
 				.AddScoped<IProcessorHelper, ProcessorHelper>()
 				.AddScoped<IPlayerWeekTeamResolverFactory, PlayerWeekTeamResolverFactory>();
 

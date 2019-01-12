@@ -50,12 +50,8 @@ namespace R5.FFDB.Engine
 			Team = ActivatorUtilities.CreateInstance<TeamProcessor>(serviceProvider);
 			Player = ActivatorUtilities.CreateInstance<PlayerProcessor>(serviceProvider);
 		}
-
-		// TODO: optional FORCE parameter that wil allow re-running
-		// should obvioulsy remove everything existing first
-		// postgres -> drop schema IF EXISTS with CASCADE
-		// mongo -> drop all collections (indexes are sub items)
-		public async Task RunInitialSetupAsync()
+		
+		public async Task RunInitialSetupAsync(bool forceReinitialize)
 		{
 			_logger.LogInformation("Running initial setup..");
 
@@ -64,7 +60,7 @@ namespace R5.FFDB.Engine
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
 			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
 
-			await dbContext.InitializeAsync(force: true);
+			await dbContext.InitializeAsync(forceReinitialize);
 			await dbContext.Team.AddTeamsAsync();
 
 			await Stats.AddMissingAsync();

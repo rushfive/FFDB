@@ -1,13 +1,10 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
-using MongoDB.Bson.Serialization.Options;
 using MongoDB.Bson.Serialization.Serializers;
 using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.Mongo.Documents;
+using R5.FFDB.DbProviders.Mongo.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace R5.FFDB.DbProviders.Mongo.Serialization
 {
@@ -19,11 +16,7 @@ namespace R5.FFDB.DbProviders.Mongo.Serialization
 
 			BsonSerializer.RegisterSerializer(new Serializers.GuidSerializer());
 			BsonSerializer.RegisterSerializer(new NullableSerializer<Guid>(new Serializers.GuidSerializer()));
-
-			//BsonSerializer.RegisterSerializer(new Serializers.DateTimeOffsetSerializer());
-			//BsonSerializer.RegisterSerializer(new NullableSerializer<DateTimeOffset>(new Serializers.DateTimeOffsetSerializer()));
-
-			BsonSerializer.RegisterSerializer(new EnumSerializer<WeekStatType>(BsonType.String));
+			BsonSerializer.RegisterSerializer(new EnumSerializer<MongoWeekStatType>(BsonType.String));
 		}
 
 		private static void RegisterConventions()

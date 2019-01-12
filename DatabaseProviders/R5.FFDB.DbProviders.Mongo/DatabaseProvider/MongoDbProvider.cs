@@ -26,7 +26,10 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseProvider
 			_config = config;
 			_loggerFactory = loggerFactory;
 
+			// must be registered before first time db is used, or it'll
+			// initialize some clashing default serializers
 			MongoSerializers.Register();
+
 			_client = new MongoClient(config.ConnectionString);
 		}
 
