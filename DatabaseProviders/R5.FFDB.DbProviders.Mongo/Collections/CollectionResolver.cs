@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using R5.FFDB.Components;
+using R5.FFDB.Core.Extensions;
 using R5.FFDB.DbProviders.Mongo.Documents;
 using R5.FFDB.DbProviders.Mongo.Models;
 using System;

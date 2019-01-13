@@ -1,11 +1,10 @@
 ﻿using R5.FFDB.Core.Entities;
-using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.CoreData
+namespace R5.FFDB.Core
 {
 	public static class TeamDataStore
 	{

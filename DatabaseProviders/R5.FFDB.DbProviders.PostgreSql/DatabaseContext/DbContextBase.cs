@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
-using R5.FFDB.Components;
-using R5.FFDB.DbProviders.PostgreSql.Models;
-using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using System;
 using System.Collections.Generic;

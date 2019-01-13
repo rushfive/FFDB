@@ -11,15 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Engine", "R5.FFDB.E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Components", "R5.FFDB.Components\R5.FFDB.Components.csproj", "{2D1FFF97-6C82-4D6D-873A-09D8A2192558}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevTester", "DevTester\DevTester.csproj", "{021D3D4F-DA9D-4953-B040-43A77E3FF198}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.Database", "R5.FFDB.Database\R5.FFDB.Database.csproj", "{63767E66-1D2D-42BC-B5E4-43C1BCE2B425}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevTester", "DevTester\DevTester.csproj", "{021D3D4F-DA9D-4953-B040-43A77E3FF198}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseProviders", "DatabaseProviders", "{D8EB869E-CFF0-434C-87C3-F06F1400070B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.DbProviders.Mongo", "DatabaseProviders\R5.FFDB.DbProviders.Mongo\R5.FFDB.DbProviders.Mongo.csproj", "{1EF20706-D610-4D34-A5B9-F504BF57CA6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.DbProviders.Mongo", "DatabaseProviders\R5.FFDB.DbProviders.Mongo\R5.FFDB.DbProviders.Mongo.csproj", "{1EF20706-D610-4D34-A5B9-F504BF57CA6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.DbProviders.PostgreSql", "DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj", "{79B18893-A4B2-4923-B5C0-2DAAA6A9EA50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.DbProviders.PostgreSql", "DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj", "{79B18893-A4B2-4923-B5C0-2DAAA6A9EA50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +45,6 @@ Global
 		{021D3D4F-DA9D-4953-B040-43A77E3FF198}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{021D3D4F-DA9D-4953-B040-43A77E3FF198}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{021D3D4F-DA9D-4953-B040-43A77E3FF198}.Release|Any CPU.Build.0 = Release|Any CPU
-		{63767E66-1D2D-42BC-B5E4-43C1BCE2B425}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63767E66-1D2D-42BC-B5E4-43C1BCE2B425}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63767E66-1D2D-42BC-B5E4-43C1BCE2B425}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63767E66-1D2D-42BC-B5E4-43C1BCE2B425}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EF20706-D610-4D34-A5B9-F504BF57CA6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1EF20706-D610-4D34-A5B9-F504BF57CA6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EF20706-D610-4D34-A5B9-F504BF57CA6C}.Release|Any CPU.ActiveCfg = Release|Any CPU

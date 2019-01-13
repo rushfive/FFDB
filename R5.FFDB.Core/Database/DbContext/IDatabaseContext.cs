@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace R5.FFDB.Database.DbContext
+namespace R5.FFDB.Core.Database.DbContext
 {
 	public interface IDatabaseContext
 	{

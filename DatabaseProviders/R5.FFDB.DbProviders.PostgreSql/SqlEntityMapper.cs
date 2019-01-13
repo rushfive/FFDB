@@ -1,5 +1,5 @@
 ﻿using Npgsql;
-using R5.FFDB.Components;
+using R5.FFDB.Core.Extensions;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;

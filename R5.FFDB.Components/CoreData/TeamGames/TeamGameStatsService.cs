@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using System;
@@ -33,7 +34,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 		{
 			var result = new List<TeamWeekStats>();
 
-			List<string> gameIds = GameFilesUtil.GetGameIdsForWeek(week, _dataPath);
+			List<string> gameIds = TeamGamesUtil.GetGameIdsForWeek(week, _dataPath);
 			foreach (var gameId in gameIds)
 			{
 				JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json"));
@@ -52,10 +53,13 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 				(string)json.SelectToken($"{gameId}.{teamType}.abbr"),
 				includePriorLookup: true);
 
-			var stats = new TeamWeekStats(teamId, week);
+			var stats = new TeamWeekStats
+			{
+				TeamId = teamId,
+				Week = week
+			};
 
-			stats.SetPointsScored(json, gameId, teamType);
-			stats.SetTeamStats(json, gameId, teamType);
+			TeamGamesUtil.SetTeamWeekStats(stats, json, gameId, teamType);
 
 			result.Add(stats);
 		}

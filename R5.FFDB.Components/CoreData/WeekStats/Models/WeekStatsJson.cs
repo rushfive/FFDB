@@ -7,17 +7,8 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.WeekStats.Models
 {
-	// model for req payload seen in this example:
-	// http://api.fantasy.nfl.com/v2/players/weekstats?season=2018&week=7
-
-	// The response model is confusing. Deeply nested object containing bunch of objects and maps/dicts.
-
-	// Used this: https://app.quicktype.io/#l=cs
-	// to get an idea of how to deserialize into types. copy pasting the entire response didnt work, so i 
-	// grabbed only the "Games" section (which is all we need i think)
 	public class WeekStatsJson
 	{
-		// the resp only seems to contain a single game id (kvp), prob representing the requested weeks game
 		[JsonProperty("games")]
 		public Dictionary<string, WeekStatsGameJson> Games { get; set; }
 
@@ -51,12 +42,12 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 					{
 						int key = int.Parse(stat.Key);
 
-						if (!Enum.IsDefined(typeof(Core.Models.WeekStatType), key))
+						if (!Enum.IsDefined(typeof(WeekStatType), key))
 						{
 							continue;
 						}
 
-						stats.Add((Core.Models.WeekStatType)key, value);
+						stats.Add((WeekStatType)key, value);
 					}
 				}
 

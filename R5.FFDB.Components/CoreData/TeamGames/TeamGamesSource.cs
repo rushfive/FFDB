@@ -222,10 +222,13 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 			{
 				JObject statsJObject = JObject.Parse(statsJson);
 
-				var stats = new TeamWeekStats(-1, week);
-				
-				stats.SetPointsScored(statsJObject, gameId, "home");
-				stats.SetTeamStats(statsJObject, gameId, "home");
+				var stats = new TeamWeekStats
+				{
+					TeamId = -1,
+					Week = week
+				};
+					
+				TeamGamesUtil.SetTeamWeekStats(stats, statsJObject, gameId, "home");
 			}
 			catch (Exception ex)
 			{

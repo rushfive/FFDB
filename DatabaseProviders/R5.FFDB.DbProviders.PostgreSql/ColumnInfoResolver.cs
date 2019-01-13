@@ -1,4 +1,4 @@
-﻿using R5.FFDB.Components;
+﻿using R5.FFDB.Core.Extensions;
 using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;

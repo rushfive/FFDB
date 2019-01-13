@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using R5.FFDB.Database.DbContext;
+using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.DbProviders.Mongo.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
