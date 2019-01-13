@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
+using R5.FFDB.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.CoreData.PlayerProfile.Models
+namespace R5.FFDB.Components.CoreData.Players.Models
 {
 	// static data retrieved from api and scraping
-	public class PlayerProfileJson
+	public class PlayerJson
 	{
 		[JsonProperty("nflId")]
 		public string NflId { get; set; }
@@ -38,9 +39,9 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile.Models
 		[JsonProperty("college")]
 		public string College { get; set; }
 
-		public static Core.Models.PlayerProfile ToCoreEntity(PlayerProfileJson json)
+		public static Player ToCoreEntity(PlayerJson json)
 		{
-			return new Core.Models.PlayerProfile
+			return new Player
 			{
 				NflId = json.NflId,
 				EsbId = json.EsbId,

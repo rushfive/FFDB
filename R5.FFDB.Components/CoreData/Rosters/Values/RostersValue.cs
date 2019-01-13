@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.ValueProviders;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.CoreData.Roster.Values
+namespace R5.FFDB.Components.CoreData.Rosters.Values
 {
-	public class RostersValue : AsyncValueProvider<List<Core.Models.Roster>>
+	public class RostersValue : AsyncValueProvider<List<Roster>>
 	{
 		private ILogger<RostersValue> _logger { get; }
 		private IRosterSource _source { get; }
@@ -30,18 +31,18 @@ namespace R5.FFDB.Components.CoreData.Roster.Values
 			_scraper = scraper;
 		}
 
-		protected override async Task<List<Core.Models.Roster>> ResolveValueAsync()
+		protected override async Task<List<Roster>> ResolveValueAsync()
 		{
-			//await _source.FetchAsync();
+			await _source.FetchAsync();
 
 			return Get();
 		}
 
-		private List<Core.Models.Roster> Get()
+		private List<Roster> Get()
 		{
 			_logger.LogInformation("Getting team roster information.");
 
-			var result = new List<Core.Models.Roster>();
+			var result = new List<Roster>();
 
 			List<Team> teams = TeamDataStore.GetAll();
 
@@ -49,7 +50,7 @@ namespace R5.FFDB.Components.CoreData.Roster.Values
 			{
 				_logger.LogTrace($"Getting team roster information for'{team.Abbreviation}.'");
 
-				Core.Models.Roster roster = GetTeam(team);
+				Roster roster = GetTeam(team);
 
 				result.Add(roster);
 
@@ -60,7 +61,7 @@ namespace R5.FFDB.Components.CoreData.Roster.Values
 			return result;
 		}
 
-		private Core.Models.Roster GetTeam(Team team)
+		private Roster GetTeam(Team team)
 		{
 			string pagePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
 			var pageHtml = File.ReadAllText(pagePath);
@@ -68,7 +69,7 @@ namespace R5.FFDB.Components.CoreData.Roster.Values
 			return GetForTeam(team, pageHtml);
 		}
 
-		private Core.Models.Roster GetForTeam(Team team, string pageHtml)
+		private Roster GetForTeam(Team team, string pageHtml)
 		{
 			_logger.LogTrace($"Beginning scraping of team '{team.Abbreviation}' roster page.");
 
@@ -79,7 +80,7 @@ namespace R5.FFDB.Components.CoreData.Roster.Values
 
 			_logger.LogTrace($"Successfully scraped team '{team.Abbreviation}' roster information.");
 
-			return new Core.Models.Roster
+			return new Roster
 			{
 				TeamId = team.Id,
 				TeamAbbreviation = team.Abbreviation,

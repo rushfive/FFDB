@@ -18,8 +18,4 @@
 		<ProjectReference Include="..\R5.FFDB.Database\R5.FFDB.Database.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="CoreData\TeamData\Models\" />
-	</ItemGroup>
-
 </Project>

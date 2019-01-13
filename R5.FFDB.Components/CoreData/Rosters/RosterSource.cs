@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.CoreData.Roster
+namespace R5.FFDB.Components.CoreData.Rosters
 {
 	public interface IRosterSource : ICoreDataSource
 	{

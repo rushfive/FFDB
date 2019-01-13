@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.PlayerProfile;
-using R5.FFDB.Components.CoreData.Roster.Values;
+using R5.FFDB.Components.CoreData.Players;
+using R5.FFDB.Components.CoreData.Rosters.Values;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.Database.DbContext;
@@ -17,15 +18,15 @@ namespace R5.FFDB.Engine.Processors
 		private ILogger<PlayerProcessor> _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private RostersValue _rostersValue { get; }
-		private IPlayerProfileSource _playerSource { get; }
-		private IPlayerProfileService _playerService { get; }
+		private IPlayerSource _playerSource { get; }
+		private IPlayerService _playerService { get; }
 
 		public PlayerProcessor(
 			ILogger<PlayerProcessor> logger,
 			IDatabaseProvider dbProvider,
 			RostersValue rostersValue,
-			IPlayerProfileSource playerSource,
-			IPlayerProfileService playerService)
+			IPlayerSource playerSource,
+			IPlayerService playerService)
 		{
 			_logger = logger;
 			_dbProvider = dbProvider;
@@ -45,7 +46,7 @@ namespace R5.FFDB.Engine.Processors
 
 			await _playerSource.FetchAsync(nflIds, overwriteExisting: false);
 
-			List<PlayerProfile> players = (await dbContext.Player.GetAllAsync())
+			List<Player> players = (await dbContext.Player.GetAllAsync())
 				.Where(p => nflIds.Contains(p.NflId))
 				.ToList();
 
@@ -63,7 +64,7 @@ namespace R5.FFDB.Engine.Processors
 
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 
-			List<PlayerProfile> players = await dbContext.Player.GetAllAsync();
+			List<Player> players = await dbContext.Player.GetAllAsync();
 			List<string> nflIds = players.Select(p => p.NflId).ToList();
 
 			await _playerSource.FetchAsync(nflIds, overwriteExisting: true);

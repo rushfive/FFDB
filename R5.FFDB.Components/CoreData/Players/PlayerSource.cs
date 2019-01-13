@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using R5.FFDB.Components.CoreData.PlayerProfile.Models;
+using R5.FFDB.Components.CoreData.Players.Models;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
@@ -12,31 +12,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.CoreData.PlayerProfile
+namespace R5.FFDB.Components.CoreData.Players
 {
-	public interface IPlayerProfileSource : ICoreDataSource
+	public interface IPlayerSource : ICoreDataSource
 	{
 		Task FetchAsync(List<string> nflIds, bool overwriteExisting = false);
 	}
 
-	public class PlayerProfileSource : IPlayerProfileSource
+	public class PlayerSource : IPlayerSource
 	{
-		public string Label => "Player Profile";
+		public string Label => "Player";
 
-		private ILogger<PlayerProfileSource> _logger { get; }
+		private ILogger<PlayerSource> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
 		private IWeekStatsService _weekStatsService { get; }
-		private IPlayerProfileScraper _scraper { get; }
+		private IPlayerScraper _scraper { get; }
 
-		public PlayerProfileSource(
-			ILogger<PlayerProfileSource> logger,
+		public PlayerSource(
+			ILogger<PlayerSource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
 			IWeekStatsService weekStatsService,
-			IPlayerProfileScraper scraper)
+			IPlayerScraper scraper)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
@@ -56,7 +56,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			if (!overwriteExisting)
 			{
 				HashSet<string>  existing = DirectoryFilesResolver
-					.GetFileNames(_dataPath.Temp.PlayerProfile, excludeExtensions: true)
+					.GetFileNames(_dataPath.Temp.Player, excludeExtensions: true)
 					.ToHashSet();
 
 				_logger.LogInformation($"Profile files already exist for {existing.Count} players. Will skip fetching for them. "
@@ -72,7 +72,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 
 			foreach (string id in idsToFetch)
 			{
-				string filePath = _dataPath.Temp.PlayerProfile + $"{id}.json";
+				string filePath = _dataPath.Temp.Player + $"{id}.json";
 				if (File.Exists(filePath) && !overwriteExisting)
 				{
 					_logger.LogInformation($"Player profile file already exists for '{id}'. Will not fetch.");
@@ -81,7 +81,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 
 				_logger.LogTrace($"Fetching player profile data for '{id}'.");
 
-				PlayerProfileJson playerProfile = await FetchForPlayerAsync(id);
+				PlayerJson playerProfile = await FetchForPlayerAsync(id);
 
 				string serializedPlayerData = JsonConvert.SerializeObject(playerProfile);
 				
@@ -94,7 +94,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			_logger.LogInformation("Finished fetching player profiles.");
 		}	
 
-		private async Task<PlayerProfileJson> FetchForPlayerAsync(string nflId)
+		private async Task<PlayerJson> FetchForPlayerAsync(string nflId)
 		{
 			// the first {nflId} can be any random string, so we'll just use the id
 			string uri = Endpoints.Page.PlayerProfile(nflId);
@@ -120,7 +120,7 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 			(string esbId, string gsisId) = _scraper.ExtractIds(page);
 			string pictureUri = _scraper.ExtractPictureUri(page);
 
-			return new PlayerProfileJson
+			return new PlayerJson
 			{
 				NflId = nflId,
 				FirstName = firstName,

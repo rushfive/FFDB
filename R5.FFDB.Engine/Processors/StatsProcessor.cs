@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.TeamGameHistory;
+using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Models;
@@ -18,7 +18,7 @@ namespace R5.FFDB.Engine.Processors
 		private ILogger<StatsProcessor> _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private AvailableWeeksValue _availableWeeksValue { get; }
-		private ITeamGameHistorySource _teamGameHistorySource { get; }
+		private ITeamGamesSource _teamGamesSource { get; }
 		private IWeekStatsSource _weekStatsSource { get; }
 		private IWeekStatsService _weekStatsService { get; }
 		private ITeamGameStatsService _teamStatsService { get; }
@@ -29,7 +29,7 @@ namespace R5.FFDB.Engine.Processors
 			ILogger<StatsProcessor> logger,
 			IDatabaseProvider dbProvider,
 			AvailableWeeksValue availableWeeksValue,
-			ITeamGameHistorySource teamGameHistorySource,
+			ITeamGamesSource teamGamesSource,
 			IWeekStatsSource weekStatsSource,
 			IWeekStatsService weekStatsService,
 			ITeamGameStatsService teamStatsService,
@@ -39,7 +39,7 @@ namespace R5.FFDB.Engine.Processors
 			_logger = logger;
 			_dbProvider = dbProvider;
 			_availableWeeksValue = availableWeeksValue;
-			_teamGameHistorySource = teamGameHistorySource;
+			_teamGamesSource = teamGamesSource;
 			_weekStatsSource = weekStatsSource;
 			_weekStatsService = weekStatsService;
 			_teamStatsService = teamStatsService;
@@ -86,7 +86,7 @@ namespace R5.FFDB.Engine.Processors
 		{
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 
-			await _teamGameHistorySource.FetchForWeekAsync(week);
+			await _teamGamesSource.FetchForWeekAsync(week);
 			await _weekStatsSource.FetchForWeekAsync(week);
 
 			List<string> weekStatNflIds = _weekStatsService.GetNflIdsForWeek(week);

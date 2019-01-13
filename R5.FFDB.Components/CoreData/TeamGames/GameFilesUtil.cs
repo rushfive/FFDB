@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
-namespace R5.FFDB.Components.CoreData.TeamGameHistory
+namespace R5.FFDB.Components.CoreData.TeamGames
 {
 	internal static class GameFilesUtil
 	{

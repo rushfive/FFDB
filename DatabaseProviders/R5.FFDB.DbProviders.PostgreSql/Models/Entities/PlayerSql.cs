@@ -1,4 +1,5 @@
-﻿using R5.FFDB.Core.Models;
+﻿using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.PostgreSql.Attributes;
 using System;
 using System.Collections.Generic;
@@ -51,7 +52,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("college", PostgresDataType.TEXT)]
 		public string College { get; set; }
 
-		public static PlayerSql FromCoreEntity(PlayerProfile player,
+		public static PlayerSql FromCoreEntity(Player player,
 			int? number, Position? position, RosterStatus? status)
 		{
 			return new PlayerSql
@@ -72,9 +73,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 			};
 		}
 
-		public static PlayerProfile ToCoreEntity(PlayerSql sql)
+		public static Player ToCoreEntity(PlayerSql sql)
 		{
-			return new PlayerProfile
+			return new Player
 			{
 				Id = sql.Id,
 				NflId = sql.NflId,

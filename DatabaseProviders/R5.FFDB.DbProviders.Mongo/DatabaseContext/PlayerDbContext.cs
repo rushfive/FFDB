@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database.DbContext;
 using R5.FFDB.DbProviders.Mongo.Collections;
@@ -21,7 +22,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 		}
 
-		public async Task AddAsync(List<PlayerProfile> players, List<Roster> rosters)
+		public async Task AddAsync(List<Player> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
 			var collectionName = CollectionNames.GetForType<PlayerDocument>();
@@ -35,7 +36,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			logger.LogInformation($"Successfully added {players.Count} players to the '{collectionName}' collection.");
 		}
 
-		public async Task UpdateAsync(List<PlayerProfile> players, List<Roster> rosters)
+		public async Task UpdateAsync(List<Player> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
 			var collectionName = CollectionNames.GetForType<PlayerDocument>();
@@ -53,7 +54,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			logger.LogInformation($"Successfully updated {players.Count} players in the '{collectionName}' collection.");
 		}
 
-		private List<PlayerDocument> MapToDocuments(List<PlayerProfile> players, List<Roster> rosters)
+		private List<PlayerDocument> MapToDocuments(List<Player> players, List<Roster> rosters)
 		{
 			var result = new List<PlayerDocument>();
 
@@ -80,7 +81,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			return result;
 		}
 
-		public async Task<List<PlayerProfile>> GetAllAsync()
+		public async Task<List<Player>> GetAllAsync()
 		{
 			var logger = GetLogger<PlayerDbContext>();
 			var collectionName = CollectionNames.GetForType<PlayerDocument>();

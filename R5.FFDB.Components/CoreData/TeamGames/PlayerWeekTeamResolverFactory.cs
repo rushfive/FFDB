@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.Database.DbContext;
@@ -10,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace R5.FFDB.Components.CoreData.TeamGameHistory
+namespace R5.FFDB.Components.CoreData.TeamGames
 {
 	public interface IPlayerWeekTeamResolverFactory
 	{
@@ -64,7 +65,7 @@ namespace R5.FFDB.Components.CoreData.TeamGameHistory
 		private async Task<Dictionary<string, string>> GetGsisToNflIdMapAsync()
 		{
 			IDatabaseContext dbContext = _dbProvider.GetContext();
-			List<Core.Models.PlayerProfile> players = await dbContext.Player.GetAllAsync();
+			List<Player> players = await dbContext.Player.GetAllAsync();
 			return players.ToDictionary(p => p.GsisId, p => p.NflId);
 		}
 

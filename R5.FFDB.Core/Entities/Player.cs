@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace R5.FFDB.Core.Models
+namespace R5.FFDB.Core.Entities
 {
-	public class PlayerProfile
+	public class Player
 	{
 		public Guid Id { get; set; }
 		public string NflId { get; set; }

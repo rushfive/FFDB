@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.PlayerProfile;
-using R5.FFDB.Components.CoreData.Roster.Values;
+using R5.FFDB.Components.CoreData.Players;
+using R5.FFDB.Components.CoreData.Rosters.Values;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.Database.DbContext;
@@ -20,19 +21,19 @@ namespace R5.FFDB.Engine.Processors
 	internal class ProcessorHelper : IProcessorHelper
 	{
 		private ILogger<ProcessorHelper> _logger { get; }
-		private IPlayerProfileSource _profileSource { get; }
-		private IPlayerProfileService _profileService { get; }
+		private IPlayerSource _playerSource { get; }
+		private IPlayerService _playerService { get; }
 		private RostersValue _rostersValue { get; }
 
 		public ProcessorHelper(
 			ILogger<ProcessorHelper> logger,
-			IPlayerProfileSource profileSource,
-			IPlayerProfileService profileService,
+			IPlayerSource playerSource,
+			IPlayerService playerService,
 			RostersValue rostersValue)
 		{
 			_logger = logger;
-			_profileSource = profileSource;
-			_profileService = profileService;
+			_playerSource = playerSource;
+			_playerService = playerService;
 			_rostersValue = rostersValue;
 		}
 
@@ -52,9 +53,9 @@ namespace R5.FFDB.Engine.Processors
 
 			_logger.LogInformation($"Adding {newIds.Count} player profiles to database.");
 
-			await _profileSource.FetchAsync(newIds);
+			await _playerSource.FetchAsync(newIds);
 
-			List<PlayerProfile> playerProfiles = _profileService.Get(newIds);
+			List<Player> playerProfiles = _playerService.Get(newIds);
 			if (!playerProfiles.Any())
 			{
 				_logger.LogInformation("No player profiles resolved from files. Skipping database update.");

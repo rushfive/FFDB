@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using R5.FFDB.Components.CoreData.TeamGameHistory;
+using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Core.Models;

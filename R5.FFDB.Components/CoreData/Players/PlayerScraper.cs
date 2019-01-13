@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace R5.FFDB.Components.CoreData.PlayerProfile
+namespace R5.FFDB.Components.CoreData.Players
 {
-	public interface IPlayerProfileScraper
+	public interface IPlayerScraper
 	{
 		(string esbId, string gsisId) ExtractIds(HtmlDocument page);
 		string ExtractPictureUri(HtmlDocument page);
@@ -17,15 +17,12 @@ namespace R5.FFDB.Components.CoreData.PlayerProfile
 		string ExtractCollege(HtmlDocument page);
 		(string firstName, string lastName) ExtractNames(HtmlDocument page);
 	}
-
-
-	// todo: should all be internal
-	// todo: integrate to IOC with logging
-	public class PlayerProfileScraper : IPlayerProfileScraper
+	
+	public class PlayerScraper : IPlayerScraper
 	{
-		private ILogger<PlayerProfileScraper> _logger { get; }
+		private ILogger<PlayerScraper> _logger { get; }
 
-		public PlayerProfileScraper(ILogger<PlayerProfileScraper> logger)
+		public PlayerScraper(ILogger<PlayerScraper> logger)
 		{
 			_logger = logger;
 		}

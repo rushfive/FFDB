@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData;
-using R5.FFDB.Components.CoreData.PlayerProfile;
-using R5.FFDB.Components.CoreData.Roster;
-using R5.FFDB.Components.CoreData.TeamGameHistory;
+using R5.FFDB.Components.CoreData.Players;
+using R5.FFDB.Components.CoreData.Rosters;
+using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
@@ -29,10 +29,10 @@ namespace R5.FFDB.Engine
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
 			IDatabaseProvider databaseProvider,
-			IPlayerProfileSource playerProfileSource,
+			IPlayerSource playerSource,
 			IRosterSource rosterSource,
 			IWeekStatsSource weekStatsSource,
-			ITeamGameHistorySource teamGameHistorySource,
+			ITeamGamesSource teamGamesSource,
 			IServiceProvider serviceProvider)
 		{
 			_logger = logger;
@@ -40,10 +40,10 @@ namespace R5.FFDB.Engine
 
 			_coreDataSources = new List<ICoreDataSource>
 			{
-				playerProfileSource,
+				playerSource,
 				rosterSource,
 				weekStatsSource,
-				teamGameHistorySource
+				teamGamesSource
 			};
 
 			Stats = ActivatorUtilities.CreateInstance<StatsProcessor>(serviceProvider);

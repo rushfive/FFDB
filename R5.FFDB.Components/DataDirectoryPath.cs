@@ -8,18 +8,8 @@ namespace R5.FFDB.Components
 	public class DataDirectoryPath
 	{
 		private string _root { get; }
-
-		// static data
 		public StaticDataDirectoryPath Static { get; }
 		public TempDataDirectoryPath Temp { get; }
-		//public string PlayerData => _root + @"player_data\";
-		//public string WeekStats => _root + @"week_stats\";
-
-		// temp - always okay to dump all
-		//public string RosterPages => _root + @"temp\roster_pages\";
-
-		// Error file logs
-		//public string 
 
 		public DataDirectoryPath(string rootPath)
 		{
@@ -66,7 +56,7 @@ namespace R5.FFDB.Components
 		public class TempDataDirectoryPath
 		{
 			private string _root { get; }
-			public string PlayerProfile => _root + @"temp\player_profile\";
+			public string Player => _root + @"temp\player\";
 			public string RosterPages => _root + @"temp\roster_pages\";
 
 			public TempDataDirectoryPath(string rootPath)
@@ -76,7 +66,7 @@ namespace R5.FFDB.Components
 
 			public void CreateMissing()
 			{
-				Directory.CreateDirectory(PlayerProfile);
+				Directory.CreateDirectory(Player);
 				Directory.CreateDirectory(RosterPages);
 			}
 		}

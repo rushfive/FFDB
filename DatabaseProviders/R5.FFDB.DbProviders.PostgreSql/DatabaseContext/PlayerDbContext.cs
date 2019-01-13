@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database;
 using R5.FFDB.Database.DbContext;
@@ -21,7 +22,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 		}
 
-		public async Task AddAsync(List<PlayerProfile> players, List<Roster> rosters)
+		public async Task AddAsync(List<Player> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
 			string tableName = EntityInfoMap.TableName(typeof(PlayerSql));
@@ -38,7 +39,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogInformation($"Successfully added players to the '{tableName}' table.");
 		}
 
-		public async Task UpdateAsync(List<PlayerProfile> players, List<Roster> rosters)
+		public async Task UpdateAsync(List<Player> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
 			string tableName = EntityInfoMap.TableName(typeof(PlayerSql));
@@ -59,7 +60,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogInformation($"Successfully updated players in the '{tableName}' table.");
 		}
 
-		private List<PlayerSql> MapToSqlEntities(List<PlayerProfile> players, List<Roster> rosters)
+		private List<PlayerSql> MapToSqlEntities(List<Player> players, List<Roster> rosters)
 		{
 			var result = new List<PlayerSql>();
 
@@ -86,7 +87,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			return result;
 		}
 
-		public async Task<List<PlayerProfile>> GetAllAsync()
+		public async Task<List<Player>> GetAllAsync()
 		{
 			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>();
 			return playerSqls.Select(PlayerSql.ToCoreEntity).ToList();

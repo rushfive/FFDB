@@ -12,27 +12,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace R5.FFDB.Components.CoreData.TeamGameHistory
+namespace R5.FFDB.Components.CoreData.TeamGames
 {
-	public interface ITeamGameHistorySource : ICoreDataSource
+	public interface ITeamGamesSource : ICoreDataSource
 	{
 		Task FetchForWeekAsync(WeekInfo week);
 		Task FetchAllAsync();
 		Task FetchForWeeksAsync(List<WeekInfo> weeks);
 	}
 
-	public class TeamGameHistorySource : ITeamGameHistorySource
+	public class TeamGamesSource : ITeamGamesSource
 	{
 		public string Label => "Team Game History";
 
-		private ILogger<TeamGameHistorySource> _logger { get; }
+		private ILogger<TeamGamesSource> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
 		private AvailableWeeksValue _availableWeeks { get; }
 
-		public TeamGameHistorySource(
-			ILogger<TeamGameHistorySource> logger,
+		public TeamGamesSource(
+			ILogger<TeamGamesSource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,

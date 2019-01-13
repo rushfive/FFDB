@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.CoreData.PlayerProfile;
-using R5.FFDB.Components.CoreData.Roster;
-using R5.FFDB.Components.CoreData.Roster.Values;
-using R5.FFDB.Components.CoreData.TeamGameHistory;
+using R5.FFDB.Components.CoreData.Players;
+using R5.FFDB.Components.CoreData.Rosters;
+using R5.FFDB.Components.CoreData.Rosters.Values;
+using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
@@ -58,14 +58,14 @@ namespace R5.FFDB.Engine
 
 			services
 				.AddScoped<IWebRequestClient, WebRequestClient>()
-				.AddScoped<IPlayerProfileSource, PlayerProfileSource>()
-				.AddScoped<IPlayerProfileService, PlayerProfileService>()
-				.AddScoped<IPlayerProfileScraper, PlayerProfileScraper>()
+				.AddScoped<IPlayerSource, PlayerSource>()
+				.AddScoped<IPlayerService, PlayerService>()
+				.AddScoped<IPlayerScraper, PlayerScraper>()
 				.AddScoped<IRosterSource, RosterSource>()
 				.AddScoped<IRosterScraper, RosterScraper>()
 				.AddScoped<IWeekStatsSource, WeekStatsSource>()
 				.AddScoped<IWeekStatsService, WeekStatsService>()
-				.AddScoped<ITeamGameHistorySource, TeamGameHistorySource>()
+				.AddScoped<ITeamGamesSource, TeamGamesSource>()
 				.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
 				.AddScoped<IWeekGameMatchupService, WeekGameMatchupService>()
 				.AddScoped<IProcessorHelper, ProcessorHelper>()

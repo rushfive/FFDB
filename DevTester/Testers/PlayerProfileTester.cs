@@ -2,9 +2,10 @@
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
-using R5.FFDB.Components.CoreData.PlayerProfile;
-using R5.FFDB.Components.CoreData.Roster;
+using R5.FFDB.Components.CoreData.Players;
+using R5.FFDB.Components.CoreData.Rosters;
 using R5.FFDB.Components.Http;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -25,20 +26,20 @@ namespace DevTester.Testers
 	{
 		private ILogger<PlayerProfileTester> _logger { get; }
 		private IWebRequestClient _webRequestClient { get; }
-		private IPlayerProfileSource _playerProfileSource { get; }
+		private IPlayerSource _playerSource { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IRosterScraper _rosterScraper { get; }
 
 		public PlayerProfileTester(
 			ILogger<PlayerProfileTester> logger,
 			IWebRequestClient webRequestClient,
-			IPlayerProfileSource playerProfileSource,
+			IPlayerSource playerProfileSource,
 			DataDirectoryPath dataPath,
 			IRosterScraper rosterScraper)
 		{
 			_logger = logger;
 			_webRequestClient = webRequestClient;
-			_playerProfileSource = playerProfileSource;
+			_playerSource = playerProfileSource;
 			_dataPath = dataPath;
 			_rosterScraper = rosterScraper;
 		}
