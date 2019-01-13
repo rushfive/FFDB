@@ -21,10 +21,10 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 		[JsonProperty("games")]
 		public Dictionary<string, WeekStatsGameJson> Games { get; set; }
 
-		public static Core.Models.WeekStats ToCoreEntity(WeekStatsJson model, WeekInfo week,
+		public static Core.Entities.WeekStats ToCoreEntity(WeekStatsJson model, WeekInfo week,
 			Func<string, int?> weekTeamResolver)
 		{
-			var players = new List<Core.Models.PlayerWeekStats>();
+			var players = new List<Core.Entities.PlayerWeekStats>();
 
 			WeekStatsGameJson games = model.Games.Single().Value;
 			foreach (KeyValuePair<string, WeekStatsPlayerJson> player in games.Players)
@@ -63,7 +63,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 				string nflId = player.Key;
 				int? teamId = weekTeamResolver(nflId);
 
-				players.Add(new Core.Models.PlayerWeekStats
+				players.Add(new Core.Entities.PlayerWeekStats
 				{
 					NflId = nflId,
 					Stats = stats,
@@ -71,7 +71,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats.Models
 				});
 			}
 
-			return new Core.Models.WeekStats
+			return new Core.Entities.WeekStats
 			{
 				Week = week,
 				Players = players

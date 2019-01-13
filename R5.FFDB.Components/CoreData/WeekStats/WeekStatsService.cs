@@ -16,10 +16,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 	public interface IWeekStatsService
 	{
 		List<string> GetNflIdsForWeek(WeekInfo week);
-		Task<Core.Models.WeekStats> GetForWeekAsync(WeekInfo week);
-		
-		//
-		Task<List<Core.Models.WeekStats>> GetAsync();
+		Task<Core.Entities.WeekStats> GetForWeekAsync(WeekInfo week);
 
 	}
 	public class WeekStatsService : IWeekStatsService
@@ -49,29 +46,14 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			return games.Players.Keys.ToList();
 		}
 
-		public async Task<Core.Models.WeekStats> GetForWeekAsync(WeekInfo week)
+		public async Task<Core.Entities.WeekStats> GetForWeekAsync(WeekInfo week)
 		{
 			Func<string, int?> weekTeamResolver = await _playerWeekTeamResolverFactory.GetForWeekAsync(week);
 
 			return GetStats(week, weekTeamResolver);
 		}
 
-		// pre per-week below
-
-		public async Task<List<Core.Models.WeekStats>> GetAsync()
-		{
-			var result = new List<Core.Models.WeekStats>();
-			
-			foreach(WeekInfo week in DirectoryFilesResolver.GetWeeksFromJsonFiles(_dataPath.Static.WeekStats))
-			{
-				Func<string, int?> weekTeamResolver = await _playerWeekTeamResolverFactory.GetForWeekAsync(week);
-				result.Add(GetStats(week, weekTeamResolver));
-			}
-
-			return result;
-		}
-
-		private Core.Models.WeekStats GetStats(WeekInfo week, Func<string, int?> weekTeamResolver)
+		private Core.Entities.WeekStats GetStats(WeekInfo week, Func<string, int?> weekTeamResolver)
 		{
 			string path = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
 

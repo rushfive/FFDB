@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;

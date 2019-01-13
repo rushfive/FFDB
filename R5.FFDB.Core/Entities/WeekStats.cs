@@ -1,8 +1,9 @@
-﻿using System;
+﻿using R5.FFDB.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Core.Models
+namespace R5.FFDB.Core.Entities
 {
 	public class WeekStats
 	{

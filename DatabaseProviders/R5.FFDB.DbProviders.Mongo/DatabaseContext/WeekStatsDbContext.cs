@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using R5.FFDB.Components.CoreData;
+using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Database.DbContext;
 using R5.FFDB.DbProviders.Mongo.Collections;

@@ -1,4 +1,4 @@
-﻿namespace R5.FFDB.Core.Models
+﻿namespace R5.FFDB.Core.Entities
 {
 	public class WeekGameMatchup
 	{
