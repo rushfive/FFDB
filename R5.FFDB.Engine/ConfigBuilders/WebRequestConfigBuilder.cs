@@ -42,7 +42,7 @@ namespace R5.FFDB.Engine.ConfigBuilders
 			{
 				throw new ArgumentNullException(nameof(key), "Header key must be provided.");
 			}
-			// todo: validate value? or empty ok
+
 			_headers[key] = value;
 			return this;
 		}

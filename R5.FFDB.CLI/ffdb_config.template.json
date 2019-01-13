@@ -1,0 +1,27 @@
+{
+	"RootDataPath": "",
+	"WebRequest": {
+		"ThrottleMilliseconds": 1000,
+		"RandomizedThrottle": {
+			"Min": 1000,
+			"Max": 3000
+		}
+	},
+	"Logging": {
+		"Directory": "",
+		"MaxBytes": null,
+		"RollingInterval": "Day",
+		"RollOnFileSizeLimit": false,
+		"LogLevel": "Debug"
+	},
+	"PostgreSql": {
+		"Host": "",
+		"DatabaseName": "",
+		"Username": "",
+		"Password": ""
+	},
+	"Mongo": {
+		"ConnectionString": "",
+		"DatabaseName": ""
+	}
+}

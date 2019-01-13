@@ -6,9 +6,19 @@
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+	  <PackageReference Include="R5.RunInfoBuilder" Version="1.0.1" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="RunInfo\" />
 	</ItemGroup>
 
 </Project>
