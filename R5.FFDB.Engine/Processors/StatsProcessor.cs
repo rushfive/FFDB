@@ -83,6 +83,8 @@ namespace R5.FFDB.Engine.Processors
 
 		private async Task AddStatsForWeekInternalAsync(WeekInfo week)
 		{
+			// TODO: first check if stats for week already exist, PREVENT if so
+
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 
 			await _teamGamesSource.FetchForWeekAsync(week);
