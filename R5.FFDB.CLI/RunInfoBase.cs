@@ -8,5 +8,6 @@ namespace R5.FFDB.CLI
 	{
 		public abstract string CommandKey { get; }
 		public string ConfigFilePath { get; set; }
+		public bool SkipRosterFetch { get; set; }
 	}
 }

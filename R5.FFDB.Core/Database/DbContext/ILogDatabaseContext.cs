@@ -8,6 +8,7 @@ namespace R5.FFDB.Core.Database.DbContext
 	{
 		Task AddUpdateForWeekAsync(WeekInfo week);
 		Task<List<WeekInfo>> GetUpdatedWeeksAsync();
+		Task<bool> HasUpdatedWeekAsync(WeekInfo week);
 		Task RemoveAllAsync();
 		Task RemoveForWeekAsync(WeekInfo week);
 	}

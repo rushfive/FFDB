@@ -21,6 +21,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			typeof(WeekStatsPassSql),
 			typeof(WeekStatsRushSql),
 			typeof(WeekStatsReceiveSql),
+			typeof(WeekStatsReturnSql),
 			typeof(WeekStatsMiscSql),
 			typeof(WeekStatsKickSql),
 			typeof(WeekStatsDstSql),

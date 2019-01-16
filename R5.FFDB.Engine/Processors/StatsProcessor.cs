@@ -76,6 +76,14 @@ namespace R5.FFDB.Engine.Processors
 		{
 			_logger.LogInformation($"Adding stats for {week}.");
 
+			IDatabaseContext dbContext = _dbProvider.GetContext();
+			bool alreadyUpdated = await dbContext.Log.HasUpdatedWeekAsync(week);
+			if (alreadyUpdated)
+			{
+				_logger.LogWarning($"Stats for {week} have already been added. Remove them first before try again.");
+				return;
+			}
+
 			await AddStatsForWeekInternalAsync(week);
 
 			_logger.LogInformation($"Finished adding stats for {week}.");
@@ -83,8 +91,6 @@ namespace R5.FFDB.Engine.Processors
 
 		private async Task AddStatsForWeekInternalAsync(WeekInfo week)
 		{
-			// TODO: first check if stats for week already exist, PREVENT if so
-
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 
 			await _teamGamesSource.FetchForWeekAsync(week);

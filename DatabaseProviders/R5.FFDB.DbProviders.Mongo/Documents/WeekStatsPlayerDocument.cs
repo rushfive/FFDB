@@ -39,6 +39,9 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("hasReceive")]
 		public bool HasReceive { get; set; }
 
+		[BsonElement("hasReturn")]
+		public bool HasReturn { get; set; }
+
 		[BsonElement("hasMisc")]
 		public bool HasMisc { get; set; }
 
@@ -78,6 +81,10 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 				if (WeekStatCategory.Receive.Contains(statKv.Key))
 				{
 					result.HasReceive = true;
+				}
+				if (WeekStatCategory.Return.Contains(statKv.Key))
+				{
+					result.HasReturn = true;
 				}
 				if (WeekStatCategory.Misc.Contains(statKv.Key))
 				{

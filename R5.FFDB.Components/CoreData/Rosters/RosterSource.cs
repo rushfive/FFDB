@@ -96,11 +96,11 @@ namespace R5.FFDB.Components.CoreData.Rosters
 
 			foreach (var team in testTeams)
 			{
-				_logger.LogDebug($"Checking health using team {team}.");
+				_logger.LogTrace($"Checking health using team {team}.");
 
 				await CheckHealthForTeamAsync(team);
 
-				_logger.LogInformation($"Health check passed for team {team}.");
+				_logger.LogDebug($"Health check passed for team {team}.");
 			}
 
 			_logger.LogInformation($"Health check successfully passed for '{Label}' source.");

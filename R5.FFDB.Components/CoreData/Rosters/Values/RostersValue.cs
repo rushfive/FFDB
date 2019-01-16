@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Entities;
@@ -18,23 +19,34 @@ namespace R5.FFDB.Components.CoreData.Rosters.Values
 		private IRosterSource _source { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IRosterScraper _scraper { get; }
+		private ProgramOptions _programOptions { get; }
 
 		public RostersValue(
 			ILogger<RostersValue> logger,
 			IRosterSource source,
 			DataDirectoryPath dataPath,
-			IRosterScraper scraper)
+			IRosterScraper scraper,
+			ProgramOptions programOptions)
 			: base("Rosters")
 		{
 			_logger = logger;
 			_source = source;
 			_dataPath = dataPath;
 			_scraper = scraper;
+			_programOptions = programOptions;
 		}
 
 		protected override async Task<List<Roster>> ResolveValueAsync()
 		{
-			await _source.FetchAsync();
+			if (_programOptions.SkipRosterFetch)
+			{
+				_logger.LogInformation("Will skip fetching of team roster pages and use the currently existing ones. "
+					+ "Make sure you do have a copy of all the pages, else certain information may be ommitted from updates.");
+			}
+			else
+			{
+				await _source.FetchAsync();
+			}
 
 			return Get();
 		}

@@ -25,6 +25,7 @@ namespace R5.FFDB.Engine
 		private WebRequestConfig _webRequestConfig { get; set; }
 		private LoggingConfig _loggingConfig { get; set; }
 		private Func<ILoggerFactory, IDatabaseProvider> _dbProviderFactory { get; set; }
+		private ProgramOptions _programOptions { get; set; }
 
 		public ServiceCollection Create()
 		{
@@ -40,6 +41,8 @@ namespace R5.FFDB.Engine
 				_webRequestConfig.ThrottleMilliseconds,
 				_webRequestConfig.RandomizedThrottle);
 
+			var programOptions = _programOptions ?? new ProgramOptions();
+
 			services
 				.AddScoped(sp => dataPath)
 				.AddScoped(sp => _webRequestConfig)
@@ -47,6 +50,7 @@ namespace R5.FFDB.Engine
 				.AddScoped<LatestWeekValue>()
 				.AddScoped<AvailableWeeksValue>()
 				.AddScoped<RostersValue>()
+				.AddScoped<ProgramOptions>(sp => programOptions)
 				.AddScoped<IDatabaseProvider>(sp =>
 				{
 					var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
@@ -97,22 +101,28 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
-		public EngineBaseServiceCollection AddWebRequestConfig(WebRequestConfig config)
+		public EngineBaseServiceCollection SetWebRequestConfig(WebRequestConfig config)
 		{
 			_webRequestConfig = config;
 			return this;
 		}
 
-		public EngineBaseServiceCollection AddLoggingConfig(LoggingConfig config)
+		public EngineBaseServiceCollection SetLoggingConfig(LoggingConfig config)
 		{
 			_loggingConfig = config;
 			return this;
 		}
 
-		public EngineBaseServiceCollection AddDatabaseProviderFactory(
+		public EngineBaseServiceCollection SetDatabaseProviderFactory(
 			Func<ILoggerFactory, IDatabaseProvider> dbProviderFactory)
 		{
 			_dbProviderFactory = dbProviderFactory;
+			return this;
+		}
+
+		public EngineBaseServiceCollection SetProgramOptions(ProgramOptions options)
+		{
+			_programOptions = options;
 			return this;
 		}
 	}

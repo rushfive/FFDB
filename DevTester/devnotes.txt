@@ -1,3 +1,8 @@
+need to add an option to NOT download latest rosters, but instead use from the LAST downloaded
+team roster pages
+
+---------------
+
 need a mongo stat type enum, that maps directly 1:1 to WeekStatType
 that has proper casing and stuff for mongo
 

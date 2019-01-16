@@ -49,6 +49,19 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			return logs.Select(l => new WeekInfo(l.Season, l.Week)).ToList();
 		}
 
+		public async Task<bool> HasUpdatedWeekAsync(WeekInfo week)
+		{
+			var collectionName = CollectionNames.GetForType<UpdateLogDocument>();
+
+			var builder = Builders<UpdateLogDocument>.Filter;
+			var filter = builder.Eq(l => l.Season, week.Season)
+				& builder.Eq(l => l.Week, week.Week);
+
+			UpdateLogDocument log = await GetMongoDbContext().FindOneAsync(filter);
+
+			return log != null;
+		}
+
 		public async Task RemoveAllAsync()
 		{
 			var logger = GetLogger<LogDbContext>();

@@ -1,5 +1,4 @@
-﻿using DevTester.Testers;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

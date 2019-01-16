@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using R5.FFDB.CLI.Configuration;
+using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.Engine;
@@ -27,7 +28,7 @@ namespace R5.FFDB.CLI
 
 				FfdbConfig config = FileConfigResolver.FromFile(runInfo.ConfigFilePath);
 
-				FfdbEngine engine = GetConfiguredEngine(config);
+				FfdbEngine engine = GetConfiguredEngine(config, runInfo);
 				var runner = new EngineRunner(engine);
 
 				await runner.RunAsync(runInfo);
@@ -63,7 +64,7 @@ namespace R5.FFDB.CLI
 			return runInfo;
 		}
 
-		private static FfdbEngine GetConfiguredEngine(FfdbConfig config)
+		private static FfdbEngine GetConfiguredEngine(FfdbConfig config, RunInfoBase runInfo)
 		{
 			var setup = new EngineSetup();
 
@@ -104,6 +105,11 @@ namespace R5.FFDB.CLI
 			else if (config.Mongo != null)
 			{
 				setup.UseMongo(config.Mongo);
+			}
+
+			if (runInfo.SkipRosterFetch)
+			{
+				setup.SkipRosterFetch();
 			}
 
 			return setup.Create();

@@ -46,6 +46,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			return logs.Select(sql => new WeekInfo(sql.Season, sql.Week)).ToList();
 		}
 
+		public Task<bool> HasUpdatedWeekAsync(WeekInfo week)
+		{
+			string tableName = EntityInfoMap.TableName(typeof(UpdateLogSql));
+			string sqlCommand = $"SELECT exists(SELECT * FROM {tableName} WHERE season = {week.Season} AND week = {week.Week})";
+			return ExecuteAsBoolAsync(sqlCommand);
+		}
+
 		public async Task RemoveAllAsync()
 		{
 			var logger = GetLogger<UpdateLogSql>();

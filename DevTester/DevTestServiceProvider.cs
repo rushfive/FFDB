@@ -41,9 +41,9 @@ namespace DevTester
 
 			ServiceCollection services = baseServiceCollection
 				.SetRootDataPath(@"D:\Repos\ffdb_data_2\")
-				.AddWebRequestConfig(webRequestConfig)
-				.AddLoggingConfig(loggingConfig)
-				.AddDatabaseProviderFactory(loggerFactory => new PostgresDbProvider(postgresConfig, loggerFactory))
+				.SetWebRequestConfig(webRequestConfig)
+				.SetLoggingConfig(loggingConfig)
+				.SetDatabaseProviderFactory(loggerFactory => new PostgresDbProvider(postgresConfig, loggerFactory))
 				.Create();
 
 			return services.BuildServiceProvider();

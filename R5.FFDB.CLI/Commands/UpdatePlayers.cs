@@ -38,6 +38,14 @@ namespace R5.FFDB.CLI.Commands
 						("all", UpdatePlayersType.All)
 					}
 				}
+			},
+			Options =
+			{
+				new Option<RunInfo, string>
+				{
+					Key = "config | c",
+					Property = ri => ri.ConfigFilePath
+				}
 			}
 		};
 	}

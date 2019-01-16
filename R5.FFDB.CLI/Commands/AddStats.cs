@@ -25,7 +25,15 @@ namespace R5.FFDB.CLI.Commands
 			{
 				new Command<RunInfo>
 				{
-					Key = "missing"
+					Key = "missing",
+					Options =
+					{
+						new Option<RunInfo, string>
+						{
+							Key = "config | c",
+							Property = ri => ri.ConfigFilePath
+						}
+					}
 				},
 				new Command<RunInfo>
 				{
@@ -36,6 +44,19 @@ namespace R5.FFDB.CLI.Commands
 						{
 							Property = ri => ri.Week,
 							HelpToken = "<week>"
+						}
+					},
+					Options =
+					{
+						new Option<RunInfo, string>
+						{
+							Key = "config | c",
+							Property = ri => ri.ConfigFilePath
+						},
+						new Option<RunInfo, bool>
+						{
+							Key = "skip-roster-fetch | s",
+							Property = ri => ri.SkipRosterFetch
 						}
 					}
 				}

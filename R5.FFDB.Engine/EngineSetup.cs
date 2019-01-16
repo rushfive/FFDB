@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.Configurations;
 using R5.FFDB.Core.Database;
 using R5.FFDB.DbProviders.Mongo.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql;
@@ -17,9 +18,9 @@ namespace R5.FFDB.Engine
 		public LoggingConfigBuilder Logging { get; } = new LoggingConfigBuilder();
 
 		private string _rootDataPath { get; set; }
-
 		private PostgresConfig _postgresConfig { get; set; }
 		private MongoConfig _mongoConfig { get; set; }
+		private ProgramOptions _programOptions { get; } = new ProgramOptions();
 
 		public EngineSetup SetRootDataDirectoryPath(string path)
 		{
@@ -70,15 +71,22 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
+		public EngineSetup SkipRosterFetch()
+		{
+			_programOptions.SkipRosterFetch = true;
+			return this;
+		}
+
 		public FfdbEngine Create()
 		{
 			var baseServiceCollection = new EngineBaseServiceCollection();
-			AddDatabaseProviderFactory(baseServiceCollection);
+			SetDatabaseProviderFactory(baseServiceCollection);
 
 			ServiceCollection services = baseServiceCollection
 				.SetRootDataPath(_rootDataPath)
-				.AddWebRequestConfig(WebRequest.Build())
-				.AddLoggingConfig(Logging.Build())
+				.SetWebRequestConfig(WebRequest.Build())
+				.SetLoggingConfig(Logging.Build())
+				.SetProgramOptions(_programOptions)
 				.Create();
 			
 			return services
@@ -87,7 +95,7 @@ namespace R5.FFDB.Engine
 				.GetService<FfdbEngine>();
 		}
 
-		private void AddDatabaseProviderFactory(EngineBaseServiceCollection collection)
+		private void SetDatabaseProviderFactory(EngineBaseServiceCollection collection)
 		{
 			bool noneConfigured = _postgresConfig == null && _mongoConfig == null;
 			if (noneConfigured)
@@ -113,7 +121,7 @@ namespace R5.FFDB.Engine
 
 			Debug.Assert(dbProviderFactory != null);
 
-			collection.AddDatabaseProviderFactory(dbProviderFactory);
+			collection.SetDatabaseProviderFactory(dbProviderFactory);
 		}
 	}
 }
