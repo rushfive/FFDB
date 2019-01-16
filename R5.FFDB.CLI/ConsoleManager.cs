@@ -12,5 +12,15 @@ namespace R5.FFDB.CLI
 			Console.WriteLine(message);
 			Console.ResetColor();
 		}
+
+		public static void WriteLineColored(string message, ConsoleColor color, bool reset = true)
+		{
+			Console.ForegroundColor = color;
+			Console.WriteLine(message);
+			if (reset)
+			{
+				Console.ResetColor();
+			}
+		}
 	}
 }

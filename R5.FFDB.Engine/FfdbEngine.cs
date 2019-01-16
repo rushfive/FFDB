@@ -5,8 +5,10 @@ using R5.FFDB.Components.CoreData.Players;
 using R5.FFDB.Components.CoreData.Rosters;
 using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
+using R5.FFDB.Core.Models;
 using R5.FFDB.Engine.Processors;
 using System;
 using System.Collections.Generic;
@@ -16,39 +18,43 @@ namespace R5.FFDB.Engine
 {
 	public class FfdbEngine
 	{
-		public StatsProcessor Stats { get; }
-		public TeamProcessor Team { get; }
-		public PlayerProcessor Player { get; }
+		public StatsProcessor Stats { get; private set; }
+		public TeamProcessor Team { get; private set; }
+		public PlayerProcessor Player { get; private set; }
 
 		private ILogger<FfdbEngine> _logger { get; }
 		private IDatabaseProvider _databaseProvider { get; }
-		private List<ICoreDataSource> _coreDataSources { get; }
+		private List<ICoreDataSource> _coreDataSources { get; set; }
+		private LatestWeekValue _latestWeekValue { get; }
 
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
 			IDatabaseProvider databaseProvider,
-			IPlayerSource playerSource,
-			IRosterSource rosterSource,
-			IWeekStatsSource weekStatsSource,
-			ITeamGamesSource teamGamesSource,
+			LatestWeekValue latestWeekValue,
 			IServiceProvider serviceProvider)
 		{
 			_logger = logger;
 			_databaseProvider = databaseProvider;
+			_latestWeekValue = latestWeekValue;
 
+			InitializeSourcesProcessors(serviceProvider);
+		}
+
+		private void InitializeSourcesProcessors(IServiceProvider serviceProvider)
+		{
 			_coreDataSources = new List<ICoreDataSource>
 			{
-				playerSource,
-				rosterSource,
-				weekStatsSource,
-				teamGamesSource
+				serviceProvider.GetRequiredService<IPlayerSource>(),
+				serviceProvider.GetRequiredService<IRosterSource>(),
+				serviceProvider.GetRequiredService<IWeekStatsSource>(),
+				serviceProvider.GetRequiredService<ITeamGamesSource>()
 			};
 
 			Stats = ActivatorUtilities.CreateInstance<StatsProcessor>(serviceProvider);
 			Team = ActivatorUtilities.CreateInstance<TeamProcessor>(serviceProvider);
 			Player = ActivatorUtilities.CreateInstance<PlayerProcessor>(serviceProvider);
 		}
-		
+
 		public async Task RunInitialSetupAsync(bool forceReinitialize)
 		{
 			_logger.LogInformation("Running initial setup..");
@@ -77,6 +83,23 @@ namespace R5.FFDB.Engine
 			}
 
 			_logger.LogInformation("All health checks successfully passed.");
+		}
+
+		public Task<bool> HasBeenInitializedAsync()
+		{
+			IDatabaseContext dbContext = _databaseProvider.GetContext();
+			return dbContext.HasBeenInitializedAsync();
+		}
+
+		public Task<WeekInfo> GetLatestWeekAsync()
+		{
+			return _latestWeekValue.GetAsync();
+		}
+
+		public Task<List<WeekInfo>> GetAllUpdatedWeeksAsync()
+		{
+			IDatabaseContext dbContext = _databaseProvider.GetContext();
+			return dbContext.Log.GetUpdatedWeeksAsync();
 		}
 	}
 }

@@ -23,13 +23,14 @@ namespace R5.FFDB.CLI
 		{
 			try
 			{
-				args = new string[] { "setup", "--force" };//
 				RunInfoBase runInfo = GetRunInfoFromArgs(args);
 
 				FfdbConfig config = FileConfigResolver.FromFile(runInfo.ConfigFilePath);
 
 				FfdbEngine engine = GetConfiguredEngine(config);
+				var runner = new EngineRunner(engine);
 
+				await runner.RunAsync(runInfo);
 
 
 				return;

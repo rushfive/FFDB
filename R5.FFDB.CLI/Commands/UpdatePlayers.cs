@@ -10,8 +10,11 @@ namespace R5.FFDB.CLI.Commands
 	// ffdb update-players all
 	public static class UpdatePlayers
 	{
+		private const string _commandKey = "update-players";
+
 		public class RunInfo : RunInfoBase
 		{
+			public override string CommandKey => _commandKey;
 			public UpdatePlayersType UpdateType { get; set; }
 		}
 
@@ -23,7 +26,7 @@ namespace R5.FFDB.CLI.Commands
 
 		internal static Command<RunInfo> Command = new Command<RunInfo>
 		{
-			Key = "update-players",
+			Key = _commandKey,
 			Arguments =
 			{
 				new SetArgument<RunInfo, UpdatePlayersType>

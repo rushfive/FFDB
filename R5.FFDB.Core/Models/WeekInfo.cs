@@ -61,5 +61,35 @@ namespace R5.FFDB.Core.Models
 			}
 			return 0;
 		}
+
+		public static bool operator ==(WeekInfo a, WeekInfo b)
+		{
+			return a.CompareTo(b) == 0;
+		}
+
+		public static bool operator !=(WeekInfo a, WeekInfo b)
+		{
+			return a.CompareTo(b) != 0;
+		}
+
+		public static bool operator <(WeekInfo a, WeekInfo b)
+		{
+			return a.CompareTo(b) == -1;
+		}
+
+		public static bool operator >(WeekInfo a, WeekInfo b)
+		{
+			return a.CompareTo(b) == 1;
+		}
+
+		public static bool operator <=(WeekInfo a, WeekInfo b)
+		{
+			return a.CompareTo(b) < 1;
+		}
+
+		public static bool operator >=(WeekInfo a, WeekInfo b)
+		{
+			return a.CompareTo(b) > -1;
+		}
 	}
 }

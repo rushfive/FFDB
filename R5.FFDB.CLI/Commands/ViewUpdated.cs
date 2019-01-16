@@ -5,15 +5,14 @@ using System.Text;
 
 namespace R5.FFDB.CLI.Commands
 {
-	// ffdb setup --force|f --config|c=path\to\config.json
-	public static class InitialSetup
+	// ffdb view-updated --config|c=path\to\config.json
+	public static class ViewUpdated
 	{
-		private const string _commandKey = "setup";
+		private const string _commandKey = "view-updated";
 
 		public class RunInfo : RunInfoBase
 		{
 			public override string CommandKey => _commandKey;
-			public bool ForceReinitialize { get; set; }
 		}
 
 		internal static Command<RunInfo> Command = new Command<RunInfo>
@@ -21,11 +20,6 @@ namespace R5.FFDB.CLI.Commands
 			Key = _commandKey,
 			Options =
 			{
-				new Option<RunInfo, bool>
-				{
-					Key = "force | f",
-					Property = ri => ri.ForceReinitialize
-				},
 				new Option<RunInfo, string>
 				{
 					Key = "config | c",

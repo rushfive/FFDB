@@ -8,11 +8,16 @@ namespace R5.FFDB.CLI.Commands
 	// ffdb check-health --config|c=path\to\config.json
 	public static class CheckHealth
 	{
-		public class RunInfo : RunInfoBase { }
+		private const string _commandKey = "check-health";
+		
+		public class RunInfo : RunInfoBase
+		{
+			public override string CommandKey => _commandKey;
+		}
 
 		internal static Command<RunInfo> Command = new Command<RunInfo>
 		{
-			Key = "check-health",
+			Key = _commandKey,
 			Options =
 			{
 				new Option<RunInfo, string>

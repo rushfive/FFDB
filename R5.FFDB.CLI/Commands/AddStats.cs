@@ -10,14 +10,17 @@ namespace R5.FFDB.CLI.Commands
 	// ffdb add-stats week 2018-5
 	public static class AddStats
 	{
+		private const string _commandKey = "add-stats";
+
 		public class RunInfo : RunInfoBase
 		{
+			public override string CommandKey => _commandKey;
 			public WeekInfo? Week { get; set; }
 		}
 
 		internal static Command<RunInfo> Command = new Command<RunInfo>
 		{
-			Key = "add-stats",
+			Key = _commandKey,
 			SubCommands =
 			{
 				new Command<RunInfo>

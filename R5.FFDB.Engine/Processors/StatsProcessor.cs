@@ -61,7 +61,7 @@ namespace R5.FFDB.Engine.Processors
 			}
 
 			_logger.LogInformation($"Adding stats for {missing.Count} missing weeks.");
-			
+
 			foreach (var week in missing)
 			{
 				_logger.LogDebug($"Begin adding stats for {week}.");
