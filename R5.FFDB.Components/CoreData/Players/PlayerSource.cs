@@ -76,7 +76,7 @@ namespace R5.FFDB.Components.CoreData.Players
 				string filePath = _dataPath.Temp.Player + $"{id}.json";
 				if (File.Exists(filePath) && !overwriteExisting)
 				{
-					_logger.LogInformation($"Player profile file already exists for '{id}'. Will not fetch.");
+					_logger.LogDebug($"Player profile file already exists for '{id}'. Will not fetch.");
 					continue;
 				}
 
@@ -153,7 +153,7 @@ namespace R5.FFDB.Components.CoreData.Players
 
 				await CheckHealthForPlayerAsync(nflId);
 
-				_logger.LogInformation($"Health check passed for player {nflId}.");
+				_logger.LogDebug($"Health check passed for player {nflId}.");
 			}
 
 			_logger.LogInformation($"Health check successfully passed for '{Label}' source.");

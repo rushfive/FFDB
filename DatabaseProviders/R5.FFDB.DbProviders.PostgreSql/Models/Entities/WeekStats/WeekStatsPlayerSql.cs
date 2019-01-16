@@ -27,6 +27,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 			var passStats = stats.Stats.Where(kv => WeekStatCategory.Pass.Contains(kv.Key));
 			var rushStats = stats.Stats.Where(kv => WeekStatCategory.Rush.Contains(kv.Key));
 			var receiveStats = stats.Stats.Where(kv => WeekStatCategory.Receive.Contains(kv.Key));
+			var returnStats = stats.Stats.Where(kv => WeekStatCategory.Return.Contains(kv.Key));
 			var miscStats = stats.Stats.Where(kv => WeekStatCategory.Misc.Contains(kv.Key));
 			var kickStats = stats.Stats.Where(kv => WeekStatCategory.Kick.Contains(kv.Key));
 			var idpStats = stats.Stats.Where(kv => WeekStatCategory.IDP.Contains(kv.Key));
@@ -42,6 +43,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 			if (receiveStats.Any())
 			{
 				addWeekStatSql(new WeekStatsReceiveSql(), receiveStats);
+			}
+			if (returnStats.Any())
+			{
+				addWeekStatSql(new WeekStatsReturnSql(), returnStats);
 			}
 			if (miscStats.Any())
 			{

@@ -18,6 +18,7 @@
 			public const string Pass = "ffdb.week_stats_pass";
 			public const string Receive = "ffdb.week_stats_receive";
 			public const string Rush = "ffdb.week_stats_rush";
+			public const string Return = "ffdb.week_stats_return";
 		}
 	}
 }

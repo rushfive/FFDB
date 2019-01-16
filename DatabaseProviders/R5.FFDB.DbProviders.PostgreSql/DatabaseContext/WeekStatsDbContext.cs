@@ -69,6 +69,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 				{
 					await AddStatsAsync(add.ReceiveStats, add.Week, "Week Stats (Receive)", logger);
 				}
+				if (add.ReturnStats.Any())
+				{
+					await AddStatsAsync(add.ReturnStats, add.Week, "Week Stats (Return)", logger);
+				}
 				if (add.MiscStats.Any())
 				{
 					await AddStatsAsync(add.MiscStats, add.Week, "Week Stats (Misc)", logger);
@@ -137,6 +141,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 									break;
 								case WeekStatsReceiveSql receive:
 									update.ReceiveStats.Add(receive);
+									break;
+								case WeekStatsReturnSql returnStats:
+									update.ReturnStats.Add(returnStats);
 									break;
 								case WeekStatsMiscSql misc:
 									update.MiscStats.Add(misc);

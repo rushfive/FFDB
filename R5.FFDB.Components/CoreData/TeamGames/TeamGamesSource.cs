@@ -87,27 +87,27 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 
 			if (File.Exists(filePath))
 			{
-				_logger.LogInformation($"Week games file already exists for {week}. Will not fetch.");
+				_logger.LogDebug($"Week games file already exists for {week}. Will not fetch.");
 				return;
 			}
 
 			string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
 
-			_logger.LogDebug($"Fetching week games for {week} from '{uri}'.");
+			_logger.LogTrace($"Fetching week games for {week} from '{uri}'.");
 
 			string response = await _webRequestClient.GetStringAsync(uri, throttle: false);
 			
 			_logger.LogTrace($"Saving XML response to '{filePath}'.");
 			await File.WriteAllTextAsync(filePath, response);
 
-			_logger.LogInformation($"Finished fetching week games for {week}.");
+			_logger.LogDebug($"Finished fetching week games for {week}.");
 		}
 
 		private async Task FetchSaveGameStatsAsync(WeekInfo week)
 		{
 			List<string> gameIds = GetGameIdsForWeek(week);
 
-			_logger.LogDebug($"Fetching game stats for {week}.");
+			_logger.LogTrace($"Fetching game stats for {week}.");
 			_logger.LogTrace($"Game ids: {string.Join(", ", gameIds)}");
 
 			foreach (string gameId in gameIds)
@@ -116,7 +116,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 
 				if (File.Exists(filePath))
 				{
-					_logger.LogInformation($"Game stats file already exists for game '{gameId}'. Will not fetch.");
+					_logger.LogDebug($"Game stats file already exists for game '{gameId}'. Will not fetch.");
 					continue;
 				}
 
@@ -172,7 +172,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 
 				await CheckHealthForWeekAsync(week);
 
-				_logger.LogInformation($"Health check passed for week {week}.");
+				_logger.LogDebug($"Health check passed for week {week}.");
 			}
 
 			_logger.LogInformation($"Health check successfully passed for '{Label}' source.");

@@ -49,7 +49,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			string filePath = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
 			if (File.Exists(filePath))
 			{
-				_logger.LogInformation($"Week stats file already exists for {week}. Will not fetch.");
+				_logger.LogDebug($"Week stats file already exists for {week}. Will not fetch.");
 				return;
 			}
 
@@ -58,9 +58,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			_logger.LogTrace($"Saving week stats JSON response for {week} to '{filePath}'.");
 			File.WriteAllText(filePath, stats);
 
-			_logger.LogInformation($"Finished saving week stats for {week}.");
-
-			_logger.LogInformation("Finished fetching week stats.");
+			_logger.LogInformation($"Finished fetching week stats for {week}.");
 		}
 
 		public async Task FetchAllAsync()
@@ -84,7 +82,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 				string filePath = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
 				if (File.Exists(filePath))
 				{
-					_logger.LogInformation($"Week stats file already exists for {week}. Will not fetch.");
+					_logger.LogDebug($"Week stats file already exists for {week}. Will not fetch.");
 					return;
 				}
 
@@ -93,7 +91,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 				_logger.LogTrace($"Saving week stats JSON response for {week} to '{filePath}'.");
 				File.WriteAllText(filePath, stats);
 
-				_logger.LogInformation($"Finished saving week stats for {week}.");
+				_logger.LogDebug($"Finished saving week stats for {week}.");
 			}
 
 			_logger.LogInformation("Finished fetching week stats.");
@@ -107,7 +105,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 			try
 			{
 				string stats = await _webRequestClient.GetStringAsync(uri);
-				_logger.LogInformation($"Finished fetching week stats for {week}.");
+				_logger.LogDebug($"Finished fetching week stats for {week}.");
 				return stats;
 			}
 			catch (Exception ex)
@@ -134,7 +132,7 @@ namespace R5.FFDB.Components.CoreData.WeekStats
 
 				await CheckHealthForWeekAsync(week);
 
-				_logger.LogInformation($"Health check passed for week {week}.");
+				_logger.LogDebug($"Health check passed for week {week}.");
 			}
 
 			_logger.LogInformation($"Health check successfully passed for '{Label}' source.");

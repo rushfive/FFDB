@@ -14,27 +14,31 @@ namespace R5.FFDB.Core
 			WeekStatType.Pass_Yards,
 			WeekStatType.Pass_Touchdowns,
 			WeekStatType.Pass_Interceptions,
-			WeekStatType.Pass_Sacked,
+			WeekStatType.Pass_Sacked
 		};
 
 		public static HashSet<WeekStatType> Rush = new HashSet<WeekStatType>
 		{
 			WeekStatType.Rush_Attempts,
 			WeekStatType.Rush_Yards,
-			WeekStatType.Rush_Touchdowns,
+			WeekStatType.Rush_Touchdowns
 		};
 
 		public static HashSet<WeekStatType> Receive = new HashSet<WeekStatType>
 		{
 			WeekStatType.Receive_Catches,
 			WeekStatType.Receive_Yards,
-			WeekStatType.Receive_Touchdowns,
+			WeekStatType.Receive_Touchdowns
+		};
+
+		public static HashSet<WeekStatType> Return = new HashSet<WeekStatType>
+		{
+			WeekStatType.Return_Yards,
+			WeekStatType.Return_Touchdowns
 		};
 
 		public static HashSet<WeekStatType> Misc = new HashSet<WeekStatType>
 		{
-			WeekStatType.Return_Yards,
-			WeekStatType.Return_Touchdowns,
 			WeekStatType.Fumble_Recover_Touchdowns,
 			WeekStatType.Fumbles_Lost,
 			WeekStatType.Fumbles_Total,

@@ -12,6 +12,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models
 		public List<WeekStatsPassSql> PassStats { get; } = new List<WeekStatsPassSql>();
 		public List<WeekStatsRushSql> RushStats { get; } = new List<WeekStatsRushSql>();
 		public List<WeekStatsReceiveSql> ReceiveStats { get; } = new List<WeekStatsReceiveSql>();
+		public List<WeekStatsReturnSql> ReturnStats { get; } = new List<WeekStatsReturnSql>();
 		public List<WeekStatsMiscSql> MiscStats { get; } = new List<WeekStatsMiscSql>();
 		public List<WeekStatsKickSql> KickStats { get; } = new List<WeekStatsKickSql>();
 		public List<WeekStatsDstSql> DstStats { get; } = new List<WeekStatsDstSql>();

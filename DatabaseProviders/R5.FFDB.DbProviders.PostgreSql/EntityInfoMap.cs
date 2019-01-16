@@ -29,6 +29,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			typeof(WeekStatsKickSql),
 			typeof(WeekStatsDstSql),
 			typeof(WeekStatsIdpSql),
+			typeof(WeekStatsReturnSql),
 			typeof(TeamGameStatsSql),
 			typeof(UpdateLogSql),
 			typeof(WeekGameMatchupSql)
@@ -73,7 +74,6 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		}
 
 		// initialization
-
 		static EntityInfoMap()
 		{
 			ResolveMapData();
