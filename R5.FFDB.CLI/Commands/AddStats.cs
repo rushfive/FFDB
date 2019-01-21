@@ -23,19 +23,11 @@ namespace R5.FFDB.CLI.Commands
 			Key = _commandKey,
 			SubCommands =
 			{
-				new Command<RunInfo>
+				new SubCommand<RunInfo>
 				{
-					Key = "missing",
-					Options =
-					{
-						new Option<RunInfo, string>
-						{
-							Key = "config | c",
-							Property = ri => ri.ConfigFilePath
-						}
-					}
+					Key = "missing"
 				},
-				new Command<RunInfo>
+				new SubCommand<RunInfo>
 				{
 					Key = "week",
 					Arguments =
@@ -48,17 +40,20 @@ namespace R5.FFDB.CLI.Commands
 					},
 					Options =
 					{
-						new Option<RunInfo, string>
-						{
-							Key = "config | c",
-							Property = ri => ri.ConfigFilePath
-						},
 						new Option<RunInfo, bool>
 						{
 							Key = "skip-roster-fetch | s",
 							Property = ri => ri.SkipRosterFetch
 						}
 					}
+				}
+			},
+			GlobalOptions =
+			{
+				new Option<RunInfo, string>
+				{
+					Key = "config | c",
+					Property = ri => ri.ConfigFilePath
 				}
 			}
 		};

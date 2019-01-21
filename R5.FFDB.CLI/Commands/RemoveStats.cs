@@ -23,19 +23,11 @@ namespace R5.FFDB.CLI.Commands
 			Key = _commandKey,
 			SubCommands =
 			{
-				new Command<RunInfo>
+				new SubCommand<RunInfo>
 				{
-					Key = "all",
-					Options =
-					{
-						new Option<RunInfo, string>
-						{
-							Key = "config | c",
-							Property = ri => ri.ConfigFilePath
-						}
-					}
+					Key = "all"
 				},
-				new Command<RunInfo>
+				new SubCommand<RunInfo>
 				{
 					Key = "week",
 					Arguments =
@@ -45,15 +37,15 @@ namespace R5.FFDB.CLI.Commands
 							Property = ri => ri.Week,
 							HelpToken = "<week>"
 						}
-					},
-					Options =
-					{
-						new Option<RunInfo, string>
-						{
-							Key = "config | c",
-							Property = ri => ri.ConfigFilePath
-						}
 					}
+				}
+			},
+			GlobalOptions =
+			{
+				new Option<RunInfo, string>
+				{
+					Key = "config | c",
+					Property = ri => ri.ConfigFilePath
 				}
 			}
 		};

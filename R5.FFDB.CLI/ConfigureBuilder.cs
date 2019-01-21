@@ -10,11 +10,16 @@ namespace R5.FFDB.CLI
 {
 	internal static class ConfigureBuilder
 	{
+		// todo: help and version triggers
 		internal static RunInfoBuilder.RunInfoBuilder Get()
 		{
 			var builder = new RunInfoBuilder.RunInfoBuilder();
 
-			builder.Help.DisplayOnBuildFail();
+			builder.Help
+				.SetProgramName("ffdb")
+				.InvokeOnBuildFail(suppressException: false);
+
+			builder.Version.Set("v1.0.0-alpha.1");
 
 			builder.Commands
 				.Add(InitialSetup.Command)
