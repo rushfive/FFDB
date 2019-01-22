@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.DbProviders.Mongo",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.DbProviders.PostgreSql", "DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj", "{79B18893-A4B2-4923-B5C0-2DAAA6A9EA50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.CLI.Tests", "R5.FFDB.CLI.Tests\R5.FFDB.CLI.Tests.csproj", "{25705406-0533-4F4C-BEB0-6ECC2649B519}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.CLI.Tests", "R5.FFDB.CLI.Tests\R5.FFDB.CLI.Tests.csproj", "{25705406-0533-4F4C-BEB0-6ECC2649B519}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.Components.Tests", "R5.FFDB.Components.Tests\R5.FFDB.Components.Tests.csproj", "{C0AA7917-5035-4936-9827-A1E36DE067CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{25705406-0533-4F4C-BEB0-6ECC2649B519}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25705406-0533-4F4C-BEB0-6ECC2649B519}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25705406-0533-4F4C-BEB0-6ECC2649B519}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0AA7917-5035-4936-9827-A1E36DE067CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0AA7917-5035-4936-9827-A1E36DE067CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0AA7917-5035-4936-9827-A1E36DE067CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0AA7917-5035-4936-9827-A1E36DE067CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

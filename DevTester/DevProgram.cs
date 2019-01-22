@@ -48,6 +48,16 @@ namespace DevTester
 			_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 			/// DONT TOUCH ABOVE ///
 			/// 
+			/// 
+
+
+			// TEST getting targets data
+			// first need to come up with fuzzy strin gmatching, use edit distance
+			//  - normalize pattern vs search-text by lowercasing all, then run algorithm
+
+
+			
+			return;
 
 			//var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
 			//MongoDbProvider mongoProvider = GetMongoDbProvider(loggerFactory);
@@ -58,11 +68,11 @@ namespace DevTester
 			//var matchups = GetMatchups(new WeekInfo(2018, 17));
 			
 
-			FfdbEngine engine = GetConfiguredMongoEngine();
+			//FfdbEngine engine = GetConfiguredMongoEngine();
 			//await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 5));
 			//await engine.Team.UpdateRostersAsync();
 			//await engine.Stats.RemoveForWeekAsync(new WeekInfo(2018, 5));
-			await engine.RunInitialSetupAsync(forceReinitialize: false);
+			//await engine.RunInitialSetupAsync(forceReinitialize: false);
 
 			//await engine.Stats.AddMissingAsync();
 
@@ -71,6 +81,22 @@ namespace DevTester
 			return;
 			Console.ReadKey();
 		}
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 		private static List<WeekGameMatchup> GetMatchups(WeekInfo week)

@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.1</TargetFramework>
 		<LangVersion>latest</LangVersion>
+		<AssemblyName>R5.FFDB.Components</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -15,3 +15,19 @@ add readme docs and c# comments
 get TARGETS, 
 NFL.com has a stats/overview page for each game
 - find some way to get to that, and extract targets information
+
+
+-- ALSO, team pages on NFL has stats like totla rushing, passing, sacks, etc
+which should be added
+
+- rethink the model of how static json files are saved.
+currently saving the entire thing, but could lower the total disk space usage
+by A LOT by only extracing what we need into a more useable model.
+- this would allow updating stuff all in memory easier too.
+     - we can use the current logic of parsing the ENTIRE file, such that
+	   we make the json requests on the fly as needed, and apply the same logic
+	   to map those into a more useable model.
+	 - OR, if you want to save, it will first map to the SAME useable model
+	   first before saving.
+	 - from there, any logic shold be the same, whether you're saving files to disk
+	   or not

@@ -10,5 +10,6 @@ namespace R5.FFDB.Core.Database.DbContext
 		Task AddAsync(List<Player> players, List<Roster> rosters);
 		Task UpdateAsync(List<Player> players, List<Roster> rosters);
 		Task<List<Player>> GetAllAsync();
+		Task<List<Player>> GetByTeamForWeekAsync(int teamId, WeekInfo week);
 	}
 }
