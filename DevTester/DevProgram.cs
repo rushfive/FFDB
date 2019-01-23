@@ -7,7 +7,9 @@ using Npgsql;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.PlayerMatcher;
 using R5.FFDB.Components.Resolvers;
+using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
@@ -55,8 +57,25 @@ namespace DevTester
 			// first need to come up with fuzzy strin gmatching, use edit distance
 			//  - normalize pattern vs search-text by lowercasing all, then run algorithm
 
+			var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
+			PostgresDbProvider db2Provider = GetPostgresDbProvider(loggerFactory);
+			IDatabaseContext dbContext = db2Provider.GetContext();
 
-			
+			List<Player> players = await dbContext.Player.GetByTeamForWeekAsync(30, new WeekInfo(2018, 15));
+
+			var mongoProvider = GetMongoDbProvider(loggerFactory);
+			var mongoContext = mongoProvider.GetContext();
+
+			var mongoPlayers = await mongoContext.Player.GetByTeamForWeekAsync(30, new WeekInfo(2018, 15));
+
+
+
+			//var matcher = await playerMatcherFactory.GetAsync(30, new WeekInfo(2018, 15));
+
+			//string tyLock = "Tyler Lockett";
+			//Guid id = matcher(tyLock);
+
+
 			return;
 
 			//var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
@@ -143,6 +162,19 @@ namespace DevTester
 			};
 
 			return new MongoDbProvider(config, loggerFactory);
+		}
+
+		private static PostgresDbProvider GetPostgresDbProvider(ILoggerFactory loggerFactory)
+		{
+			var _config = new PostgresConfig
+			{
+				DatabaseName = "ffdb_test_1",
+				Host = "localhost",
+				Username = "ffdb",
+				Password = "welc0me!"
+			};
+
+			return new PostgresDbProvider(_config, loggerFactory);
 		}
 
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.FuzzyMatch
+namespace R5.FFDB.Components.PlayerMatcher
 {
 	public static class EditDistance
 	{

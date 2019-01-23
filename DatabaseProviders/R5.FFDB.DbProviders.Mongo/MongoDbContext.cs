@@ -96,6 +96,32 @@ namespace R5.FFDB.DbProviders.Mongo
 			return collection.FindAsync(filter, findOptions);
 		}
 
+		public async Task<List<TProjection>> FindAsync<T, TProjection>(FilterDefinition<T> filter = null,
+			FindOptions<T, TProjection> findOptions = null)
+			where T : DocumentBase
+		{
+			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+
+			if (filter == null)
+			{
+				//empty filter
+				filter = new BsonDocumentFilterDefinition<T>(new BsonDocument());
+			}
+
+			IAsyncCursor<TProjection> asyncCursor = await collection.FindAsync(filter, findOptions).ConfigureAwait(false);
+			return await asyncCursor.ToListAsync().ConfigureAwait(false);
+		}
+
+		public async Task<List<TProjection>> FindAsync<T, TProjection>(Expression<Func<T, bool>> filter,
+			FindOptions<T, TProjection> findOptions = null)
+			where T : DocumentBase
+		{
+			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+
+			IAsyncCursor<TProjection> asyncCursor = await collection.FindAsync(filter, findOptions).ConfigureAwait(false);
+			return await asyncCursor.ToListAsync().ConfigureAwait(false);
+		}
+
 		public Task<DeleteResult> DeleteOneAsync<T>(FilterDefinition<T> filter)
 			where T : DocumentBase
 		{

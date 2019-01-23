@@ -8,5 +8,10 @@
 		public int AwayTeamId { get; set; }
 		public string NflGameId { get; set; }
 		public string GsisGameId { get; set; }
+
+		public override string ToString()
+		{
+			return $"{HomeTeamId} vs {AwayTeamId} | {Season}-{Week}";
+		}
 	}
 }

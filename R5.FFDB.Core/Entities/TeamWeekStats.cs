@@ -27,5 +27,10 @@ namespace R5.FFDB.Core.Entities
 		public int PuntYards { get; set; }
 		public int PuntYardsAverage { get; set; }
 		public int TimeOfPossessionSeconds { get; set; }
+
+		public override string ToString()
+		{
+			return $"{TeamId} | {Week}";
+		}
 	}
 }

@@ -93,6 +93,29 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			return result;
 		}
 
-		
+		public async Task<List<Player>> GetByTeamForWeekAsync(int teamId, WeekInfo week)
+		{
+			var builder = Builders<WeekStatsPlayerDocument>.Filter;
+
+			FilterDefinition<WeekStatsPlayerDocument> filter = builder.And(
+				builder.Eq(ws => ws.TeamId, teamId),
+				builder.Eq(ws => ws.Season, week.Season),
+				builder.Eq(ws => ws.Week, week.Week));
+
+			var findOptions = new FindOptions<WeekStatsPlayerDocument, Guid>
+			{
+				Projection = Builders<WeekStatsPlayerDocument>.Projection
+					.Expression(ws => ws.PlayerId)
+			};
+
+			MongoDbContext mongoDbContext = GetMongoDbContext();
+
+			List<Guid> ids = await mongoDbContext.FindAsync(filter, findOptions);
+
+			var playerFilter = Builders<PlayerDocument>.Filter.In(p => p.Id, ids);
+			List<PlayerDocument> players = await mongoDbContext.FindAsync(playerFilter);
+
+			return players.Select(PlayerDocument.ToCoreEntity).ToList();
+		}
 	}
 }

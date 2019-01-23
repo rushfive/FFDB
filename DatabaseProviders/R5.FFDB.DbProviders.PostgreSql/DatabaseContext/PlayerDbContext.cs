@@ -4,6 +4,7 @@ using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
+using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			List<PlayerSql> playerSqls = MapToSqlEntities(players, rosters);
 
-			foreach(PlayerSql player in playerSqls)
+			foreach (PlayerSql player in playerSqls)
 			{
 				string sqlCommand = SqlCommandBuilder.Rows.Update(player);
 
@@ -65,7 +66,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			Dictionary<string, RosterPlayer> rosterPlayerMap = rosters
 				.SelectMany(r => r.Players)
 				.ToDictionary(p => p.NflId, p => p);
-			
+
 			foreach (var player in players)
 			{
 				int? number = null;
@@ -88,6 +89,30 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public async Task<List<Player>> GetAllAsync()
 		{
 			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>();
+			return playerSqls.Select(PlayerSql.ToCoreEntity).ToList();
+		}
+
+		public async Task<List<Player>> GetByTeamForWeekAsync(int teamId, WeekInfo week)
+		{
+			var player = EntityInfoMap.TableName(typeof(PlayerSql));
+
+			var tables = new List<string>
+			{
+				EntityInfoMap.TableName(typeof(WeekStatsRushSql)),
+				EntityInfoMap.TableName(typeof(WeekStatsReturnSql)),
+				EntityInfoMap.TableName(typeof(WeekStatsReceiveSql)),
+				EntityInfoMap.TableName(typeof(WeekStatsPassSql)),
+				EntityInfoMap.TableName(typeof(WeekStatsMiscSql)),
+				EntityInfoMap.TableName(typeof(WeekStatsKickSql)),
+				EntityInfoMap.TableName(typeof(WeekStatsIdpSql))
+			};
+
+			IEnumerable<string> idsByTable = tables
+				.Select(t => $"SELECT player_id FROM {t} WHERE season = {week.Season} AND week = {week.Week} AND team_id = {teamId}");
+
+			string sql = $"SELECT * FROM {player} WHERE id in ({string.Join(" UNION ALL ", idsByTable)});";
+
+			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>(sql);
 			return playerSqls.Select(PlayerSql.ToCoreEntity).ToList();
 		}
 	}

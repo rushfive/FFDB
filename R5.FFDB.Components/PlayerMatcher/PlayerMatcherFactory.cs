@@ -9,12 +9,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace R5.FFDB.Components.FuzzyMatch
+namespace R5.FFDB.Components.PlayerMatcher
 {
 	public interface IPlayerMatcherFactory
 	{
 		Task<Func<string, Guid>> GetAsync(int teamId, WeekInfo week);
 	}
+
 	public class PlayerMatcherFactory : IPlayerMatcherFactory
 	{
 		private IDatabaseProvider _databaseProvider { get; }

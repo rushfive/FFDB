@@ -14,5 +14,10 @@ namespace R5.FFDB.Core.Entities
 		public int Weight { get; set; }
 		public DateTimeOffset DateOfBirth { get; set; }
 		public string College { get; set; }
+
+		public override string ToString()
+		{
+			return $"{FirstName} {LastName}";
+		}
 	}
 }
