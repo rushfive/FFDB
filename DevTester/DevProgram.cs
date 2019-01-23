@@ -9,6 +9,7 @@ using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.PlayerMatcher;
 using R5.FFDB.Components.Resolvers;
+using R5.FFDB.Components.SourceDataMappers.TeamGames;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
@@ -56,6 +57,12 @@ namespace DevTester
 			// TEST getting targets data
 			// first need to come up with fuzzy strin gmatching, use edit distance
 			//  - normalize pattern vs search-text by lowercasing all, then run algorithm
+
+			var dataMApper = _serviceProvider.GetRequiredService<ITeamGamesDataMapper>();
+			await dataMApper.Test();
+
+
+			return;
 
 			var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
 			PostgresDbProvider db2Provider = GetPostgresDbProvider(loggerFactory);
