@@ -10,6 +10,14 @@ namespace R5.FFDB.Components.Resolvers
 {
 	public static class DirectoryFilesResolver
 	{
+		public static List<string> GetFilePaths(string directoryPath)
+		{
+			return new DirectoryInfo(directoryPath)
+				.GetFiles()
+				.Select(f => f.ToString())
+				.ToList();
+		}
+
 		public static List<string> GetFileNames(string directoryPath,
 			string validateNameRegex = null, bool excludeExtensions = false)
 		{

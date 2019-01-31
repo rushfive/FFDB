@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.DbProviders.Postgre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.CLI.Tests", "R5.FFDB.CLI.Tests\R5.FFDB.CLI.Tests.csproj", "{25705406-0533-4F4C-BEB0-6ECC2649B519}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.FFDB.Components.Tests", "R5.FFDB.Components.Tests\R5.FFDB.Components.Tests.csproj", "{C0AA7917-5035-4936-9827-A1E36DE067CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Components.Tests", "R5.FFDB.Components.Tests\R5.FFDB.Components.Tests.csproj", "{C0AA7917-5035-4936-9827-A1E36DE067CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.Lib", "R5.Lib\R5.Lib.csproj", "{EAE544CC-57B8-46A0-A960-66F65C8E6332}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{C0AA7917-5035-4936-9827-A1E36DE067CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0AA7917-5035-4936-9827-A1E36DE067CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0AA7917-5035-4936-9827-A1E36DE067CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAE544CC-57B8-46A0-A960-66F65C8E6332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAE544CC-57B8-46A0-A960-66F65C8E6332}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAE544CC-57B8-46A0-A960-66F65C8E6332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAE544CC-57B8-46A0-A960-66F65C8E6332}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

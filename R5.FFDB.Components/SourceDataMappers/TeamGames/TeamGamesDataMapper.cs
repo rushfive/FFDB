@@ -1,9 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using R5.FFDB.Components.CoreData.TeamGames;
+using R5.FFDB.Components.CoreData.TeamGames.Models;
+using R5.FFDB.Components.CoreData.WeekStats.Models;
+using R5.FFDB.Components.Resolvers;
+using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,18 +22,90 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 	public interface ITeamGamesDataMapper
 	{
 		Task Test();
+		Task Test2();
+		Task Test3();
+		Task Test4();
 	}
 	public class TeamGamesDataMapper : ITeamGamesDataMapper
 	{
 		private DataDirectoryPath _dataPath { get; set; }
 		private IDatabaseProvider _dbProvider { get; set; }
+		private AvailableWeeksValue _availableWeeksValue { get; set; }
+		private IPlayerWeekTeamResolverFactory _playerWeekTeamResolverFactory { get; }
 
 		public TeamGamesDataMapper(
 			DataDirectoryPath dataPath,
-			IDatabaseProvider dbProvider)
+			IDatabaseProvider dbProvider,
+			AvailableWeeksValue availableWeeksValue,
+			IPlayerWeekTeamResolverFactory playerWeekTeamResolverFactory)
 		{
 			_dataPath = dataPath;
 			_dbProvider = dbProvider;
+			_availableWeeksValue = availableWeeksValue;
+			_playerWeekTeamResolverFactory = playerWeekTeamResolverFactory;
+		}
+
+		public async Task Test4()
+		{
+			// test week stats
+			var all = new List<Core.Entities.WeekStats>();
+			var filePaths = DirectoryFilesResolver.GetFilePaths(@"D:\Repos\ffdb_data_2\week_stats\");
+
+			List<Core.Models.WeekInfo> allWeeks = await _availableWeeksValue.GetAsync();
+			foreach (var week in allWeeks)
+			{
+				Func<string, int?> weekTeamResolver = await _playerWeekTeamResolverFactory.GetForWeekAsync(week);
+
+				string path = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
+
+				var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
+
+				var item = WeekStatsJson.ToCoreEntity(json, week, weekTeamResolver);
+				all.Add(item);
+			}
+
+
+			string t = "test";
+		}
+
+		public async Task Test3()
+		{
+			// load all to test mem usage
+
+			var allData = new List<TeamGameData>();
+
+			var filePaths = DirectoryFilesResolver.GetFilePaths(@"D:\Repos\ffdb_data_2\team_game_history\game_stats2\");
+
+			foreach(var file in filePaths)
+			{
+				TeamGameData json = JsonConvert.DeserializeObject<TeamGameData>(
+					File.ReadAllText(file));
+				allData.Add(json);
+			}
+
+			string t = "test";
+		}
+
+		// get and save all as new model
+		public async Task Test2()
+		{
+			Dictionary<string, string> gsisNflIdMap = await GetGsisToNflIdMapAsync();
+
+			List<Core.Models.WeekInfo> allWeeks = await _availableWeeksValue.GetAsync();
+			foreach(var week in allWeeks)
+			{
+				List<string> gameIds = TeamGamesUtil.GetGameIdsForWeek(week, _dataPath);
+				foreach(var gameId in gameIds)
+				{
+					// try converting to new model FROM disk (this could be directly from a web response as well)
+					JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json"));
+
+					var teamData = TeamGameData.FromGameStats(json, gameId, week, gsisNflIdMap);
+					string serializedJson = JsonConvert.SerializeObject(teamData);
+
+					File.WriteAllText(@"D:\Repos\ffdb_data_2\team_game_history\game_stats2\" + $"{gameId}.json", serializedJson);
+				}
+			}
 		}
 
 		public async Task Test()
@@ -41,7 +119,7 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 																					  // gameId and teamType (home or away) required to parse an inner jobject
 			string gameId = "2018123015";
 
-			var teamData = WeekGameTeamData.FromGameStats(json, gameId, gsisNflIdMap);
+			var teamData = TeamGameData.FromGameStats(json, gameId, new WeekInfo(2018,5), gsisNflIdMap);
 
 			string serializedJson = JsonConvert.SerializeObject(teamData);
 
@@ -62,146 +140,5 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 	}
 
 	// todo move - filename should be nfl game id
-	public class WeekGameTeamData
-	{
-		public TeamData Home { get; }
-		public TeamData Away { get;}
-
-		private WeekGameTeamData(
-			TeamData home,
-			TeamData away)
-		{
-			Home = home;
-			Away = away;
-		}
-
-		// json param should be the entire parsed file, just pass it straight here
-		public static WeekGameTeamData FromGameStats(JObject json, string gameId, Dictionary<string, string> gsisNflIdMap)
-		{
-			var home = TeamData.AsHome(json, gameId, gsisNflIdMap);
-			var away = TeamData.AsAway(json, gameId, gsisNflIdMap);
-			return new WeekGameTeamData(home, away);
-		}
-	}
-
-	public class TeamData
-	{
-		public int Id { get; set; }
-
-		// list of players from team active, must map from esb to nflid
-		public List<string> PlayerNflIds { get; set; } = new List<string>();
-
-		// points
-		public int PointsFirstQuarter { get; set; }
-		public int PointsSecondQuarter { get; set; }
-		public int PointsThirdQuarter { get; set; }
-		public int PointsFourthQuarter { get; set; }
-		public int PointsOverTime { get; set; }
-		public int PointsTotal { get; set; }
-
-		// stats
-		public int FirstDowns { get; set; }
-		public int TotalYards { get; set; }
-		public int PassingYards { get; set; }
-		public int RushingYards { get; set; }
-		public int Penalties { get; set; }
-		public int PenaltyYards { get; set; }
-		public int Turnovers { get; set; }
-		public int Punts { get; set; }
-		public int PuntYards { get; set; }
-		public int PuntYardsAverage { get; set; }
-		public int TimeOfPossessionSeconds { get; set; }
-
-		private static List<string> _statKeys = new List<string>
-		{
-			"passing", "rushing", "receiving", "fumbles", "kicking", "punting", "kickret", "puntret", "defense"
-		};
-
-		private TeamData() { }
-
-		public static TeamData AsHome(JObject json, string gameId, Dictionary<string, string> gsisNflIdMap)
-		{
-			return new TeamData().ResolveAs(json, gameId, "home", gsisNflIdMap);
-		}
-
-		public static TeamData AsAway(JObject json, string gameId, Dictionary<string, string> gsisNflIdMap)
-		{
-			return new TeamData().ResolveAs(json, gameId, "away", gsisNflIdMap);
-		}
-
-		private TeamData ResolveAs(JObject json, string gameId, string teamType, Dictionary<string, string> gsisNflIdMap)
-		{
-			Id = TeamDataStore.GetIdFromAbbreviation(
-				(string)json.SelectToken($"{gameId}.{teamType}.abbr"),
-				includePriorLookup: true);
-
-			SetPointsScored(json, gameId, teamType);
-			SetTeamStats(json, gameId, teamType);
-			SetActivePlayers(json, Id, gameId, teamType, gsisNflIdMap);
-
-			return this;
-		}
-
-		private void SetPointsScored(JObject json, string gameId, string teamType)
-		{
-			JToken score = json.SelectToken($"{gameId}.{teamType}.score");
-			if (score == null)
-			{
-				throw new InvalidOperationException($"Failed to parse score object for {teamType} team in game '{gameId}'.");
-			}
-
-			PointsFirstQuarter = (int)score["1"];
-			PointsSecondQuarter = (int)score["2"];
-			PointsThirdQuarter = (int)score["3"];
-			PointsFourthQuarter = (int)score["4"];
-			PointsOverTime = (int)score["5"];
-			PointsTotal = (int)score["T"];
-		}
-
-		private void SetTeamStats(JObject json, string gameId, string teamType)
-		{
-			JToken teamStats = json.SelectToken($"{gameId}.{teamType}.stats.team");
-			if (teamStats == null)
-			{
-				throw new InvalidOperationException($"Failed to parse team stats object for {teamType} team in game '{gameId}'.");
-			}
-
-			FirstDowns = (int)teamStats["totfd"];
-			TotalYards = (int)teamStats["totyds"];
-			PassingYards = (int)teamStats["pyds"];
-			RushingYards = (int)teamStats["ryds"];
-			Penalties = (int)teamStats["pen"];
-			PenaltyYards = (int)teamStats["penyds"];
-			Turnovers = (int)teamStats["trnovr"];
-			Punts = (int)teamStats["pt"];
-			PuntYards = (int)teamStats["ptyds"];
-			PuntYardsAverage = (int)teamStats["ptavg"];
-
-			string timeOfPosession = (string)teamStats["top"];
-			var split = timeOfPosession.Split(':');
-			TimeOfPossessionSeconds = int.Parse(split[0]) * 60 + int.Parse(split[1]);
-		}
-
-		private void SetActivePlayers(JObject json, int teamId, string gameId, string teamType, Dictionary<string, string> gsisNflIdMap)
-		{
-			foreach (string statKey in _statKeys)
-			{
-				if (!json.SelectToken($"{gameId}.{teamType}.stats").TryGetToken(statKey, out JToken stats))
-				{
-					continue;
-				}
-
-				foreach (string gsis in stats.ChildPropertyNames())
-				{
-					if (!gsisNflIdMap.TryGetValue(gsis, out string nflId))
-					{
-						// most likely insignificant players that we dont care about
-						continue;
-					}
-
-					PlayerNflIds.Add(nflId);
-				}
-			}
-		}
-	}
+	
 }

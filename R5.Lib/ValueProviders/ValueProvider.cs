@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.ValueProviders
+namespace R5.Lib.ValueProviders
 {
 	public abstract class ValueProvider<T>
 	{

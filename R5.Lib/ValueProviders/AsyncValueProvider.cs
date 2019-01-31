@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.ValueProviders
+namespace R5.Lib.ValueProviders
 {
 	// lazy loaded values resolved async
 	public abstract class AsyncValueProvider<T>

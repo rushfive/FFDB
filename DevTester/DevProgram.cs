@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Npgsql;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
+using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.PlayerMatcher;
 using R5.FFDB.Components.Resolvers;
@@ -53,13 +54,31 @@ namespace DevTester
 			/// 
 			/// 
 
+			var gameMatchSvc = _serviceProvider.GetRequiredService<IWeekGameMatchupService>();
+			var availableWeeksValue = _serviceProvider.GetRequiredService<AvailableWeeksValue>();
+
+			var weeks = await availableWeeksValue.GetAsync();
+			var allMatchups = new List<WeekGameMatchup>();
+
+			foreach (var week in weeks)
+			{
+				var matchups = gameMatchSvc.GetForWeek(week);
+				allMatchups.AddRange(matchups);
+			}
+
+			return;
+
 
 			// TEST getting targets data
 			// first need to come up with fuzzy strin gmatching, use edit distance
 			//  - normalize pattern vs search-text by lowercasing all, then run algorithm
 
+			//var filePath = @"D:\Repos\ffdb_data_2\team_game_history\game_stats2\2018123015.json";
+			//WeekGameTeamData json = JsonConvert.DeserializeObject<WeekGameTeamData>(File.ReadAllText(filePath));
+			
+
 			var dataMApper = _serviceProvider.GetRequiredService<ITeamGamesDataMapper>();
-			await dataMApper.Test();
+			await dataMApper.Test4();
 
 
 			return;

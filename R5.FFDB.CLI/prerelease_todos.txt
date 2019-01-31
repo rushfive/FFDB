@@ -1,3 +1,11 @@
+need a SaveToDisk switch (or the opposite)
+
+- Caching static data on init
+-- loading all new week stats into memory takes: 8,072,856 = ~8MB (not too bad, should def cache all this)
+- weekstats = 21,307,216 (ont too bad)
+
+------------------------------------------
+
 RunInfoBuilder needs to be updated to allow for 
 global options that can be accessed in any command.
 - for now, making it work by adding the same --config option
