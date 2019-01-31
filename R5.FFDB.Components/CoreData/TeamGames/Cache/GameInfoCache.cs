@@ -7,22 +7,29 @@ using R5.Lib.Cache;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 {
-	// gameId -> week
-	// get game ids for week (currently in TeamGamesUtil)
-	public interface IGameInfoCache
+	// todo move
+	public interface IResolvableAsyncCache<TKey, TValue>
 	{
-		Task<WeekInfo> GetWeekAsync(string gameId);
+		Task<TValue> GetAsync(TKey key);
+	}
+
+	public interface IGameInfoCache : IResolvableAsyncCache<WeekInfo, List<string>>
+	{
+		WeekInfo GetWeekForGame(string gameId);
 		Task<List<string>> GetGameIdsAsync(WeekInfo week);
 	}
 
 	public class GameInfoCache : ResolvableAsyncCache<WeekInfo, List<string>>, IGameInfoCache
 	{
+		private Dictionary<string, WeekInfo> _gameWeekMap { get; } = new Dictionary<string, WeekInfo>(StringComparer.OrdinalIgnoreCase);
+
 		private ILogger<TeamGameDataCache> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
@@ -45,22 +52,31 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 			return this.GetAsync(week);
 		}
 
-		public Task<WeekInfo> GetWeekAsync(string gameId)
+		public WeekInfo GetWeekForGame(string gameId)
 		{
-			throw new NotImplementedException();
+			if (!_gameWeekMap.TryGetValue(gameId, out WeekInfo week))
+			{
+				throw new InvalidOperationException($"Failed to find week for game '{gameId}'.");
+			}
+
+			return week;
 		}
 
-		protected override Task<List<string>> ResolveAsync(WeekInfo week)
+		protected override async Task<List<string>> ResolveAsync(WeekInfo week)
 		{
-			throw new NotImplementedException();
-
-			string filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
-
-			if (File.Exists(filePath))
+			List<string> gameIds;
+			if (TryGetFromDisk(week, out List<string> ids))
 			{
-				_logger.LogDebug($"Week games file already exists for {week}. Will not fetch.");
-				return;
+				gameIds = ids;
 			}
+			else
+			{
+				gameIds = await FetchAsync(week);
+			}
+
+			gameIds.ForEach(id => _gameWeekMap[id] = week);
+
+			return gameIds;
 		}
 
 		private bool TryGetFromDisk(WeekInfo week, out List<string> result)
@@ -69,26 +85,42 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 
 			string filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
 
-			if (File.Exists(filePath))
+			if (!File.Exists(filePath))
 			{
-				result = new List<string>();
-
-				XElement weekGameXml = XElement.Load(filePath);
-
-				XElement gameNode = weekGameXml.Elements("gms").Single();
-
-				foreach (XElement game in gameNode.Elements("g"))
-				{
-					string gameId = game.Attribute("eid").Value;
-					result.Add(gameId);
-				}
-
-				return result;
-
-				return true;
+				return false;
 			}
 
-			return false;
+			XElement weekGameXml = XElement.Load(filePath);
+
+			result = GetFromXmlElement(weekGameXml);
+			
+			return true;
+		}
+
+		private async Task<List<string>> FetchAsync(WeekInfo week)
+		{
+			string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
+
+			string response = await _webRequestClient.GetStringAsync(uri, throttle: false);
+
+			XElement weekGameXml = XElement.Parse(response);
+
+			return GetFromXmlElement(weekGameXml);
+		}
+
+		private List<string> GetFromXmlElement(XElement weekGameXml)
+		{
+			var result = new List<string>();
+
+			XElement gameNode = weekGameXml.Elements("gms").Single();
+
+			foreach (XElement game in gameNode.Elements("g"))
+			{
+				string gameId = game.Attribute("eid").Value;
+				result.Add(gameId);
+			}
+
+			return result;
 		}
 	}
 }

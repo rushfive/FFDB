@@ -93,19 +93,19 @@ namespace R5.FFDB.Engine.Processors
 		{
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 
-			await _teamGamesSource.FetchForWeekAsync(week);
-			await _weekStatsSource.FetchForWeekAsync(week);
+			await _teamGamesSource.FetchForWeekAsync(week);//
+			await _weekStatsSource.FetchForWeekAsync(week);//
 
-			List<string> weekStatNflIds = _weekStatsService.GetNflIdsForWeek(week);
-			await _helper.AddPlayerProfilesAsync(weekStatNflIds, dbContext);
+			List<string> weekStatNflIds = _weekStatsService.GetNflIdsForWeek(week);//
+			await _helper.AddPlayerProfilesAsync(weekStatNflIds, dbContext);//
 
-			WeekStats weekStats = await _weekStatsService.GetForWeekAsync(week);
+			WeekStats weekStats = await _weekStatsService.GetForWeekAsync(week);//
 			await dbContext.Stats.AddWeekAsync(weekStats);
 
-			List<TeamWeekStats> teamStats = _teamStatsService.GetForWeek(week);
+			List<TeamWeekStats> teamStats = _teamStatsService.GetForWeek(week); // team game data cache
 			await dbContext.Team.AddGameStatsAsync(teamStats);
 
-			List<WeekGameMatchup> gameMatchups = _gameMatchupService.GetForWeek(week);
+			List<WeekGameMatchup> gameMatchups = _gameMatchupService.GetForWeek(week); // game info cache
 			await dbContext.Team.AddGameMatchupsAsync(gameMatchups);
 
 			await dbContext.Log.AddUpdateForWeekAsync(week);
