@@ -14,11 +14,12 @@ using System.Xml.Linq;
 
 namespace R5.FFDB.Components.CoreData.TeamGames
 {
+	[Obsolete("Use new TeamGameDataCache instead")]
 	public interface IPlayerWeekTeamResolverFactory
 	{
 		Task<Func<string, int?>> GetForWeekAsync(WeekInfo week);
 	}
-
+	[Obsolete("Use new TeamGameDataCache instead")]
 	public class PlayerWeekTeamResolverFactory : IPlayerWeekTeamResolverFactory
 	{
 		private static List<string> _statKeys = new List<string>

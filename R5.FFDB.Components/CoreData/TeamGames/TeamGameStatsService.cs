@@ -12,11 +12,12 @@ using System.Xml.Linq;
 
 namespace R5.FFDB.Components.CoreData.TeamGames
 {
+	[Obsolete("Use new TeamGameDataCache instead")]
 	public interface ITeamGameStatsService
 	{
 		List<TeamWeekStats> GetForWeek(WeekInfo week);
 	}
-
+	[Obsolete("Use new TeamGameDataCache instead")]
 	public class TeamGameStatsService : ITeamGameStatsService
 	{
 		private ILogger<TeamGameStatsService> _logger { get; }

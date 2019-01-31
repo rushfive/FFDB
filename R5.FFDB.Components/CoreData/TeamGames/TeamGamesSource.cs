@@ -15,13 +15,14 @@ using System.Xml.Linq;
 
 namespace R5.FFDB.Components.CoreData.TeamGames
 {
+	[Obsolete("moving to GameInfoCache")]
 	public interface ITeamGamesSource : ICoreDataSource
 	{
 		Task FetchForWeekAsync(WeekInfo week);
 		Task FetchAllAsync();
 		Task FetchForWeeksAsync(List<WeekInfo> weeks);
 	}
-
+	[Obsolete("moving to GameInfoCache")]
 	public class TeamGamesSource : ITeamGamesSource
 	{
 		public string Label => "Team Game History";

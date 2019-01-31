@@ -9,8 +9,10 @@ using System.Xml.Linq;
 
 namespace R5.FFDB.Components.CoreData.TeamGames
 {
+	[Obsolete]
 	internal static class TeamGamesUtil
 	{
+		[Obsolete("moving to GameInfoCache")]
 		internal static List<string> GetGameIdsForWeek(WeekInfo week, DataDirectoryPath dataPath)
 		{
 			var result = new List<string>();
@@ -29,7 +31,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 
 			return result;
 		}
-
+		[Obsolete("move to wherever this is happening")]
 		internal static void SetTeamWeekStats(TeamWeekStats stats,
 			JObject statsJson, string gameId, string teamType)
 		{

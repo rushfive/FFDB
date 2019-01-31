@@ -10,11 +10,12 @@ using System.Xml.Linq;
 
 namespace R5.FFDB.Components.CoreData.TeamGames
 {
+	[Obsolete("Use new GameInfoCache instead")]
 	public interface IWeekGameMatchupService
 	{
 		List<WeekGameMatchup> GetForWeek(WeekInfo week);
 	}
-
+	[Obsolete("Use new GameInfoCache instead")]
 	public class WeekGameMatchupService : IWeekGameMatchupService
 	{
 		private ILogger<WeekGameMatchupService> _logger { get; }

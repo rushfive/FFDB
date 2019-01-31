@@ -72,14 +72,14 @@ namespace R5.FFDB.Components.CoreData.TeamGames.NewTodoMove
 
 			string filePath = _dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json";
 
-			if (File.Exists(filePath))
+			if (!File.Exists(filePath))
 			{
-				string serialized = File.ReadAllText(filePath);
-				value = JsonConvert.DeserializeObject<TeamGameData>(serialized);
-				return true;
+				return false;
 			}
 
-			return false;
+			string serialized = File.ReadAllText(filePath);
+			value = JsonConvert.DeserializeObject<TeamGameData>(serialized);
+			return true;
 		}
 
 
