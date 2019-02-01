@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components
+namespace R5.FFDB.Components.Extensions
 {
 	public static class JObjectExtensions
 	{
