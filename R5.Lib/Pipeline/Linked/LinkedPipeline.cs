@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace R5.Lib.Pipeline.Linked
 {
+	// todo: implement ienumerable
 	public class LinkedPipeline<TContext>
 	{
 		private string _name { get; }

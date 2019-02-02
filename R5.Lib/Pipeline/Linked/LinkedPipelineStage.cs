@@ -5,40 +5,35 @@ using System.Threading.Tasks;
 
 namespace R5.Lib.Pipeline.Linked
 {
-	public abstract class LinkedPipelineStage<TContext>
+	public abstract class LinkedPipelineStage<TContext, TIn, TOut>
 	{
-		private string _name { get; }
+		public virtual string Name { get; protected set; } = "Unnamed Stage";
 
-		protected LinkedPipelineStage(string name)
-		{
-			_name = name;
-		}
+		//private string _name { get; }
+
+		//protected LinkedPipelineStage(string name)
+		//{
+		//	_name = name;
+		//}
+
+		//public abstract bool HasNext();
+		//public abstract LinkedPipelineStage<TContext, TNextInput> GetNext<TNextInput>(TContext context);
 
 		public abstract bool HasNext();
-		public abstract LinkedPipelineStage<TContext> GetNext(TContext context);
-		public abstract LinkedPipelineStage<TContext> SetNext(string name, Func<TContext, Task<ProcessStageResult>> processCallback);
-		public abstract LinkedPipelineStage<TContext> SetNext(LinkedPipelineStage<TContext> stage);
+		public abstract LinkedPipelineStage<TContext, TOut, TNextInput> GetNext<TNextInput>();
 
-		public virtual Func<TContext, Task<ProcessStageResult>> ProcessAsync { get; set; } = context =>
+		public abstract LinkedPipelineStage<TContext, TOut, TNextInput> SetNext<TNextInput>(Func<TContext, TOut, Task<ProcessStageResult<TNextInput>>> processCallback, string name = null);
+		public abstract LinkedPipelineStage<TContext, TOut, TNextInput> SetNext<TNextInput>(LinkedPipelineStage<TContext, TOut, TNextInput> stage);
+
+		//public abstract Task<ProcessStageResult<TNextInput>> ProcessAsync<TNextInput>(TContext context, TInput input);
+
+		// virtual member with default, derived implementations can override, most likely calling a configurable callback func
+		public virtual async Task<ProcessStageResult<TOutput>> ProcessAsync<TOutput>(TContext context, TIn input)
 		{
 			Console.WriteLine($"Ending processing because the stage hasn't defined process logic.");
-			return Task.FromResult(ProcessResult.End);
-		};
-
-		//public virtual Task<ProcessStageResult> ProcessAsync(TContext context)
-		//{
-		//	Console.WriteLine($"Ending processing because stage '{_name}' hasn't defined process logic.");
-		//	return Task.FromResult<ProcessStageResult>(ProcessResult.End);
-		//}
-
-		//public Task<ProcessStageResult> ProcessAsync(TContext context)
-		//{
-		//	return _process(context);
-		//}
-
-		public string GetName()
-		{
-			return _name;
+			return ProcessResult.EndWith(default(TOutput));
 		}
+
+		
 	}
 }
