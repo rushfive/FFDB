@@ -8,6 +8,7 @@ using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.Pipelines.Stats;
 using R5.FFDB.Components.PlayerMatcher;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.SourceDataMappers.TeamGames;
@@ -59,6 +60,9 @@ namespace DevTester
 			/// DONT TOUCH ABOVE ///
 			/// 
 			/// 
+
+			RemoveWeekPipeline pipeline = RemoveWeekPipeline.Create(_serviceProvider);
+			await pipeline.ProcessAsync(new RemoveWeekPipeline.Context { Week = new WeekInfo(2010, 1) });
 
 			//var endChain = new LinkedPointerStage<TestContext>("End Stage 1", async context =>
 			//{
