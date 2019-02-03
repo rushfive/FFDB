@@ -25,7 +25,6 @@ using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using R5.FFDB.Engine;
 using R5.Lib.Pipeline;
-using R5.Lib.Pipeline.Linked;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -61,79 +60,79 @@ namespace DevTester
 			/// 
 			/// 
 
-			var endChain = new LinkedPointerStage<TestContext>("End Stage 1", async context =>
-			{
-				Console.WriteLine($"[End] Stage 1 - {context.Bool}");
-				return ProcessResult.Continue;
-			});
-			endChain
-				.SetNext("End Stage 2", async context =>
-				{
-					Console.WriteLine($"[End] Stage 2 - {context.Bool}");
-					//Console.WriteLine($"[End] Stage 2 - Setting Bool to FALSE");
-					//context.Bool = false;
-					return ProcessResult.Continue;
-				})
-				.SetNext(new LinkedPointerStage<TestContext>("terminate stage - no process func"))
-				.SetNext("End Stage 3", async context =>
-				{
-					Console.WriteLine($"[End] Stage 2 - {context.Bool}");
-					Console.WriteLine($"[End] Stage 2 - will END processing if FALSE");
-					return context.Bool ? ProcessResult.Continue : ProcessResult.End;
-				})
-				.SetNext("End Stage 4", async context =>
-				{
-					Console.WriteLine($"[End] Stage 3 - {context.Bool}");
-					Console.WriteLine($"[End] Stage 3 - Should have only reached here if context.Bool was TRUE");
-					return ProcessResult.End;
-				});
+			//var endChain = new LinkedPointerStage<TestContext>("End Stage 1", async context =>
+			//{
+			//	Console.WriteLine($"[End] Stage 1 - {context.Bool}");
+			//	return ProcessResult.Continue;
+			//});
+			//endChain
+			//	.SetNext("End Stage 2", async context =>
+			//	{
+			//		Console.WriteLine($"[End] Stage 2 - {context.Bool}");
+			//		//Console.WriteLine($"[End] Stage 2 - Setting Bool to FALSE");
+			//		//context.Bool = false;
+			//		return ProcessResult.Continue;
+			//	})
+			//	.SetNext(new LinkedPointerStage<TestContext>("terminate stage - no process func"))
+			//	.SetNext("End Stage 3", async context =>
+			//	{
+			//		Console.WriteLine($"[End] Stage 2 - {context.Bool}");
+			//		Console.WriteLine($"[End] Stage 2 - will END processing if FALSE");
+			//		return context.Bool ? ProcessResult.Continue : ProcessResult.End;
+			//	})
+			//	.SetNext("End Stage 4", async context =>
+			//	{
+			//		Console.WriteLine($"[End] Stage 3 - {context.Bool}");
+			//		Console.WriteLine($"[End] Stage 3 - Should have only reached here if context.Bool was TRUE");
+			//		return ProcessResult.End;
+			//	});
 
-			var midChain1 = new LinkedPointerStage<TestContext>("Mid-1 Stage 1", async context =>
-			{
-				Console.WriteLine($"[Mid-1] Stage 1 - {context.Bool}");
-				Console.WriteLine($"[Mid-1] Stage 1 - Reached MID-1 because context.Bool is TRUE");
-				Console.WriteLine($"[Mid-1] Stage 1 - Moving onto [End]");
-				return ProcessResult.Continue;
-			});
-			midChain1
-				.SetNext(endChain);
+			//var midChain1 = new LinkedPointerStage<TestContext>("Mid-1 Stage 1", async context =>
+			//{
+			//	Console.WriteLine($"[Mid-1] Stage 1 - {context.Bool}");
+			//	Console.WriteLine($"[Mid-1] Stage 1 - Reached MID-1 because context.Bool is TRUE");
+			//	Console.WriteLine($"[Mid-1] Stage 1 - Moving onto [End]");
+			//	return ProcessResult.Continue;
+			//});
+			//midChain1
+			//	.SetNext(endChain);
 
-			var midChain2 = new LinkedPointerStage<TestContext>("Mid-2 Stage 1", async context =>
-			{
-				Console.WriteLine($"[Mid-2] Stage 1 - {context.Bool}");
-				Console.WriteLine($"[Mid-2] Stage 1 - Reached MID-2 because context.Bool is FALSE");
-				return ProcessResult.Continue;
-			});
-			midChain2
-				.SetNext("Mid-2 Stage 2", async context =>
-				{
-					Console.WriteLine($"[Mid-2] Stage 2 - {context.Bool}");
-					Console.WriteLine($"[Mid-2] Stage 2 - Moving onto [End]");
-					return ProcessResult.Continue;
-				})
-				.SetNext(endChain);
+			//var midChain2 = new LinkedPointerStage<TestContext>("Mid-2 Stage 1", async context =>
+			//{
+			//	Console.WriteLine($"[Mid-2] Stage 1 - {context.Bool}");
+			//	Console.WriteLine($"[Mid-2] Stage 1 - Reached MID-2 because context.Bool is FALSE");
+			//	return ProcessResult.Continue;
+			//});
+			//midChain2
+			//	.SetNext("Mid-2 Stage 2", async context =>
+			//	{
+			//		Console.WriteLine($"[Mid-2] Stage 2 - {context.Bool}");
+			//		Console.WriteLine($"[Mid-2] Stage 2 - Moving onto [End]");
+			//		return ProcessResult.Continue;
+			//	})
+			//	.SetNext(endChain);
 
-			var splitByBool = new LinkedCallbackStage<TestContext>("Begin Stage 2", async context =>
-			{
-				Console.WriteLine($"[Begin] Stage 2 - {context.Bool} - CALLBACK stage");
-				return ProcessResult.Continue;
-			})
-				.SetCallback(context =>
-				{
-					return context.Bool ? midChain1 : midChain2;
-				});
+			//var splitByBool = new LinkedCallbackStage<TestContext>("Begin Stage 2", async context =>
+			//{
+			//	Console.WriteLine($"[Begin] Stage 2 - {context.Bool} - CALLBACK stage");
+			//	return ProcessResult.Continue;
+			//})
+			//	.SetCallback(context =>
+			//	{
+			//		return context.Bool ? midChain1 : midChain2;
+			//	});
 
-			var beginChain = new LinkedPointerStage<TestContext>("Begin Stage 1", async context =>
-			{
-				Console.WriteLine($"[Begin] Stage 1 - {context.Bool}");
-				return ProcessResult.Continue;
-			});
-			beginChain
-				.SetNext(splitByBool);
+			//var beginChain = new LinkedPointerStage<TestContext>("Begin Stage 1", async context =>
+			//{
+			//	Console.WriteLine($"[Begin] Stage 1 - {context.Bool}");
+			//	return ProcessResult.Continue;
+			//});
+			//beginChain
+			//	.SetNext(splitByBool);
 
 
-			var pipeline = new LinkedPipeline<TestContext>("Test Pipeline", beginChain);
-			await pipeline.ProcessAsync(new TestContext { Bool = true }); // should context be passed in as process arg??
+			//var pipeline = new LinkedPipeline<TestContext>("Test Pipeline", beginChain);
+			//await pipeline.ProcessAsync(new TestContext { Bool = true }); // should context be passed in as process arg??
 
 
 
