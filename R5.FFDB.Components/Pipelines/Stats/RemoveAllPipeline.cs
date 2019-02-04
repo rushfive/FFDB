@@ -10,32 +10,29 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.Pipelines.Stats
 {
-	public class RemoveWeekPipeline : AsyncPipeline<RemoveWeekPipeline.Context>
+	public class RemoveAllPipeline : AsyncPipeline<RemoveAllPipeline.Context>
 	{
-		private ILogger<RemoveWeekPipeline> _logger { get; }
+		private ILogger<RemoveAllPipeline> _logger { get; }
 
-		public RemoveWeekPipeline(
+		public RemoveAllPipeline(
 			AsyncPipelineStage<Context> head,
-			ILogger<RemoveWeekPipeline> logger)
-			: base(head, "Remove Stats for Week")
+			ILogger<RemoveAllPipeline> logger)
+			: base(head, "Remove All Stats")
 		{
 			_logger = logger;
 		}
 
 
-		public class Context
-		{
-			public WeekInfo Week { get; set; }
-		}
+		public class Context { }
 
 		protected override void OnPipelineProcessStart(Context context, string name)
 		{
-			_logger.LogInformation($"Starting pipeline to remove stats for week {context.Week}.");
+			_logger.LogInformation("Starting pipeline to remove all stats.");
 		}
 
 		protected override void OnPipelineProcessEnd(Context context, string name)
 		{
-			_logger.LogInformation($"Finished processing pipeline to remove stats for week {context.Week}.");
+			_logger.LogInformation("Finished processing pipeline to remove all stats.");
 		}
 
 		protected override void OnStageProcessStart(Context context, string name)
@@ -77,7 +74,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
-					await _dbProvider.GetContext().Stats.RemoveForWeekAsync(context.Week);
+					await _dbProvider.GetContext().Stats.RemoveAllAsync();
 					return ProcessResult.Continue;
 				}
 			}
@@ -94,7 +91,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
-					await _dbProvider.GetContext().Team.RemoveGameStatsForWeekAsync(context.Week);
+					await _dbProvider.GetContext().Team.RemoveAllGameStatsAsync();
 					return ProcessResult.Continue;
 				}
 			}
@@ -111,7 +108,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
-					await _dbProvider.GetContext().Log.RemoveForWeekAsync(context.Week);
+					await _dbProvider.GetContext().Log.RemoveAllAsync();
 					return ProcessResult.Continue;
 				}
 			}

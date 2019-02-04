@@ -9,6 +9,7 @@ using R5.Lib.ValueProviders;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,6 +36,13 @@ namespace R5.FFDB.Components.CoreData.Rosters.Values
 			_dataPath = dataPath;
 			_scraper = scraper;
 			_programOptions = programOptions;
+		}
+
+		public async Task<Dictionary<string, RosterPlayer>> GetPlayerMapAsync()
+		{
+			return (await GetAsync())
+				.SelectMany(r => r.Players)
+				.ToDictionary(p => p.NflId, p => p);
 		}
 
 		protected override async Task<List<Roster>> ResolveValueAsync()

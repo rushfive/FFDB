@@ -21,6 +21,13 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 		}
 
+		// NEW FOR PIPELINE
+
+		public async Task
+
+
+		// OLD BELOW
+
 		public async Task AddAsync(List<Player> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();

@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.Pipelines.Stats;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +16,8 @@ namespace R5.FFDB.Engine.Processors
 {
 	public class StatsProcessor
 	{
+		private IServiceProvider _serviceProvider { get; }
+
 		private ILogger<StatsProcessor> _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private AvailableWeeksValue _availableWeeksValue { get; }
@@ -25,6 +29,8 @@ namespace R5.FFDB.Engine.Processors
 		private IWeekGameMatchupService _gameMatchupService { get; }
 
 		public StatsProcessor(
+			IServiceProvider serviceProvider,
+
 			ILogger<StatsProcessor> logger,
 			IDatabaseProvider dbProvider,
 			AvailableWeeksValue availableWeeksValue,
@@ -35,6 +41,8 @@ namespace R5.FFDB.Engine.Processors
 			IProcessorHelper helper,
 			IWeekGameMatchupService gameMatchupService)
 		{
+			_serviceProvider = serviceProvider;
+
 			_logger = logger;
 			_dbProvider = dbProvider;
 			_availableWeeksValue = availableWeeksValue;
@@ -111,30 +119,41 @@ namespace R5.FFDB.Engine.Processors
 			await dbContext.Log.AddUpdateForWeekAsync(week);
 		}
 
-		public async Task RemoveAllAsync()
+		public Task RemoveAllAsync()
 		{
-			_logger.LogInformation("Removing all stats (WeekStats and TeamGameStats) and logs.");
+			var pipeline = RemoveAllPipeline.Create(_serviceProvider);
 
-			IDatabaseContext dbContext = _dbProvider.GetContext();
+			return pipeline.ProcessAsync(null);
 
-			await dbContext.Stats.RemoveAllAsync();
-			await dbContext.Team.RemoveAllGameStatsAsync();
-			await dbContext.Log.RemoveAllAsync();
+			//_logger.LogInformation("Removing all stats (WeekStats and TeamGameStats) and logs.");
 
-			_logger.LogInformation("Finished removing all stats and logs.");
+			//IDatabaseContext dbContext = _dbProvider.GetContext();
+
+			//await dbContext.Stats.RemoveAllAsync();
+			//await dbContext.Team.RemoveAllGameStatsAsync();
+			//await dbContext.Log.RemoveAllAsync();
+
+			//_logger.LogInformation("Finished removing all stats and logs.");
 		}
 
-		public async Task RemoveForWeekAsync(WeekInfo week)
+		public Task RemoveForWeekAsync(WeekInfo week)
 		{
-			_logger.LogInformation($"Removing stats (WeekStats and TeamGameStats) and logs for {week}.");
+			var context = new RemoveWeekPipeline.Context { Week = week };
 
-			IDatabaseContext dbContext = _dbProvider.GetContext();
+			var pipeline = RemoveWeekPipeline.Create(_serviceProvider);
 
-			await dbContext.Stats.RemoveForWeekAsync(week);
-			await dbContext.Team.RemoveGameStatsForWeekAsync(week);
-			await dbContext.Log.RemoveForWeekAsync(week);
+			return pipeline.ProcessAsync(context);
 
-			_logger.LogInformation($"Finished removing stats and logs for {week}.");
+
+			//_logger.LogInformation($"Removing stats (WeekStats and TeamGameStats) and logs for {week}.");
+
+			//IDatabaseContext dbContext = _dbProvider.GetContext();
+
+			//await dbContext.Stats.RemoveForWeekAsync(week);
+			//await dbContext.Team.RemoveGameStatsForWeekAsync(week);
+			//await dbContext.Log.RemoveForWeekAsync(week);
+
+			//_logger.LogInformation($"Finished removing stats and logs for {week}.");
 		}
 	}
 }
