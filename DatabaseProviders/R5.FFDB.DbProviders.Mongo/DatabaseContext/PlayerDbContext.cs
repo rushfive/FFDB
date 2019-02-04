@@ -30,9 +30,18 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			await GetMongoDbContext().InsertOneAsync(document);
 
 			var collectionName = CollectionNames.GetForType<PlayerDocument>();
-			GetLogger<PlayerDbContext>().LogTrace($"Saved player {player} to the '{collectionName}' collection.");
+			GetLogger<PlayerDbContext>().LogTrace($"Saved player {player} to collection '{collectionName}'.");
 		}
 
+		public async Task UpdateAsync(Player player)
+		{
+			PlayerDocument document = PlayerDocument.FromCoreEntity(player);
+
+			await GetMongoDbContext().ReplaceOneAsync(p => p.Id == player.Id, document);
+
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+			GetLogger<PlayerDbContext>().LogTrace($"Updated player {player} in collection '{collectionName}'.");
+		}
 
 		// OLD BELOW
 

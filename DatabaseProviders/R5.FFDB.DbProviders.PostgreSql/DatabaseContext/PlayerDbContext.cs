@@ -124,5 +124,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>(sql);
 			return playerSqls.Select(PlayerSql.ToCoreEntity).ToList();
 		}
+
+		public Task UpdateAsync(Player player)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

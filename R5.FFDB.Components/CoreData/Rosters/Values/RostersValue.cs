@@ -38,6 +38,14 @@ namespace R5.FFDB.Components.CoreData.Rosters.Values
 			_programOptions = programOptions;
 		}
 
+		public async Task<List<string>> GetIdsAsync()
+		{
+			return (await GetAsync())
+				.SelectMany(r => r.Players)
+				.Select(p => p.NflId)
+				.ToList();
+		}
+
 		public async Task<Dictionary<string, RosterPlayer>> GetPlayerMapAsync()
 		{
 			return (await GetAsync())

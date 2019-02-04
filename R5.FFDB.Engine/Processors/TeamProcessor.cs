@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData.Rosters.Values;
+using R5.FFDB.Components.Pipelines.Team;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,31 +18,47 @@ namespace R5.FFDB.Engine.Processors
 		private RostersValue _rostersValue { get; }
 		private IProcessorHelper _helper { get; }
 
+		private IServiceProvider _serviceProvider { get; }
+
 		public TeamProcessor(
 			ILogger<TeamProcessor> logger,
 			IDatabaseProvider dbProvider,
 			RostersValue rostersValue,
-			IProcessorHelper helper)
+			IProcessorHelper helper,
+
+			IServiceProvider serviceProvider)
 		{
 			_logger = logger;
 			_dbProvider = dbProvider;
 			_rostersValue = rostersValue;
 			_helper = helper;
+
+			_serviceProvider = serviceProvider;
 		}
 
-		public async Task UpdateRostersAsync()
+		// Updates player-team mappings. Doesn't update player data
+		public Task UpdateRostersAsync()
 		{
-			_logger.LogInformation("Beginning rosters update in database.");
+			var context = new UpdateRostersPipeline.Context();
 
-			IDatabaseContext dbContext = _dbProvider.GetContext();
-			List<Roster> rosters = await _rostersValue.GetAsync();
+			var pipeline = UpdateRostersPipeline.Create(_serviceProvider);
 
-			List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
-			await _helper.AddPlayerProfilesAsync(rosterNflIds, dbContext);
+			return pipeline.ProcessAsync(context);
 
-			await dbContext.Team.UpdateRostersAsync(rosters);
+			////
 
-			_logger.LogInformation("Successfully updated rosters in database.");
+
+			//_logger.LogInformation("Beginning rosters update in database.");
+
+			//IDatabaseContext dbContext = _dbProvider.GetContext();
+			//List<Roster> rosters = await _rostersValue.GetAsync();
+
+			//List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
+			//await _helper.AddPlayerProfilesAsync(rosterNflIds, dbContext);
+
+			//await dbContext.Team.UpdateRostersAsync(rosters);
+
+			//_logger.LogInformation("Successfully updated rosters in database.");
 		}
 	}
 }

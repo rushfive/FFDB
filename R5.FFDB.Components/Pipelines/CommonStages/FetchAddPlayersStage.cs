@@ -10,6 +10,7 @@ using R5.FFDB.Core.Entities;
 using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,54 +18,55 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.Pipelines.CommonStages
 {
-	public interface IPlayersListContext
+	// this will simply fetch and add all players as specified in the ids list,
+	// no filtering! this assumes all players in FetchAddNflIds have already
+	// been verified to NOT already exist
+
+	public interface IFetchAddPlayersContext
 	{
-		List<string> NflIds { get; set; }
+		List<string> FetchAddNflIds { get; set; }
 	}
 
-	public class FetchSavePlayersStage : AsyncPipelineStage<IPlayersListContext>
+	public class FetchAddPlayersStage<TContext> : Stage<TContext>
+		where TContext : IFetchAddPlayersContext
 	{
-		private ILogger<FetchSavePlayersStage> _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private RostersValue _rosters { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IPlayerSource _playerSource { get; }
 		private WebRequestThrottle _throttle { get; }
 
-		public FetchSavePlayersStage(
-			ILogger<FetchSavePlayersStage> logger,
+		public FetchAddPlayersStage(
+			ILogger<FetchAddPlayersStage<TContext>> logger,
 			IDatabaseProvider dbProvider,
 			RostersValue rosters,
 			DataDirectoryPath dataPath,
 			IPlayerSource playerSource,
 			WebRequestThrottle throttle)
-			: base("Fetch and Save Players")
+			: base(logger, "Fetch and Save Players")
 		{
-			_logger = logger;
 			_dbProvider = dbProvider;
 			_rosters = rosters;
 			_dataPath = dataPath;
 			_playerSource = playerSource;
 			_throttle = throttle;
 		}
-
-		public override async Task<ProcessStageResult> ProcessAsync(IPlayersListContext context)
+		
+		public override async Task<ProcessStageResult> ProcessAsync(TContext context)
 		{
-			List<string> requiredIds = await GetRequiredIdsAsync(context.NflIds);
+			Debug.Assert(context.FetchAddNflIds != null, "NFL Ids list must be set before this stage runs.");
 
-			if (!requiredIds.Any())
+			if (!context.FetchAddNflIds.Any())
 			{
-				_logger.LogInformation($"No new player profiles to add. "
-					+ $"The {requiredIds.Count} players already exist in the database.");
-
+				LogInformation("No players to add. Continuing to next stage.");
 				return ProcessResult.Continue;
 			}
 
-			_logger.LogDebug($"Will fetch and save {requiredIds.Count} players.");
+			LogDebug($"Will fetch and save {context.FetchAddNflIds.Count} players.");
 
 			Dictionary<string, RosterPlayer> rosterPlayerMap = await _rosters.GetPlayerMapAsync();
 
-			foreach(string nflId in requiredIds)
+			foreach(string nflId in context.FetchAddNflIds)
 			{
 				Player player = await FetchAsync(nflId, rosterPlayerMap);
 				
@@ -72,24 +74,12 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 				
 				await _throttle.DelayAsync();
 
-				_logger.LogDebug($"Successfully fetched and saved '{nflId}' ({player.FirstName} {player.LastName})");
+				LogDebug($"Successfully fetched and saved '{nflId}' ({player.FirstName} {player.LastName})");
 			}
 			
 			return ProcessResult.Continue;
 		}
-
-		// determine which players don't already exist in db
-		private async Task<List<string>> GetRequiredIdsAsync(List<string> nflIds)
-		{
-			IDatabaseContext dbContext = _dbProvider.GetContext();
-
-			HashSet<string> existingIds = (await dbContext.Player.GetAllAsync())
-				.Select(p => p.NflId)
-				.ToHashSet();
-
-			return nflIds.Where(id => !existingIds.Contains(id)).ToList();
-		}
-
+		
 		private async Task<Player> FetchAsync(string nflId, Dictionary<string, RosterPlayer> rosterPlayerMap)
 		{
 			if (!TryGetFromDisk(nflId, out Player player))

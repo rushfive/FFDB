@@ -10,40 +10,20 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.Pipelines.Stats
 {
-	public class RemoveAllPipeline : AsyncPipeline<RemoveAllPipeline.Context>
+	public class RemoveAllPipeline : Pipeline<RemoveAllPipeline.Context>
 	{
 		private ILogger<RemoveAllPipeline> _logger { get; }
 
 		public RemoveAllPipeline(
-			AsyncPipelineStage<Context> head,
-			ILogger<RemoveAllPipeline> logger)
-			: base(head, "Remove All Stats")
+			ILogger<RemoveAllPipeline> logger,
+			AsyncPipelineStage<Context> head)
+			: base(logger, head, "Remove All Stats")
 		{
 			_logger = logger;
 		}
 
 
 		public class Context { }
-
-		protected override void OnPipelineProcessStart(Context context, string name)
-		{
-			_logger.LogInformation("Starting pipeline to remove all stats.");
-		}
-
-		protected override void OnPipelineProcessEnd(Context context, string name)
-		{
-			_logger.LogInformation("Finished processing pipeline to remove all stats.");
-		}
-
-		protected override void OnStageProcessStart(Context context, string name)
-		{
-			_logger.LogDebug($"Starting stage '{name}'.");
-		}
-
-		protected override void OnStageProcessEnd(Context context, string name)
-		{
-			_logger.LogInformation($"Finished processing stage '{name}'.");
-		}
 
 		public static RemoveWeekPipeline Create(IServiceProvider sp)
 		{
@@ -52,7 +32,6 @@ namespace R5.FFDB.Components.Pipelines.Stats
 			AsyncPipelineStage<Context> removeLog = sp.Create<Stages.RemoveLog>();
 
 			AsyncPipelineStage<Context> chain = removeWeekStats;
-
 			chain
 				.SetNext(removeTeamGameStats)
 				.SetNext(removeLog);
