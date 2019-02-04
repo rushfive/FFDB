@@ -68,7 +68,7 @@ namespace R5.FFDB.Engine
 			await dbContext.Team.AddTeamsAsync();
 
 			await Stats.AddMissingAsync();
-			await Team.UpdateRostersAsync();
+			await Team.UpdateRosterMappingsAsync();
 
 			_logger.LogInformation("Successfully finished running initial setup.");
 		}

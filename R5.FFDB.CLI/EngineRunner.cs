@@ -81,7 +81,7 @@ namespace R5.FFDB.CLI
 
 		private Task RunRostersUpdateAsync()
 		{
-			return _engine.Team.UpdateRostersAsync();
+			return _engine.Team.UpdateRosterMappingsAsync();
 		}
 
 		private async Task RunAddStatsAsync(AddStats.RunInfo runInfo)

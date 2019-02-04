@@ -40,7 +40,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			logger.LogInformation($"Successfully added team documents to '{collectionName}' collection.");
 		}
 
-		public async Task UpdateRostersAsync(List<Roster> rosters)
+		public async Task UpdateRosterMappingsAsync(List<Roster> rosters)
 		{
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
 			var collectionName = CollectionNames.GetForType<PlayerDocument>();

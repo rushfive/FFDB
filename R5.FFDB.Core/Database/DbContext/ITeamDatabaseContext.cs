@@ -8,7 +8,7 @@ namespace R5.FFDB.Core.Database.DbContext
 	public interface ITeamDatabaseContext
 	{
 		Task AddTeamsAsync();
-		Task UpdateRostersAsync(List<Roster> rosters);
+		Task UpdateRosterMappingsAsync(List<Roster> rosters);
 		Task AddGameStatsAsync(List<TeamWeekStats> stats);
 		Task RemoveAllGameStatsAsync();
 		Task RemoveGameStatsForWeekAsync(WeekInfo week);

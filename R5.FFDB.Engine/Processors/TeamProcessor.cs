@@ -13,35 +13,19 @@ namespace R5.FFDB.Engine.Processors
 {
 	public class TeamProcessor
 	{
-		private ILogger<TeamProcessor> _logger { get; }
-		private IDatabaseProvider _dbProvider { get; }
-		private RostersValue _rostersValue { get; }
-		private IProcessorHelper _helper { get; }
-
 		private IServiceProvider _serviceProvider { get; }
 
-		public TeamProcessor(
-			ILogger<TeamProcessor> logger,
-			IDatabaseProvider dbProvider,
-			RostersValue rostersValue,
-			IProcessorHelper helper,
-
-			IServiceProvider serviceProvider)
+		public TeamProcessor(IServiceProvider serviceProvider)
 		{
-			_logger = logger;
-			_dbProvider = dbProvider;
-			_rostersValue = rostersValue;
-			_helper = helper;
-
 			_serviceProvider = serviceProvider;
 		}
 
 		// Updates player-team mappings. Doesn't update player data
-		public Task UpdateRostersAsync()
+		public Task UpdateRosterMappingsAsync()
 		{
-			var context = new UpdateRostersPipeline.Context();
+			var context = new UpdateRosterMappingsPipeline.Context();
 
-			var pipeline = UpdateRostersPipeline.Create(_serviceProvider);
+			var pipeline = UpdateRosterMappingsPipeline.Create(_serviceProvider);
 
 			return pipeline.ProcessAsync(context);
 

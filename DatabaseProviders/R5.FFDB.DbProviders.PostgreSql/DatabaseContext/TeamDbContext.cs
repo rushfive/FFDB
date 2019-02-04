@@ -41,7 +41,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogInformation($"Successfully added team entries to '{tableName}' table.");
 		}
 		
-		public async Task UpdateRostersAsync(List<Roster> rosters)
+		public async Task UpdateRosterMappingsAsync(List<Roster> rosters)
 		{
 			string playerTeamMapTableName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
 			var logger = GetLogger<TeamDbContext>();
