@@ -54,7 +54,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		
 		public override async Task<ProcessStageResult> ProcessAsync(TContext context)
 		{
-			Debug.Assert(context.FetchAddNflIds != null, "NFL Ids list must be set before this stage runs.");
+			Debug.Assert(context.FetchAddNflIds != null, $"'{nameof(context.FetchAddNflIds)}' list must be set before this stage runs.");
 
 			if (!context.FetchAddNflIds.Any())
 			{

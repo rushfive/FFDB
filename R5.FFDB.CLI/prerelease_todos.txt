@@ -1,3 +1,10 @@
+rename WeekInfo -> Week
+update access modifiers to as restrictive as needed (mainly public -> internal)
+-unit & functional tests for everything
+- documentation
+- get image/diagram of db schemas (both mongo and postgres) for alpha release discussion
+
+---------------
 need a SaveToDisk switch (or the opposite)
 
 - Caching static data on init
