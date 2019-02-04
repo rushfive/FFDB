@@ -1,11 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using R5.FFDB.Components.CoreData.Players;
+using R5.FFDB.Components.CoreData.Players.Models;
 using R5.FFDB.Components.CoreData.Rosters.Values;
+using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
 using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,16 +27,25 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		private ILogger<FetchSavePlayersStage> _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private RostersValue _rosters { get; }
+		private DataDirectoryPath _dataPath { get; }
+		private IPlayerSource _playerSource { get; }
+		private WebRequestThrottle _throttle { get; }
 
 		public FetchSavePlayersStage(
 			ILogger<FetchSavePlayersStage> logger,
 			IDatabaseProvider dbProvider,
-			RostersValue rosters)
+			RostersValue rosters,
+			DataDirectoryPath dataPath,
+			IPlayerSource playerSource,
+			WebRequestThrottle throttle)
 			: base("Fetch and Save Players")
 		{
 			_logger = logger;
 			_dbProvider = dbProvider;
 			_rosters = rosters;
+			_dataPath = dataPath;
+			_playerSource = playerSource;
+			_throttle = throttle;
 		}
 
 		public override async Task<ProcessStageResult> ProcessAsync(IPlayersListContext context)
@@ -52,16 +66,15 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 
 			foreach(string nflId in requiredIds)
 			{
-				Player player = await FetchAsync(nflId);
-
-				await SaveAsync(player, rosterPlayerMap);
+				Player player = await FetchAsync(nflId, rosterPlayerMap);
+				
+				await SaveAsync(player);
+				
+				await _throttle.DelayAsync();
 
 				_logger.LogDebug($"Successfully fetched and saved '{nflId}' ({player.FirstName} {player.LastName})");
 			}
-
-
-			//
-			await _dbProvider.GetContext().Stats.RemoveAllAsync();
+			
 			return ProcessResult.Continue;
 		}
 
@@ -77,15 +90,45 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 			return nflIds.Where(id => !existingIds.Contains(id)).ToList();
 		}
 
-		private async Task<Player> FetchAsync(string nflId)
+		private async Task<Player> FetchAsync(string nflId, Dictionary<string, RosterPlayer> rosterPlayerMap)
 		{
-			// try resolving from disk
-			// if fetch, persist based on program options
+			if (!TryGetFromDisk(nflId, out Player player))
+			{
+				player = await _playerSource.GetAsync(nflId);
+			}
+
+			if (rosterPlayerMap.TryGetValue(nflId, out RosterPlayer rosterPlayer))
+			{
+				player.Number = rosterPlayer.Number;
+				player.Position = rosterPlayer.Position;
+				player.Status = rosterPlayer.Status;
+			}
+
+			return player;
 		}
 
-		private async Task SaveAsync(Player player, Dictionary<string, RosterPlayer> rosterPlayerMap)
+		private bool TryGetFromDisk(string nflId, out Player player)
 		{
-				
+			player = null;
+
+			string filePath = _dataPath.Temp.Player + $"{nflId}.json";
+			if (!File.Exists(filePath))
+			{
+				return false;
+			}
+
+			string serialized = File.ReadAllText(filePath);
+
+			PlayerJson json = JsonConvert.DeserializeObject<PlayerJson>(serialized);
+			player = PlayerJson.ToCoreEntity(json);
+
+			return true;
+		}
+
+		private Task SaveAsync(Player player)
+		{
+			IDatabaseContext dbContext = _dbProvider.GetContext();
+			return dbContext.Player.AddAsync(player);
 		}
 	}
 }

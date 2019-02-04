@@ -56,8 +56,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("college")]
 		public string College { get; set; }
 
-		public static PlayerDocument FromCoreEntity(Player player,
-			int? number, Position? position, RosterStatus? status)
+		public static PlayerDocument FromCoreEntity(Player player)
 		{
 			return new PlayerDocument
 			{
@@ -67,9 +66,9 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 				GsisId = player.GsisId,
 				FirstName = player.FirstName,
 				LastName = player.LastName,
-				Position = position,
-				Status = status,
-				Number = number,
+				Position = player.Position,
+				Status = player.Status,
+				Number = player.Number,
 				Height = player.Height,
 				Weight = player.Weight,
 				DateOfBirth = player.DateOfBirth,

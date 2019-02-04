@@ -21,6 +21,15 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 		}
 
+		// NEW for pipeline
+
+		public Task AddAsync(Player player)
+		{
+			throw new NotImplementedException();
+		}
+
+		// OLD BELOW
+
 		public async Task AddAsync(List<Player> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();

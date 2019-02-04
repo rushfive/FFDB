@@ -1,11 +1,13 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.Players.Models;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Core;
+using R5.FFDB.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +19,9 @@ namespace R5.FFDB.Components.CoreData.Players
 {
 	public interface IPlayerSource : ICoreDataSource
 	{
+		Task<Player> GetAsync(string nflId);
+
+		// OLD
 		Task FetchAsync(List<string> nflIds, bool overwriteExisting = false);
 	}
 
@@ -31,13 +36,17 @@ namespace R5.FFDB.Components.CoreData.Players
 		private IWeekStatsService _weekStatsService { get; }
 		private IPlayerScraper _scraper { get; }
 
+		private ProgramOptions _programOptions { get; }
+
 		public PlayerSource(
 			ILogger<PlayerSource> logger,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
 			IWeekStatsService weekStatsService,
-			IPlayerScraper scraper)
+			IPlayerScraper scraper,
+
+			ProgramOptions programOptions)
 		{
 			_logger = logger;
 			_dataPath = dataPath;
@@ -45,7 +54,72 @@ namespace R5.FFDB.Components.CoreData.Players
 			_throttle = throttle;
 			_weekStatsService = weekStatsService;
 			_scraper = scraper;
+
+			_programOptions = programOptions;
 		}
+
+		// NEW for pieline
+
+		public async Task<Player> GetAsync(string nflId)
+		{
+			PlayerJson json = await FetchForPlayerAsync(nflId);
+
+			if (_programOptions.SaveToDisk)
+			{
+				string filePath = _dataPath.Temp.Player + $"{nflId}.json";
+
+				string serializedPlayerData = JsonConvert.SerializeObject(json);
+
+				File.WriteAllText(filePath, serializedPlayerData);
+			}
+
+			return PlayerJson.ToCoreEntity(json);
+		}
+
+		private async Task<PlayerJson> FetchForPlayerAsync(string nflId)
+		{
+			// the first {nflId} can be any random string, so we'll just use the id
+			string uri = Endpoints.Page.PlayerProfile(nflId);
+
+			string html;
+			try
+			{
+				html = await _webRequestClient.GetStringAsync(uri, throttle: false);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Failed to fetch player profile page for '{nflId}' at '{uri}'.");
+				throw;
+			}
+
+			var page = new HtmlDocument();
+			page.LoadHtml(html);
+
+			(string firstName, string lastName) = _scraper.ExtractNames(page);
+			(int height, int weight) = _scraper.ExtractHeightWeight(page);
+			DateTimeOffset dateOfBirth = _scraper.ExtractDateOfBirth(page);
+			string college = _scraper.ExtractCollege(page);
+			(string esbId, string gsisId) = _scraper.ExtractIds(page);
+			string pictureUri = _scraper.ExtractPictureUri(page);
+
+			return new PlayerJson
+			{
+				NflId = nflId,
+				FirstName = firstName,
+				LastName = lastName,
+				EsbId = esbId,
+				GsisId = gsisId,
+				PictureUri = pictureUri,
+				Height = height,
+				Weight = weight,
+				DateOfBirth = dateOfBirth.DateTime,
+				College = college
+			};
+		}
+
+
+
+		// OLD BELOW
 
 		public async Task FetchAsync(List<string> nflIds, bool overwriteExisting = false)
 		{
@@ -95,46 +169,7 @@ namespace R5.FFDB.Components.CoreData.Players
 			_logger.LogInformation("Finished fetching player profiles.");
 		}	
 
-		private async Task<PlayerJson> FetchForPlayerAsync(string nflId)
-		{
-			// the first {nflId} can be any random string, so we'll just use the id
-			string uri = Endpoints.Page.PlayerProfile(nflId);
-
-			string html;
-			try
-			{
-				html = await _webRequestClient.GetStringAsync(uri, throttle: false);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Failed to fetch player profile page for '{nflId}' at '{uri}'.");
-				throw;
-			}
-
-			var page = new HtmlDocument();
-			page.LoadHtml(html);
-
-			(string firstName, string lastName) = _scraper.ExtractNames(page);
-			(int height, int weight) = _scraper.ExtractHeightWeight(page);
-			DateTimeOffset dateOfBirth = _scraper.ExtractDateOfBirth(page);
-			string college = _scraper.ExtractCollege(page);
-			(string esbId, string gsisId) = _scraper.ExtractIds(page);
-			string pictureUri = _scraper.ExtractPictureUri(page);
-
-			return new PlayerJson
-			{
-				NflId = nflId,
-				FirstName = firstName,
-				LastName = lastName,
-				EsbId = esbId,
-				GsisId = gsisId,
-				PictureUri = pictureUri,
-				Height = height,
-				Weight = weight,
-				DateOfBirth = dateOfBirth.DateTime,
-				College = college
-			};
-		}
+		
 
 		public async Task CheckHealthAsync()
 		{

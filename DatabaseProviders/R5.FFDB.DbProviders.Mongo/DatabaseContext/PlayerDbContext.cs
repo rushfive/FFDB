@@ -23,7 +23,15 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 		// NEW FOR PIPELINE
 
-		public async Task
+		public async Task AddAsync(Player player)
+		{
+			PlayerDocument document = PlayerDocument.FromCoreEntity(player);
+
+			await GetMongoDbContext().InsertOneAsync(document);
+
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+			GetLogger<PlayerDbContext>().LogTrace($"Saved player {player} to the '{collectionName}' collection.");
+		}
 
 
 		// OLD BELOW
@@ -80,7 +88,8 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 					status = rosterPlayer.Status;
 				}
 
-				var document = PlayerDocument.FromCoreEntity(player, number, position, status);
+				//var document = PlayerDocument.FromCoreEntity(player, number, position, status);
+				var document = PlayerDocument.FromCoreEntity(player);
 				result.Add(document);
 			}
 
