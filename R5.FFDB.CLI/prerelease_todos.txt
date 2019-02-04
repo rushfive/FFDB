@@ -1,4 +1,9 @@
-rename WeekInfo -> Week
+remove StaticDataDirectoryPath.WeekGames
+  - it now uses the new WeekGamesMatchups
+
+add static helpers to DataPath to easily get file paths based
+on params like week, etc
+
 update access modifiers to as restrictive as needed (mainly public -> internal)
 -unit & functional tests for everything
 - documentation

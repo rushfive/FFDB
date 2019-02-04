@@ -38,7 +38,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 			List<string> gameIds = TeamGamesUtil.GetGameIdsForWeek(week, _dataPath);
 			foreach (var gameId in gameIds)
 			{
-				JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json"));
+				JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameStats + $"{gameId}.json"));
 
 				AddForTeam("home", gameId, json, week, result);
 				AddForTeam("away", gameId, json, week, result);

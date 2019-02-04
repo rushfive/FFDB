@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,10 @@ namespace R5.FFDB.Core.Models
 {
 	public struct WeekInfo : IComparable<WeekInfo>
 	{
+		[JsonProperty("season")]
 		public int Season { get; }
+
+		[JsonProperty("week")]
 		public int Week { get; }
 
 		public WeekInfo(int season, int week)

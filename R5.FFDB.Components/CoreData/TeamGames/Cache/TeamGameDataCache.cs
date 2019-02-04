@@ -13,7 +13,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.CoreData.TeamGames.NewTodoMove
+namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 {
 	public interface ITeamGameDataCache
 	{
@@ -70,7 +70,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.NewTodoMove
 		{
 			value = null;
 
-			string filePath = _dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json";
+			string filePath = _dataPath.Static.TeamGameStats + $"{gameId}.json";
 
 			if (!File.Exists(filePath))
 			{

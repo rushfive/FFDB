@@ -84,7 +84,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 
 		private async Task FetchGamesForWeekAsync(WeekInfo week)
 		{
-			string filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
+			string filePath = _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
 
 			if (File.Exists(filePath))
 			{
@@ -113,7 +113,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 
 			foreach (string gameId in gameIds)
 			{
-				string filePath = _dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json";
+				string filePath = _dataPath.Static.TeamGameStats + $"{gameId}.json";
 
 				if (File.Exists(filePath))
 				{
@@ -141,7 +141,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 		{
 			var result = new List<string>();
 
-			var filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
+			var filePath = _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
 
 			XElement weekGameXml = XElement.Load(filePath);
 

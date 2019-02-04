@@ -98,7 +98,7 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 				foreach(var gameId in gameIds)
 				{
 					// try converting to new model FROM disk (this could be directly from a web response as well)
-					JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameHistoryGameStats + $"{gameId}.json"));
+					JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameStats + $"{gameId}.json"));
 
 					var teamData = TeamGameData.FromGameStats(json, gameId, week, gsisNflIdMap);
 					string serializedJson = JsonConvert.SerializeObject(teamData);
@@ -112,7 +112,7 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 		{
 			
 			// 2018123015.json
-			JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameHistoryGameStats + "2018123015.json"));
+			JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameStats + "2018123015.json"));
 
 			// dependencies
 			Dictionary<string, string> gsisNflIdMap = await GetGsisToNflIdMapAsync(); // player week team

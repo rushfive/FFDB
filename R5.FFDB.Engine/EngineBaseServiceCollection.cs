@@ -6,6 +6,7 @@ using R5.FFDB.Components.CoreData.Players;
 using R5.FFDB.Components.CoreData.Rosters;
 using R5.FFDB.Components.CoreData.Rosters.Values;
 using R5.FFDB.Components.CoreData.TeamGames;
+using R5.FFDB.Components.CoreData.TeamGames.Cache;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.PlayerMatcher;
@@ -70,10 +71,12 @@ namespace R5.FFDB.Engine
 				.AddScoped<IWeekStatsService, WeekStatsService>()
 				.AddScoped<ITeamGamesSource, TeamGamesSource>()
 				.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
-				.AddScoped<IWeekGameMatchupService, WeekGameMatchupService>()
+				//.AddScoped<IWeekGameMatchupService, WeekGameMatchupService>()
 				.AddScoped<IProcessorHelper, ProcessorHelper>()
 				.AddScoped<IPlayerMatcherFactory, PlayerMatcherFactory>()
 				.AddScoped<ITeamGamesDataMapper, TeamGamesDataMapper>()
+				.AddScoped<ITeamGameDataCache, TeamGameDataCache>()
+				.AddScoped<IWeekGameDataCache, WeekGameDataCache>()
 				.AddScoped<IPlayerWeekTeamResolverFactory, PlayerWeekTeamResolverFactory>();
 
 			return services;

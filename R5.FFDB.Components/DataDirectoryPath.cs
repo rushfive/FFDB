@@ -36,32 +36,37 @@ namespace R5.FFDB.Components
 		{
 			private string _root { get; }
 			public string WeekStats => _root + @"week_stats\";
-			public string TeamGameHistoryWeekGames => _root + @"team_game_history\week_games\";
-			public string TeamGameHistoryGameStats => _root + @"team_game_history\game_stats\";
+
+			// TODO: REMOVE THIS
+			public string WeekGames => _root + @"week_games\";
+
+
+			public string TeamGameStats => _root + @"team_game_stats\";
+			public string WeekGameMatchups => _root + @"week_game_matchups\";
 
 			public StaticDataDirectoryPath(string rootPath)
 			{
-				_root = rootPath;
+				_root = rootPath + @"static\";
 			}
 
 			public void CreateMissing()
 			{
-				
 				Directory.CreateDirectory(WeekStats);
-				Directory.CreateDirectory(TeamGameHistoryWeekGames);
-				Directory.CreateDirectory(TeamGameHistoryGameStats);
+				Directory.CreateDirectory(WeekGames);
+				Directory.CreateDirectory(TeamGameStats);
+				Directory.CreateDirectory(WeekGameMatchups);
 			}
 		}
 
 		public class TempDataDirectoryPath
 		{
 			private string _root { get; }
-			public string Player => _root + @"temp\player\";
-			public string RosterPages => _root + @"temp\roster_pages\";
+			public string Player => _root + @"player\";
+			public string RosterPages => _root + @"roster_pages\";
 
 			public TempDataDirectoryPath(string rootPath)
 			{
-				_root = rootPath;
+				_root = rootPath + @"temp\";
 			}
 
 			public void CreateMissing()

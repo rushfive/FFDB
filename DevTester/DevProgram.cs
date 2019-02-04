@@ -152,7 +152,7 @@ namespace DevTester
 		{
 			var result = new List<WeekGameMatchup>();
 
-			var filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
+			var filePath = _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
 
 			XElement weekGameXml = XElement.Load(filePath);
 

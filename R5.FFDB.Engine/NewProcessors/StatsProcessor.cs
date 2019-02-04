@@ -15,13 +15,13 @@ namespace R5.FFDB.Engine.NewProcessors
 	public class StatsProcessor
 	{
 		private IDatabaseProvider _dbProvider { get; }
-		private IGameInfoCache _gameInfoCache { get; }
+		private IWeekGameDataCache _gameInfoCache { get; }
 		private DataDirectoryPath _dataPath { get; }
 
 
 		public StatsProcessor(
 			IDatabaseProvider dbProvider,
-			IGameInfoCache gameInfoCache,
+			IWeekGameDataCache gameInfoCache,
 			DataDirectoryPath dataPath)
 		{
 			_dbProvider = dbProvider;

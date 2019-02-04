@@ -17,7 +17,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 		{
 			var result = new List<string>();
 
-			var filePath = dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
+			var filePath = dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
 
 			XElement weekGameXml = XElement.Load(filePath);
 
