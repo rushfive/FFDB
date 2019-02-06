@@ -9,61 +9,109 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.TeamGames.Models
 {
-	public class TeamGameData
+	public class WeekTeamMatchupStats
 	{
+		[JsonProperty("week")]
 		public WeekInfo Week { get; set; }
+
+		[JsonProperty("stats")]
+		public List<TeamGameMatchupStats> Stats { get; set; } = new List<TeamGameMatchupStats>();
+	}
+
+
+	public class TeamGameMatchupStats
+	{
+		//public WeekInfo Week { get; set; }
+		[JsonProperty("home")]
 		public TeamData Home { get; set; }
+
+		[JsonProperty("away")]
 		public TeamData Away { get; set; }
 
-		private TeamGameData(
-			WeekInfo week,
+		private TeamGameMatchupStats(
+			//WeekInfo week,
 			TeamData home,
 			TeamData away)
 		{
-			Week = week;
+			//Week = week;
 			Home = home;
 			Away = away;
 		}
 
 		[JsonConstructor]
-		private TeamGameData() { }
+		private TeamGameMatchupStats() { }
 
 		// json param should be the entire parsed file, just pass it straight here
-		public static TeamGameData FromGameStats(JObject json, string gameId,
+		public static TeamGameMatchupStats FromGameStats(JObject json, string gameId,
 			WeekInfo week, Dictionary<string, string> gsisNflIdMap)
 		{
 			var home = TeamData.AsHome(json, gameId, gsisNflIdMap);
 			var away = TeamData.AsAway(json, gameId, gsisNflIdMap);
-			return new TeamGameData(week, home, away);
+			//return new TeamGameMatchupStats(week, home, away);
+			return new TeamGameMatchupStats(home, away);
 		}
 	}
 
 	public class TeamData
 	{
+		[JsonProperty("id")]
 		public int Id { get; set; }
 
 		// list of players from team active, must map from esb to nflid
+		[JsonProperty("playerNflIds")]
 		public List<string> PlayerNflIds { get; set; } = new List<string>();
 
-		// points
+
+		[JsonProperty("pointsFirstQuarter")]
 		public int PointsFirstQuarter { get; set; }
+
+		[JsonProperty("pointsSecondQuarter")]
 		public int PointsSecondQuarter { get; set; }
+
+		[JsonProperty("pointsThirdQuarter")]
 		public int PointsThirdQuarter { get; set; }
+
+		[JsonProperty("pointsFourthQuarter")]
 		public int PointsFourthQuarter { get; set; }
+
+		[JsonProperty("pointsOverTime")]
 		public int PointsOverTime { get; set; }
+
+		[JsonProperty("pointsTotal")]
 		public int PointsTotal { get; set; }
 
-		// stats
+
+		[JsonProperty("firstDowns")]
 		public int FirstDowns { get; set; }
+
+		[JsonProperty("totalYards")]
 		public int TotalYards { get; set; }
+
+		[JsonProperty("passingYards")]
 		public int PassingYards { get; set; }
+
+		[JsonProperty("rushingYards")]
 		public int RushingYards { get; set; }
+
+		[JsonProperty("penalties")]
 		public int Penalties { get; set; }
+
+		[JsonProperty("penaltyYards")]
 		public int PenaltyYards { get; set; }
+
+		[JsonProperty("turnovers")]
 		public int Turnovers { get; set; }
+
+		[JsonProperty("punts")]
 		public int Punts { get; set; }
+
+		[JsonProperty("puntYards")]
 		public int PuntYards { get; set; }
+
+		[JsonProperty("puntYardsAverage")]
 		public int PuntYardsAverage { get; set; }
+
+		[JsonProperty("timeOfPossessionSeconds")]
 		public int TimeOfPossessionSeconds { get; set; }
 
 		private static List<string> _statKeys = new List<string>

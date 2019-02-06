@@ -7,6 +7,10 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.TeamGames.Models
 {
+
+	// CONSOLIDATE this and WeekTeamMatchupStats
+	// we can just add the stats into the MAtchup class
+
 	public class WeekGameMatchups
 	{
 		[JsonProperty("week")]

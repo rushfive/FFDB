@@ -25,7 +25,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 	// - resolve the teams players were on for given weeks
 
 	// key = gameId
-	public class TeamGameDataCache : ResolvableAsyncCache<string, TeamGameData>, ITeamGameDataCache
+	public class TeamGameDataCache : ResolvableAsyncCache<WeekInfo, List<TeamGameMatchupStats>>, ITeamGameDataCache
 	{
 		private ILogger<TeamGameDataCache> _logger { get; }
 		private DataDirectoryPath _dataPath { get; }
@@ -44,7 +44,9 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 			_programOptions = programOptions;
 		}
 
-		public async Task<List<TeamGameData>> GetForWeekAsync(WeekInfo week)
+		// maybe need a gameId -> TeamGameData method (with associated private map)
+
+		public async Task<List<TeamGameMatchupStats>> GetForWeekAsync(WeekInfo week)
 		{
 			throw new NotImplementedException();
 		}
@@ -56,9 +58,16 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 		}
 
 
-		protected override async Task<TeamGameData> ResolveAsync(string gameId)
+		protected override async Task<List<TeamGameMatchupStats>> ResolveAsync(WeekInfo week)
 		{
-			if (TryGetFromDisk(gameId, out TeamGameData value))
+			// get all gameids for week (from WeekGameDataCache)
+
+
+
+
+
+			//
+			if (TryGetFromDisk(gameId, out TeamGameMatchupStats value))
 			{
 				return value;
 			}
@@ -66,7 +75,12 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 			return await FetchAsync(gameId);
 		}
 
-		private bool TryGetFromDisk(string gameId, out TeamGameData value)
+
+
+
+		// OLD BELOW
+
+		private bool TryGetFromDisk(string gameId, out TeamGameMatchupStats value)
 		{
 			value = null;
 
@@ -78,7 +92,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 			}
 
 			string serialized = File.ReadAllText(filePath);
-			value = JsonConvert.DeserializeObject<TeamGameData>(serialized);
+			value = JsonConvert.DeserializeObject<TeamGameMatchupStats>(serialized);
 			return true;
 		}
 
@@ -86,7 +100,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 		// NEED:
 		// - gsis to nfl id mapping
 		// - week resolver (gameId -> week)
-		private async Task<TeamGameData> FetchAsync(string gameId)
+		private async Task<TeamGameMatchupStats> FetchAsync(string gameId)
 		{
 			throw new NotImplementedException();
 			//string uri = Endpoints.Api.GameCenterStats(gameId);

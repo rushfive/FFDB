@@ -9,6 +9,9 @@ update access modifiers to as restrictive as needed (mainly public -> internal)
 - documentation
 - get image/diagram of db schemas (both mongo and postgres) for alpha release discussion
 
+- move fetching from sources into SOURCE classes
+  - abstracts away, so we can check individual source health and possibly in the future add more than 1 for redundancy
+
 ---------------
 need a SaveToDisk switch (or the opposite)
 

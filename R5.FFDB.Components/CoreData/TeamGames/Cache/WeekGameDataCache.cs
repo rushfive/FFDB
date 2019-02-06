@@ -29,6 +29,9 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 		List<string> GetGameIds(WeekInfo week);
 		WeekInfo GetWeekForGame(string gameId);
 		Task<List<WeekGameMatchup>> GetMatchupsAsync(WeekInfo week);
+
+		// we would need a Week -> List<TeamWeekStats> if we want
+		// to consolidate this cache with TeamGameDataCache
 	}
 
 	public class WeekGameDataCache : ResolvableAsyncCache<WeekInfo, WeekGameMatchups>, IWeekGameDataCache

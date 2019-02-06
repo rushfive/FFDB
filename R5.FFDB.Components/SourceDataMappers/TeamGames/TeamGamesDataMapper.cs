@@ -72,13 +72,13 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 		{
 			// load all to test mem usage
 
-			var allData = new List<TeamGameData>();
+			var allData = new List<TeamGameMatchupStats>();
 
 			var filePaths = DirectoryFilesResolver.GetFilePaths(@"D:\Repos\ffdb_data_2\team_game_history\game_stats2\");
 
 			foreach(var file in filePaths)
 			{
-				TeamGameData json = JsonConvert.DeserializeObject<TeamGameData>(
+				TeamGameMatchupStats json = JsonConvert.DeserializeObject<TeamGameMatchupStats>(
 					File.ReadAllText(file));
 				allData.Add(json);
 			}
@@ -100,7 +100,7 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 					// try converting to new model FROM disk (this could be directly from a web response as well)
 					JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameStats + $"{gameId}.json"));
 
-					var teamData = TeamGameData.FromGameStats(json, gameId, week, gsisNflIdMap);
+					var teamData = TeamGameMatchupStats.FromGameStats(json, gameId, week, gsisNflIdMap);
 					string serializedJson = JsonConvert.SerializeObject(teamData);
 
 					File.WriteAllText(@"D:\Repos\ffdb_data_2\team_game_history\game_stats2\" + $"{gameId}.json", serializedJson);
@@ -119,7 +119,7 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 																					  // gameId and teamType (home or away) required to parse an inner jobject
 			string gameId = "2018123015";
 
-			var teamData = TeamGameData.FromGameStats(json, gameId, new WeekInfo(2018,5), gsisNflIdMap);
+			var teamData = TeamGameMatchupStats.FromGameStats(json, gameId, new WeekInfo(2018,5), gsisNflIdMap);
 
 			string serializedJson = JsonConvert.SerializeObject(teamData);
 
