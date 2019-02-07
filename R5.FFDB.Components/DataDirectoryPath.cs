@@ -1,4 +1,5 @@
-﻿using System;
+﻿using R5.FFDB.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -8,8 +9,8 @@ namespace R5.FFDB.Components
 	public class DataDirectoryPath
 	{
 		private string _root { get; }
-		public StaticDataDirectoryPath Static { get; }
-		public TempDataDirectoryPath Temp { get; }
+		public StaticPaths Static { get; } // REMOVE LATER
+		public TempPaths Temp { get; } // REMOVE LATER
 
 		public DataDirectoryPath(string rootPath)
 		{
@@ -20,11 +21,23 @@ namespace R5.FFDB.Components
 
 			_root = rootPath.EndsWith(@"\") ? rootPath : rootPath + @"\";
 
-			Static = new StaticDataDirectoryPath(_root);
-			Temp = new TempDataDirectoryPath(_root);
+			Static = new StaticPaths(_root);
+			Temp = new TempPaths(_root);
 
 			CreateMissing();
 		}
+
+		public string WeekGameMap(WeekInfo week)
+		{
+			return _root + $"week_game_map\\{week.Season}-{week.Week}.json";
+		}
+
+
+
+
+
+
+		// OLD BELOW, WILL ALL BE REPLACED EVENTUALLY
 
 		private void CreateMissing()
 		{
@@ -32,7 +45,7 @@ namespace R5.FFDB.Components
 			Temp.CreateMissing();
 		}
 
-		public class StaticDataDirectoryPath
+		public class StaticPaths
 		{
 			private string _root { get; }
 			public string WeekStats => _root + @"week_stats\";
@@ -44,7 +57,7 @@ namespace R5.FFDB.Components
 			public string TeamGameStats => _root + @"team_game_stats\";
 			public string WeekGameMatchups => _root + @"week_game_matchups\";
 
-			public StaticDataDirectoryPath(string rootPath)
+			public StaticPaths(string rootPath)
 			{
 				_root = rootPath + @"static\";
 			}
@@ -58,13 +71,13 @@ namespace R5.FFDB.Components
 			}
 		}
 
-		public class TempDataDirectoryPath
+		public class TempPaths
 		{
 			private string _root { get; }
 			public string Player => _root + @"player\";
 			public string RosterPages => _root + @"roster_pages\";
 
-			public TempDataDirectoryPath(string rootPath)
+			public TempPaths(string rootPath)
 			{
 				_root = rootPath + @"temp\";
 			}

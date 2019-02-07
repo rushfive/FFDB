@@ -9,12 +9,14 @@ namespace R5.FFDB.Components.Http
 		public static class Api
 		{
 			// json
+			// TODO: CHANGE TO ACCEPT WEEKINFO
 			public static string WeekStats(int season, int week)
 			{
 				return $"http://api.fantasy.nfl.com/v2/players/weekstats?season={season}&week={week}";
 			}
 
 			// xml
+			// TODO: CHANGE TO ACCEPT WEEKINFO
 			public static string ScoreStripWeekGames(int season, int week)
 			{
 				return $"http://www.nfl.com/ajax/scorestrip?season={season}&seasonType=REG&week={week}";
