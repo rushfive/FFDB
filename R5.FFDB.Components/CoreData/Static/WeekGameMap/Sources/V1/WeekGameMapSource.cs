@@ -134,6 +134,8 @@ namespace R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1
 				result.Add(new WeekGameMapping
 				{
 					Week = versionedModel.Week,
+					HomeTeamId = game.HomeTeamId,
+					AwayTeamId = game.AwayTeamId,
 					NflGameId = game.NflGameId,
 					GsisGameId = game.GsisGameId
 				});

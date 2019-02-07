@@ -12,6 +12,8 @@ namespace R5.FFDB.Components
 		public StaticPaths Static { get; } // REMOVE LATER
 		public TempPaths Temp { get; } // REMOVE LATER
 
+		private string _weekGameMap { get; }
+
 		public DataDirectoryPath(string rootPath)
 		{
 			if (string.IsNullOrWhiteSpace(rootPath) || !Directory.Exists(rootPath))
@@ -24,15 +26,23 @@ namespace R5.FFDB.Components
 			Static = new StaticPaths(_root);
 			Temp = new TempPaths(_root);
 
-			CreateMissing();
+			//CreateMissing();
+
+			// OLD ABOVE
+
+			_weekGameMap = _root + @"week_game_map\";
+			CreateMissingPaths();
 		}
 
 		public string WeekGameMap(WeekInfo week)
 		{
-			return _root + $"week_game_map\\{week.Season}-{week.Week}.json";
+			return _weekGameMap + $"{week.Season}-{week.Week}.json";
 		}
 
-
+		private void CreateMissingPaths()
+		{
+			Directory.CreateDirectory(_weekGameMap);
+		}
 
 
 
