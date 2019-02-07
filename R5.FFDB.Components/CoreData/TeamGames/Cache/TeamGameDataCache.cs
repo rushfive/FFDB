@@ -64,15 +64,15 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 
 
 
+			throw new NotImplementedException();
 
+			////
+			//if (TryGetFromDisk(gameId, out TeamGameMatchupStats value))
+			//{
+			//	return value;
+			//}
 
-			//
-			if (TryGetFromDisk(gameId, out TeamGameMatchupStats value))
-			{
-				return value;
-			}
-
-			return await FetchAsync(gameId);
+			//return await FetchAsync(gameId);
 		}
 
 

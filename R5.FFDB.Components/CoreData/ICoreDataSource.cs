@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData
 {
+	[Obsolete("can probably replace with new StaticCoreDataSource")]
 	public interface ICoreDataSource
 	{
 		string Label { get; }
