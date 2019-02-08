@@ -18,12 +18,12 @@ namespace R5.FFDB.Components.CoreData
 	//	Func<ICoreDataSource<TEntity>> CreateSource { get; }
 	//}
 
-	public abstract class SourceVersion<TEntity>
+	public abstract class SourceVersion<TCoreData, TKey>
 	{
 		public abstract int Version { get; }
-		public Func<ICoreDataSource<TEntity>> CreateSource { get; }
+		public Func<ICoreDataSource<TCoreData, TKey>> CreateSource { get; }
 
-		protected SourceVersion(Func<ICoreDataSource<TEntity>> createSource)
+		protected SourceVersion(Func<ICoreDataSource<TCoreData, TKey>> createSource)
 		{
 			CreateSource = createSource;
 		}

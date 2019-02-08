@@ -13,6 +13,7 @@ namespace R5.FFDB.Components
 		public TempPaths Temp { get; } // REMOVE LATER
 
 		private string _weekGameMap { get; }
+		private string _players { get; }
 
 		public DataDirectoryPath(string rootPath)
 		{
@@ -31,6 +32,7 @@ namespace R5.FFDB.Components
 			// OLD ABOVE
 
 			_weekGameMap = _root + @"week_game_map\";
+			_players = _root + @"players\";
 			CreateMissingPaths();
 		}
 
@@ -39,9 +41,15 @@ namespace R5.FFDB.Components
 			return _weekGameMap + $"{week.Season}-{week.Week}.json";
 		}
 
+		public string Player(string nflId)
+		{
+			return _players + $"{nflId}.json";
+		}
+
 		private void CreateMissingPaths()
 		{
 			Directory.CreateDirectory(_weekGameMap);
+			Directory.CreateDirectory(_players);
 		}
 
 

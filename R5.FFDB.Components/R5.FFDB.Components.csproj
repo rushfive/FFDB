@@ -19,10 +19,4 @@
 		<ProjectReference Include="..\R5.Lib\R5.Lib.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="CoreData\Dynamic\" />
-	  <Folder Include="CoreData\Static\WeekGameMap\Sources\V1\Models\" />
-	  <Folder Include="CoreData\Static\WeekGameMap\Sources\V1\Mappers\" />
-	</ItemGroup>
-
 </Project>

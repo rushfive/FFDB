@@ -7,8 +7,10 @@ using Npgsql;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1;
+using R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1.Mappers;
 using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.Extensions.JsonConverters;
 using R5.FFDB.Components.Pipelines.Stats;
 using R5.FFDB.Components.PlayerMatcher;
 using R5.FFDB.Components.Resolvers;
@@ -51,6 +53,17 @@ namespace DevTester
 		private static IDatabaseContext _dbContext { get; set; }
 		private static DataDirectoryPath _dataPath { get; set; }
 
+		static DevProgram()
+		{
+			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+			{
+				Converters = new List<JsonConverter>
+				{
+					new WeekInfoJsonConverter()
+				}
+			};
+		}
+
 		public static async Task Main(string[] args)
 		{
 			_serviceProvider = DevTestServiceProvider.Build();
@@ -65,7 +78,7 @@ namespace DevTester
 			WeekGameMapSource weekGameMapSource = ActivatorUtilities.CreateInstance<WeekGameMapSource>(_serviceProvider,
 				new ToVersionedModelMapper(), new ToCoreDataMapper());
 
-			List<WeekGameMapping> games = await weekGameMapSource.GetAsync(new WeekInfo(2018, 1));
+			List<WeekGameMapping> games = await weekGameMapSource.GetAsync(new WeekInfo(2018, 2));
 
 			
 

@@ -6,18 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace R5.FFDB.Components.CoreData.Players
+namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1
 {
 	public interface IPlayerScraper
 	{
 		(string esbId, string gsisId) ExtractIds(HtmlDocument page);
-		string ExtractPictureUri(HtmlDocument page);
 		(int height, int weight) ExtractHeightWeight(HtmlDocument page);
 		DateTimeOffset ExtractDateOfBirth(HtmlDocument page);
 		string ExtractCollege(HtmlDocument page);
 		(string firstName, string lastName) ExtractNames(HtmlDocument page);
 	}
-	
+
 	public class PlayerScraper : IPlayerScraper
 	{
 		private ILogger<PlayerScraper> _logger { get; }
@@ -76,25 +75,10 @@ namespace R5.FFDB.Components.CoreData.Players
 			return (esbId, gsisId);
 		}
 
-		public string ExtractPictureUri(HtmlDocument page)
-		{
-			try
-			{
-				return page.DocumentNode.SelectNodes("//meta")
-					.SingleOrDefault(n => n.Attributes.Contains("property") && n.Attributes["property"].Value == "og:image")
-					?.Attributes["content"].Value;
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Failed to find player's picture URI.");
-				throw;
-			}
-		}
-
 		public (int height, int weight) ExtractHeightWeight(HtmlDocument page)
 		{
 			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-			
+
 			HtmlNode heightWeightParagraph = null;
 			try
 			{
@@ -127,7 +111,7 @@ namespace R5.FFDB.Components.CoreData.Players
 			try
 			{
 				var spaceSplit = colonSplit[2].Trim().Split(" ");
-				weight =  int.Parse(spaceSplit[0]);
+				weight = int.Parse(spaceSplit[0]);
 			}
 			catch (Exception ex)
 			{
@@ -141,7 +125,7 @@ namespace R5.FFDB.Components.CoreData.Players
 		public DateTimeOffset ExtractDateOfBirth(HtmlDocument page)
 		{
 			HtmlNodeCollection infoParagraphs = GetInfoParagraphNodes(page);
-			
+
 			HtmlNode dateOfBirthParagraph = null;
 			try
 			{
@@ -153,7 +137,7 @@ namespace R5.FFDB.Components.CoreData.Players
 				_logger.LogError(ex, "Failed to find paragraph containing player's date of birth.");
 				throw;
 			}
-			
+
 			try
 			{
 				var spaceSplit = dateOfBirthParagraph.InnerText.Split(" ");
@@ -239,9 +223,9 @@ namespace R5.FFDB.Components.CoreData.Players
 					throw;
 				}
 			}
-			
+
 			return (
-				HtmlEntity.DeEntitize(firstName), 
+				HtmlEntity.DeEntitize(firstName),
 				HtmlEntity.DeEntitize(lastName));
 		}
 
