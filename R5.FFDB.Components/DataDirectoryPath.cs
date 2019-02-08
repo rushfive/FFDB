@@ -1,4 +1,5 @@
-﻿using R5.FFDB.Core.Models;
+﻿using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +15,7 @@ namespace R5.FFDB.Components
 
 		private string _weekGameMap { get; }
 		private string _players { get; }
+		private string _rosters { get; }
 
 		public DataDirectoryPath(string rootPath)
 		{
@@ -33,6 +35,8 @@ namespace R5.FFDB.Components
 
 			_weekGameMap = _root + @"week_game_map\";
 			_players = _root + @"players\";
+			_rosters = _root + @"rosters\";
+
 			CreateMissingPaths();
 		}
 
@@ -46,10 +50,16 @@ namespace R5.FFDB.Components
 			return _players + $"{nflId}.json";
 		}
 
+		public string Roster(Team team)
+		{
+			return _rosters + $"{team.Abbreviation}.json";
+		}
+
 		private void CreateMissingPaths()
 		{
 			Directory.CreateDirectory(_weekGameMap);
 			Directory.CreateDirectory(_players);
+			Directory.CreateDirectory(_rosters);
 		}
 
 

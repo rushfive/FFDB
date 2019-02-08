@@ -27,7 +27,7 @@ namespace R5.FFDB.Components.CoreData
 	//  - eg if we're collecting a list of stats for a week, the model should contain a list of the stats
 	// similarly, TCoreData should represent whatever represents a weeks worth of the core data
 	//  in a lot of cases, its gonna be a list of something
-	public abstract class CoreDataSource<TVersionedModel, TCoreData, TKey> : ICoreDataSource<TCoreData, TKey>
+	public abstract class CoreDataSource<TVersionedModel, TCoreData, TKey>// : ICoreDataSource<TCoreData, TKey>
 		where TVersionedModel : class
 		where TCoreData : class
 	{
@@ -113,7 +113,7 @@ namespace R5.FFDB.Components.CoreData
 			{
 				string filePath = GetVersionedFilePath(key);
 
-				string serializedModel = JsonConvert.SerializeObject(versioned, Formatting.Indented);
+				string serializedModel = JsonConvert.SerializeObject(versioned);
 
 				File.WriteAllText(filePath, serializedModel);
 			}

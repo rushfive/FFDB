@@ -6,8 +6,8 @@ using Newtonsoft.Json.Linq;
 using Npgsql;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
-using R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1;
-using R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1.Mappers;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
+//using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers;
 using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Extensions.JsonConverters;
@@ -57,6 +57,7 @@ namespace DevTester
 		{
 			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
 			{
+				Formatting = Formatting.Indented,
 				Converters = new List<JsonConverter>
 				{
 					new WeekInfoJsonConverter()
@@ -75,10 +76,22 @@ namespace DevTester
 			/// 
 			/// 
 
-			WeekGameMapSource weekGameMapSource = ActivatorUtilities.CreateInstance<WeekGameMapSource>(_serviceProvider,
-				new ToVersionedModelMapper(), new ToCoreDataMapper());
+			//RosterSource rostersSource = ActivatorUtilities.CreateInstance<RosterSource>(_serviceProvider,
+			//	new R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers.ToCoreDataMapper()
 
-			List<WeekGameMapping> games = await weekGameMapSource.GetAsync(new WeekInfo(2018, 2));
+			//	);
+
+			var rostersSource = _serviceProvider.GetRequiredService<IRosterSource>();
+
+			var teams = TeamDataStore.GetAll();
+
+			Roster roster = await rostersSource.GetAsync(teams.First());
+
+
+			//WeekGameMapSource weekGameMapSource = ActivatorUtilities.CreateInstance<WeekGameMapSource>(_serviceProvider,
+			//	new ToVersionedModelMapper(), new ToCoreDataMapper());
+
+			//List<WeekGameMapping> games = await weekGameMapSource.GetAsync(new WeekInfo(2018, 3));
 
 			
 

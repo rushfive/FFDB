@@ -1,17 +1,17 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using R5.FFDB.Core.Entities;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.Components.CoreData.Rosters
+namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 {
 	public interface IRosterScraper
 	{
-		List<RosterPlayer> ExtractPlayers(HtmlDocument page);
+		List<RosterVersionedModel.Player> ExtractPlayers(HtmlDocument page);
 	}
 
 	public class RosterScraper : IRosterScraper
@@ -23,9 +23,9 @@ namespace R5.FFDB.Components.CoreData.Rosters
 			_logger = logger;
 		}
 
-		public List<RosterPlayer> ExtractPlayers(HtmlDocument page)
+		public List<RosterVersionedModel.Player> ExtractPlayers(HtmlDocument page)
 		{
-			var result = new List<RosterPlayer>();
+			var result = new List<RosterVersionedModel.Player>();
 
 			HtmlNodeCollection playerRows = null;
 			try
@@ -40,17 +40,16 @@ namespace R5.FFDB.Components.CoreData.Rosters
 				throw;
 			}
 
-			_logger.LogDebug($"Found {playerRows.Count} player rows to scrape.");
+			_logger.LogTrace($"Found {playerRows.Count} player rows to scrape.");
 
 			foreach (HtmlNode r in playerRows)
 			{
 				string id = ExtractNflId(r);
 				int? number = ExtractNumber(r);
-				(string firstName, string lastName) = ExtractName(r);
 				Position position = ExtractPosition(r);
 				RosterStatus status = ExtractStatus(r);
 
-				result.Add(new RosterPlayer
+				result.Add(new RosterVersionedModel.Player
 				{
 					NflId = id,
 					Number = number,
@@ -58,7 +57,7 @@ namespace R5.FFDB.Components.CoreData.Rosters
 					Status = status
 				});
 
-				_logger.LogTrace($"Extracted player '{id}' ({firstName} {lastName}).");
+				_logger.LogTrace($"Extracted player '{id}'.");
 			}
 
 			return result;
@@ -116,28 +115,30 @@ namespace R5.FFDB.Components.CoreData.Rosters
 			}
 		}
 
-		private (string firstName, string lastName) ExtractName(HtmlNode playerRow)
-		{
-			try
-			{
-				HtmlNodeCollection tdChildNodes = playerRow.SelectNodes("td")[1].ChildNodes;
+		// NOT necessary, we currently get from player profile pages. Keep this
+		// in case for future redundancy
+		//private (string firstName, string lastName) ExtractName(HtmlNode playerRow)
+		//{
+		//	try
+		//	{
+		//		HtmlNodeCollection tdChildNodes = playerRow.SelectNodes("td")[1].ChildNodes;
 
-				string fullName = tdChildNodes[1].InnerText;
+		//		string fullName = tdChildNodes[1].InnerText;
 
-				string[] commaSplit = fullName.Split(",");
-				if (commaSplit.Length == 1 || commaSplit.Length > 2)
-				{
-					return (fullName, null);
-				}
+		//		string[] commaSplit = fullName.Split(",");
+		//		if (commaSplit.Length == 1 || commaSplit.Length > 2)
+		//		{
+		//			return (fullName, null);
+		//		}
 
-				return (commaSplit[1].Trim(), commaSplit[0].Trim());
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Failed to extract first and last name from a player row.");
-				throw;
-			}
-		}
+		//		return (commaSplit[1].Trim(), commaSplit[0].Trim());
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_logger.LogError(ex, "Failed to extract first and last name from a player row.");
+		//		throw;
+		//	}
+		//}
 
 		private Position ExtractPosition(HtmlNode playerRow)
 		{

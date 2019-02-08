@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.Players;
 using R5.FFDB.Components.CoreData.Rosters;
 using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.Extensions.JsonConverters;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
@@ -38,6 +40,18 @@ namespace R5.FFDB.Engine
 			_latestWeekValue = latestWeekValue;
 
 			InitializeSourcesProcessors(serviceProvider);
+		}
+
+		static FfdbEngine()
+		{
+			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+			{
+				Formatting = Formatting.Indented,
+				Converters = new List<JsonConverter>
+				{
+					new WeekInfoJsonConverter()
+				}
+			};
 		}
 
 		private void InitializeSourcesProcessors(IServiceProvider serviceProvider)
