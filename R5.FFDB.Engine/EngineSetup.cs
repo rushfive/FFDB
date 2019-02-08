@@ -108,7 +108,8 @@ namespace R5.FFDB.Engine
 			{
 				throw new InvalidOperationException("Engine can only be configured to use a single database type.");
 			}
-			
+			// TODO: Configuring the engine with a datbase config should create this 
+			// dbProviderFactory on the spot, so we dont even need to have this method.
 			Func<ILoggerFactory, IDatabaseProvider> dbProviderFactory = null;
 			if (_postgresConfig != null)
 			{

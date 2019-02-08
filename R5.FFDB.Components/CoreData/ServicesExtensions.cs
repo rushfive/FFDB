@@ -18,7 +18,10 @@ namespace R5.FFDB.Components.CoreData
 					Dynamic.Rosters.Sources.V1.RosterScraper>()
 				.AddScoped<
 					Dynamic.Rosters.Sources.V1.Mappers.IToVersionedModelMapper,
-					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedModelMapper>();
+					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedModelMapper>()
+				.AddScoped<
+					Dynamic.Rosters.Sources.V1.IRosterCache,
+					Dynamic.Rosters.Sources.V1.RosterCache>();
 
 			return services;
 		}

@@ -81,11 +81,26 @@ namespace DevTester
 
 			//	);
 
-			var rostersSource = _serviceProvider.GetRequiredService<IRosterSource>();
+			//var rostersSource = _serviceProvider.GetRequiredService<IRosterSource>();
 
-			var teams = TeamDataStore.GetAll();
+			//var teams = TeamDataStore.GetAll();
 
-			Roster roster = await rostersSource.GetAsync(teams.First());
+			//Roster roster = await rostersSource.GetAsync(teams.First());
+
+
+			var rosterCache = _serviceProvider.GetRequiredService<IRosterCache>();
+
+
+			// 2552301    2532792
+			var task1 = rosterCache.GetPlayerDataAsync("2552301");
+			var task2 = rosterCache.GetPlayerDataAsync("2532792");
+
+			var data = await Task.WhenAll(task1, task2);
+
+
+
+
+
 
 
 			//WeekGameMapSource weekGameMapSource = ActivatorUtilities.CreateInstance<WeekGameMapSource>(_serviceProvider,
@@ -93,7 +108,7 @@ namespace DevTester
 
 			//List<WeekGameMapping> games = await weekGameMapSource.GetAsync(new WeekInfo(2018, 3));
 
-			
+
 
 
 			return;

@@ -74,6 +74,8 @@ namespace R5.FFDB.Engine
 
 			// NEW:
 
+			services.AddAsyncLazyCache();
+
 			// for RosterSource
 			services
 				.AddCoreDataSources();

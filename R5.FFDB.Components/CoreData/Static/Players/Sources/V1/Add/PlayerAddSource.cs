@@ -6,6 +6,7 @@ using R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Models;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -59,11 +60,14 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 
 		protected override async Task OnCoreDataMappedAsync(string nflId, PlayerAdd playerAdd)
 		{
-			var (number, position, status) = await _rosterCache.GetPlayerDataAsync(nflId);
+			(int? number, Position? position, RosterStatus? status)? data = await _rosterCache.GetPlayerDataAsync(nflId);
 
-			playerAdd.Number = number;
-			playerAdd.Position = position;
-			playerAdd.Status = status;
+			if (data.HasValue)
+			{
+				playerAdd.Number = data.Value.number;
+				playerAdd.Position = data.Value.position;
+				playerAdd.Status = data.Value.status;
+			}
 		}
 	}
 }

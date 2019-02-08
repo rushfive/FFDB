@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace R5.Lib.Cache
 {
+	[Obsolete("migrate things to the newer AsynLazyCache")]
 	public abstract class ResolvableAsyncCache<TKey, TValue>
 	{
 		private Dictionary<TKey, TValue> _cache { get; } = new Dictionary<TKey, TValue>();
