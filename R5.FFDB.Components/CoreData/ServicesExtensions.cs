@@ -19,7 +19,7 @@ namespace R5.FFDB.Components.CoreData
 				.AddScoped<
 					Dynamic.Rosters.Sources.V1.Mappers.IToVersionedModelMapper,
 					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedModelMapper>()
-				.AddScoped<
+				.AddSingleton<
 					Dynamic.Rosters.Sources.V1.IRosterCache,
 					Dynamic.Rosters.Sources.V1.RosterCache>();
 

@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 {
+	// TODO: need a configurable way to determine when
+	// saved roster files are too old (requiring a re-fetch)
 	public interface IRosterSource : ICoreDataSource<Roster, Team>
 	{
 

@@ -30,13 +30,13 @@ namespace R5.Lib.Cache.AsyncLazyCache
 				return value;
 			}
 
-			await _exclusiveLock.WaitAsync();
+			await _exclusiveLock.WaitAsync().ConfigureAwait(false);
 
 			try
 			{
 				if (!_cache.TryGetValue(key, out _))
 				{
-					T resolved = await taskFactory();
+					T resolved = await taskFactory().ConfigureAwait(false);
 					_cache.Set(key, resolved);
 				}
 			}

@@ -94,8 +94,10 @@ namespace DevTester
 			// 2552301    2532792
 			var task1 = rosterCache.GetPlayerDataAsync("2552301");
 			var task2 = rosterCache.GetPlayerDataAsync("2532792");
+			var task3 = rosterCache.GetPlayerDataAsync("2555255");
+			var task4 = rosterCache.GetPlayerDataAsync("2495136");
 
-			var data = await Task.WhenAll(task1, task2);
+			var data = await Task.WhenAll(task1, task2, task3, task4);
 
 
 

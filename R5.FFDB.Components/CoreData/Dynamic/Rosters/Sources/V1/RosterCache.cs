@@ -1,4 +1,5 @@
-﻿using R5.FFDB.Core;
+﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.Lib.Cache.AsyncLazyCache;
@@ -21,6 +22,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 		private const string _cacheKey = "rosters";
 		private readonly SemaphoreSlim _exclusiveLock = new SemaphoreSlim(1, 1);
 
+		private ILogger<RosterCache> _logger { get; }
 		private IAsyncLazyCache _cache { get; }
 		private IRosterSource _source { get; }
 
@@ -28,18 +30,18 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 		private Dictionary<string, (int?, Position?, RosterStatus?)> _playerDataMap { get; set; }
 
 		public RosterCache(
+			ILogger<RosterCache> logger,
 			IAsyncLazyCache cache,
 			IRosterSource source)
 		{
+			_logger = logger;
 			_cache = cache;
 			_source = source;
 		}
-
-
-		// does this need to allow returning null if doesnt exist??
+		
 		public async Task<(int? number, Position? position, RosterStatus? status)?> GetPlayerDataAsync(string nflId)
 		{
-			await _exclusiveLock.WaitAsync();
+			await _exclusiveLock.WaitAsync().ConfigureAwait(false);
 			try
 			{
 				if (_rosters == null)
@@ -51,7 +53,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			{
 				_exclusiveLock.Release();
 			}
-			
+
 			if (_playerDataMap.TryGetValue(nflId, out (int?, Position?, RosterStatus?) data))
 			{
 				return data;
@@ -77,12 +79,9 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 		private async Task<List<Roster>> GetRostersAsync()
 		{
 			List<Team> teams = TeamDataStore.GetAll();
-
-			// temp: take
-			var fetchTasks = teams.Take(2).Select(t => Task.Run(() =>
+			
+			var fetchTasks = teams.Select(t => Task.Run(() =>
 			{
-				Console.WriteLine($"running TEAM/ROSTER fetch task for '{t}'.");
-
 				return _source.GetAsync(t);
 			}));
 
