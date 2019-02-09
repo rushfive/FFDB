@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1
+namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 {
-	public class SourceV1 : SourceVersion<WeekGameMapping, WeekInfo>
+	public class SourceV1 : SourceVersion<WeekGameMatchup, WeekInfo>
 	{
 		public override int Version => 1;
 
-		public SourceV1(Func<ICoreDataSource<WeekGameMapping, WeekInfo>> createSource)
+		public SourceV1(Func<ICoreDataSource<WeekGameMatchup, WeekInfo>> createSource)
 			: base(createSource)
 		{
 		}

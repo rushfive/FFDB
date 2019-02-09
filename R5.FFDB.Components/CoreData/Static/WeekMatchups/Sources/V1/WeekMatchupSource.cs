@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1.Mappers;
-using R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1.Models;
+using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers;
+using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Models;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
@@ -10,17 +10,17 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1
+namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 {
-	public interface IWeekGameMapSource : ICoreDataSource<List<WeekGameMapping>, WeekInfo>
+	public interface IWeekMatchupSource : ICoreDataSource<List<WeekGameMatchup>, WeekInfo>
 	{
 
 	}
 
-	public class WeekGameMapSource : CoreDataSource<WeekGamesVersionedModel, List<WeekGameMapping>, WeekInfo>, IWeekGameMapSource
+	public class WeekMatchupSource : CoreDataSource<WeekMatchupsVersionedModel, List<WeekGameMatchup>, WeekInfo>, IWeekMatchupSource
 	{
-		public WeekGameMapSource(
-			ILogger<WeekGameMapSource> logger,
+		public WeekMatchupSource(
+			ILogger<WeekMatchupSource> logger,
 			ToVersionedModelMapper toVersionedMapper,
 			ToCoreDataMapper toCoreDataMapper,
 			ProgramOptions programOptions,
@@ -49,13 +49,13 @@ namespace R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1
 			return Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
 		}
 
-		protected override Task OnVersionedModelMappedAsync(WeekInfo week, WeekGamesVersionedModel versioned)
+		protected override Task OnVersionedModelMappedAsync(WeekInfo week, WeekMatchupsVersionedModel versioned)
 		{
 			versioned.Week = week;
 			return Task.CompletedTask;
 		}
 
-		protected override Task OnCoreDataMappedAsync(WeekInfo key, List<WeekGameMapping> coreData)
+		protected override Task OnCoreDataMappedAsync(WeekInfo key, List<WeekGameMatchup> coreData)
 		{
 			return Task.CompletedTask;
 		}

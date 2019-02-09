@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1.Models
+namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Models
 {
-	public class WeekGamesVersionedModel
+	public class WeekMatchupsVersionedModel
 	{
 		[JsonProperty("week")]
 		public WeekInfo Week { get; set; }

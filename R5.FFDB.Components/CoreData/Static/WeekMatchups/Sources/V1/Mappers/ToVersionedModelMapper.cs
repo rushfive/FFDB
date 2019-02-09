@@ -1,4 +1,4 @@
-﻿using R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1.Models;
+﻿using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Models;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Models;
 using System;
@@ -6,21 +6,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1.Mappers
+namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 {
 	// parses XML response from NFLs score strip endpoint:
 	// http://www.nfl.com/ajax/scorestrip?season={season}&seasonType=REG&week={week}
-	public class ToVersionedModelMapper : IMapper<string, WeekGamesVersionedModel>
+	public class ToVersionedModelMapper : IMapper<string, WeekMatchupsVersionedModel>
 	{
-		public WeekGamesVersionedModel Map(string httpResponse)
+		public WeekMatchupsVersionedModel Map(string httpResponse)
 		{
 			XElement weekGameXml = XElement.Parse(httpResponse);
 
 			XElement gamesNode = weekGameXml.Elements("gms").Single();
 
-			var model = new WeekGamesVersionedModel
+			var model = new WeekMatchupsVersionedModel
 			{
-				Games = new List<WeekGamesVersionedModel.Game>()
+				Games = new List<WeekMatchupsVersionedModel.Game>()
 			};
 
 			foreach (XElement game in gamesNode.Elements("g"))
@@ -30,7 +30,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1.Mappers
 				string nflGameId = game.Attribute("eid").Value;
 				string gsisGameId = game.Attribute("gsis").Value;
 
-				var matchup = new WeekGamesVersionedModel.Game
+				var matchup = new WeekMatchupsVersionedModel.Game
 				{
 					HomeTeamId = homeTeamId,
 					AwayTeamId = awayTeamId,
