@@ -36,8 +36,8 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		{
 			return new WeekGameMatchupDocument
 			{
-				Season = entity.Season,
-				Week = entity.Week,
+				Season = entity.Week.Season,
+				Week = entity.Week.Week,
 				HomeTeamId = entity.HomeTeamId,
 				AwayTeamId = entity.AwayTeamId,
 				NflGameId = entity.NflGameId,

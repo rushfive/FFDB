@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
@@ -10,13 +11,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
+namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 {
 	public interface IRosterCache
 	{
 		Task<(int? number, Position? position, RosterStatus? status)?> GetPlayerDataAsync(string nflId);
 	}
-	//singleton!
+
 	public class RosterCache : IRosterCache
 	{
 		private const string _cacheKey = "rosters";

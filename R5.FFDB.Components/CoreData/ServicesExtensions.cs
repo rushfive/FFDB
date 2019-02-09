@@ -20,8 +20,8 @@ namespace R5.FFDB.Components.CoreData
 					Dynamic.Rosters.Sources.V1.Mappers.IToVersionedModelMapper,
 					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedModelMapper>()
 				.AddSingleton<
-					Dynamic.Rosters.Sources.V1.IRosterCache,
-					Dynamic.Rosters.Sources.V1.RosterCache>();
+					Dynamic.Rosters.IRosterCache,
+					Dynamic.Rosters.RosterCache>();
 
 			return services;
 		}

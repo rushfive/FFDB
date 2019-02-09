@@ -41,8 +41,8 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		{
 			return new WeekGameMatchupSql
 			{
-				Season = entity.Season,
-				Week = entity.Week,
+				Season = entity.Week.Season,
+				Week = entity.Week.Week,
 				HomeTeamId = entity.HomeTeamId,
 				AwayTeamId = entity.AwayTeamId,
 				NflGameId = entity.NflGameId,

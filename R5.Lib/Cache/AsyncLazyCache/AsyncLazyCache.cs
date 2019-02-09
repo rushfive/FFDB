@@ -25,6 +25,15 @@ namespace R5.Lib.Cache.AsyncLazyCache
 
 		public async Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> taskFactory)
 		{
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				throw new ArgumentNullException(nameof(key), "Valid cache key must be provided.");
+			}
+			if (taskFactory == null)
+			{
+				throw new ArgumentNullException(nameof(taskFactory), $"Task factory for key '{key}' must be provided.");
+			}
+
 			if (_cache.TryGetValue<T>(key, out T value))
 			{
 				return value;

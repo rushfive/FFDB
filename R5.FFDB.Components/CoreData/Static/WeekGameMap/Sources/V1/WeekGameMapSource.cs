@@ -12,7 +12,12 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.WeekGameMap.Sources.V1
 {
-	public class WeekGameMapSource : CoreDataSource<WeekGamesVersionedModel, List<WeekGameMapping>, WeekInfo>
+	public interface IWeekGameMapSource : ICoreDataSource<List<WeekGameMapping>, WeekInfo>
+	{
+
+	}
+
+	public class WeekGameMapSource : CoreDataSource<WeekGamesVersionedModel, List<WeekGameMapping>, WeekInfo>, IWeekGameMapSource
 	{
 		public WeekGameMapSource(
 			ILogger<WeekGameMapSource> logger,

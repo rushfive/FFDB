@@ -1,9 +1,12 @@
-﻿namespace R5.FFDB.Core.Entities
+﻿using R5.FFDB.Core.Models;
+
+namespace R5.FFDB.Core.Entities
 {
 	public class WeekGameMatchup
 	{
-		public int Season { get; set; }
-		public int Week { get; set; }
+		//public int Season { get; set; }
+		//public int Week { get; set; }
+		public WeekInfo Week { get; set; }
 		public int HomeTeamId { get; set; }
 		public int AwayTeamId { get; set; }
 		public string NflGameId { get; set; }
@@ -11,7 +14,7 @@
 
 		public override string ToString()
 		{
-			return $"{HomeTeamId} vs {AwayTeamId} | {Season}-{Week}";
+			return $"{HomeTeamId} vs {AwayTeamId} ({Week})";
 		}
 	}
 }

@@ -38,8 +38,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Models
 			{
 				return new WeekGameMatchup
 				{
-					Season = week.Season,
-					Week = week.Week,
+					Week = week,
 					HomeTeamId = matchup.HomeTeamId,
 					AwayTeamId = matchup.AwayTeamId,
 					NflGameId = matchup.NflGameId,

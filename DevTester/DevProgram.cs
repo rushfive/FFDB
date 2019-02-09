@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Npgsql;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
 //using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers;
 using R5.FFDB.Components.CoreData.TeamGames;
@@ -148,8 +149,7 @@ namespace DevTester
 			{
 				var matchup = new WeekGameMatchup
 				{
-					Season = week.Season,
-					Week = week.Week
+					Week = week
 				};
 
 				matchup.HomeTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("h").Value, includePriorLookup: true);
