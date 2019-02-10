@@ -12,11 +12,11 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 	// parses XML response from NFLs score strip endpoint:
 	// http://www.nfl.com/ajax/scorestrip?season={season}&seasonType=REG&week={week}
 
-	public interface IToVersionedModelMapper : IAsyncMapper<string, WeekMatchupsVersionedModel> { }
+	public interface IToVersionedModelMapper : IAsyncMapper<string, WeekMatchupsVersionedModel, WeekInfo> { }
 	
 	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
-		public Task<WeekMatchupsVersionedModel> MapAsync(string httpResponse)
+		public Task<WeekMatchupsVersionedModel> MapAsync(string httpResponse, WeekInfo week)
 		{
 			XElement weekGameXml = XElement.Parse(httpResponse);
 
@@ -24,6 +24,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 
 			var model = new WeekMatchupsVersionedModel
 			{
+				Week = week,
 				Games = new List<WeekMatchupsVersionedModel.Game>()
 			};
 

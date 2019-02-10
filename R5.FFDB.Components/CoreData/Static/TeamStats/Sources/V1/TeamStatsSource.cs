@@ -13,20 +13,25 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 {
+	// how to use: the cache that uses this would resolve things on a by-week basis.
+	// first, grab the list of game ids for that week, then use this source for each game to 
+	// build up a cachedata model
 	public interface ITeamStatsSource : ICoreDataSource<List<TeamWeekStats>, (string gameId, WeekInfo week)> { }
 
 	public class TeamStatsSource : CoreDataSource<TeamStatsVersionedModel, List<TeamWeekStats>, (string, WeekInfo)>, ITeamStatsSource
 	{
 		public TeamStatsSource(
 			ILogger<TeamStatsSource> logger,
+			IToVersionedModelMapper toVersionedMapper,
+			IToCoreDataMapper toCoreDataMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
 				  logger,
-				  new ToVersionedModelMapper(),
-				  new ToCoreDataMapper(),
+				  toVersionedMapper,
+				  toCoreDataMapper,
 				  programOptions,
 				  dbProvider,
 				  dataPath,

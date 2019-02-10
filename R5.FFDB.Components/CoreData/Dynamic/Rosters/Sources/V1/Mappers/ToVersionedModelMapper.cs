@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models;
+using R5.FFDB.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 {
-	public interface IToVersionedModelMapper : IAsyncMapper<string, RosterVersionedModel> { }
+	public interface IToVersionedModelMapper : IAsyncMapper<string, RosterVersionedModel, Team> { }
 
 	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
@@ -18,7 +19,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 			_scraper = scraper;
 		}
 
-		public Task<RosterVersionedModel> MapAsync(string httpResponse)
+		public Task<RosterVersionedModel> MapAsync(string httpResponse, Team team)
 		{
 			var page = new HtmlDocument();
 			page.LoadHtml(httpResponse);
@@ -27,6 +28,8 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 
 			return Task.FromResult(new RosterVersionedModel
 			{
+				TeamId = team.Id,
+				TeamAbbreviation = team.Abbreviation,
 				Players = players
 			});
 		}

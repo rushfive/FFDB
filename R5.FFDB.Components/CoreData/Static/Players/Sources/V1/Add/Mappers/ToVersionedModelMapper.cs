@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 {
-	public interface IToVersionedModelMapper : IAsyncMapper<string, PlayerAddVersionedModel> { }
+	public interface IToVersionedModelMapper : IAsyncMapper<string, PlayerAddVersionedModel, string> { }
 
 	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
@@ -18,7 +18,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 			_scraper = scraper;
 		}
 
-		public Task<PlayerAddVersionedModel> MapAsync(string httpResponse)
+		public Task<PlayerAddVersionedModel> MapAsync(string httpResponse, string nflId)
 		{
 			var page = new HtmlDocument();
 			page.LoadHtml(httpResponse);

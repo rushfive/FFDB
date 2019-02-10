@@ -46,7 +46,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Models
 		public static TeamGameMatchupStats FromGameStats(JObject json, string gameId,
 			WeekInfo week, Dictionary<string, string> gsisNflIdMap)
 		{
-			var home = TeamData.AsHome(json, gameId, gsisNflIdMap);
+			TeamData home = TeamData.AsHome(json, gameId, gsisNflIdMap);
 			var away = TeamData.AsAway(json, gameId, gsisNflIdMap);
 			//return new TeamGameMatchupStats(week, home, away);
 			return new TeamGameMatchupStats(home, away);

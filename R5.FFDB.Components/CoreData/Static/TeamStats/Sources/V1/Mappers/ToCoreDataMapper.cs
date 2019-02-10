@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 {
-	public interface IToCoreDataMapper : IAsyncMapper<TeamStatsVersionedModel, List<TeamWeekStats>> { }
+	public interface IToCoreDataMapper : IAsyncMapper<TeamStatsVersionedModel, List<TeamWeekStats>, (string gameId, WeekInfo week)> { }
 
 	public class ToCoreDataMapper : IToCoreDataMapper
 	{
-		public Task<List<TeamWeekStats>> MapAsync(TeamStatsVersionedModel model)
+		public Task<List<TeamWeekStats>> MapAsync(TeamStatsVersionedModel model, (string, WeekInfo) gameWeek)
 		{
 			var home = MapStats(model.HomeTeamStats, model.Week);
 			var away = MapStats(model.AwayTeamStats, model.Week);

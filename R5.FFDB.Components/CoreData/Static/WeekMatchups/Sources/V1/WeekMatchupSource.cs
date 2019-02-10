@@ -18,14 +18,16 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 	{
 		public WeekMatchupSource(
 			ILogger<WeekMatchupSource> logger,
+			IToVersionedModelMapper toVersionedMapper,
+			IToCoreDataMapper toCoreDataMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
 				  logger,
-				  new ToVersionedModelMapper(),
-				  new ToCoreDataMapper(),
+				  toVersionedMapper,
+				  toCoreDataMapper,
 				  programOptions,
 				  dbProvider,
 				  dataPath,
@@ -46,7 +48,6 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 
 		protected override Task OnVersionedModelMappedAsync(WeekInfo week, WeekMatchupsVersionedModel versioned)
 		{
-			versioned.Week = week;
 			return Task.CompletedTask;
 		}
 

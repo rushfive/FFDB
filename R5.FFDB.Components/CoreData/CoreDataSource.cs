@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData
 {
-	public interface IAsyncMapper<TIn, TOut>
+	public interface IAsyncMapper<TIn, TOut, TSourceKey>
 	{
-		Task<TOut> MapAsync(TIn input);
+		Task<TOut> MapAsync(TIn input, TSourceKey sourceKey);
 	}
 
 	public interface ICoreDataSource<TCoreData, TKey>
@@ -34,16 +34,16 @@ namespace R5.FFDB.Components.CoreData
 		protected DataDirectoryPath DataPath { get; }
 
 		private ILogger<CoreDataSource<TVersionedModel, TCoreData, TKey>> _logger { get; }
-		private IAsyncMapper<string, TVersionedModel> _toVersionedMapper { get; }
-		private IAsyncMapper<TVersionedModel, TCoreData> _toCoreDataMapper { get; }
+		private IAsyncMapper<string, TVersionedModel, TKey> _toVersionedMapper { get; }
+		private IAsyncMapper<TVersionedModel, TCoreData, TKey> _toCoreDataMapper { get; }
 		private ProgramOptions _programOptions { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private IWebRequestClient _webClient { get; }
 
 		protected CoreDataSource(
 			ILogger<CoreDataSource<TVersionedModel, TCoreData, TKey>> logger,
-			IAsyncMapper<string, TVersionedModel> toVersionedMapper,
-			IAsyncMapper<TVersionedModel, TCoreData> toCoreDataMapper,
+			IAsyncMapper<string, TVersionedModel, TKey> toVersionedMapper,
+			IAsyncMapper<TVersionedModel, TCoreData, TKey> toCoreDataMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
@@ -67,7 +67,7 @@ namespace R5.FFDB.Components.CoreData
 				versioned = await FetchFromSourceAsync(key);
 			}
 
-			TCoreData coreData = await _toCoreDataMapper.MapAsync(versioned);
+			TCoreData coreData = await _toCoreDataMapper.MapAsync(versioned, key);
 
 			await OnCoreDataMappedAsync(key, coreData);
 
@@ -78,7 +78,9 @@ namespace R5.FFDB.Components.CoreData
 		protected abstract string GetVersionedFilePath(TKey key);
 		protected abstract string GetSourceUri(TKey key);
 
+		[Obsolete("replaced by adding source key to mappers")]
 		protected abstract Task OnVersionedModelMappedAsync(TKey key, TVersionedModel versioned);
+		[Obsolete("replaced by adding source key to mappers")]
 		protected abstract Task OnCoreDataMappedAsync(TKey key, TCoreData coreData);
 
 		private bool TryGetVersionedFromDisk(TKey key, out TVersionedModel versioned)
@@ -105,7 +107,7 @@ namespace R5.FFDB.Components.CoreData
 			string uri = GetSourceUri(key);
 			string response = await _webClient.GetStringAsync(uri, throttle: false);
 
-			TVersionedModel versioned = await _toVersionedMapper.MapAsync(response);
+			TVersionedModel versioned = await _toVersionedMapper.MapAsync(response, key);
 
 			await OnVersionedModelMappedAsync(key, versioned);
 

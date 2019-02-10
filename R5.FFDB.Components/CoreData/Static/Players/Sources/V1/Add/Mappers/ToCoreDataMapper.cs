@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 {
-	public interface IToCoreDataMapper : IAsyncMapper<PlayerAddVersionedModel, PlayerAdd> { }
+	public interface IToCoreDataMapper : IAsyncMapper<PlayerAddVersionedModel, PlayerAdd, string> { }
 
 	public class ToCoreDataMapper : IToCoreDataMapper
 	{
-		public Task<PlayerAdd> MapAsync(PlayerAddVersionedModel versionedModel)
+		public Task<PlayerAdd> MapAsync(PlayerAddVersionedModel versionedModel, string nflId)
 		{
 			throw new NotImplementedException();
 		}

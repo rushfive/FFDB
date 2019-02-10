@@ -21,7 +21,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 		public RosterSource(
 			ILogger<RosterSource> logger,
 			IToVersionedModelMapper toVersionedMapper,
-			//ToCoreDataMapper toCoreDataMapper,
+			ToCoreDataMapper toCoreDataMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
@@ -29,7 +29,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			: base(
 				  logger,
 				  toVersionedMapper,
-				  new ToCoreDataMapper(),
+				  toCoreDataMapper,
 				  programOptions,
 				  dbProvider,
 				  dataPath,
@@ -52,9 +52,6 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 
 		protected override Task OnVersionedModelMappedAsync(Team team, RosterVersionedModel versioned)
 		{
-			versioned.TeamId = team.Id;
-			versioned.TeamAbbreviation = team.Abbreviation;
-
 			return Task.CompletedTask;
 		}
 

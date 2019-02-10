@@ -24,7 +24,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Models
 
 			// list of players from team active, must map from esb to nflid
 			[JsonProperty("playerNflIds")]
-			public List<string> PlayerNflIds { get; set; } = new List<string>();
+			public List<string> PlayerNflIds { get; set; }
 
 			[JsonProperty("pointsFirstQuarter")]
 			public int PointsFirstQuarter { get; set; }
