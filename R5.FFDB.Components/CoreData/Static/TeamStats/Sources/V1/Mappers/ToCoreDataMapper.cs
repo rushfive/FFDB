@@ -1,4 +1,5 @@
-﻿using R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Models;
+﻿using R5.FFDB.Components.CoreData.Static.TeamStats.Models;
+using R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Models;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using System;
@@ -8,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 {
-	public interface IToCoreDataMapper : IAsyncMapper<TeamStatsVersionedModel, List<TeamWeekStats>, (string gameId, WeekInfo week)> { }
+	public interface IToCoreDataMapper : IAsyncMapper<TeamStatsVersionedModel, TeamStatsSourceModel, (string gameId, WeekInfo week)> { }
 
 	public class ToCoreDataMapper : IToCoreDataMapper
 	{
-		public Task<List<TeamWeekStats>> MapAsync(TeamStatsVersionedModel model, (string, WeekInfo) gameWeek)
+		public Task<TeamStatsSourceModel> MapAsync(TeamStatsVersionedModel model, (string, WeekInfo) gameWeek)
 		{
 			var home = MapStats(model.HomeTeamStats, model.Week);
 			var away = MapStats(model.AwayTeamStats, model.Week);
 
-			return Task.FromResult(new List<TeamWeekStats>
+			return Task.FromResult(new TeamStatsSourceModel
 			{
-				home,
-				away
+				HomeTeamStats = home,
+				AwayTeamStats = away
 			});
 		}
 

@@ -19,7 +19,6 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups
 	public class WeekMatchupsCache : IWeekMatchupsCache
 	{
 		private static string CacheKey(WeekInfo week) => $"week_matchups_{week}";
-		private readonly SemaphoreSlim _exclusiveLock = new SemaphoreSlim(1, 1);
 
 		private ILogger<WeekMatchupsCache> _logger { get; }
 		private IAsyncLazyCache _cache { get; }

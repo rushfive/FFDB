@@ -10,11 +10,12 @@ namespace R5.FFDB.Components.CoreData
 		public static IServiceCollection AddCoreDataSources(this IServiceCollection services)
 		{
 			return services
-				.AddRosterServices()
-				.AddWeekMatchupServices();
+				.AddRoster()
+				.AddWeekMatchup()
+				.AddTeamStats();
 		}
 
-		private static IServiceCollection AddRosterServices(this IServiceCollection services)
+		private static IServiceCollection AddRoster(this IServiceCollection services)
 		{
 			services
 				.AddScoped<
@@ -36,7 +37,7 @@ namespace R5.FFDB.Components.CoreData
 			return services;
 		}
 
-		private static IServiceCollection AddWeekMatchupServices(this IServiceCollection services)
+		private static IServiceCollection AddWeekMatchup(this IServiceCollection services)
 		{
 			services
 				.AddScoped<
@@ -51,6 +52,25 @@ namespace R5.FFDB.Components.CoreData
 				.AddScoped<
 					Static.WeekMatchups.IWeekMatchupsCache,
 					Static.WeekMatchups.WeekMatchupsCache>();
+
+			return services;
+		}
+
+		private static IServiceCollection AddTeamStats(this IServiceCollection services)
+		{
+			services
+				.AddScoped<
+					Static.TeamStats.Sources.V1.ITeamStatsSource,
+					Static.TeamStats.Sources.V1.TeamStatsSource>()
+				.AddScoped<
+					Static.TeamStats.Sources.V1.Mappers.IToVersionedModelMapper,
+					Static.TeamStats.Sources.V1.Mappers.ToVersionedModelMapper>()
+				.AddScoped<
+					Static.TeamStats.Sources.V1.Mappers.IToCoreDataMapper,
+					Static.TeamStats.Sources.V1.Mappers.ToCoreDataMapper>()
+				.AddScoped<
+					Static.TeamStats.ITeamStatsCache,
+					Static.TeamStats.TeamStatsCache>();
 
 			return services;
 		}
