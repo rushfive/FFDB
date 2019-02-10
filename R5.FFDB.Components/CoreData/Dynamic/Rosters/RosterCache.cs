@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models;
+using R5.FFDB.Components.Http;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
@@ -13,81 +15,73 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 {
+	// Roster use cases:
+	// 1. Updating players (dynamic stuff  like names, roster number position, etc)
+	// 2. Updating Player-Team mappings (are they on a team?)
+	//       - get nfl ids of everyone on a roster (used to resolve new players in UpdateRosterMappingsPipeline)
+	//       -
 	public interface IRosterCache
 	{
+		Task<List<Roster>> GetAsync();
+		Task<List<string>> GetRosteredIdsAsync();
 		Task<(int? number, Position? position, RosterStatus? status)?> GetPlayerDataAsync(string nflId);
 	}
 
 	public class RosterCache : IRosterCache
 	{
 		private const string _cacheKey = "rosters";
-		private readonly SemaphoreSlim _exclusiveLock = new SemaphoreSlim(1, 1);
 
 		private ILogger<RosterCache> _logger { get; }
 		private IAsyncLazyCache _cache { get; }
 		private IRosterSource _source { get; }
-
-		private List<Roster> _rosters { get; set; }
-		private Dictionary<string, (int?, Position?, RosterStatus?)> _playerDataMap { get; set; }
+		private WebRequestThrottle _throttle { get; }
 
 		public RosterCache(
 			ILogger<RosterCache> logger,
 			IAsyncLazyCache cache,
-			IRosterSource source)
+			IRosterSource source,
+			WebRequestThrottle throttle)
 		{
 			_logger = logger;
 			_cache = cache;
 			_source = source;
+			_throttle = throttle;
 		}
-		
+
+		public async Task<List<Roster>> GetAsync()
+		{
+			RosterCacheData rosterData = await _cache.GetOrCreateAsync(_cacheKey, CreateCacheDataAsync);
+
+			return rosterData.GetRosters();
+		}
+
+		public async Task<List<string>> GetRosteredIdsAsync()
+		{
+			RosterCacheData rosterData = await _cache.GetOrCreateAsync(_cacheKey, CreateCacheDataAsync);
+
+			return rosterData.GetCurrentlyRosteredIds();
+		}
+
 		public async Task<(int? number, Position? position, RosterStatus? status)?> GetPlayerDataAsync(string nflId)
 		{
-			await _exclusiveLock.WaitAsync().ConfigureAwait(false);
-			try
-			{
-				if (_rosters == null)
-				{
-					await ResolveCacheDataAsync();
-				}
-			}
-			finally
-			{
-				_exclusiveLock.Release();
-			}
+			RosterCacheData rosterData = await _cache.GetOrCreateAsync(_cacheKey, CreateCacheDataAsync);
 
-			if (_playerDataMap.TryGetValue(nflId, out (int?, Position?, RosterStatus?) data))
-			{
-				return data;
-			}
-
-			return null;
+			return rosterData.GetPlayerData(nflId);
 		}
 
-		private async Task ResolveCacheDataAsync()
+		private async Task<RosterCacheData> CreateCacheDataAsync()
 		{
-			List<Roster> rosters = await _cache.GetOrCreateAsync(_cacheKey, GetRostersAsync);
+			var data = new RosterCacheData();
 
-			var playerDataMap = new Dictionary<string, (int?, Position?, RosterStatus?)>(StringComparer.OrdinalIgnoreCase);
-			foreach (var p in rosters.SelectMany(r => r.Players))
+			foreach (Team t in TeamDataStore.GetAll())
 			{
-				playerDataMap[p.NflId] = (p.Number, p.Position, p.Status);
+				Roster roster = await _source.GetAsync(t);
+				data.UpdateWith(roster);
+
+				await _throttle.DelayAsync();
 			}
 
-			_rosters = rosters;
-			_playerDataMap = playerDataMap;
-		}
-
-		private async Task<List<Roster>> GetRostersAsync()
-		{
-			List<Team> teams = TeamDataStore.GetAll();
-			
-			var fetchTasks = teams.Select(t => Task.Run(() =>
-			{
-				return _source.GetAsync(t);
-			}));
-
-			Roster[] rosters = await Task.WhenAll(fetchTasks);
-			return rosters.ToList();
+			return data;
 		}
 	}
 }
