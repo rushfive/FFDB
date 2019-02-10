@@ -20,8 +20,8 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 	{
 		public RosterSource(
 			ILogger<RosterSource> logger,
-			IToVersionedModelMapper toVersionedMapper,
-			ToCoreDataMapper toCoreDataMapper,
+			IToVersionedMapper toVersionedMapper,
+			ToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
@@ -29,7 +29,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			: base(
 				  logger,
 				  toVersionedMapper,
-				  toCoreDataMapper,
+				  toCoreMapper,
 				  programOptions,
 				  dbProvider,
 				  dataPath,

@@ -35,7 +35,7 @@ namespace R5.FFDB.Components.CoreData
 
 		private ILogger<CoreDataSource<TVersionedModel, TCoreData, TKey>> _logger { get; }
 		private IAsyncMapper<string, TVersionedModel, TKey> _toVersionedMapper { get; }
-		private IAsyncMapper<TVersionedModel, TCoreData, TKey> _toCoreDataMapper { get; }
+		private IAsyncMapper<TVersionedModel, TCoreData, TKey> _toCoreMapper { get; }
 		private ProgramOptions _programOptions { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private IWebRequestClient _webClient { get; }
@@ -43,7 +43,7 @@ namespace R5.FFDB.Components.CoreData
 		protected CoreDataSource(
 			ILogger<CoreDataSource<TVersionedModel, TCoreData, TKey>> logger,
 			IAsyncMapper<string, TVersionedModel, TKey> toVersionedMapper,
-			IAsyncMapper<TVersionedModel, TCoreData, TKey> toCoreDataMapper,
+			IAsyncMapper<TVersionedModel, TCoreData, TKey> toCoreMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
@@ -51,7 +51,7 @@ namespace R5.FFDB.Components.CoreData
 		{
 			_logger = logger;
 			_toVersionedMapper = toVersionedMapper;
-			_toCoreDataMapper = toCoreDataMapper;
+			_toCoreMapper = toCoreMapper;
 			_programOptions = programOptions;
 			_dbProvider = dbProvider;
 			DataPath = dataPath;
@@ -67,7 +67,7 @@ namespace R5.FFDB.Components.CoreData
 				versioned = await FetchFromSourceAsync(key);
 			}
 
-			TCoreData coreData = await _toCoreDataMapper.MapAsync(versioned, key);
+			TCoreData coreData = await _toCoreMapper.MapAsync(versioned, key);
 
 			await OnCoreDataMappedAsync(key, coreData);
 

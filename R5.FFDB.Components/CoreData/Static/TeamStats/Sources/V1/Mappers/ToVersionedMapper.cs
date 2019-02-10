@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 {
-	public interface IToVersionedModelMapper : IAsyncMapper<string, TeamStatsVersioned, (string gameId, WeekInfo week)> { }
+	public interface IToVersionedMapper : IAsyncMapper<string, TeamStatsVersioned, (string gameId, WeekInfo week)> { }
 
-	public class ToVersionedModelMapper : IToVersionedModelMapper
+	public class ToVersionedMapper : IToVersionedMapper
 	{
 		private IPlayerIdMappings _playerIdMappings { get; }
 
-		public ToVersionedModelMapper(IPlayerIdMappings playerIdMappings)
+		public ToVersionedMapper(IPlayerIdMappings playerIdMappings)
 		{
 			_playerIdMappings = playerIdMappings;
 		}

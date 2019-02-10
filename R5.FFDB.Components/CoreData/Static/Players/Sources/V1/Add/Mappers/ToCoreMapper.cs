@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 {
-	public interface IToCoreDataMapper : IAsyncMapper<PlayerAddVersioned, PlayerAdd, string> { }
+	public interface IToCoreMapper : IAsyncMapper<PlayerAddVersioned, PlayerAdd, string> { }
 
-	public class ToCoreDataMapper : IToCoreDataMapper
+	public class ToCoreMapper : IToCoreMapper
 	{
 		public Task<PlayerAdd> MapAsync(PlayerAddVersioned versionedModel, string nflId)
 		{

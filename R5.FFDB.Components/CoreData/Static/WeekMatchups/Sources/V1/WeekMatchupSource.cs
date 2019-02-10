@@ -18,8 +18,8 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 	{
 		public WeekMatchupSource(
 			ILogger<WeekMatchupSource> logger,
-			IToVersionedModelMapper toVersionedMapper,
-			IToCoreDataMapper toCoreDataMapper,
+			IToVersionedMapper toVersionedMapper,
+			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
@@ -27,7 +27,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 			: base(
 				  logger,
 				  toVersionedMapper,
-				  toCoreDataMapper,
+				  toCoreMapper,
 				  programOptions,
 				  dbProvider,
 				  dataPath,

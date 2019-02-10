@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 {
-	public interface IToVersionedModelMapper : IAsyncMapper<string, PlayerAddVersioned, string> { }
+	public interface IToVersionedMapper : IAsyncMapper<string, PlayerAddVersioned, string> { }
 
-	public class ToVersionedModelMapper : IToVersionedModelMapper
+	public class ToVersionedMapper : IToVersionedMapper
 	{
 		private IPlayerScraper _scraper { get; }
 
-		public ToVersionedModelMapper(IPlayerScraper scraper)
+		public ToVersionedMapper(IPlayerScraper scraper)
 		{
 			_scraper = scraper;
 		}

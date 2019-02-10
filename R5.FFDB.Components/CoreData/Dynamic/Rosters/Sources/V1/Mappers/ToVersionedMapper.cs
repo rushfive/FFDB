@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 {
-	public interface IToVersionedModelMapper : IAsyncMapper<string, RosterVersioned, Team> { }
+	public interface IToVersionedMapper : IAsyncMapper<string, RosterVersioned, Team> { }
 
-	public class ToVersionedModelMapper : IToVersionedModelMapper
+	public class ToVersionedMapper : IToVersionedMapper
 	{
 		private IRosterScraper _scraper { get; }
 
-		public ToVersionedModelMapper(IRosterScraper scraper)
+		public ToVersionedMapper(IRosterScraper scraper)
 		{
 			_scraper = scraper;
 		}

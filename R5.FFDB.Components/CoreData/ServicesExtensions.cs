@@ -25,11 +25,11 @@ namespace R5.FFDB.Components.CoreData
 					Dynamic.Rosters.Sources.V1.IRosterScraper,
 					Dynamic.Rosters.Sources.V1.RosterScraper>()
 				.AddScoped<
-					Dynamic.Rosters.Sources.V1.Mappers.IToVersionedModelMapper,
-					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedModelMapper>()
+					Dynamic.Rosters.Sources.V1.Mappers.IToVersionedMapper,
+					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedMapper>()
 				.AddScoped<
-					Dynamic.Rosters.Sources.V1.Mappers.IToCoreDataMapper,
-					Dynamic.Rosters.Sources.V1.Mappers.ToCoreDataMapper>()
+					Dynamic.Rosters.Sources.V1.Mappers.IToCoreMapper,
+					Dynamic.Rosters.Sources.V1.Mappers.ToCoreMapper>()
 				.AddSingleton<
 					Dynamic.Rosters.IRosterCache,
 					Dynamic.Rosters.RosterCache>();
@@ -44,11 +44,11 @@ namespace R5.FFDB.Components.CoreData
 					Static.WeekMatchups.Sources.V1.IWeekMatchupSource,
 					Static.WeekMatchups.Sources.V1.WeekMatchupSource>()
 				.AddScoped<
-					Static.WeekMatchups.Sources.V1.Mappers.IToVersionedModelMapper,
-					Static.WeekMatchups.Sources.V1.Mappers.ToVersionedModelMapper>()
+					Static.WeekMatchups.Sources.V1.Mappers.IToVersionedMapper,
+					Static.WeekMatchups.Sources.V1.Mappers.ToVersionedMapper>()
 				.AddScoped<
-					Static.WeekMatchups.Sources.V1.Mappers.IToCoreDataMapper,
-					Static.WeekMatchups.Sources.V1.Mappers.ToCoreDataMapper>()
+					Static.WeekMatchups.Sources.V1.Mappers.IToCoreMapper,
+					Static.WeekMatchups.Sources.V1.Mappers.ToCoreMapper>()
 				.AddScoped<
 					Static.WeekMatchups.IWeekMatchupsCache,
 					Static.WeekMatchups.WeekMatchupsCache>();
@@ -63,11 +63,11 @@ namespace R5.FFDB.Components.CoreData
 					Static.TeamStats.Sources.V1.ITeamStatsSource,
 					Static.TeamStats.Sources.V1.TeamStatsSource>()
 				.AddScoped<
-					Static.TeamStats.Sources.V1.Mappers.IToVersionedModelMapper,
-					Static.TeamStats.Sources.V1.Mappers.ToVersionedModelMapper>()
+					Static.TeamStats.Sources.V1.Mappers.IToVersionedMapper,
+					Static.TeamStats.Sources.V1.Mappers.ToVersionedMapper>()
 				.AddScoped<
-					Static.TeamStats.Sources.V1.Mappers.IToCoreDataMapper,
-					Static.TeamStats.Sources.V1.Mappers.ToCoreDataMapper>()
+					Static.TeamStats.Sources.V1.Mappers.IToCoreMapper,
+					Static.TeamStats.Sources.V1.Mappers.ToCoreMapper>()
 				.AddScoped<
 					Static.TeamStats.ITeamStatsCache,
 					Static.TeamStats.TeamStatsCache>();

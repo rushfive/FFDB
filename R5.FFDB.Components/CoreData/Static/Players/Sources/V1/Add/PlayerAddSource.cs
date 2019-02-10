@@ -23,8 +23,8 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 			IRosterCache rosterCache,
 
 			ILogger<PlayerAddSource> logger,
-			ToVersionedModelMapper toVersionedMapper,
-			ToCoreDataMapper toCoreDataMapper,
+			ToVersionedMapper toVersionedMapper,
+			ToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
@@ -32,7 +32,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 			: base(
 				  logger,
 				  toVersionedMapper,
-				  toCoreDataMapper,
+				  toCoreMapper,
 				  programOptions,
 				  dbProvider,
 				  dataPath,

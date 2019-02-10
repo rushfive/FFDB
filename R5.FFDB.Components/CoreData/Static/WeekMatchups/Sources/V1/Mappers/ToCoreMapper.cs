@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 {
-	public interface IToCoreDataMapper : IAsyncMapper<WeekMatchupsVersioned, List<WeekGameMatchup>, WeekInfo> { }
+	public interface IToCoreMapper : IAsyncMapper<WeekMatchupsVersioned, List<WeekGameMatchup>, WeekInfo> { }
 
-	public class ToCoreDataMapper : IToCoreDataMapper
+	public class ToCoreMapper : IToCoreMapper
 	{
 		public Task<List<WeekGameMatchup>> MapAsync(WeekMatchupsVersioned versionedModel, WeekInfo week)
 		{

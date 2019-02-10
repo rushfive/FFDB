@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 {
-	public interface IToCoreDataMapper : IAsyncMapper<TeamStatsVersioned, TeamStatsSourceModel, (string gameId, WeekInfo week)> { }
+	public interface IToCoreMapper : IAsyncMapper<TeamStatsVersioned, TeamStatsSourceModel, (string gameId, WeekInfo week)> { }
 
-	public class ToCoreDataMapper : IToCoreDataMapper
+	public class ToCoreMapper : IToCoreMapper
 	{
 		public Task<TeamStatsSourceModel> MapAsync(TeamStatsVersioned model, (string, WeekInfo) gameWeek)
 		{

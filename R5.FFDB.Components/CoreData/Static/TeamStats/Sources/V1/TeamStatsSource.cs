@@ -20,8 +20,8 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 	{
 		public TeamStatsSource(
 			ILogger<TeamStatsSource> logger,
-			IToVersionedModelMapper toVersionedMapper,
-			IToCoreDataMapper toCoreDataMapper,
+			IToVersionedMapper toVersionedMapper,
+			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
@@ -29,7 +29,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 			: base(
 				  logger,
 				  toVersionedMapper,
-				  toCoreDataMapper,
+				  toCoreMapper,
 				  programOptions,
 				  dbProvider,
 				  dataPath,
