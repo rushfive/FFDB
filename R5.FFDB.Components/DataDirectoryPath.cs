@@ -18,6 +18,7 @@ namespace R5.FFDB.Components
 		private string _rosters { get; }
 		private string _teamStats { get; }
 		private string _playerWeekStats { get; }
+		private string _receiverTargets { get; }
 
 		public DataDirectoryPath(string rootPath)
 		{
@@ -40,6 +41,7 @@ namespace R5.FFDB.Components
 			_rosters = _root + @"rosters\";
 			_teamStats = _root + @"team_stats\";
 			_playerWeekStats = _root + @"player_week_stats\";
+			_receiverTargets = _root + @"receiver_targets\";
 
 			CreateMissingPaths();
 		}
@@ -69,6 +71,11 @@ namespace R5.FFDB.Components
 			return _playerWeekStats + $"{week}.json";
 		}
 
+		public string ReceiverTargets(string gameId)
+		{
+			return _receiverTargets + $"{gameId}.json";
+		}
+
 		private void CreateMissingPaths()
 		{
 			Directory.CreateDirectory(_weekGameMap);
@@ -76,6 +83,7 @@ namespace R5.FFDB.Components
 			Directory.CreateDirectory(_rosters);
 			Directory.CreateDirectory(_teamStats);
 			Directory.CreateDirectory(_playerWeekStats);
+			Directory.CreateDirectory(_receiverTargets);
 		}
 
 

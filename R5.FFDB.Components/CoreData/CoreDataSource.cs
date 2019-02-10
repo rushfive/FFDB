@@ -37,6 +37,7 @@ namespace R5.FFDB.Components.CoreData
 		private IAsyncMapper<string, TVersionedModel, TKey> _toVersionedMapper { get; }
 		private IAsyncMapper<TVersionedModel, TCoreData, TKey> _toCoreMapper { get; }
 		private ProgramOptions _programOptions { get; }
+		[Obsolete("dont think we need dbContext for sources")]
 		private IDatabaseProvider _dbProvider { get; }
 		private IWebRequestClient _webClient { get; }
 

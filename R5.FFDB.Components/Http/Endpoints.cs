@@ -39,6 +39,12 @@ namespace R5.FFDB.Components.Http
 			{
 				return $"http://www.nfl.com/teams/{shortName}/roster?team={abbreviation}";
 			}
+
+			public static string ReceiverTargets(string gameId)
+			{
+				string year = gameId.Substring(0, 4);
+				return $"https://www.nfl.com/gamecenter/{gameId}/{year}/{gameId}/{gameId}";
+			}
 		}
 	}
 }
