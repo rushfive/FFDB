@@ -12,25 +12,20 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 {
-	public interface IWeekMatchupSource : ICoreDataSource<List<WeekGameMatchup>, WeekInfo>
-	{
-
-	}
+	public interface IWeekMatchupSource : ICoreDataSource<List<WeekGameMatchup>, WeekInfo> { }
 
 	public class WeekMatchupSource : CoreDataSource<WeekMatchupsVersionedModel, List<WeekGameMatchup>, WeekInfo>, IWeekMatchupSource
 	{
 		public WeekMatchupSource(
 			ILogger<WeekMatchupSource> logger,
-			ToVersionedModelMapper toVersionedMapper,
-			ToCoreDataMapper toCoreDataMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
 				  logger,
-				  toVersionedMapper,
-				  toCoreDataMapper,
+				  new ToVersionedModelMapper(),
+				  new ToCoreDataMapper(),
 				  programOptions,
 				  dbProvider,
 				  dataPath,

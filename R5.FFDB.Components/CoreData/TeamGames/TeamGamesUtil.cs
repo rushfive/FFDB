@@ -74,7 +74,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 			stats.Turnovers = (int)teamStats["trnovr"];
 			stats.Punts = (int)teamStats["pt"];
 			stats.PuntYards = (int)teamStats["ptyds"];
-			stats.PuntYardsAverage = (int)teamStats["ptavg"];
+			//stats.PuntYardsAverage = (int)teamStats["ptavg"];
 
 			string timeOfPosession = (string)teamStats["top"];
 			var split = timeOfPosession.Split(':');

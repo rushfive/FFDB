@@ -14,10 +14,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 {
 	// TODO: need a configurable way to determine when
 	// saved roster files are too old (requiring a re-fetch)
-	public interface IRosterSource : ICoreDataSource<Roster, Team>
-	{
-
-	}
+	public interface IRosterSource : ICoreDataSource<Roster, Team> { }
 
 	public class RosterSource : CoreDataSource<RosterVersionedModel, Roster, Team>, IRosterSource
 	{
@@ -38,7 +35,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 				  dataPath,
 				  webClient)
 		{
-			
+
 		}
 
 		protected override bool SupportsFilePersistence => true;

@@ -9,6 +9,13 @@ namespace R5.FFDB.Components.CoreData
 	{
 		public static IServiceCollection AddCoreDataSources(this IServiceCollection services)
 		{
+			return services
+				.AddRosterServices()
+				.AddWeekMatchupServices();
+		}
+
+		private static IServiceCollection AddRosterServices(this IServiceCollection services)
+		{
 			services
 				.AddScoped<
 					Dynamic.Rosters.Sources.V1.IRosterSource,
@@ -22,6 +29,19 @@ namespace R5.FFDB.Components.CoreData
 				.AddSingleton<
 					Dynamic.Rosters.IRosterCache,
 					Dynamic.Rosters.RosterCache>();
+
+			return services;
+		}
+
+		private static IServiceCollection AddWeekMatchupServices(this IServiceCollection services)
+		{
+			services
+				.AddScoped<
+					Static.WeekMatchups.Sources.V1.IWeekMatchupSource,
+					Static.WeekMatchups.Sources.V1.WeekMatchupSource>()
+				.AddScoped<
+					Static.WeekMatchups.IWeekMatchupsCache,
+					Static.WeekMatchups.WeekMatchupsCache>();
 
 			return services;
 		}
