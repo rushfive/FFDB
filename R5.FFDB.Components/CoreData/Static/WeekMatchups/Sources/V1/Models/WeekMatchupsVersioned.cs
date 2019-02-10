@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Models
 {
-	public class WeekMatchupsVersionedModel
+	public class WeekMatchupsVersioned
 	{
 		[JsonProperty("week")]
 		public WeekInfo Week { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using R5.FFDB.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,17 +10,15 @@ namespace R5.FFDB.Components.Http
 		public static class Api
 		{
 			// json
-			// TODO: CHANGE TO ACCEPT WEEKINFO
-			public static string WeekStats(int season, int week)
+			public static string WeekStats(WeekInfo week)
 			{
-				return $"http://api.fantasy.nfl.com/v2/players/weekstats?season={season}&week={week}";
+				return $"http://api.fantasy.nfl.com/v2/players/weekstats?season={week.Season}&week={week.Week}";
 			}
 
 			// xml
-			// TODO: CHANGE TO ACCEPT WEEKINFO
-			public static string ScoreStripWeekGames(int season, int week)
+			public static string ScoreStripWeekGames(WeekInfo week)
 			{
-				return $"http://www.nfl.com/ajax/scorestrip?season={season}&seasonType=REG&week={week}";
+				return $"http://www.nfl.com/ajax/scorestrip?season={week.Season}&seasonType=REG&week={week.Week}";
 			}
 
 			// json

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.Players.Models;
-using R5.FFDB.Components.CoreData.WeekStats;
+//using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Core;
@@ -33,7 +33,7 @@ namespace R5.FFDB.Components.CoreData.Players
 		private DataDirectoryPath _dataPath { get; }
 		private IWebRequestClient _webRequestClient { get; }
 		private WebRequestThrottle _throttle { get; }
-		private IWeekStatsService _weekStatsService { get; }
+		//private IWeekStatsService _weekStatsService { get; }
 		private IPlayerScraper _scraper { get; }
 
 		private ProgramOptions _programOptions { get; }
@@ -43,7 +43,7 @@ namespace R5.FFDB.Components.CoreData.Players
 			DataDirectoryPath dataPath,
 			IWebRequestClient webRequestClient,
 			WebRequestThrottle throttle,
-			IWeekStatsService weekStatsService,
+			//IWeekStatsService weekStatsService,
 			IPlayerScraper scraper,
 
 			ProgramOptions programOptions)
@@ -52,7 +52,7 @@ namespace R5.FFDB.Components.CoreData.Players
 			_dataPath = dataPath;
 			_webRequestClient = webRequestClient;
 			_throttle = throttle;
-			_weekStatsService = weekStatsService;
+			//_weekStatsService = weekStatsService;
 			_scraper = scraper;
 
 			_programOptions = programOptions;

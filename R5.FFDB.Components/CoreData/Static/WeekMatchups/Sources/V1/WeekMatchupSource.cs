@@ -14,7 +14,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 {
 	public interface IWeekMatchupSource : ICoreDataSource<List<WeekGameMatchup>, WeekInfo> { }
 
-	public class WeekMatchupSource : CoreDataSource<WeekMatchupsVersionedModel, List<WeekGameMatchup>, WeekInfo>, IWeekMatchupSource
+	public class WeekMatchupSource : CoreDataSource<WeekMatchupsVersioned, List<WeekGameMatchup>, WeekInfo>, IWeekMatchupSource
 	{
 		public WeekMatchupSource(
 			ILogger<WeekMatchupSource> logger,
@@ -43,10 +43,10 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 
 		protected override string GetSourceUri(WeekInfo week)
 		{
-			return Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
+			return Endpoints.Api.ScoreStripWeekGames(week);
 		}
 
-		protected override Task OnVersionedModelMappedAsync(WeekInfo week, WeekMatchupsVersionedModel versioned)
+		protected override Task OnVersionedModelMappedAsync(WeekInfo week, WeekMatchupsVersioned versioned)
 		{
 			return Task.CompletedTask;
 		}

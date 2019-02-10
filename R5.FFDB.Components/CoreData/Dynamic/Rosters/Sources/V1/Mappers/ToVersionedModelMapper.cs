@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 {
-	public interface IToVersionedModelMapper : IAsyncMapper<string, RosterVersionedModel, Team> { }
+	public interface IToVersionedModelMapper : IAsyncMapper<string, RosterVersioned, Team> { }
 
 	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
@@ -19,14 +19,14 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 			_scraper = scraper;
 		}
 
-		public Task<RosterVersionedModel> MapAsync(string httpResponse, Team team)
+		public Task<RosterVersioned> MapAsync(string httpResponse, Team team)
 		{
 			var page = new HtmlDocument();
 			page.LoadHtml(httpResponse);
 
-			List<RosterVersionedModel.Player> players = _scraper.ExtractPlayers(page);
+			List<RosterVersioned.Player> players = _scraper.ExtractPlayers(page);
 
-			return Task.FromResult(new RosterVersionedModel
+			return Task.FromResult(new RosterVersioned
 			{
 				TeamId = team.Id,
 				TeamAbbreviation = team.Abbreviation,

@@ -5,7 +5,7 @@ using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.Players;
 using R5.FFDB.Components.CoreData.Rosters;
 using R5.FFDB.Components.CoreData.TeamGames;
-using R5.FFDB.Components.CoreData.WeekStats;
+//using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Extensions.JsonConverters;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
@@ -60,7 +60,7 @@ namespace R5.FFDB.Engine
 			{
 				serviceProvider.GetRequiredService<IPlayerSource>(),
 				serviceProvider.GetRequiredService<IRosterSource>(),
-				serviceProvider.GetRequiredService<IWeekStatsSource>(),
+				//serviceProvider.GetRequiredService<IWeekStatsSource>(),
 				serviceProvider.GetRequiredService<ITeamGamesSource>()
 			};
 

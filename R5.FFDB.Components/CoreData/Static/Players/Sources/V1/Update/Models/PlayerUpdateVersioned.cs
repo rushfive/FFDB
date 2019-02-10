@@ -7,7 +7,7 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update.Models
 {
-	public class PlayerUpdateVersionedModel
+	public class PlayerUpdateVersioned
 	{
 		// current source: player profile pages
 
@@ -28,7 +28,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update.Models
 		[JsonProperty("status")]
 		public RosterStatus? Status { get; set; }
 
-		public static PlayerUpdate ToCoreEntity(PlayerUpdateVersionedModel versioned,
+		public static PlayerUpdate ToCoreEntity(PlayerUpdateVersioned versioned,
 			int? number, Position? position, RosterStatus? status)
 		{
 			return new PlayerUpdate

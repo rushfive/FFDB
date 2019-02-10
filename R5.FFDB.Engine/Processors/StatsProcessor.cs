@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData.TeamGames;
-using R5.FFDB.Components.CoreData.WeekStats;
+//using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Pipelines.Stats;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
@@ -22,8 +22,8 @@ namespace R5.FFDB.Engine.Processors
 		private IDatabaseProvider _dbProvider { get; }
 		private AvailableWeeksValue _availableWeeksValue { get; }
 		private ITeamGamesSource _teamGamesSource { get; }
-		private IWeekStatsSource _weekStatsSource { get; }
-		private IWeekStatsService _weekStatsService { get; }
+		//private IWeekStatsSource _weekStatsSource { get; }
+		//private IWeekStatsService _weekStatsService { get; }
 		private ITeamGameStatsService _teamStatsService { get; }
 		private IProcessorHelper _helper { get; }
 		//private IWeekGameMatchupService _gameMatchupService { get; }
@@ -35,8 +35,8 @@ namespace R5.FFDB.Engine.Processors
 			IDatabaseProvider dbProvider,
 			AvailableWeeksValue availableWeeksValue,
 			ITeamGamesSource teamGamesSource,
-			IWeekStatsSource weekStatsSource,
-			IWeekStatsService weekStatsService,
+			//IWeekStatsSource weekStatsSource,
+			//IWeekStatsService weekStatsService,
 			ITeamGameStatsService teamStatsService,
 			IProcessorHelper helper
 			//IWeekGameMatchupService gameMatchupService
@@ -48,8 +48,8 @@ namespace R5.FFDB.Engine.Processors
 			_dbProvider = dbProvider;
 			_availableWeeksValue = availableWeeksValue;
 			_teamGamesSource = teamGamesSource;
-			_weekStatsSource = weekStatsSource;
-			_weekStatsService = weekStatsService;
+			//_weekStatsSource = weekStatsSource;
+			//_weekStatsService = weekStatsService;
 			_teamStatsService = teamStatsService;
 			_helper = helper;
 			//_gameMatchupService = gameMatchupService;
@@ -103,13 +103,13 @@ namespace R5.FFDB.Engine.Processors
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 
 			await _teamGamesSource.FetchForWeekAsync(week);//
-			await _weekStatsSource.FetchForWeekAsync(week);//
+			//await _weekStatsSource.FetchForWeekAsync(week);//
 
-			List<string> weekStatNflIds = _weekStatsService.GetNflIdsForWeek(week);//
-			await _helper.AddPlayerProfilesAsync(weekStatNflIds, dbContext);//
+			//List<string> weekStatNflIds = _weekStatsService.GetNflIdsForWeek(week);//
+			//await _helper.AddPlayerProfilesAsync(weekStatNflIds, dbContext);//
 
-			WeekStats weekStats = await _weekStatsService.GetForWeekAsync(week);//
-			await dbContext.Stats.AddWeekAsync(weekStats);
+			//WeekStats weekStats = await _weekStatsService.GetForWeekAsync(week);//
+			//await dbContext.Stats.AddWeekAsync(weekStats);
 
 			List<TeamWeekStats> teamStats = _teamStatsService.GetForWeek(week); // team game data cache
 			await dbContext.Team.AddGameStatsAsync(teamStats);

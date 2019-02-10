@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 {
-	public interface IToCoreDataMapper : IAsyncMapper<RosterVersionedModel, Roster, Team> { }
+	public interface IToCoreDataMapper : IAsyncMapper<RosterVersioned, Roster, Team> { }
 
 	public class ToCoreDataMapper : IToCoreDataMapper
 	{
-		public Task<Roster> MapAsync(RosterVersionedModel versionedModel, Team team)
+		public Task<Roster> MapAsync(RosterVersioned versionedModel, Team team)
 		{
 			return Task.FromResult(
-				RosterVersionedModel.ToCoreEntity(versionedModel));
+				RosterVersioned.ToCoreEntity(versionedModel));
 		}
 	}
 }

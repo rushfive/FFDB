@@ -5,6 +5,7 @@ using System.Text;
 
 namespace R5.FFDB.Core.Entities
 {
+	[Obsolete("only need te player week stats model")]
 	public class WeekStats
 	{
 		public WeekInfo Week { get; set; }

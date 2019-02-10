@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 {
-	public interface IToCoreDataMapper : IAsyncMapper<TeamStatsVersionedModel, TeamStatsSourceModel, (string gameId, WeekInfo week)> { }
+	public interface IToCoreDataMapper : IAsyncMapper<TeamStatsVersioned, TeamStatsSourceModel, (string gameId, WeekInfo week)> { }
 
 	public class ToCoreDataMapper : IToCoreDataMapper
 	{
-		public Task<TeamStatsSourceModel> MapAsync(TeamStatsVersionedModel model, (string, WeekInfo) gameWeek)
+		public Task<TeamStatsSourceModel> MapAsync(TeamStatsVersioned model, (string, WeekInfo) gameWeek)
 		{
 			var home = MapStats(model.HomeTeamStats, model.Week);
 			var away = MapStats(model.AwayTeamStats, model.Week);
@@ -25,7 +25,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 			});
 		}
 
-		private TeamWeekStats MapStats(TeamStatsVersionedModel.Stats model, WeekInfo week)
+		private TeamWeekStats MapStats(TeamStatsVersioned.Stats model, WeekInfo week)
 		{
 			return new TeamWeekStats
 			{

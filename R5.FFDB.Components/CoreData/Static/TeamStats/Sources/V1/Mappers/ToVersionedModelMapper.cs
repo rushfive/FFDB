@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 {
-	public interface IToVersionedModelMapper : IAsyncMapper<string, TeamStatsVersionedModel, (string gameId, WeekInfo week)> { }
+	public interface IToVersionedModelMapper : IAsyncMapper<string, TeamStatsVersioned, (string gameId, WeekInfo week)> { }
 
 	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
@@ -29,7 +29,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 			"passing", "rushing", "receiving", "fumbles", "kicking", "punting", "kickret", "puntret", "defense"
 		};
 
-		public async Task<TeamStatsVersionedModel> MapAsync(string httpResponse, (string, WeekInfo) gameWeek)
+		public async Task<TeamStatsVersioned> MapAsync(string httpResponse, (string, WeekInfo) gameWeek)
 		{
 			JObject json = JObject.Parse(httpResponse);
 
@@ -38,7 +38,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 			var homeStats = GetStats(json, gameWeek.Item1, "home", gsisNflIdMap);
 			var awayStats = GetStats(json, gameWeek.Item1, "away", gsisNflIdMap);
 
-			return new TeamStatsVersionedModel
+			return new TeamStatsVersioned
 			{
 				Week = gameWeek.Item2,
 				HomeTeamStats = homeStats,
@@ -46,7 +46,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 			};
 		}
 
-		private static TeamStatsVersionedModel.Stats GetStats(JObject json, 
+		private static TeamStatsVersioned.Stats GetStats(JObject json, 
 			string gameId, string teamType, Dictionary<string, string> gsisNflIdMap)
 		{
 			Debug.Assert(teamType == "home" || teamType == "away");
@@ -60,7 +60,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 				.Select(gsis => gsisNflIdMap[gsis])
 				.ToList();
 
-			var stats = new TeamStatsVersionedModel.Stats
+			var stats = new TeamStatsVersioned.Stats
 			{
 				Id = teamId,
 				PlayerNflIds = nflIds
@@ -90,7 +90,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 			return result;
 		}
 
-		private static void SetPointsScored(TeamStatsVersionedModel.Stats stats, JObject json,
+		private static void SetPointsScored(TeamStatsVersioned.Stats stats, JObject json,
 			string gameId, string teamType)
 		{
 			JToken score = json.SelectToken($"{gameId}.{teamType}.score");
@@ -107,7 +107,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 			stats.PointsTotal = (int)score["T"];
 		}
 
-		private static void SetTeamStats(TeamStatsVersionedModel.Stats stats, JObject json,
+		private static void SetTeamStats(TeamStatsVersioned.Stats stats, JObject json,
 			string gameId, string teamType)
 		{
 			JToken teamStats = json.SelectToken($"{gameId}.{teamType}.stats.team");

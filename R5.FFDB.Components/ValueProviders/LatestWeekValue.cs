@@ -33,7 +33,7 @@ namespace R5.FFDB.Components.ValueProviders
 			// local functions
 			async Task<JObject> getWeekStatsAsync()
 			{
-				string uri = Endpoints.Api.WeekStats(2018, 1);
+				string uri = Endpoints.Api.WeekStats(new WeekInfo(2018, 1));
 
 				string weekStatsJson = await _webRequestClient.GetStringAsync(uri, throttle: false);
 

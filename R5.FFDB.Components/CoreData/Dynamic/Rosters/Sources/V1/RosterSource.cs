@@ -16,7 +16,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 	// saved roster files are too old (requiring a re-fetch)
 	public interface IRosterSource : ICoreDataSource<Roster, Team> { }
 
-	public class RosterSource : CoreDataSource<RosterVersionedModel, Roster, Team>, IRosterSource
+	public class RosterSource : CoreDataSource<RosterVersioned, Roster, Team>, IRosterSource
 	{
 		public RosterSource(
 			ILogger<RosterSource> logger,
@@ -50,7 +50,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			return Endpoints.Page.TeamRoster(team.ShortName, team.Abbreviation);
 		}
 
-		protected override Task OnVersionedModelMappedAsync(Team team, RosterVersionedModel versioned)
+		protected override Task OnVersionedModelMappedAsync(Team team, RosterVersioned versioned)
 		{
 			return Task.CompletedTask;
 		}

@@ -92,7 +92,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 				return;
 			}
 
-			string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
+			string uri = Endpoints.Api.ScoreStripWeekGames(week);
 
 			_logger.LogTrace($"Fetching week games for {week} from '{uri}'.");
 
@@ -184,7 +184,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 			string gamesXml = null;
 			try
 			{
-				string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
+				string uri = Endpoints.Api.ScoreStripWeekGames(week);
 				gamesXml = await _webRequestClient.GetStringAsync(uri, throttle: false);
 			}
 			catch (Exception ex)

@@ -14,12 +14,9 @@ using R5.FFDB.Components.CoreData.Static.TeamStats.Models;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 {
-	// how to use: the cache that uses this would resolve things on a by-week basis.
-	// first, grab the list of game ids for that week, then use this source for each game to 
-	// build up a cachedata model
 	public interface ITeamStatsSource : ICoreDataSource<TeamStatsSourceModel, (string gameId, WeekInfo week)> { }
 
-	public class TeamStatsSource : CoreDataSource<TeamStatsVersionedModel, TeamStatsSourceModel, (string, WeekInfo)>, ITeamStatsSource
+	public class TeamStatsSource : CoreDataSource<TeamStatsVersioned, TeamStatsSourceModel, (string, WeekInfo)>, ITeamStatsSource
 	{
 		public TeamStatsSource(
 			ILogger<TeamStatsSource> logger,
@@ -53,7 +50,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 			return Endpoints.Api.GameCenterStats(gameWeek.Item1);
 		}
 
-		protected override Task OnVersionedModelMappedAsync((string, WeekInfo) gameWeek, TeamStatsVersionedModel versioned)
+		protected override Task OnVersionedModelMappedAsync((string, WeekInfo) gameWeek, TeamStatsVersioned versioned)
 		{
 			return Task.CompletedTask;
 		}

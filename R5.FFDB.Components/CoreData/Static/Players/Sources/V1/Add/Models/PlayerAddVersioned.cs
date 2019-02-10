@@ -8,7 +8,7 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Models
 {
-	public class PlayerAddVersionedModel
+	public class PlayerAddVersioned
 	{
 		[JsonProperty("nflId")]
 		public string NflId { get; set; }
@@ -37,7 +37,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Models
 		[JsonProperty("college")]
 		public string College { get; set; }
 
-		public static PlayerAdd ToCoreEntity(PlayerAddVersionedModel versioned,
+		public static PlayerAdd ToCoreEntity(PlayerAddVersioned versioned,
 			int? number, Position? position, RosterStatus? status)
 		{
 			return new PlayerAdd

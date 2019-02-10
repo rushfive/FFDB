@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 {
-	public class PlayerAddSource : CoreDataSource<PlayerAddVersionedModel, PlayerAdd, string>
+	public class PlayerAddSource : CoreDataSource<PlayerAddVersioned, PlayerAdd, string>
 	{
 		private IRosterCache _rosterCache { get; }
 
@@ -53,7 +53,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 			return Endpoints.Page.PlayerProfile(nflId);
 		}
 
-		protected override Task OnVersionedModelMappedAsync(string nflId, PlayerAddVersionedModel versioned)
+		protected override Task OnVersionedModelMappedAsync(string nflId, PlayerAddVersioned versioned)
 		{
 			versioned.NflId = nflId;
 			return Task.CompletedTask;

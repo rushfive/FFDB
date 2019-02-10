@@ -11,7 +11,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 {
 	public interface IRosterScraper
 	{
-		List<RosterVersionedModel.Player> ExtractPlayers(HtmlDocument page);
+		List<RosterVersioned.Player> ExtractPlayers(HtmlDocument page);
 	}
 
 	public class RosterScraper : IRosterScraper
@@ -23,9 +23,9 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			_logger = logger;
 		}
 
-		public List<RosterVersionedModel.Player> ExtractPlayers(HtmlDocument page)
+		public List<RosterVersioned.Player> ExtractPlayers(HtmlDocument page)
 		{
-			var result = new List<RosterVersionedModel.Player>();
+			var result = new List<RosterVersioned.Player>();
 
 			HtmlNodeCollection playerRows = null;
 			try
@@ -49,7 +49,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 				Position position = ExtractPosition(r);
 				RosterStatus status = ExtractStatus(r);
 
-				result.Add(new RosterVersionedModel.Player
+				result.Add(new RosterVersioned.Player
 				{
 					NflId = id,
 					Number = number,

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using R5.FFDB.Components.CoreData.TeamGames;
 using R5.FFDB.Components.CoreData.TeamGames.Models;
-using R5.FFDB.Components.CoreData.WeekStats.Models;
+//using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core;
@@ -58,10 +58,10 @@ namespace R5.FFDB.Components.SourceDataMappers.TeamGames
 
 				string path = _dataPath.Static.WeekStats + $"{week.Season}-{week.Week}.json";
 
-				var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
+				//var json = JsonConvert.DeserializeObject<WeekStatsJson>(File.ReadAllText(path));
 
-				var item = WeekStatsJson.ToCoreEntity(json, week, weekTeamResolver);
-				all.Add(item);
+				//var item = WeekStatsJson.ToCoreEntity(json, week, weekTeamResolver);
+				//all.Add(item);
 			}
 
 

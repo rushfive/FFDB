@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models
 {
-	public class RosterVersionedModel
+	public class RosterVersioned
 	{
 		[JsonProperty("teamId")]
 		public int TeamId { get; set; }
@@ -19,7 +19,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models
 		[JsonProperty("players")]
 		public List<Player> Players { get; set; }
 
-		public static Roster ToCoreEntity(RosterVersionedModel model)
+		public static Roster ToCoreEntity(RosterVersioned model)
 		{
 			return new Roster
 			{

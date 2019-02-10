@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update
 {
-	public class PlayerUpdateSource : CoreDataSource<PlayerUpdateVersionedModel, Player, string>
+	public class PlayerUpdateSource : CoreDataSource<PlayerUpdateVersioned, Player, string>
 	{
 		public PlayerUpdateSource(
 			ILogger<PlayerUpdateSource> logger,
@@ -44,7 +44,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update
 			return Endpoints.Page.PlayerProfile(nflId);
 		}
 
-		protected override Task OnVersionedModelMappedAsync(string key, PlayerUpdateVersionedModel versioned)
+		protected override Task OnVersionedModelMappedAsync(string key, PlayerUpdateVersioned versioned)
 		{
 			return Task.CompletedTask;
 		}

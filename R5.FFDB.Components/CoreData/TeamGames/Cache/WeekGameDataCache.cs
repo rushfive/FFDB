@@ -124,7 +124,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 
 		private async Task<WeekGameMatchups> FetchAsync(WeekInfo week)
 		{
-			string uri = Endpoints.Api.ScoreStripWeekGames(week.Season, week.Week);
+			string uri = Endpoints.Api.ScoreStripWeekGames(week);
 
 			string response = await _webRequestClient.GetStringAsync(uri, throttle: false);
 
