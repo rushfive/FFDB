@@ -1,12 +1,15 @@
 ﻿using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Models;
 using R5.FFDB.Core.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 {
-	public class ToCoreDataMapper : IMapper<WeekMatchupsVersionedModel, List<WeekGameMatchup>>
+	public interface IToCoreDataMapper : IAsyncMapper<WeekMatchupsVersionedModel, List<WeekGameMatchup>> { }
+
+	public class ToCoreDataMapper : IToCoreDataMapper
 	{
-		public List<WeekGameMatchup> Map(WeekMatchupsVersionedModel versionedModel)
+		public Task<List<WeekGameMatchup>> MapAsync(WeekMatchupsVersionedModel versionedModel)
 		{
 			var result = new List<WeekGameMatchup>();
 
@@ -22,7 +25,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 				});
 			}
 
-			return result;
+			return Task.FromResult(result);
 		}
 	}
 }

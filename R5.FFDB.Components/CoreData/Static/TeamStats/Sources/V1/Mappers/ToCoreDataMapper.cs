@@ -4,21 +4,24 @@ using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 {
-	public class ToCoreDataMapper : IMapper<TeamStatsVersionedModel, List<TeamWeekStats>>
+	public interface IToCoreDataMapper : IAsyncMapper<TeamStatsVersionedModel, List<TeamWeekStats>> { }
+
+	public class ToCoreDataMapper : IToCoreDataMapper
 	{
-		public List<TeamWeekStats> Map(TeamStatsVersionedModel model)
+		public Task<List<TeamWeekStats>> MapAsync(TeamStatsVersionedModel model)
 		{
 			var home = MapStats(model.HomeTeamStats, model.Week);
 			var away = MapStats(model.AwayTeamStats, model.Week);
 
-			return new List<TeamWeekStats>
+			return Task.FromResult(new List<TeamWeekStats>
 			{
 				home,
 				away
-			};
+			});
 		}
 
 		private TeamWeekStats MapStats(TeamStatsVersionedModel.Stats model, WeekInfo week)

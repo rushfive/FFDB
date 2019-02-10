@@ -3,12 +3,13 @@ using R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 {
-	// instantiate using serviceProvider so we can resolve the scraper
-	// containing the logger
-	public class ToVersionedModelMapper : IMapper<string, PlayerAddVersionedModel>
+	public interface IToVersionedModelMapper : IAsyncMapper<string, PlayerAddVersionedModel> { }
+
+	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
 		private IPlayerScraper _scraper { get; }
 
@@ -17,7 +18,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 			_scraper = scraper;
 		}
 
-		public PlayerAddVersionedModel Map(string httpResponse)
+		public Task<PlayerAddVersionedModel> MapAsync(string httpResponse)
 		{
 			var page = new HtmlDocument();
 			page.LoadHtml(httpResponse);
@@ -28,7 +29,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 			string college = _scraper.ExtractCollege(page);
 			(string esbId, string gsisId) = _scraper.ExtractIds(page);
 
-			return new PlayerAddVersionedModel
+			return Task.FromResult(new PlayerAddVersionedModel
 			{
 				FirstName = firstName,
 				LastName = lastName,
@@ -38,7 +39,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 				Weight = weight,
 				DateOfBirth = dateOfBirth.DateTime,
 				College = college
-			};
+			});
 		}
 	}
 }

@@ -3,14 +3,18 @@ using R5.FFDB.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 {
-	public class ToCoreDataMapper : IMapper<RosterVersionedModel, Roster>
+	public interface IToCoreDataMapper : IAsyncMapper<RosterVersionedModel, Roster> { }
+
+	public class ToCoreDataMapper : IToCoreDataMapper
 	{
-		public Roster Map(RosterVersionedModel versionedModel)
+		public Task<Roster> MapAsync(RosterVersionedModel versionedModel)
 		{
-			return RosterVersionedModel.ToCoreEntity(versionedModel);
+			return Task.FromResult(
+				RosterVersionedModel.ToCoreEntity(versionedModel));
 		}
 	}
 }

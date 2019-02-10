@@ -3,13 +3,12 @@ using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 {
-	public interface IToVersionedModelMapper : IMapper<string, RosterVersionedModel>
-	{
+	public interface IToVersionedModelMapper : IAsyncMapper<string, RosterVersionedModel> { }
 
-	}
 	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
 		private IRosterScraper _scraper { get; }
@@ -19,17 +18,17 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 			_scraper = scraper;
 		}
 
-		public RosterVersionedModel Map(string httpResponse)
+		public Task<RosterVersionedModel> MapAsync(string httpResponse)
 		{
 			var page = new HtmlDocument();
 			page.LoadHtml(httpResponse);
 
 			List<RosterVersionedModel.Player> players = _scraper.ExtractPlayers(page);
 
-			return new RosterVersionedModel
+			return Task.FromResult(new RosterVersionedModel
 			{
 				Players = players
-			};
+			});
 		}
 	}
 }

@@ -2,12 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update.Mappers
 {
-	public class ToVersionedModelMapper : IMapper<string, PlayerUpdateVersionedModel>
+	public interface IToVersionedModelMapper : IAsyncMapper<string, PlayerUpdateVersionedModel> { }
+
+	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
-		public PlayerUpdateVersionedModel Map(string httpResponse)
+		public Task<PlayerUpdateVersionedModel> MapAsync(string httpResponse)
 		{
 			throw new NotImplementedException();
 		}

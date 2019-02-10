@@ -26,6 +26,9 @@ namespace R5.FFDB.Components.CoreData
 				.AddScoped<
 					Dynamic.Rosters.Sources.V1.Mappers.IToVersionedModelMapper,
 					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedModelMapper>()
+				.AddScoped<
+					Dynamic.Rosters.Sources.V1.Mappers.IToCoreDataMapper,
+					Dynamic.Rosters.Sources.V1.Mappers.ToCoreDataMapper>()
 				.AddSingleton<
 					Dynamic.Rosters.IRosterCache,
 					Dynamic.Rosters.RosterCache>();
@@ -39,6 +42,12 @@ namespace R5.FFDB.Components.CoreData
 				.AddScoped<
 					Static.WeekMatchups.Sources.V1.IWeekMatchupSource,
 					Static.WeekMatchups.Sources.V1.WeekMatchupSource>()
+				.AddScoped<
+					Static.WeekMatchups.Sources.V1.Mappers.IToVersionedModelMapper,
+					Static.WeekMatchups.Sources.V1.Mappers.ToVersionedModelMapper>()
+				.AddScoped<
+					Static.WeekMatchups.Sources.V1.Mappers.IToCoreDataMapper,
+					Static.WeekMatchups.Sources.V1.Mappers.ToCoreDataMapper>()
 				.AddScoped<
 					Static.WeekMatchups.IWeekMatchupsCache,
 					Static.WeekMatchups.WeekMatchupsCache>();

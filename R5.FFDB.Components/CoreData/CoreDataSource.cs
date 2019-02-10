@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData
 {
-	public interface IMapper<TIn, TOut>
+	public interface IAsyncMapper<TIn, TOut>
 	{
-		TOut Map(TIn input);
+		Task<TOut> MapAsync(TIn input);
 	}
 
 	public interface ICoreDataSource<TCoreData, TKey>
@@ -34,16 +34,16 @@ namespace R5.FFDB.Components.CoreData
 		protected DataDirectoryPath DataPath { get; }
 
 		private ILogger<CoreDataSource<TVersionedModel, TCoreData, TKey>> _logger { get; }
-		private IMapper<string, TVersionedModel> _toVersionedMapper { get; }
-		private IMapper<TVersionedModel, TCoreData> _toCoreDataMapper { get; }
+		private IAsyncMapper<string, TVersionedModel> _toVersionedMapper { get; }
+		private IAsyncMapper<TVersionedModel, TCoreData> _toCoreDataMapper { get; }
 		private ProgramOptions _programOptions { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private IWebRequestClient _webClient { get; }
 
 		protected CoreDataSource(
 			ILogger<CoreDataSource<TVersionedModel, TCoreData, TKey>> logger,
-			IMapper<string, TVersionedModel> toVersionedMapper,
-			IMapper<TVersionedModel, TCoreData> toCoreDataMapper,
+			IAsyncMapper<string, TVersionedModel> toVersionedMapper,
+			IAsyncMapper<TVersionedModel, TCoreData> toCoreDataMapper,
 			ProgramOptions programOptions,
 			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
@@ -67,7 +67,7 @@ namespace R5.FFDB.Components.CoreData
 				versioned = await FetchFromSourceAsync(key);
 			}
 
-			TCoreData coreData = _toCoreDataMapper.Map(versioned);
+			TCoreData coreData = await _toCoreDataMapper.MapAsync(versioned);
 
 			await OnCoreDataMappedAsync(key, coreData);
 
@@ -105,7 +105,7 @@ namespace R5.FFDB.Components.CoreData
 			string uri = GetSourceUri(key);
 			string response = await _webClient.GetStringAsync(uri, throttle: false);
 
-			TVersionedModel versioned = _toVersionedMapper.Map(response);
+			TVersionedModel versioned = await _toVersionedMapper.MapAsync(response);
 
 			await OnVersionedModelMappedAsync(key, versioned);
 

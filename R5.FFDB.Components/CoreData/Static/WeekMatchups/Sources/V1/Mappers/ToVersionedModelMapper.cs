@@ -4,15 +4,19 @@ using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 {
 	// parses XML response from NFLs score strip endpoint:
 	// http://www.nfl.com/ajax/scorestrip?season={season}&seasonType=REG&week={week}
-	public class ToVersionedModelMapper : IMapper<string, WeekMatchupsVersionedModel>
+
+	public interface IToVersionedModelMapper : IAsyncMapper<string, WeekMatchupsVersionedModel> { }
+	
+	public class ToVersionedModelMapper : IToVersionedModelMapper
 	{
-		public WeekMatchupsVersionedModel Map(string httpResponse)
+		public Task<WeekMatchupsVersionedModel> MapAsync(string httpResponse)
 		{
 			XElement weekGameXml = XElement.Parse(httpResponse);
 
@@ -41,7 +45,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 				model.Games.Add(matchup);
 			}
 
-			return model;
+			return Task.FromResult(model);
 		}
 	}
 }
