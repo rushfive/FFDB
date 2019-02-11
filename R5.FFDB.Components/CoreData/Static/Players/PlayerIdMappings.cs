@@ -1,5 +1,9 @@
-﻿using System;
+﻿using R5.FFDB.Core.Database;
+using R5.FFDB.Core.Database.DbContext;
+using R5.FFDB.Core.Entities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,9 +16,20 @@ namespace R5.FFDB.Components.CoreData.Static.Players
 
 	public class PlayerIdMappings : IPlayerIdMappings
 	{
-		public Task<Dictionary<string, string>> GetGsisToNflMapAsync()
+		private IDatabaseProvider _dbProvider { get; }
+
+		public PlayerIdMappings(IDatabaseProvider dbProvider)
 		{
-			throw new NotImplementedException();
+			_dbProvider = dbProvider;
+		}
+
+		public async Task<Dictionary<string, string>> GetGsisToNflMapAsync()
+		{
+			IDatabaseContext dbContext = _dbProvider.GetContext();
+
+			List<Player> players = await dbContext.Player.GetAllAsync();
+
+			return players.ToDictionary(p => p.GsisId, p => p.NflId);
 		}
 	}
 }

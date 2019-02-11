@@ -4,12 +4,12 @@ using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Linq;
 
-namespace R5.FFDB.Components.PlayerMatcher
+namespace R5.FFDB.Components.CoreData.Static.ReceiverTargets.PlayerMatcher
 {
 	public interface IPlayerMatcherFactory
 	{
@@ -63,7 +63,7 @@ namespace R5.FFDB.Components.PlayerMatcher
 			List<Player> players = await dbContext.Player.GetByTeamForWeekAsync(teamId, week);
 
 			var result = new Dictionary<string, Guid>();
-			foreach(var player in players)
+			foreach (var player in players)
 			{
 				// requires normalizing using the same method as the search input
 				var key = Normalize($"{player.FirstName}{player.LastName}");
@@ -73,6 +73,6 @@ namespace R5.FFDB.Components.PlayerMatcher
 			return result;
 		}
 
-		private static Func<string, string> Normalize = name => Regex.Replace(name, " ", "").ToLower();
+		private static readonly Func<string, string> Normalize = name => Regex.Replace(name, " ", "").ToLower();
 	}
 }

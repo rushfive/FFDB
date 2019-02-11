@@ -59,7 +59,7 @@ namespace R5.FFDB.Components.CoreData.Rosters
 
 		private async Task FetchTeamAsync(Team team)
 		{
-			string uri = Endpoints.Page.TeamRoster(team.ShortName, team.Abbreviation);
+			string uri = Endpoints.Page.TeamRoster(team);
 			_logger.LogTrace($"Beginning request for team '{team.Abbreviation}' roster page at '{uri}'.");
 
 			string html = null;
@@ -108,7 +108,7 @@ namespace R5.FFDB.Components.CoreData.Rosters
 
 		private async Task CheckHealthForTeamAsync(Team team)
 		{
-			string uri = Endpoints.Page.TeamRoster(team.ShortName, team.Abbreviation);
+			string uri = Endpoints.Page.TeamRoster(team);
 
 			string html = null;
 			try

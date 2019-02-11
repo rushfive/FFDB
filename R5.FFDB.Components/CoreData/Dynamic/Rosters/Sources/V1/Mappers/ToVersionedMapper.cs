@@ -10,11 +10,11 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers
 {
 	public interface IToVersionedMapper : IAsyncMapper<string, RosterVersioned, Team> { }
 
-	public class ToVersionedMapper : IToVersionedMapper
+	public class ToVersionedModelMapper : IToVersionedMapper
 	{
 		private IRosterScraper _scraper { get; }
 
-		public ToVersionedMapper(IRosterScraper scraper)
+		public ToVersionedModelMapper(IRosterScraper scraper)
 		{
 			_scraper = scraper;
 		}

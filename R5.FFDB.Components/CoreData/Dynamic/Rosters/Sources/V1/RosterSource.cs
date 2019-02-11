@@ -47,7 +47,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 
 		protected override string GetSourceUri(Team team)
 		{
-			return Endpoints.Page.TeamRoster(team.ShortName, team.Abbreviation);
+			return Endpoints.Page.TeamRoster(team);
 		}
 
 		protected override Task OnVersionedModelMappedAsync(Team team, RosterVersioned versioned)

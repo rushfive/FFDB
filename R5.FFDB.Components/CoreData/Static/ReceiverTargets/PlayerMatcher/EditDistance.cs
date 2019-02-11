@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.Components.PlayerMatcher
+namespace R5.FFDB.Components.CoreData.Static.ReceiverTargets.PlayerMatcher
 {
 	public static class EditDistance
 	{

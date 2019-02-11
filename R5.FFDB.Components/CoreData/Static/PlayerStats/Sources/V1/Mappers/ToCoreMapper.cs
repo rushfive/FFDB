@@ -14,7 +14,19 @@ namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers
 	{
 		public Task<List<PlayerWeekStats>> MapAsync(PlayerWeekStatsVersioned versionedModel, WeekInfo week)
 		{
-			throw new NotImplementedException();
+			var result = new List<PlayerWeekStats>();
+
+			foreach(var p in versionedModel.Players)
+			{
+				result.Add(new PlayerWeekStats
+				{
+					NflId = p.NflId,
+					Stats = p.Stats,
+					TeamId = p.TeamId
+				});
+			}
+			
+			return Task.FromResult(result);
 		}
 	}
 }

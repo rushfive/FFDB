@@ -1,4 +1,5 @@
-﻿using R5.FFDB.Core.Models;
+﻿using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -35,9 +36,9 @@ namespace R5.FFDB.Components.Http
 				return $"http://www.nfl.com/player/{nflId}/{nflId}/profile";
 			}
 
-			public static string TeamRoster(string shortName, string abbreviation)
+			public static string TeamRoster(Team team)
 			{
-				return $"http://www.nfl.com/teams/{shortName}/roster?team={abbreviation}";
+				return $"http://www.nfl.com/teams/{team.ShortName}/roster?team={team.Abbreviation}";
 			}
 
 			public static string ReceiverTargets(string gameId)

@@ -8,12 +8,17 @@ using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
+using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1;
+using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers;
+using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1;
+using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers;
 //using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers;
 using R5.FFDB.Components.CoreData.TeamGames;
 //using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Extensions.JsonConverters;
+using R5.FFDB.Components.Extensions.Methods;
+using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Pipelines.Stats;
-using R5.FFDB.Components.PlayerMatcher;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.SourceDataMappers.TeamGames;
 using R5.FFDB.Components.ValueProviders;
@@ -73,56 +78,36 @@ namespace DevTester
 			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
 			_dbContext = dbProvider.GetContext();
 			_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
-			/// DONT TOUCH ABOVE ///
-			/// 
-			/// 
 
-			//RosterSource rostersSource = ActivatorUtilities.CreateInstance<RosterSource>(_serviceProvider,
-			//	new R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers.ToCoreDataMapper()
-
-			//	);
-
-			//var rostersSource = _serviceProvider.GetRequiredService<IRosterSource>();
-
-			//var teams = TeamDataStore.GetAll();
-
-			//Roster roster = await rostersSource.GetAsync(teams.First());
+			var playerStatsSource = _serviceProvider.GetRequiredService<IPlayerWeekStatsSource>();
 
 
-			var rosterCache = _serviceProvider.GetRequiredService<IRosterCache>();
+			await playerStatsSource.GetAsync(new WeekInfo(2018, 17));
 
-
-			// 2552301    2532792
-			var task1 = rosterCache.GetPlayerDataAsync("2552301");
-			var task2 = rosterCache.GetPlayerDataAsync("2532792");
-			var task3 = rosterCache.GetPlayerDataAsync("2555255");
-			var task4 = rosterCache.GetPlayerDataAsync("2495136");
-
-			var data = await Task.WhenAll(task1, task2, task3, task4);
-
-
-
-
-
-
-
-			//WeekGameMapSource weekGameMapSource = ActivatorUtilities.CreateInstance<WeekGameMapSource>(_serviceProvider,
-			//	new ToVersionedModelMapper(), new ToCoreDataMapper());
-
-			//List<WeekGameMapping> games = await weekGameMapSource.GetAsync(new WeekInfo(2018, 3));
-
-
+			//
 
 
 			return;
 			Console.ReadKey();
 		}
 
-		
+		//public static JObject GetStatsObjectForPlayer(JToken playerValue, WeekInfo week)
+		//{
+		//	var playerObject = playerValue as JObject;
 
+		//	return playerObject?.SelectToken($"stats.week.{week.Season}.{week.Week}") as JObject;
+		//}
 
+		//public static Dictionary<WeekStatType, double> GetStatsForPlayer(JObject statsObject)
+		//{
+		//	foreach (var s in statsObject)
+		//	{
+		//		string key = s.Key;
+		//		string value = s.Value.ToObject<string>();
 
-
+		//		Console.WriteLine($"{key} = {value}");
+		//	}
+		//}
 
 
 

@@ -12,10 +12,18 @@ namespace R5.FFDB.Components.CoreData
 			return services
 				.AddRoster()
 				.AddWeekMatchup()
-				.AddTeamStats();
+				.AddTeamStats()
+				.AddPlayerWeekStats()
+				.AddPlayers();
 		}
 
 		private static IServiceCollection AddRoster(this IServiceCollection services)
+		{
+			return services
+				.AddRosterVersionedServices();
+		}
+
+		private static IServiceCollection AddRosterVersionedServices(this IServiceCollection services)
 		{
 			services
 				.AddScoped<
@@ -26,7 +34,7 @@ namespace R5.FFDB.Components.CoreData
 					Dynamic.Rosters.Sources.V1.RosterScraper>()
 				.AddScoped<
 					Dynamic.Rosters.Sources.V1.Mappers.IToVersionedMapper,
-					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedMapper>()
+					Dynamic.Rosters.Sources.V1.Mappers.ToVersionedModelMapper>()
 				.AddScoped<
 					Dynamic.Rosters.Sources.V1.Mappers.IToCoreMapper,
 					Dynamic.Rosters.Sources.V1.Mappers.ToCoreMapper>()
@@ -38,6 +46,12 @@ namespace R5.FFDB.Components.CoreData
 		}
 
 		private static IServiceCollection AddWeekMatchup(this IServiceCollection services)
+		{
+			return services
+				.AddWeekMatchupVersionedServices();
+		}
+
+		private static IServiceCollection AddWeekMatchupVersionedServices(this IServiceCollection services)
 		{
 			services
 				.AddScoped<
@@ -58,6 +72,12 @@ namespace R5.FFDB.Components.CoreData
 
 		private static IServiceCollection AddTeamStats(this IServiceCollection services)
 		{
+			return services
+				.AddTeamStatsVersionedServices();
+		}
+
+		private static IServiceCollection AddTeamStatsVersionedServices(this IServiceCollection services)
+		{
 			services
 				.AddScoped<
 					Static.TeamStats.Sources.V1.ITeamStatsSource,
@@ -73,6 +93,36 @@ namespace R5.FFDB.Components.CoreData
 					Static.TeamStats.TeamStatsCache>();
 
 			return services;
+		}
+
+		private static IServiceCollection AddPlayerWeekStats(this IServiceCollection services)
+		{
+			return services
+				.AddPlayerWeekStatsVersionedServices();
+		}
+
+		private static IServiceCollection AddPlayerWeekStatsVersionedServices(this IServiceCollection services)
+		{
+			services
+				.AddScoped<
+					Static.PlayerStats.Sources.V1.IPlayerWeekStatsSource,
+					Static.PlayerStats.Sources.V1.PlayerWeekStatsSource>()
+				.AddScoped<
+					Static.PlayerStats.Sources.V1.Mappers.IToVersionedMapper,
+					Static.PlayerStats.Sources.V1.Mappers.ToVersionedMapper>()
+				.AddScoped<
+					Static.PlayerStats.Sources.V1.Mappers.IToCoreMapper,
+					Static.PlayerStats.Sources.V1.Mappers.ToCoreMapper>();
+
+			return services;
+		}
+
+		private static IServiceCollection AddPlayers(this IServiceCollection services)
+		{
+			return services
+				.AddScoped<
+					Static.Players.IPlayerIdMappings,
+					Static.Players.PlayerIdMappings>();
 		}
 	}
 }
