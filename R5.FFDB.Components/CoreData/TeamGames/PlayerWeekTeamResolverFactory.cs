@@ -50,7 +50,10 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 			List<string> gameIds = GetGameIds(week);
 			foreach (string gameId in gameIds)
 			{
-				JObject json = JObject.Parse(File.ReadAllText(_dataPath.Static.TeamGameStats + $"{gameId}.json"));
+				JObject json = JObject.Parse(File.ReadAllText(
+					null//_dataPath.Static.TeamGameStats + $"{gameId}.json"
+					
+					));
 
 				AddForTeam("home", gameId, json, gsisNflIdMap, map);
 				AddForTeam("away", gameId, json, gsisNflIdMap, map);
@@ -77,7 +80,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames
 		{
 			var result = new List<string>();
 
-			var filePath = _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
+			string filePath = null;// _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
 
 			XElement weekGameXml = XElement.Load(filePath);
 

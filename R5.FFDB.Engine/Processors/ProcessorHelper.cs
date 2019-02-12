@@ -17,18 +17,18 @@ namespace R5.FFDB.Engine.Processors
 	internal class ProcessorHelper : IProcessorHelper
 	{
 		private ILogger<ProcessorHelper> _logger { get; }
-		private IPlayerSource _playerSource { get; }
+		//private IPlayerSource _playerSource { get; }
 		private IPlayerService _playerService { get; }
 		private RostersValue _rostersValue { get; }
 
 		public ProcessorHelper(
 			ILogger<ProcessorHelper> logger,
-			IPlayerSource playerSource,
+			//IPlayerSource playerSource,
 			IPlayerService playerService,
 			RostersValue rostersValue)
 		{
 			_logger = logger;
-			_playerSource = playerSource;
+			//_playerSource = playerSource;
 			_playerService = playerService;
 			_rostersValue = rostersValue;
 		}
@@ -49,7 +49,7 @@ namespace R5.FFDB.Engine.Processors
 
 			_logger.LogInformation($"Adding {newIds.Count} player profiles to database.");
 
-			await _playerSource.FetchAsync(newIds);
+			//await _playerSource.FetchAsync(newIds);
 
 			List<Player> playerProfiles = _playerService.Get(newIds);
 			if (!playerProfiles.Any())

@@ -25,20 +25,20 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 	{
 		private IDatabaseProvider _dbProvider { get; }
 		private RostersValue _rosters { get; }
-		private IPlayerSource _playerSource { get; }
+		//private IPlayerSource _playerSource { get; }
 		private WebRequestThrottle _throttle { get; }
 
 		public UpdatePlayersStage(
 			ILogger<UpdatePlayersStage<TContext>> logger,
 			IDatabaseProvider dbProvider,
 			RostersValue rosters,
-			IPlayerSource playerSource,
+			//IPlayerSource playerSource,
 			WebRequestThrottle throttle)
 			: base(logger, "Update Players")
 		{
 			_dbProvider = dbProvider;
 			_rosters = rosters;
-			_playerSource = playerSource;
+			//_playerSource = playerSource;
 			_throttle = throttle;
 		}
 
@@ -72,7 +72,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 
 		private async Task<Player> FetchAsync(string nflId, Dictionary<string, RosterPlayer> rosterPlayerMap)
 		{
-			Player player = await _playerSource.GetAsync(nflId);
+			Player player = null;// await _playerSource.GetAsync(nflId);
 
 			if (rosterPlayerMap.TryGetValue(nflId, out RosterPlayer rosterPlayer))
 			{

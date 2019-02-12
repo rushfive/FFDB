@@ -32,11 +32,17 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 				  webClient)
 		{ }
 
-		protected override bool SupportsFilePersistence => true;
+		protected override bool SupportsSourceFilePersistence => true;
+		protected override bool SupportsVersionedFilePersistence => true;
 
 		protected override string GetVersionedFilePath(WeekInfo week)
 		{
-			return DataPath.WeekGameMap(week);
+			return DataPath.Versioned.V1.WeekMatchup(week);
+		}
+
+		protected override string GetSourceFilePath(WeekInfo week)
+		{
+			return DataPath.SourceFiles.V1.WeekMatchup(week);
 		}
 
 		protected override string GetSourceUri(WeekInfo week)

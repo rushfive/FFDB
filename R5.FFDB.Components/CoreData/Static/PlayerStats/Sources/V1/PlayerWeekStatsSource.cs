@@ -35,11 +35,17 @@ namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1
 
 		}
 
-		protected override bool SupportsFilePersistence => true;
+		protected override bool SupportsSourceFilePersistence => true;
+		protected override bool SupportsVersionedFilePersistence => true;
 
 		protected override string GetVersionedFilePath(WeekInfo week)
 		{
-			return DataPath.PlayerWeekStats(week);
+			return DataPath.Versioned.V1.PlayerWeekStats(week);
+		}
+
+		protected override string GetSourceFilePath(WeekInfo week)
+		{
+			return DataPath.SourceFiles.V1.PlayerWeekStats(week);
 		}
 
 		protected override string GetSourceUri(WeekInfo week)

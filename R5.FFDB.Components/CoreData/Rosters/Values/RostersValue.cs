@@ -18,21 +18,21 @@ namespace R5.FFDB.Components.CoreData.Rosters.Values
 	public class RostersValue : AsyncValueProvider<List<Roster>>
 	{
 		private ILogger<RostersValue> _logger { get; }
-		private IRosterSource _source { get; }
+		//private IRosterSource _source { get; }
 		private DataDirectoryPath _dataPath { get; }
 		private IRosterScraper _scraper { get; }
 		private ProgramOptions _programOptions { get; }
 
 		public RostersValue(
 			ILogger<RostersValue> logger,
-			IRosterSource source,
+			//IRosterSource source,
 			DataDirectoryPath dataPath,
 			IRosterScraper scraper,
 			ProgramOptions programOptions)
 			: base("Rosters")
 		{
 			_logger = logger;
-			_source = source;
+			//_source = source;
 			_dataPath = dataPath;
 			_scraper = scraper;
 			_programOptions = programOptions;
@@ -62,7 +62,7 @@ namespace R5.FFDB.Components.CoreData.Rosters.Values
 			}
 			else
 			{
-				await _source.FetchAsync();
+				//await _source.FetchAsync();
 			}
 
 			return Get();
@@ -93,7 +93,7 @@ namespace R5.FFDB.Components.CoreData.Rosters.Values
 
 		private Roster GetTeam(Team team)
 		{
-			string pagePath = _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
+			string pagePath = null;// _dataPath.Temp.RosterPages + $"{team.Abbreviation}.html";
 			var pageHtml = File.ReadAllText(pagePath);
 
 			return GetForTeam(team, pageHtml);

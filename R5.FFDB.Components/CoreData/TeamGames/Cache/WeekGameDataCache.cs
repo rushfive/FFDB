@@ -108,7 +108,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 		{
 			matchups = null;
 
-			string filePath = _dataPath.Static.WeekGameMatchups + $"{week.Season}-{week.Week}.json";
+			string filePath = null;// _dataPath.Static.WeekGameMatchups + $"{week.Season}-{week.Week}.json";
 
 			if (!File.Exists(filePath))
 			{
@@ -158,7 +158,10 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 			if (_programOptions.SaveToDisk)
 			{
 				string serialized = JsonConvert.SerializeObject(result);
-				File.WriteAllText(_dataPath.Static.WeekGameMatchups + $"{week.Season}-{week.Week}.json", serialized);
+				File.WriteAllText(
+					//_dataPath.Static.WeekGameMatchups + $"{week.Season}-{week.Week}.json", 
+					null,
+					serialized);
 			}
 
 			return result;

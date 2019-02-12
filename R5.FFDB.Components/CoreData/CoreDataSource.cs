@@ -13,16 +13,11 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData
 {
-	public interface IAsyncMapper<TIn, TOut, TSourceKey>
-	{
-		Task<TOut> MapAsync(TIn input, TSourceKey sourceKey);
-	}
-
 	public interface ICoreDataSource<TCoreData, TKey>
 	{
 		Task<TCoreData> GetAsync(TKey key);
 	}
-	
+
 	// TVersionedModel should represent whatever a week's worth of this source data is
 	//  - eg if we're collecting a list of stats for a week, the model should contain a list of the stats
 	// similarly, TCoreData should represent whatever represents a weeks worth of the core data
@@ -54,11 +49,11 @@ namespace R5.FFDB.Components.CoreData
 			DataPath = dataPath;
 			_webClient = webClient;
 		}
-		
+
 		public async Task<TCoreData> GetAsync(TKey key)
 		{
 			TVersionedModel versioned = null;
-			
+
 			if (!TryGetVersionedFromDisk(key, out versioned))
 			{
 				versioned = await FetchFromSourceAsync(key);
@@ -68,16 +63,19 @@ namespace R5.FFDB.Components.CoreData
 
 			return coreData;
 		}
-		
-		protected abstract bool SupportsFilePersistence { get; }
+
+		protected abstract bool SupportsSourceFilePersistence { get; }
+		protected abstract bool SupportsVersionedFilePersistence { get; }
+
 		protected abstract string GetVersionedFilePath(TKey key);
+		protected abstract string GetSourceFilePath(TKey key);
 		protected abstract string GetSourceUri(TKey key);
 
 		private bool TryGetVersionedFromDisk(TKey key, out TVersionedModel versioned)
 		{
 			versioned = null;
 
-			if (!SupportsFilePersistence)
+			if (!SupportsVersionedFilePersistence)
 			{
 				return false;
 			}
@@ -94,12 +92,21 @@ namespace R5.FFDB.Components.CoreData
 
 		private async Task<TVersionedModel> FetchFromSourceAsync(TKey key)
 		{
-			string uri = GetSourceUri(key);
-			string response = await _webClient.GetStringAsync(uri, throttle: false);
+			if (!TryGetSourceFile(key, out string sourceResponse))
+			{
+				string uri = GetSourceUri(key);
+				sourceResponse = await _webClient.GetStringAsync(uri, throttle: false);
 
-			TVersionedModel versioned = await _toVersionedMapper.MapAsync(response, key);
+				if (SupportsSourceFilePersistence && !File.Exists(GetSourceFilePath(key)))
+				{
+					File.WriteAllText(GetSourceFilePath(key), sourceResponse);
+				}
+				
+			}
 
-			if (SupportsFilePersistence && _programOptions.SaveToDisk)
+			TVersionedModel versioned = await _toVersionedMapper.MapAsync(sourceResponse, key);
+
+			if (SupportsVersionedFilePersistence && _programOptions.SaveToDisk)
 			{
 				string filePath = GetVersionedFilePath(key);
 
@@ -109,6 +116,25 @@ namespace R5.FFDB.Components.CoreData
 			}
 
 			return versioned;
+		}
+
+		private bool TryGetSourceFile(TKey key, out string sourceResponse)
+		{
+			sourceResponse = null;
+
+			if (!SupportsSourceFilePersistence)
+			{
+				return false;
+			}
+
+			string filePath = GetSourceFilePath(key);
+			if (!File.Exists(filePath))
+			{
+				return false;
+			}
+
+			sourceResponse = File.ReadAllText(filePath);
+			return true;
 		}
 	}
 

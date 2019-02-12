@@ -26,13 +26,16 @@ namespace R5.FFDB.Components.CoreData.Players
 		public List<Player> Get(List<string> nflIds)
 		{
 			// file names are formatted as {nflId}.json
-			var files = DirectoryFilesResolver.GetFileNames(_dataPath.Temp.Player, excludeExtensions: true);
+			var files = DirectoryFilesResolver.GetFileNames(
+				//_dataPath.Temp.Player, 
+				null,
+				excludeExtensions: true);
 
 			return files
 				.Where(f => nflIds.Contains(f))
 				.Select(f =>
 				{
-					string filePath = _dataPath.Temp.Player + $"{f}.json";
+					string filePath = null;// _dataPath.Temp.Player + $"{f}.json";
 					PlayerJson json = JsonConvert.DeserializeObject<PlayerJson>(File.ReadAllText(filePath));
 					return PlayerJson.ToCoreEntity(json);
 				})

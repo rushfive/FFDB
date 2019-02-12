@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.TeamGames.Models;
 using R5.FFDB.Components.Http;
-using R5.FFDB.Components.SourceDataMappers.TeamGames;
 using R5.FFDB.Core.Models;
 using R5.Lib.Cache;
 using System;
@@ -84,7 +83,7 @@ namespace R5.FFDB.Components.CoreData.TeamGames.Cache
 		{
 			value = null;
 
-			string filePath = _dataPath.Static.TeamGameStats + $"{gameId}.json";
+			string filePath = null;// _dataPath.Static.TeamGameStats + $"{gameId}.json";
 
 			if (!File.Exists(filePath))
 			{

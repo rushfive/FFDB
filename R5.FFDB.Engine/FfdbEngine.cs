@@ -26,7 +26,7 @@ namespace R5.FFDB.Engine
 
 		private ILogger<FfdbEngine> _logger { get; }
 		private IDatabaseProvider _databaseProvider { get; }
-		private List<ICoreDataSource> _coreDataSources { get; set; }
+		//private List<ICoreDataSource> _coreDataSources { get; set; }
 		private LatestWeekValue _latestWeekValue { get; }
 
 		public FfdbEngine(
@@ -56,13 +56,13 @@ namespace R5.FFDB.Engine
 
 		private void InitializeSourcesProcessors(IServiceProvider serviceProvider)
 		{
-			_coreDataSources = new List<ICoreDataSource>
-			{
-				serviceProvider.GetRequiredService<IPlayerSource>(),
-				serviceProvider.GetRequiredService<IRosterSource>(),
-				//serviceProvider.GetRequiredService<IWeekStatsSource>(),
-				serviceProvider.GetRequiredService<ITeamGamesSource>()
-			};
+			//_coreDataSources = new List<ICoreDataSource>
+			//{
+			//	serviceProvider.GetRequiredService<IPlayerSource>(),
+			//	serviceProvider.GetRequiredService<IRosterSource>(),
+			//	//serviceProvider.GetRequiredService<IWeekStatsSource>(),
+			//	serviceProvider.GetRequiredService<ITeamGamesSource>()
+			//};
 
 			Stats = ActivatorUtilities.CreateInstance<StatsProcessor>(serviceProvider);
 			Team = ActivatorUtilities.CreateInstance<TeamProcessor>(serviceProvider);
@@ -91,10 +91,10 @@ namespace R5.FFDB.Engine
 		{
 			_logger.LogInformation("Starting health checks for all core data sources.");
 
-			foreach (ICoreDataSource source in _coreDataSources)
-			{
-				await source.CheckHealthAsync();
-			}
+			//foreach (ICoreDataSource source in _coreDataSources)
+			//{
+			//	await source.CheckHealthAsync();
+			//}
 
 			_logger.LogInformation("All health checks successfully passed.");
 		}

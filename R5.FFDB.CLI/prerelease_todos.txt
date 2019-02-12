@@ -1,3 +1,8 @@
+- convert teamdatastore to a class that reads from json file?
+- core data sources should have option to save original source files? (in temp/source?)
+
+-------
+
 - Use Lazy<T> or AsyncLazy<T> for currenty custom async stuff?
 - memory caching (scoped per week)
 	- note: if a pipeline updates more than a week (eg update-all, update-missing),

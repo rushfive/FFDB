@@ -79,7 +79,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 			foreach (Team t in TeamDataStore.GetAll())
 			{
 				bool shouldThrottle = false;
-				var versionedFilePath = _dataPath.Roster(t);
+				var versionedFilePath = _source.GetVersionedFilePath(t);
 
 				if (!_programOptions.SkipRosterFetch)
 				{

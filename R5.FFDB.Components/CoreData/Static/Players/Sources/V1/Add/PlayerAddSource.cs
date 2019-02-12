@@ -40,11 +40,17 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 			_rosterCache = rosterCache;
 		}
 
-		protected override bool SupportsFilePersistence => true;
+		protected override bool SupportsSourceFilePersistence => false;
+		protected override bool SupportsVersionedFilePersistence => true;
 
 		protected override string GetVersionedFilePath(string nflId)
 		{
-			return DataPath.Player(nflId);
+			return DataPath.Versioned.V1.PlayerAdd(nflId);
+		}
+
+		protected override string GetSourceFilePath(string key)
+		{
+			return DataPath.SourceFiles.V1.PlayerAdd(key);
 		}
 
 		protected override string GetSourceUri(string nflId)

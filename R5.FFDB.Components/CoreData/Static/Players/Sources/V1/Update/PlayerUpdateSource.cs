@@ -30,11 +30,17 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update
 				  webClient)
 		{ }
 
-		protected override bool SupportsFilePersistence => false;
+		protected override bool SupportsSourceFilePersistence => false;
+		protected override bool SupportsVersionedFilePersistence => false;
 
 		protected override string GetVersionedFilePath(string nflId)
 		{
-			return DataPath.Player(nflId);
+			return null;
+		}
+
+		protected override string GetSourceFilePath(string key)
+		{
+			return null;
 		}
 
 		protected override string GetSourceUri(string nflId)

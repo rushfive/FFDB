@@ -40,7 +40,8 @@ namespace DevTester
 			var programOptions = new ProgramOptions
 			{
 				SaveToDisk = true,
-				SkipRosterFetch = true
+				SkipRosterFetch = true,
+				SaveOriginalSourceFiles = true
 			};
 
 			var baseServiceCollection = new EngineBaseServiceCollection();

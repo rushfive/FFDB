@@ -9,16 +9,8 @@ namespace R5.FFDB.Components
 {
 	public class DataDirectoryPath
 	{
-		private string _root { get; }
-		public StaticPaths Static { get; } // REMOVE LATER
-		public TempPaths Temp { get; } // REMOVE LATER
-
-		private static string _weekGameMap { get; set; }
-		private static string _players { get; set; }
-		private static string _rosters { get; set; }
-		private static string _teamStats { get; set; }
-		private static string _playerWeekStats { get; set; }
-		private static string _receiverTargets { get; set; }
+		public SourceFilePaths SourceFiles { get; }
+		public VersionedFilePaths Versioned { get; }
 
 		public DataDirectoryPath(string rootPath)
 		{
@@ -27,114 +19,134 @@ namespace R5.FFDB.Components
 				throw new ArgumentException($"Path '{rootPath}' is invalid.", nameof(rootPath));
 			}
 
-			_root = rootPath.EndsWith(@"\") ? rootPath : rootPath + @"\";
+			rootPath = rootPath.EndsWith("\\") ? rootPath : rootPath + "\\";
 
-			Static = new StaticPaths(_root);
-			Temp = new TempPaths(_root);
+			SourceFiles = new SourceFilePaths(rootPath);
+			Versioned = new VersionedFilePaths(rootPath);
+		}
+	}
 
-			//CreateMissing();
+	public class SourceFilePaths
+	{
+		public Paths V1 { get; }
 
-			// OLD ABOVE
+		public SourceFilePaths(string rootPath)
+		{
+			var versionedRoot = rootPath + "original_source\\";
 
-			_weekGameMap = _root + @"week_game_map\";
-			_players = _root + @"players\";
-			_rosters = _root + @"rosters\";
-			_teamStats = _root + @"team_stats\";
-			_playerWeekStats = _root + @"player_week_stats\";
-			_receiverTargets = _root + @"receiver_targets\";
-
-			CreateMissingPaths();
+			V1 = new Paths(versionedRoot, 1);
 		}
 
-		public string WeekGameMap(WeekInfo week)
+		public class Paths
 		{
-			return _weekGameMap + $"{week.Season}-{week.Week}.json";
-		}
+			private string _weekMatchup { get; }
+			private string _playerAdd { get; }
+			private string _playerWeekStats { get; }
+			private string _teamStats { get; }
 
-		public string Player(string nflId)
-		{
-			return _players + $"{nflId}.json";
-		}
-
-		public string Roster(Team team)
-		{
-			return _rosters + $"{team.Abbreviation}.json";
-		}
-
-		public string TeamStats(string gameId)
-		{
-			return _teamStats + $"{gameId}.json";
-		}
-
-		public string PlayerWeekStats(WeekInfo week)
-		{
-			return _playerWeekStats + $"{week}.json";
-		}
-
-		public string ReceiverTargets(string gameId)
-		{
-			return _receiverTargets + $"{gameId}.json";
-		}
-
-		private void CreateMissingPaths()
-		{
-			Directory.CreateDirectory(_weekGameMap);
-			Directory.CreateDirectory(_players);
-			Directory.CreateDirectory(_rosters);
-			Directory.CreateDirectory(_teamStats);
-			Directory.CreateDirectory(_playerWeekStats);
-			Directory.CreateDirectory(_receiverTargets);
-		}
-
-		// OLD BELOW, WILL ALL BE REPLACED EVENTUALLY
-
-		private void CreateMissing()
-		{
-			Static.CreateMissing();
-			Temp.CreateMissing();
-		}
-
-		public class StaticPaths
-		{
-			private string _root { get; }
-			public string WeekStats => _root + @"week_stats\";
-
-			// TODO: REMOVE THIS
-			public string WeekGames => _root + @"week_games\";
-
-
-			public string TeamGameStats => _root + @"team_game_stats\";
-			public string WeekGameMatchups => _root + @"week_game_matchups\";
-
-			public StaticPaths(string rootPath)
+			public Paths(string versionedRootPath, int version)
 			{
-				_root = rootPath + @"static\";
+				var root = versionedRootPath + $"V{version}\\";
+
+				_weekMatchup = versionedRootPath + "week_matchup\\";
+				_playerAdd = versionedRootPath + "player_add\\";
+				_teamStats = versionedRootPath + "team_stats\\";
+				_playerWeekStats = versionedRootPath + "player_week_stats\\";
+
+				CreateMissingPaths();
 			}
 
-			public void CreateMissing()
+			public string WeekMatchup(WeekInfo week)
 			{
-				Directory.CreateDirectory(WeekStats);
-				Directory.CreateDirectory(WeekGames);
-				Directory.CreateDirectory(TeamGameStats);
-				Directory.CreateDirectory(WeekGameMatchups);
+				return _weekMatchup + $"{week.Season}-{week.Week}.json";
+			}
+
+			public string PlayerAdd(string nflId)
+			{
+				return _playerAdd + $"{nflId}.json";
+			}
+
+			public string PlayerWeekStats(WeekInfo week)
+			{
+				return _playerWeekStats + $"{week}.json";
+			}
+
+			public string TeamStats(string gameId)
+			{
+				return _teamStats + $"{gameId}.json";
+			}
+
+			private void CreateMissingPaths()
+			{
+				Directory.CreateDirectory(_playerWeekStats);
 			}
 		}
+	}
 
-		public class TempPaths
+	public class VersionedFilePaths
+	{
+		public Paths V1 { get; }
+
+		public VersionedFilePaths(string rootPath)
 		{
-			private string _root { get; }
-			public string Player => _root + @"player\";
-			public string RosterPages => _root + @"roster_pages\";
+			var versionedRoot = rootPath + "versioned\\";
 
-			public TempPaths(string rootPath)
+			V1 = new Paths(versionedRoot, 1);
+		}
+
+		public class Paths
+		{
+			private string _weekMatchup { get; }
+			private string _playerAdd { get; }
+			private string _rosters { get; }
+			private string _teamStats { get; }
+			private string _playerWeekStats { get; }
+
+			public Paths(string versionedRootPath, int version)
 			{
-				_root = rootPath + @"temp\";
+				var root = versionedRootPath + $"V{version}\\";
+
+				_weekMatchup = versionedRootPath + "week_matchup\\";
+				_playerAdd = versionedRootPath + "player_add\\";
+				_rosters = versionedRootPath + "rosters\\";
+				_teamStats = versionedRootPath + "team_stats\\";
+				_playerWeekStats = versionedRootPath + "player_week_stats\\";
+
+				CreateMissingPaths();
 			}
 
-			public void CreateMissing()
+			public string WeekMatchup(WeekInfo week)
 			{
-				Directory.CreateDirectory(Player);
-				Directory.CreateDirectory(RosterPages);
+				return _weekMatchup + $"{week.Season}-{week.Week}.json";
+			}
+
+			public string PlayerAdd(string nflId)
+			{
+				return _playerAdd + $"{nflId}.json";
+			}
+
+			public string Roster(Team team)
+			{
+				return _rosters + $"{team.Abbreviation}.json";
+			}
+
+			public string TeamStats(string gameId)
+			{
+				return _teamStats + $"{gameId}.json";
+			}
+
+			public string PlayerWeekStats(WeekInfo week)
+			{
+				return _playerWeekStats + $"{week}.json";
+			}
+
+			private void CreateMissingPaths()
+			{
+				Directory.CreateDirectory(_weekMatchup);
+				Directory.CreateDirectory(_playerAdd);
+				Directory.CreateDirectory(_rosters);
+				Directory.CreateDirectory(_teamStats);
+				Directory.CreateDirectory(_playerWeekStats);
 			}
 		}
 	}

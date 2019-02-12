@@ -33,7 +33,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		private IDatabaseProvider _dbProvider { get; }
 		private RostersValue _rosters { get; }
 		private DataDirectoryPath _dataPath { get; }
-		private IPlayerSource _playerSource { get; }
+		//private IPlayerSource _playerSource { get; }
 		private WebRequestThrottle _throttle { get; }
 
 		public FetchAddPlayersStage(
@@ -41,14 +41,14 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 			IDatabaseProvider dbProvider,
 			RostersValue rosters,
 			DataDirectoryPath dataPath,
-			IPlayerSource playerSource,
+			//IPlayerSource playerSource,
 			WebRequestThrottle throttle)
 			: base(logger, "Fetch and Save Players")
 		{
 			_dbProvider = dbProvider;
 			_rosters = rosters;
 			_dataPath = dataPath;
-			_playerSource = playerSource;
+			//_playerSource = playerSource;
 			_throttle = throttle;
 		}
 		
@@ -84,7 +84,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		{
 			if (!TryGetFromDisk(nflId, out Player player))
 			{
-				player = await _playerSource.GetAsync(nflId);
+				//player = await _playerSource.GetAsync(nflId);
 			}
 
 			if (rosterPlayerMap.TryGetValue(nflId, out RosterPlayer rosterPlayer))
@@ -101,7 +101,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		{
 			player = null;
 
-			string filePath = _dataPath.Temp.Player + $"{nflId}.json";
+			string filePath = null;// _dataPath.Temp.Player + $"{nflId}.json";
 			if (!File.Exists(filePath))
 			{
 				return false;

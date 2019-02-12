@@ -21,7 +21,6 @@ using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Pipelines.Stats;
 using R5.FFDB.Components.Resolvers;
-using R5.FFDB.Components.SourceDataMappers.TeamGames;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
@@ -130,7 +129,7 @@ namespace DevTester
 		{
 			var result = new List<WeekGameMatchup>();
 
-			var filePath = _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
+			string filePath = null;// _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
 
 			XElement weekGameXml = XElement.Load(filePath);
 
