@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.Rosters.Values;
 using R5.FFDB.Components.Extensions;
 using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Pipelines.CommonStages;
@@ -51,16 +50,16 @@ namespace R5.FFDB.Components.Pipelines.Players
 		{
 			public class GroupByNewAndExisting : Stage<Context>
 			{
-				private RostersValue _rosters { get; }
+				//private RostersValue _rosters { get; }
 				private IDatabaseProvider _dbProvider { get; }
 
 				public GroupByNewAndExisting(
 					ILogger<GroupByNewAndExisting> logger,
-					RostersValue rosters,
+					//RostersValue rosters,
 					IDatabaseProvider dbProvider)
 					: base(logger, "Group by New and Existing")
 				{
-					_rosters = rosters;
+					//_rosters = rosters;
 					_dbProvider = dbProvider;
 				}
 
@@ -72,7 +71,7 @@ namespace R5.FFDB.Components.Pipelines.Players
 						.Select(p => p.NflId)
 						.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-					List<string> rosteredIds = await _rosters.GetIdsAsync();
+					List<string> rosteredIds = null;// await _rosters.GetIdsAsync();
 
 					var newIds = new List<string>();
 					var existingIds = new List<string>();

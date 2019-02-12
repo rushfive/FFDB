@@ -1,5 +1,101 @@
+TeamsProcessor
+	- Update Roster Mappings
+		[Stage - GLOBAL] Resolve New Rostered Players
+			- find new by comparing rostered players versus whats currently in DB
+				[DbContext - Player] Get All Players 
+				[RosterCache]
+		[Stage - GLOBAL] Fetch Save Players
+			- foreach id, fetch from source and save to db
+				[PlayerAddSource] Get 
+				[DbContext - Player] Save Player
+		*** OR, instead of the above 2 stages, we can just run the 
+		        PlayerPRocessor.AddMissingRostered pipeline first!
+		[Stage] Update
+			[DbContext - Team] Update Roster Mappings
+
+PlayerProcessor
+	//- (NEW) Add Missing Rostered
+	//	[Stage - GLOBAL] Resolve New Rostered Players
+	//	[Stage - GLOBAL] Fetch Save Players
+	- Update Currently Rostered - will ALSO add missing
+		[Stage] Group by New and Existing
+			[DbContext - Player] Get All
+		[Stage - GLOBAL] Fetch Save Players (for new)
+		[Stage - GLOBAL] Update Players
+			foreach existing/update players:
+			[PlayerUpdateSource] Get
+			[DbContext - Player] Update Player (NEW)
+	- Update All 
+		[Stage] Get All Existing
+			[DbContext - Player] Get All
+				- set to Update Ids
+		[Stage - GLOBAL] Update Player 
+			
+StatsPRocessor
+	REMOVE these 2 existing ones:
+		- Remove All
+		- Remove For Week
+		all other methods will intelligently determine what to add, even if a previous
+		run was incomplete.
+		Things that are updated:
+			- Player WeekStats
+			- Team WeekStats
+			- Game Matchups
+	- Add Missing
+		[Stage] Get Missing Weeks
+			- Get All Available
+			- Get Missing by comparing all to update log
+				[DbContext - Logs] Get All
+		[Stage] - Update/Add Stats
+			- for each missing week, run the "AddForWeek" pipeline
+				- need to scope certain things like caches so they "reset" per week run
+	- Add For Week
+		[Stage] Check Already Updated
+			[DbContext - Logs] Has Updated Week
+		[Stage] Add Stats
+			PlayerWeekStats
+				[Source - PlayerWeekStats] Get For Week
+				Get PlayerIds from week stats and FETCH/SAVE new players
+				[DbContext - Stats] - Add Player WeekStats
+			TeamWeekStats
+				[Source - TeamWeekStats] Get For Week
+				[DbContext - Stats] - Add Team WeekStats
+			WeekMatchups
+				[Source - WeekMatchups] - Get For Week
+				[DbContext - Teams] - Add Matchups for Week
+		[Stage] Add Log
+			[DbContext - Log] Add For Week
+		
+				
+
+new DBCONTEXT api:
+[Base]
+	- Has Been Initialized
+	- Initialize
+[Player]
+	- Get All
+	- Save
+	- Update
+[Team]
+	- Add All
+	- Update Roster Mappings
+	- Add Matchups for Week
+[Logs]
+	- Get All
+	- Has Updated Week
+	- Add For Week
+[Stats] NEW
+	- Add Player Week Stats
+	- Add Team Week Stats
+
+
+
+-------------------------
+
 - convert teamdatastore to a class that reads from json file?
 - core data sources should have option to save original source files? (in temp/source?)
+-logging
+
 
 -------
 

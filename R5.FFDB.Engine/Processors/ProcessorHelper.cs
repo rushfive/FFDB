@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.Players;
-using R5.FFDB.Components.CoreData.Rosters.Values;
 using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
 using System.Collections.Generic;
@@ -18,19 +16,20 @@ namespace R5.FFDB.Engine.Processors
 	{
 		private ILogger<ProcessorHelper> _logger { get; }
 		//private IPlayerSource _playerSource { get; }
-		private IPlayerService _playerService { get; }
-		private RostersValue _rostersValue { get; }
+		//private IPlayerService _playerService { get; }
+		//private RostersValue _rostersValue { get; }
 
 		public ProcessorHelper(
-			ILogger<ProcessorHelper> logger,
+			ILogger<ProcessorHelper> logger
 			//IPlayerSource playerSource,
-			IPlayerService playerService,
-			RostersValue rostersValue)
+			//IPlayerService playerService,
+			//RostersValue rostersValue
+			)
 		{
 			_logger = logger;
 			//_playerSource = playerSource;
-			_playerService = playerService;
-			_rostersValue = rostersValue;
+			//_playerService = playerService;
+			//_rostersValue = rostersValue;
 		}
 
 		public async Task AddPlayerProfilesAsync(List<string> nflIds, IDatabaseContext dbContext)
@@ -51,14 +50,14 @@ namespace R5.FFDB.Engine.Processors
 
 			//await _playerSource.FetchAsync(newIds);
 
-			List<Player> playerProfiles = _playerService.Get(newIds);
+			List<Player> playerProfiles = null;// _playerService.Get(newIds);
 			if (!playerProfiles.Any())
 			{
 				_logger.LogInformation("No player profiles resolved from files. Skipping database update.");
 				return;
 			}
 
-			List<Roster> rosters = await _rostersValue.GetAsync();
+			List<Roster> rosters = null;// await _rostersValue.GetAsync();
 
 			await dbContext.Player.AddAsync(playerProfiles, rosters);
 		}

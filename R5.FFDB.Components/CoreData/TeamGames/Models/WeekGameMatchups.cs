@@ -1,50 +1,50 @@
-﻿using Newtonsoft.Json;
-using R5.FFDB.Core.Entities;
-using R5.FFDB.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//using Newtonsoft.Json;
+//using R5.FFDB.Core.Entities;
+//using R5.FFDB.Core.Models;
+//using System;
+//using System.Collections.Generic;
+//using System.Text;
 
-namespace R5.FFDB.Components.CoreData.TeamGames.Models
-{
+//namespace R5.FFDB.Components.CoreData.TeamGames.Models
+//{
 
-	// CONSOLIDATE this and WeekTeamMatchupStats
-	// we can just add the stats into the MAtchup class
+//	// CONSOLIDATE this and WeekTeamMatchupStats
+//	// we can just add the stats into the MAtchup class
 
-	public class WeekGameMatchups
-	{
-		[JsonProperty("week")]
-		public WeekInfo Week { get; set; }
+//	public class WeekGameMatchups
+//	{
+//		[JsonProperty("week")]
+//		public WeekInfo Week { get; set; }
 
-		[JsonProperty("matchups")]
-		public List<Matchup> Matchups { get; set; } = new List<Matchup>();
+//		[JsonProperty("matchups")]
+//		public List<Matchup> Matchups { get; set; } = new List<Matchup>();
 
 
-		public class Matchup
-		{
-			[JsonProperty("homeTeamId")]
-			public int HomeTeamId { get; set; }
+//		public class Matchup
+//		{
+//			[JsonProperty("homeTeamId")]
+//			public int HomeTeamId { get; set; }
 
-			[JsonProperty("awayTeamId")]
-			public int AwayTeamId { get; set; }
+//			[JsonProperty("awayTeamId")]
+//			public int AwayTeamId { get; set; }
 
-			[JsonProperty("nflGameId")]
-			public string NflGameId { get; set; }
+//			[JsonProperty("nflGameId")]
+//			public string NflGameId { get; set; }
 
-			[JsonProperty("gsisGameId")]
-			public string GsisGameId { get; set; }
+//			[JsonProperty("gsisGameId")]
+//			public string GsisGameId { get; set; }
 
-			public static WeekGameMatchup ToCoreEntity(Matchup matchup, WeekInfo week)
-			{
-				return new WeekGameMatchup
-				{
-					Week = week,
-					HomeTeamId = matchup.HomeTeamId,
-					AwayTeamId = matchup.AwayTeamId,
-					NflGameId = matchup.NflGameId,
-					GsisGameId = matchup.GsisGameId
-				};
-			}
-		}
-	}
-}
+//			public static WeekGameMatchup ToCoreEntity(Matchup matchup, WeekInfo week)
+//			{
+//				return new WeekGameMatchup
+//				{
+//					Week = week,
+//					HomeTeamId = matchup.HomeTeamId,
+//					AwayTeamId = matchup.AwayTeamId,
+//					NflGameId = matchup.NflGameId,
+//					GsisGameId = matchup.GsisGameId
+//				};
+//			}
+//		}
+//	}
+//}

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.Rosters.Values;
 using R5.FFDB.Components.Extensions;
 using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Pipelines.CommonStages;
@@ -53,16 +52,16 @@ namespace R5.FFDB.Components.Pipelines.Team
 		{
 			public class ResolveNewRosteredPlayers : Stage<Context>
 			{
-				private RostersValue _rosters { get; }
+				//private RostersValue _rosters { get; }
 				private IDatabaseProvider _dbProvider { get; }
 
 				public ResolveNewRosteredPlayers(
 					ILogger<ResolveNewRosteredPlayers> logger,
-					RostersValue rosters,
+					//RostersValue rosters,
 					IDatabaseProvider dbProvider) 
 					: base(logger, "Resolve New Rostered Players")
 				{
-					_rosters = rosters;
+					//_rosters = rosters;
 					_dbProvider = dbProvider;
 				}
 
@@ -74,9 +73,9 @@ namespace R5.FFDB.Components.Pipelines.Team
 						.Select(p => p.NflId)
 						.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-					List<string> newIds = (await _rosters.GetIdsAsync())
-						.Where(id => !existingPlayers.Contains(id))
-						.ToList();
+					List<string> newIds = null;// (await _rosters.GetIdsAsync())
+						//.Where(id => !existingPlayers.Contains(id))
+						//.ToList();
 
 					context.FetchAddNflIds = newIds;
 
@@ -86,16 +85,16 @@ namespace R5.FFDB.Components.Pipelines.Team
 			
 			public class Update : Stage<Context>
 			{
-				private RostersValue _rosters { get; }
+				//private RostersValue _rosters { get; }
 				private IDatabaseProvider _dbProvider { get; }
 
 				public Update(
 					ILogger<Update> logger,
-					RostersValue rosters,
+					//RostersValue rosters,
 					IDatabaseProvider dbProvider)
 					: base(logger, "Update Rosters")
 				{
-					_rosters = rosters;
+					//_rosters = rosters;
 					_dbProvider = dbProvider;
 				}
 
@@ -103,7 +102,7 @@ namespace R5.FFDB.Components.Pipelines.Team
 				{
 					IDatabaseContext dbContext = _dbProvider.GetContext();
 
-					List<Roster> rosters = await _rosters.GetAsync();
+					List<Roster> rosters = null;// await _rosters.GetAsync();
 
 					await dbContext.Team.UpdateRosterMappingsAsync(rosters);
 

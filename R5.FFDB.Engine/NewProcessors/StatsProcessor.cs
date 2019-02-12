@@ -1,5 +1,4 @@
 ﻿using R5.FFDB.Components;
-using R5.FFDB.Components.CoreData.TeamGames.Cache;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Models;
@@ -15,17 +14,17 @@ namespace R5.FFDB.Engine.NewProcessors
 	public class StatsProcessor
 	{
 		private IDatabaseProvider _dbProvider { get; }
-		private IWeekGameDataCache _gameInfoCache { get; }
+		//private IWeekGameDataCache _gameInfoCache { get; }
 		private DataDirectoryPath _dataPath { get; }
 
 
 		public StatsProcessor(
 			IDatabaseProvider dbProvider,
-			IWeekGameDataCache gameInfoCache,
+			//IWeekGameDataCache gameInfoCache,
 			DataDirectoryPath dataPath)
 		{
 			_dbProvider = dbProvider;
-			_gameInfoCache = gameInfoCache;
+			//_gameInfoCache = gameInfoCache;
 			_dataPath = dataPath;
 		}
 

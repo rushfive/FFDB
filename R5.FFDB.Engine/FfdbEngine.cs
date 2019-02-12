@@ -2,9 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using R5.FFDB.Components.CoreData;
-using R5.FFDB.Components.CoreData.Players;
-using R5.FFDB.Components.CoreData.Rosters;
-using R5.FFDB.Components.CoreData.TeamGames;
 //using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Extensions.JsonConverters;
 using R5.FFDB.Components.ValueProviders;

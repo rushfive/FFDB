@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using R5.FFDB.Components.CoreData.Players;
-using R5.FFDB.Components.CoreData.Players.Models;
-using R5.FFDB.Components.CoreData.Rosters.Values;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
@@ -31,7 +28,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		where TContext : IFetchAddPlayersContext
 	{
 		private IDatabaseProvider _dbProvider { get; }
-		private RostersValue _rosters { get; }
+		//private RostersValue _rosters { get; }
 		private DataDirectoryPath _dataPath { get; }
 		//private IPlayerSource _playerSource { get; }
 		private WebRequestThrottle _throttle { get; }
@@ -39,14 +36,14 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		public FetchAddPlayersStage(
 			ILogger<FetchAddPlayersStage<TContext>> logger,
 			IDatabaseProvider dbProvider,
-			RostersValue rosters,
+			//RostersValue rosters,
 			DataDirectoryPath dataPath,
 			//IPlayerSource playerSource,
 			WebRequestThrottle throttle)
 			: base(logger, "Fetch and Save Players")
 		{
 			_dbProvider = dbProvider;
-			_rosters = rosters;
+			//_rosters = rosters;
 			_dataPath = dataPath;
 			//_playerSource = playerSource;
 			_throttle = throttle;
@@ -64,7 +61,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 
 			LogDebug($"Will fetch and save {context.FetchAddNflIds.Count} players.");
 
-			Dictionary<string, RosterPlayer> rosterPlayerMap = await _rosters.GetPlayerMapAsync();
+			Dictionary<string, RosterPlayer> rosterPlayerMap = null;// wait _rosters.GetPlayerMapAsync();
 
 			foreach(string nflId in context.FetchAddNflIds)
 			{
@@ -109,8 +106,8 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 
 			string serialized = File.ReadAllText(filePath);
 
-			PlayerJson json = JsonConvert.DeserializeObject<PlayerJson>(serialized);
-			player = PlayerJson.ToCoreEntity(json);
+			//PlayerJson json = JsonConvert.DeserializeObject<PlayerJson>(serialized);
+			//player = PlayerJson.ToCoreEntity(json);
 
 			return true;
 		}

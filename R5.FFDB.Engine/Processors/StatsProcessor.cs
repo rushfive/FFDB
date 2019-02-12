@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.TeamGames;
 //using R5.FFDB.Components.CoreData.WeekStats;
 using R5.FFDB.Components.Pipelines.Stats;
 using R5.FFDB.Components.ValueProviders;
@@ -24,7 +23,7 @@ namespace R5.FFDB.Engine.Processors
 		//private ITeamGamesSource _teamGamesSource { get; }
 		//private IWeekStatsSource _weekStatsSource { get; }
 		//private IWeekStatsService _weekStatsService { get; }
-		private ITeamGameStatsService _teamStatsService { get; }
+		//private ITeamGameStatsService _teamStatsService { get; }
 		private IProcessorHelper _helper { get; }
 		//private IWeekGameMatchupService _gameMatchupService { get; }
 
@@ -37,7 +36,7 @@ namespace R5.FFDB.Engine.Processors
 			//ITeamGamesSource teamGamesSource,
 			//IWeekStatsSource weekStatsSource,
 			//IWeekStatsService weekStatsService,
-			ITeamGameStatsService teamStatsService,
+			//ITeamGameStatsService teamStatsService,
 			IProcessorHelper helper
 			//IWeekGameMatchupService gameMatchupService
 			)
@@ -50,7 +49,7 @@ namespace R5.FFDB.Engine.Processors
 			//_teamGamesSource = teamGamesSource;
 			//_weekStatsSource = weekStatsSource;
 			//_weekStatsService = weekStatsService;
-			_teamStatsService = teamStatsService;
+			//_teamStatsService = teamStatsService;
 			_helper = helper;
 			//_gameMatchupService = gameMatchupService;
 		}
@@ -111,7 +110,7 @@ namespace R5.FFDB.Engine.Processors
 			//WeekStats weekStats = await _weekStatsService.GetForWeekAsync(week);//
 			//await dbContext.Stats.AddWeekAsync(weekStats);
 
-			List<TeamWeekStats> teamStats = _teamStatsService.GetForWeek(week); // team game data cache
+			List<TeamWeekStats> teamStats = null;// _teamStatsService.GetForWeek(week); // team game data cache
 			await dbContext.Team.AddGameStatsAsync(teamStats);
 
 			/// INSTEAD: get this from the IWeekGameDataCache

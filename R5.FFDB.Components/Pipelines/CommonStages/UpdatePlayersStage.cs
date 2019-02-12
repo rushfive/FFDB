@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.Players;
-using R5.FFDB.Components.CoreData.Rosters.Values;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
@@ -24,20 +22,20 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		where TContext : IUpdatePlayersContext
 	{
 		private IDatabaseProvider _dbProvider { get; }
-		private RostersValue _rosters { get; }
+		//private RostersValue _rosters { get; }
 		//private IPlayerSource _playerSource { get; }
 		private WebRequestThrottle _throttle { get; }
 
 		public UpdatePlayersStage(
 			ILogger<UpdatePlayersStage<TContext>> logger,
 			IDatabaseProvider dbProvider,
-			RostersValue rosters,
+			//RostersValue rosters,
 			//IPlayerSource playerSource,
 			WebRequestThrottle throttle)
 			: base(logger, "Update Players")
 		{
 			_dbProvider = dbProvider;
-			_rosters = rosters;
+			//_rosters = rosters;
 			//_playerSource = playerSource;
 			_throttle = throttle;
 		}
@@ -54,7 +52,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 
 			LogDebug($"Will update {context.UpdateNflIds.Count} players.");
 
-			Dictionary<string, RosterPlayer> rosterPlayerMap = await _rosters.GetPlayerMapAsync();
+			Dictionary<string, RosterPlayer> rosterPlayerMap = null;// await _rosters.GetPlayerMapAsync();
 
 			foreach (string nflId in context.UpdateNflIds)
 			{
