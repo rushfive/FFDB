@@ -13,12 +13,12 @@ namespace R5.FFDB.Components
 		public StaticPaths Static { get; } // REMOVE LATER
 		public TempPaths Temp { get; } // REMOVE LATER
 
-		private string _weekGameMap { get; }
-		private string _players { get; }
-		private string _rosters { get; }
-		private string _teamStats { get; }
-		private string _playerWeekStats { get; }
-		private string _receiverTargets { get; }
+		private static string _weekGameMap { get; set; }
+		private static string _players { get; set; }
+		private static string _rosters { get; set; }
+		private static string _teamStats { get; set; }
+		private static string _playerWeekStats { get; set; }
+		private static string _receiverTargets { get; set; }
 
 		public DataDirectoryPath(string rootPath)
 		{
@@ -85,9 +85,6 @@ namespace R5.FFDB.Components
 			Directory.CreateDirectory(_playerWeekStats);
 			Directory.CreateDirectory(_receiverTargets);
 		}
-
-
-
 
 		// OLD BELOW, WILL ALL BE REPLACED EVENTUALLY
 

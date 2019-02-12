@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models;
 using R5.FFDB.Components.Http;
@@ -8,6 +9,7 @@ using R5.FFDB.Core.Models;
 using R5.Lib.Cache.AsyncLazyCache;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,11 +17,6 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 {
-	// Roster use cases:
-	// 1. Updating players (dynamic stuff  like names, roster number position, etc)
-	// 2. Updating Player-Team mappings (are they on a team?)
-	//       - get nfl ids of everyone on a roster (used to resolve new players in UpdateRosterMappingsPipeline)
-	//       -
 	public interface IRosterCache
 	{
 		Task<List<Roster>> GetAsync();
@@ -35,17 +32,23 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 		private IAsyncLazyCache _cache { get; }
 		private IRosterSource _source { get; }
 		private WebRequestThrottle _throttle { get; }
+		private ProgramOptions _programOptions { get; }
+		private DataDirectoryPath _dataPath { get; }
 
 		public RosterCache(
 			ILogger<RosterCache> logger,
 			IAsyncLazyCache cache,
 			IRosterSource source,
-			WebRequestThrottle throttle)
+			WebRequestThrottle throttle,
+			ProgramOptions programOptions,
+			DataDirectoryPath dataPath)
 		{
 			_logger = logger;
 			_cache = cache;
 			_source = source;
 			_throttle = throttle;
+			_programOptions = programOptions;
+			_dataPath = dataPath;
 		}
 
 		public async Task<List<Roster>> GetAsync()
@@ -75,10 +78,26 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 
 			foreach (Team t in TeamDataStore.GetAll())
 			{
+				bool shouldThrottle = false;
+				var versionedFilePath = _dataPath.Roster(t);
+
+				if (!_programOptions.SkipRosterFetch)
+				{
+					File.Delete(versionedFilePath);
+					shouldThrottle = true;
+				}
+				else if (!File.Exists(versionedFilePath))
+				{
+					shouldThrottle = true;
+				}
+
 				Roster roster = await _source.GetAsync(t);
 				data.UpdateWith(roster);
-
-				await _throttle.DelayAsync();
+				
+				if (shouldThrottle)
+				{
+					await _throttle.DelayAsync();
+				}
 			}
 
 			return data;

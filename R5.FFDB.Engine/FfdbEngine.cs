@@ -46,7 +46,7 @@ namespace R5.FFDB.Engine
 		{
 			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
 			{
-				Formatting = Formatting.Indented,
+				Formatting = Formatting.None,
 				Converters = new List<JsonConverter>
 				{
 					new WeekInfoJsonConverter()

@@ -23,7 +23,6 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
-			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
@@ -31,7 +30,6 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 				  toVersionedMapper,
 				  toCoreMapper,
 				  programOptions,
-				  dbProvider,
 				  dataPath,
 				  webClient)
 		{
@@ -48,16 +46,6 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 		protected override string GetSourceUri((string, WeekInfo) gameWeek)
 		{
 			return Endpoints.Api.GameCenterStats(gameWeek.Item1);
-		}
-
-		protected override Task OnVersionedModelMappedAsync((string, WeekInfo) gameWeek, TeamStatsVersioned versioned)
-		{
-			return Task.CompletedTask;
-		}
-
-		protected override Task OnCoreDataMappedAsync((string, WeekInfo) gameWeek, TeamStatsSourceModel stats)
-		{
-			return Task.CompletedTask;
 		}
 	}
 }

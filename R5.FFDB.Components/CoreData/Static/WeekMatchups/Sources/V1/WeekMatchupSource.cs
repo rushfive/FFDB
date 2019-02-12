@@ -21,7 +21,6 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
-			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
@@ -29,7 +28,6 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 				  toVersionedMapper,
 				  toCoreMapper,
 				  programOptions,
-				  dbProvider,
 				  dataPath,
 				  webClient)
 		{ }
@@ -44,16 +42,6 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 		protected override string GetSourceUri(WeekInfo week)
 		{
 			return Endpoints.Api.ScoreStripWeekGames(week);
-		}
-
-		protected override Task OnVersionedModelMappedAsync(WeekInfo week, WeekMatchupsVersioned versioned)
-		{
-			return Task.CompletedTask;
-		}
-
-		protected override Task OnCoreDataMappedAsync(WeekInfo key, List<WeekGameMatchup> coreData)
-		{
-			return Task.CompletedTask;
 		}
 	}
 }

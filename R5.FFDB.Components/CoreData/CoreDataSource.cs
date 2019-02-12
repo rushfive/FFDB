@@ -37,8 +37,6 @@ namespace R5.FFDB.Components.CoreData
 		private IAsyncMapper<string, TVersionedModel, TKey> _toVersionedMapper { get; }
 		private IAsyncMapper<TVersionedModel, TCoreData, TKey> _toCoreMapper { get; }
 		private ProgramOptions _programOptions { get; }
-		[Obsolete("dont think we need dbContext for sources")]
-		private IDatabaseProvider _dbProvider { get; }
 		private IWebRequestClient _webClient { get; }
 
 		protected CoreDataSource(
@@ -46,7 +44,6 @@ namespace R5.FFDB.Components.CoreData
 			IAsyncMapper<string, TVersionedModel, TKey> toVersionedMapper,
 			IAsyncMapper<TVersionedModel, TCoreData, TKey> toCoreMapper,
 			ProgramOptions programOptions,
-			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 		{
@@ -54,7 +51,6 @@ namespace R5.FFDB.Components.CoreData
 			_toVersionedMapper = toVersionedMapper;
 			_toCoreMapper = toCoreMapper;
 			_programOptions = programOptions;
-			_dbProvider = dbProvider;
 			DataPath = dataPath;
 			_webClient = webClient;
 		}
@@ -70,19 +66,12 @@ namespace R5.FFDB.Components.CoreData
 
 			TCoreData coreData = await _toCoreMapper.MapAsync(versioned, key);
 
-			await OnCoreDataMappedAsync(key, coreData);
-
 			return coreData;
 		}
 		
 		protected abstract bool SupportsFilePersistence { get; }
 		protected abstract string GetVersionedFilePath(TKey key);
 		protected abstract string GetSourceUri(TKey key);
-
-		[Obsolete("replaced by adding source key to mappers")]
-		protected abstract Task OnVersionedModelMappedAsync(TKey key, TVersionedModel versioned);
-		[Obsolete("replaced by adding source key to mappers")]
-		protected abstract Task OnCoreDataMappedAsync(TKey key, TCoreData coreData);
 
 		private bool TryGetVersionedFromDisk(TKey key, out TVersionedModel versioned)
 		{
@@ -109,8 +98,6 @@ namespace R5.FFDB.Components.CoreData
 			string response = await _webClient.GetStringAsync(uri, throttle: false);
 
 			TVersionedModel versioned = await _toVersionedMapper.MapAsync(response, key);
-
-			await OnVersionedModelMappedAsync(key, versioned);
 
 			if (SupportsFilePersistence && _programOptions.SaveToDisk)
 			{

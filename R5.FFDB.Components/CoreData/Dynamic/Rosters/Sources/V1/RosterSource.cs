@@ -12,8 +12,6 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 {
-	// TODO: need a configurable way to determine when
-	// saved roster files are too old (requiring a re-fetch)
 	public interface IRosterSource : ICoreDataSource<Roster, Team> { }
 
 	public class RosterSource : CoreDataSource<RosterVersioned, Roster, Team>, IRosterSource
@@ -21,9 +19,8 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 		public RosterSource(
 			ILogger<RosterSource> logger,
 			IToVersionedMapper toVersionedMapper,
-			ToCoreMapper toCoreMapper,
+			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
-			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
@@ -31,11 +28,9 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 				  toVersionedMapper,
 				  toCoreMapper,
 				  programOptions,
-				  dbProvider,
 				  dataPath,
 				  webClient)
 		{
-
 		}
 
 		protected override bool SupportsFilePersistence => true;
@@ -48,16 +43,6 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 		protected override string GetSourceUri(Team team)
 		{
 			return Endpoints.Page.TeamRoster(team);
-		}
-
-		protected override Task OnVersionedModelMappedAsync(Team team, RosterVersioned versioned)
-		{
-			return Task.CompletedTask;
-		}
-
-		protected override Task OnCoreDataMappedAsync(Team team, Roster roster)
-		{
-			return Task.CompletedTask;
 		}
 	}
 }

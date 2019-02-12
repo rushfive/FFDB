@@ -15,18 +15,18 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 {
-	public class PlayerAddSource : CoreDataSource<PlayerAddVersioned, PlayerAdd, string>
+	public interface IPlayerAddSource : ICoreDataSource<PlayerAdd, string> { }
+
+	public class PlayerAddSource : CoreDataSource<PlayerAddVersioned, PlayerAdd, string>, IPlayerAddSource
 	{
 		private IRosterCache _rosterCache { get; }
 
 		public PlayerAddSource(
 			IRosterCache rosterCache,
-
 			ILogger<PlayerAddSource> logger,
-			ToVersionedMapper toVersionedMapper,
-			ToCoreMapper toCoreMapper,
+			IToVersionedMapper toVersionedMapper,
+			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
-			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
@@ -34,7 +34,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 				  toVersionedMapper,
 				  toCoreMapper,
 				  programOptions,
-				  dbProvider,
 				  dataPath,
 				  webClient)
 		{
@@ -51,24 +50,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add
 		protected override string GetSourceUri(string nflId)
 		{
 			return Endpoints.Page.PlayerProfile(nflId);
-		}
-
-		protected override Task OnVersionedModelMappedAsync(string nflId, PlayerAddVersioned versioned)
-		{
-			versioned.NflId = nflId;
-			return Task.CompletedTask;
-		}
-
-		protected override async Task OnCoreDataMappedAsync(string nflId, PlayerAdd playerAdd)
-		{
-			(int? number, Position? position, RosterStatus? status)? data = await _rosterCache.GetPlayerDataAsync(nflId);
-
-			if (data.HasValue)
-			{
-				playerAdd.Number = data.Value.number;
-				playerAdd.Position = data.Value.position;
-				playerAdd.Status = data.Value.status;
-			}
 		}
 	}
 }

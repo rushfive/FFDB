@@ -25,7 +25,6 @@ namespace R5.FFDB.Components.CoreData.Static.ReceiverTargets.Sources.V1
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
-			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
@@ -33,7 +32,6 @@ namespace R5.FFDB.Components.CoreData.Static.ReceiverTargets.Sources.V1
 				  toVersionedMapper,
 				  toCoreMapper,
 				  programOptions,
-				  dbProvider,
 				  dataPath,
 				  webClient)
 		{
@@ -50,16 +48,6 @@ namespace R5.FFDB.Components.CoreData.Static.ReceiverTargets.Sources.V1
 		protected override string GetSourceUri(string gameId)
 		{
 			return Endpoints.Page.ReceiverTargets(gameId);
-		}
-
-		protected override Task OnVersionedModelMappedAsync(string gameId, ReceiverTargetsVersioned versioned)
-		{
-			return Task.CompletedTask;
-		}
-
-		protected override Task OnCoreDataMappedAsync(string gameId, Dictionary<string, int> playerTargetsMap)
-		{
-			return Task.CompletedTask;
 		}
 	}
 }

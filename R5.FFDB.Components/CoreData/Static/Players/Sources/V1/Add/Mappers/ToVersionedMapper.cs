@@ -33,6 +33,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 			{
 				FirstName = firstName,
 				LastName = lastName,
+				NflId = nflId,
 				EsbId = esbId,
 				GsisId = gsisId,
 				Height = height,

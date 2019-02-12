@@ -12,6 +12,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players
 	public interface IPlayerIdMappings
 	{
 		Task<Dictionary<string, string>> GetGsisToNflMapAsync();
+		Task<Dictionary<string, Guid>> GetNflToIdMapAsync();
 	}
 
 	public class PlayerIdMappings : IPlayerIdMappings
@@ -30,6 +31,15 @@ namespace R5.FFDB.Components.CoreData.Static.Players
 			List<Player> players = await dbContext.Player.GetAllAsync();
 
 			return players.ToDictionary(p => p.GsisId, p => p.NflId);
+		}
+
+		public async Task<Dictionary<string, Guid>> GetNflToIdMapAsync()
+		{
+			IDatabaseContext dbContext = _dbProvider.GetContext();
+
+			List<Player> players = await dbContext.Player.GetAllAsync();
+
+			return players.ToDictionary(p => p.NflId, p => p.Id);
 		}
 	}
 }

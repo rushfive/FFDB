@@ -8,6 +8,7 @@ using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
+using R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add;
 using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1;
 using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers;
 using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1;
@@ -63,7 +64,7 @@ namespace DevTester
 		{
 			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
 			{
-				Formatting = Formatting.Indented,
+				Formatting = Formatting.None,
 				Converters = new List<JsonConverter>
 				{
 					new WeekInfoJsonConverter()
@@ -79,12 +80,17 @@ namespace DevTester
 			_dbContext = dbProvider.GetContext();
 			_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
-			var playerStatsSource = _serviceProvider.GetRequiredService<IPlayerWeekStatsSource>();
+			//var playerStatsSource = _serviceProvider.GetRequiredService<IPlayerWeekStatsSource>();
 
 
-			await playerStatsSource.GetAsync(new WeekInfo(2018, 17));
+			//await playerStatsSource.GetAsync(new WeekInfo(2018, 16));
 
-			//
+
+			var playerAddSource = _serviceProvider.GetRequiredService<IPlayerAddSource>();
+			PlayerAdd playerAdd = await playerAddSource.GetAsync("2558865");
+
+			// 2530747   doug baldwin
+			// 2558865	chris carson
 
 
 			return;

@@ -36,26 +36,5 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Models
 
 		[JsonProperty("college")]
 		public string College { get; set; }
-
-		public static PlayerAdd ToCoreEntity(PlayerAddVersioned versioned,
-			int? number, Position? position, RosterStatus? status)
-		{
-			return new PlayerAdd
-			{
-				Id = Guid.NewGuid(),
-				NflId = versioned.NflId,
-				EsbId = versioned.EsbId,
-				GsisId = versioned.EsbId,
-				FirstName = versioned.FirstName,
-				LastName = versioned.LastName,
-				Height = versioned.Height,
-				Weight = versioned.Weight,
-				DateOfBirth = versioned.DateOfBirth,
-				College = versioned.College,
-				Number = number,
-				Position = position,
-				Status = status
-			};
-		}
 	}
 }

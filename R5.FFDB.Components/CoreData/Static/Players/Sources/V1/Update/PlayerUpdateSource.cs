@@ -12,14 +12,13 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update
 {
-	public class PlayerUpdateSource : CoreDataSource<PlayerUpdateVersioned, Player, string>
+	public class PlayerUpdateSource : CoreDataSource<PlayerUpdateVersioned, PlayerUpdate, string>
 	{
 		public PlayerUpdateSource(
 			ILogger<PlayerUpdateSource> logger,
-			ToVersionedMapper toVersionedMapper,
-			ToCoreMapper toCoreMapper,
+			IToVersionedMapper toVersionedMapper,
+			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
-			IDatabaseProvider dbProvider,
 			DataDirectoryPath dataPath,
 			IWebRequestClient webClient)
 			: base(
@@ -27,7 +26,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update
 				  toVersionedMapper,
 				  toCoreMapper,
 				  programOptions,
-				  dbProvider,
 				  dataPath,
 				  webClient)
 		{ }
@@ -42,16 +40,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update
 		protected override string GetSourceUri(string nflId)
 		{
 			return Endpoints.Page.PlayerProfile(nflId);
-		}
-
-		protected override Task OnVersionedModelMappedAsync(string key, PlayerUpdateVersioned versioned)
-		{
-			return Task.CompletedTask;
-		}
-
-		protected override Task OnCoreDataMappedAsync(string key, Player coreData)
-		{
-			return Task.CompletedTask;
 		}
 	}
 }

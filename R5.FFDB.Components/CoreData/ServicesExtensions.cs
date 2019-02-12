@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using R5.FFDB.Components.CoreData.Static.Players.Sources.V1;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -120,9 +121,33 @@ namespace R5.FFDB.Components.CoreData
 		private static IServiceCollection AddPlayers(this IServiceCollection services)
 		{
 			return services
+				.AddPlayersVersionedServices()
 				.AddScoped<
 					Static.Players.IPlayerIdMappings,
 					Static.Players.PlayerIdMappings>();
+		}
+
+		private static IServiceCollection AddPlayersVersionedServices(this IServiceCollection services)
+		{
+			return services
+				.AddScoped<IPlayerScraper, PlayerScraper>()
+				.AddPlayerAddVersionedServices();
+		}
+
+		private static IServiceCollection AddPlayerAddVersionedServices(this IServiceCollection services)
+		{
+			services
+				.AddScoped<
+					Static.Players.Sources.V1.Add.IPlayerAddSource,
+					Static.Players.Sources.V1.Add.PlayerAddSource>()
+				.AddScoped<
+					Static.Players.Sources.V1.Add.Mappers.IToVersionedMapper,
+					Static.Players.Sources.V1.Add.Mappers.ToVersionedMapper>()
+				.AddScoped<
+					Static.Players.Sources.V1.Add.Mappers.IToCoreMapper,
+					Static.Players.Sources.V1.Add.Mappers.ToCoreMapper>();
+
+			return services;
 		}
 	}
 }
