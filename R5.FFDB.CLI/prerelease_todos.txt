@@ -1,6 +1,11 @@
+- add Sql lite (use entity framework core)
+- use entity framework core for postgresql provider
+
+--------------
+
 TeamsProcessor
-	- Update Roster Mappings
-		[Stage - GLOBAL] Resolve New Rostered Players
+	- Update Roster Mappings ****************
+		[Stage ] Resolve New Rostered Players
 			- find new by comparing rostered players versus whats currently in DB
 				[DbContext - Player] Get All Players 
 				[RosterCache]
@@ -17,7 +22,7 @@ PlayerProcessor
 	//- (NEW) Add Missing Rostered
 	//	[Stage - GLOBAL] Resolve New Rostered Players
 	//	[Stage - GLOBAL] Fetch Save Players
-	- Update Currently Rostered - will ALSO add missing
+	- Update Currently Rostered - will ALSO add missing *******
 		[Stage] Group by New and Existing
 			[DbContext - Player] Get All
 		[Stage - GLOBAL] Fetch Save Players (for new)
@@ -25,7 +30,7 @@ PlayerProcessor
 			foreach existing/update players:
 			[PlayerUpdateSource] Get
 			[DbContext - Player] Update Player (NEW)
-	- Update All 
+	- Update All **********
 		[Stage] Get All Existing
 			[DbContext - Player] Get All
 				- set to Update Ids
@@ -81,7 +86,7 @@ new DBCONTEXT api:
 	- Update Roster Mappings
 	- Add Matchups for Week
 [Logs]
-	- Get All
+	- Get Updated Weeks
 	- Has Updated Week
 	- Add For Week
 [Stats] NEW

@@ -66,13 +66,13 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 				GsisId = player.GsisId,
 				FirstName = player.FirstName,
 				LastName = player.LastName,
-				Position = player.Position,
-				Status = player.Status,
-				Number = player.Number,
-				Height = player.Height,
-				Weight = player.Weight,
-				DateOfBirth = player.DateOfBirth,
-				College = player.College,
+				//Position = player.Position,
+				//Status = player.Status,
+				//Number = player.Number,
+				//Height = player.Height,
+				//Weight = player.Weight,
+				//DateOfBirth = player.DateOfBirth,
+				//College = player.College,
 				TeamId = null
 			};
 		}
@@ -87,10 +87,10 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 				GsisId = document.GsisId,
 				FirstName = document.FirstName,
 				LastName = document.LastName,
-				Height = document.Height,
-				Weight = document.Weight,
-				DateOfBirth = document.DateOfBirth,
-				College = document.College
+				//Height = document.Height,
+				//Weight = document.Weight,
+				//DateOfBirth = document.DateOfBirth,
+				//College = document.College
 			};
 		}
 

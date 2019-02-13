@@ -13,9 +13,9 @@ namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers
 
 	public class ToVersionedMapper : IToVersionedMapper
 	{
-		private ITeamStatsCache _teamStatsCache { get; }
+		private ITeamWeekStatsCache _teamStatsCache { get; }
 
-		public ToVersionedMapper(ITeamStatsCache teamStatsCache)
+		public ToVersionedMapper(ITeamWeekStatsCache teamStatsCache)
 		{
 			_teamStatsCache = teamStatsCache;
 		}

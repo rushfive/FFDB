@@ -12,7 +12,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update
 {
-	public class PlayerUpdateSource : CoreDataSource<PlayerUpdateVersioned, PlayerUpdate, string>
+	public interface IPlayerUpdateSource : ICoreDataSource<PlayerUpdate, string> { }
+
+	public class PlayerUpdateSource : CoreDataSource<PlayerUpdateVersioned, PlayerUpdate, string>, IPlayerUpdateSource
 	{
 		public PlayerUpdateSource(
 			ILogger<PlayerUpdateSource> logger,

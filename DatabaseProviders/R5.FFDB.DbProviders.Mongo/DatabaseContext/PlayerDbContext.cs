@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 {
-	public class PlayerDbContext : DbContextBase, IPlayerDatabaseContext
+	public class PlayerDbContext : DbContextBase//, IPlayerDatabaseContext
 	{
 		public PlayerDbContext(
 			Func<IMongoDatabase> getDatabase,

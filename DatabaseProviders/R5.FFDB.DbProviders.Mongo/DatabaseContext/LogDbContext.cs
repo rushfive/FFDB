@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 {
-	public class LogDbContext : DbContextBase, ILogDatabaseContext
+	public class LogDbContext : DbContextBase//, ILogDatabaseContext
 	{
 		public LogDbContext(
 			Func<IMongoDatabase> getDatabase,

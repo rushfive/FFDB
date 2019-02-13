@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 {
-	public class WeekStatsDbContext : DbContextBase, IWeekStatsDatabaseContext
+	public class WeekStatsDbContext : DbContextBase//, IWeekStatsDatabaseContext
 	{
 		public WeekStatsDbContext(
 			Func<IMongoDatabase> getDatabase,
@@ -23,12 +23,13 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 		}
 
-		public Task AddWeekAsync(WeekStats stats)
-		{
-			return AddWeeksAsync(new List<WeekStats> { stats });
-		}
+		//public Task AddWeekAsync(WeekStats stats)
+		//{
+		//	return AddWeeksAsync(new List<WeekStats> { stats });
+		//}
 
-		public async Task AddWeeksAsync(List<WeekStats> stats)
+		//public async Task AddWeeksAsync(List<WeekStats> stats)
+		public async Task AddWeeksAsync()
 		{
 			var logger = GetLogger<WeekStatsDbContext>();
 			var collectionName = CollectionNames.GetForType<WeekStatsPlayerDocument>();
@@ -46,11 +47,11 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			var nflPlayerIdMap = playerDocuments.ToDictionary(p => p.NflId, p => p.Id);
 			var teamNflIdMap = TeamDataStore.GetAll().ToDictionary(t => t.NflId, t => t.Id);
-			
-			List<WeekStatsDocumentAdd> statsAdd = GetStatsAdd(stats, nflPlayerIdMap, teamNflIdMap, logger);
 
-			logger.LogInformation($"Adding week stats for {statsAdd.Count} week(s).");
-			logger.LogTrace($"Adding week stats for: {string.Join(", ", stats.Select(s => s.Week))}");
+			List<WeekStatsDocumentAdd> statsAdd = null;// GetStatsAdd(stats, nflPlayerIdMap, teamNflIdMap, logger);
+
+			//logger.LogInformation($"Adding week stats for {statsAdd.Count} week(s).");
+			//logger.LogTrace($"Adding week stats for: {string.Join(", ", stats.Select(s => s.Week))}");
 
 			foreach(WeekStatsDocumentAdd add in statsAdd)
 			{
@@ -72,48 +73,48 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		}
 
 		private static List<WeekStatsDocumentAdd> GetStatsAdd(
-			List<WeekStats> stats,
+			//List<WeekStats> stats,
 			Dictionary<string, Guid> nflPlayerIdMap,
 			Dictionary<string, int> teamNflIdMap,
 			ILogger<WeekStatsDbContext> logger)
 		{
 			var result = new List<WeekStatsDocumentAdd>();
 
-			foreach (WeekStats weekStats in stats)
-			{
-				var update = new WeekStatsDocumentAdd
-				{
-					Week = weekStats.Week
-				};
+			//foreach (WeekStats weekStats in stats)
+			//{
+			//	var update = new WeekStatsDocumentAdd
+			//	{
+			//		Week = weekStats.Week
+			//	};
 
-				foreach (PlayerWeekStats playerStats in weekStats.Players)
-				{
-					if (teamNflIdMap.TryGetValue(playerStats.NflId, out int teamId))
-					{
-						var statValues = WeekStatsDstDocument.FilterStatValues(playerStats);
-						if (statValues.Any())
-						{
-							var dstStats = WeekStatsDstDocument.FromCoreEntity(teamId, weekStats.Week, statValues);
-							update.DstStats.Add(dstStats);
-						}
+			//	foreach (PlayerWeekStats playerStats in weekStats.Players)
+			//	{
+			//		if (teamNflIdMap.TryGetValue(playerStats.NflId, out int teamId))
+			//		{
+			//			var statValues = WeekStatsDstDocument.FilterStatValues(playerStats);
+			//			if (statValues.Any())
+			//			{
+			//				var dstStats = WeekStatsDstDocument.FromCoreEntity(teamId, weekStats.Week, statValues);
+			//				update.DstStats.Add(dstStats);
+			//			}
 
-						continue;
-					}
+			//			continue;
+			//		}
 
-					if (nflPlayerIdMap.TryGetValue(playerStats.NflId, out Guid playerId))
-					{
-						WeekStatsPlayerDocument statsDocument = WeekStatsPlayerDocument.FromCoreEntity(playerStats, playerId, weekStats.Week);
-						update.PlayerStats.Add(statsDocument);
+			//		if (nflPlayerIdMap.TryGetValue(playerStats.NflId, out Guid playerId))
+			//		{
+			//			WeekStatsPlayerDocument statsDocument = WeekStatsPlayerDocument.FromCoreEntity(playerStats, playerId, weekStats.Week);
+			//			update.PlayerStats.Add(statsDocument);
 
-						continue;
-					}
+			//			continue;
+			//		}
 
-					logger.LogWarning($"Failed to map NFL id '{playerStats.NflId}' to either a Team id or Player id. "
-						+ $"They have stats recorded for week {weekStats.Week.Week} ({weekStats.Week.Season}) but cannot be added to the database.");
-				}
+			//		logger.LogWarning($"Failed to map NFL id '{playerStats.NflId}' to either a Team id or Player id. "
+			//			+ $"They have stats recorded for week {weekStats.Week.Week} ({weekStats.Week.Season}) but cannot be added to the database.");
+			//	}
 
-				result.Add(update);
-			}
+			//	result.Add(update);
+			//}
 
 			return result;
 		}

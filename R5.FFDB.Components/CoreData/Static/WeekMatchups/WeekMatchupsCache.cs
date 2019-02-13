@@ -12,7 +12,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups
 {
 	public interface IWeekMatchupsCache
 	{
-		Task<List<WeekGameMatchup>> GetMatchupsForWeekAsync(WeekInfo week);
+		Task<List<WeekMatchup>> GetMatchupsForWeekAsync(WeekInfo week);
 		Task<List<string>> GetGameIdsForWeekAsync(WeekInfo week);
 	}
 
@@ -34,16 +34,18 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups
 			_source = source;
 		}
 
-		public Task<List<WeekGameMatchup>> GetMatchupsForWeekAsync(WeekInfo week)
+		public async Task<List<WeekMatchup>> GetMatchupsForWeekAsync(WeekInfo week)
 		{
-			return _cache.GetOrCreateAsync(CacheKey(week), () => _source.GetAsync(week));
+			SourceResult<List<WeekMatchup>> result = await _cache.GetOrCreateAsync(CacheKey(week), () => _source.GetAsync(week));
+
+			return result.Value;
 		}
 
 		public async Task<List<string>> GetGameIdsForWeekAsync(WeekInfo week)
 		{
-			List<WeekGameMatchup> mappings = await _cache.GetOrCreateAsync(CacheKey(week), () => _source.GetAsync(week));
+			SourceResult<List<WeekMatchup>> result = await _cache.GetOrCreateAsync(CacheKey(week), () => _source.GetAsync(week));
 
-			return mappings.Select(m => m.NflGameId).ToList();
+			return result.Value.Select(m => m.NflGameId).ToList();
 		}
 	}
 }

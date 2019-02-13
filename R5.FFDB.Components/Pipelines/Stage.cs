@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using R5.Lib.Pipeline;
+using System;
 
 namespace R5.FFDB.Components.Pipelines
 {
@@ -28,6 +30,11 @@ namespace R5.FFDB.Components.Pipelines
 		protected void LogTrace(string message)
 		{
 			_logger.LogTrace(NamePrepended(message));
+		}
+
+		protected void LogWarning(string message)
+		{
+			_logger.LogWarning(NamePrepended(message));
 		}
 
 		private string NamePrepended(string message) => $"[{Name}] message";

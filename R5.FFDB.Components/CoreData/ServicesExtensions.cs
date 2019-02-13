@@ -81,8 +81,8 @@ namespace R5.FFDB.Components.CoreData
 		{
 			services
 				.AddScoped<
-					Static.TeamStats.Sources.V1.ITeamStatsSource,
-					Static.TeamStats.Sources.V1.TeamStatsSource>()
+					Static.TeamStats.Sources.V1.ITeamWeekStatsSource,
+					Static.TeamStats.Sources.V1.TeamWeekStatsSource>()
 				.AddScoped<
 					Static.TeamStats.Sources.V1.Mappers.IToVersionedMapper,
 					Static.TeamStats.Sources.V1.Mappers.ToVersionedMapper>()
@@ -90,8 +90,8 @@ namespace R5.FFDB.Components.CoreData
 					Static.TeamStats.Sources.V1.Mappers.IToCoreMapper,
 					Static.TeamStats.Sources.V1.Mappers.ToCoreMapper>()
 				.AddScoped<
-					Static.TeamStats.ITeamStatsCache,
-					Static.TeamStats.TeamStatsCache>();
+					Static.TeamStats.ITeamWeekStatsCache,
+					Static.TeamStats.TeamWeekStatsCache>();
 
 			return services;
 		}
@@ -131,7 +131,8 @@ namespace R5.FFDB.Components.CoreData
 		{
 			return services
 				.AddScoped<IPlayerScraper, PlayerScraper>()
-				.AddPlayerAddVersionedServices();
+				.AddPlayerAddVersionedServices()
+				.AddPlayerUpdateVersionedServices();
 		}
 
 		private static IServiceCollection AddPlayerAddVersionedServices(this IServiceCollection services)
@@ -146,6 +147,22 @@ namespace R5.FFDB.Components.CoreData
 				.AddScoped<
 					Static.Players.Sources.V1.Add.Mappers.IToCoreMapper,
 					Static.Players.Sources.V1.Add.Mappers.ToCoreMapper>();
+
+			return services;
+		}
+
+		private static IServiceCollection AddPlayerUpdateVersionedServices(this IServiceCollection services)
+		{
+			services
+				.AddScoped<
+					Static.Players.Sources.V1.Update.IPlayerUpdateSource,
+					Static.Players.Sources.V1.Update.PlayerUpdateSource>()
+				.AddScoped<
+					Static.Players.Sources.V1.Update.Mappers.IToVersionedMapper,
+					Static.Players.Sources.V1.Update.Mappers.ToVersionedMapper>()
+				.AddScoped<
+					Static.Players.Sources.V1.Update.Mappers.IToCoreMapper,
+					Static.Players.Sources.V1.Update.Mappers.ToCoreMapper>();
 
 			return services;
 		}

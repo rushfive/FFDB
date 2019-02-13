@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.CoreData;
+using R5.FFDB.Components.CoreData.Static.Players;
+using R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
@@ -22,22 +25,22 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		where TContext : IUpdatePlayersContext
 	{
 		private IDatabaseProvider _dbProvider { get; }
-		//private RostersValue _rosters { get; }
-		//private IPlayerSource _playerSource { get; }
 		private WebRequestThrottle _throttle { get; }
+		private IPlayerUpdateSource _playerUpdateSource { get; }
+		private IPlayerIdMappings _playerIdMappings { get; }
 
 		public UpdatePlayersStage(
 			ILogger<UpdatePlayersStage<TContext>> logger,
 			IDatabaseProvider dbProvider,
-			//RostersValue rosters,
-			//IPlayerSource playerSource,
-			WebRequestThrottle throttle)
+			WebRequestThrottle throttle,
+			IPlayerUpdateSource playerUpdateSource,
+			IPlayerIdMappings playerIdMappings)
 			: base(logger, "Update Players")
 		{
 			_dbProvider = dbProvider;
-			//_rosters = rosters;
-			//_playerSource = playerSource;
 			_throttle = throttle;
+			_playerUpdateSource = playerUpdateSource;
+			_playerIdMappings = playerIdMappings;
 		}
 
 		public override async Task<ProcessStageResult> ProcessAsync(TContext context)
@@ -52,40 +55,30 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 
 			LogDebug($"Will update {context.UpdateNflIds.Count} players.");
 
-			Dictionary<string, RosterPlayer> rosterPlayerMap = null;// await _rosters.GetPlayerMapAsync();
+			IDatabaseContext dbContext = _dbProvider.GetContext();
+			Dictionary<string, Guid> nflIdMap = await _playerIdMappings.GetNflToIdMapAsync();
 
 			foreach (string nflId in context.UpdateNflIds)
 			{
-				Player player = await FetchAsync(nflId, rosterPlayerMap);
+				if (!nflIdMap.TryGetValue(nflId, out Guid id))
+				{
+					LogWarning($"Failed to find player '{nflId}' in database. Will skip update.");
+					continue;
+				}
 
-				await UpdateAsync(player);
+				SourceResult<PlayerUpdate> result = await _playerUpdateSource.GetAsync(nflId);
 
-				await _throttle.DelayAsync();
+				await dbContext.Player.UpdateAsync(id, result.Value);
 
-				LogDebug($"Successfully updated '{nflId}' ({player.FirstName} {player.LastName})");
+				if (result.FetchedFromWeb)
+				{
+					await _throttle.DelayAsync();
+				}
+
+				LogDebug($"Successfully updated '{nflId}'.");
 			}
 
 			return ProcessResult.Continue;
-		}
-
-		private async Task<Player> FetchAsync(string nflId, Dictionary<string, RosterPlayer> rosterPlayerMap)
-		{
-			Player player = null;// await _playerSource.GetAsync(nflId);
-
-			if (rosterPlayerMap.TryGetValue(nflId, out RosterPlayer rosterPlayer))
-			{
-				player.Number = rosterPlayer.Number;
-				player.Position = rosterPlayer.Position;
-				player.Status = rosterPlayer.Status;
-			}
-
-			return player;
-		}
-
-		private Task UpdateAsync(Player player)
-		{
-			IDatabaseContext dbContext = _dbProvider.GetContext();
-			return dbContext.Player.UpdateAsync(player);
 		}
 	}
 }

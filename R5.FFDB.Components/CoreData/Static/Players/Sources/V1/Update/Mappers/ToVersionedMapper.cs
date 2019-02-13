@@ -25,7 +25,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Update.Mappers
 
 			(string firstName, string lastName) = _scraper.ExtractNames(page);
 
-
 			return Task.FromResult(new PlayerUpdateVersioned
 			{
 				FirstName = firstName,

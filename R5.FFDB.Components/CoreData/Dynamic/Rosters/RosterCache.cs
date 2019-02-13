@@ -91,8 +91,9 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 					shouldThrottle = true;
 				}
 
-				Roster roster = await _source.GetAsync(t);
-				data.UpdateWith(roster);
+				SourceResult<Roster> roster = await _source.GetAsync(t);
+
+				data.UpdateWith(roster.Value);
 				
 				if (shouldThrottle)
 				{

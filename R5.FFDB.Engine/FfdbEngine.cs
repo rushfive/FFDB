@@ -76,7 +76,7 @@ namespace R5.FFDB.Engine
 			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
 
 			await dbContext.InitializeAsync(forceReinitialize);
-			await dbContext.Team.AddTeamsAsync();
+			//await dbContext.Team.AddTeamsAsync();
 
 			await Stats.AddMissingAsync();
 			await Team.UpdateRosterMappingsAsync();
@@ -110,7 +110,7 @@ namespace R5.FFDB.Engine
 		public Task<List<WeekInfo>> GetAllUpdatedWeeksAsync()
 		{
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
-			return dbContext.Log.GetUpdatedWeeksAsync();
+			return null;// dbContext.Log.GetUpdatedWeeksAsync();
 		}
 	}
 }

@@ -14,12 +14,12 @@ using R5.FFDB.Components.CoreData.Static.TeamStats.Models;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 {
-	public interface ITeamStatsSource : ICoreDataSource<TeamStatsSourceModel, (string gameId, WeekInfo week)> { }
+	public interface ITeamWeekStatsSource : ICoreDataSource<TeamWeekStatsSourceModel, (string gameId, WeekInfo week)> { }
 
-	public class TeamStatsSource : CoreDataSource<TeamStatsVersioned, TeamStatsSourceModel, (string, WeekInfo)>, ITeamStatsSource
+	public class TeamWeekStatsSource : CoreDataSource<TeamWeekStatsVersioned, TeamWeekStatsSourceModel, (string, WeekInfo)>, ITeamWeekStatsSource
 	{
-		public TeamStatsSource(
-			ILogger<TeamStatsSource> logger,
+		public TeamWeekStatsSource(
+			ILogger<TeamWeekStatsSource> logger,
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,

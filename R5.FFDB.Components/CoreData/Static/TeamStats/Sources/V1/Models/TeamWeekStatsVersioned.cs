@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Models
 {
-	public class TeamStatsVersioned
+	public class TeamWeekStatsVersioned
 	{
 		[JsonProperty("week")]
 		public WeekInfo Week { get; set; }

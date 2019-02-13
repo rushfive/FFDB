@@ -36,7 +36,7 @@ namespace R5.FFDB.Components.Pipelines.Players
 			AsyncPipelineStage<Context> resolveAllExisting = sp.Create<Stages.ResolveAllExistingPlayers>();
 			AsyncPipelineStage<Context> updatePlayers = sp.Create<UpdatePlayersStage<Context>>();
 
-			AsyncPipelineStage<Context> chain = resolveAllExisting;
+			var chain = resolveAllExisting;
 			chain.SetNext(updatePlayers);
 
 			return sp.Create<UpdateAllPipeline>(chain);

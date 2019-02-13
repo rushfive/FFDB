@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public class LogDbContext : DbContextBase, ILogDatabaseContext
+	public class LogDbContext : DbContextBase//, ILogDatabaseContext
 	{
 		public LogDbContext(
 			Func<NpgsqlConnection> getConnection,

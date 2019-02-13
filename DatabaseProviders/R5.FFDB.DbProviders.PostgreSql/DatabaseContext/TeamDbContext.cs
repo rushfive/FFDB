@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public class TeamDbContext : DbContextBase, ITeamDatabaseContext
+	public class TeamDbContext : DbContextBase//, ITeamDatabaseContext
 	{
 		public TeamDbContext(
 			Func<NpgsqlConnection> getConnection,
@@ -121,7 +121,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogInformation($"Successfully removed team game stats rows for {week} from database.");
 		}
 
-		public async Task AddGameMatchupsAsync(List<WeekGameMatchup> gameMatchups)
+		public async Task AddGameMatchupsAsync(List<WeekMatchup> gameMatchups)
 		{
 			string tableName = EntityInfoMap.TableName(typeof(WeekGameMatchupSql));
 

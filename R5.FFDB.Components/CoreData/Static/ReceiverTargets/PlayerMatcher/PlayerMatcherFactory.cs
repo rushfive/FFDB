@@ -60,7 +60,7 @@ namespace R5.FFDB.Components.CoreData.Static.ReceiverTargets.PlayerMatcher
 		{
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
 
-			List<Player> players = await dbContext.Player.GetByTeamForWeekAsync(teamId, week);
+			List<Player> players = null;// await dbContext.Player.GetByTeamForWeekAsync(teamId, week);
 
 			var result = new Dictionary<string, Guid>();
 			foreach (var player in players)

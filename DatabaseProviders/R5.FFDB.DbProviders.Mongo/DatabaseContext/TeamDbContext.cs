@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 {
-	public class TeamDbContext : DbContextBase, ITeamDatabaseContext
+	public class TeamDbContext : DbContextBase//, ITeamDatabaseContext
 	{
 		public TeamDbContext(
 			Func<IMongoDatabase> getDatabase,
@@ -128,7 +128,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			logger.LogInformation($"Successfully removed team game stats documents for {week} from '{collectionName}' collection.");
 		}
 
-		public async Task AddGameMatchupsAsync(List<WeekGameMatchup> gameMatchups)
+		public async Task AddGameMatchupsAsync(List<WeekMatchup> gameMatchups)
 		{
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
 			var collectionName = CollectionNames.GetForType<WeekGameMatchupDocument>();

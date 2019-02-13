@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 {
-	public class DbContext : DbContextBase, IDatabaseContext
+	public class DbContext : DbContextBase//, IDatabaseContext
 	{
-		public ITeamDatabaseContext Team { get; }
-		public IPlayerDatabaseContext Player { get; }
-		public IWeekStatsDatabaseContext Stats { get; }
-		public ILogDatabaseContext Log { get; }
+		//public ITeamDatabaseContext Team { get; }
+		//public IPlayerDatabaseContext Player { get; }
+		//public IWeekStatsDatabaseContext Stats { get; }
+		//public ILogDatabaseContext Log { get; }
 
 		private Func<IMongoDatabase> _getDatabase { get; }
 		private ILogger<DbContext> _logger { get; }
@@ -24,10 +24,10 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			ILoggerFactory loggerFactory)
 			: base(getDatabase, loggerFactory)
 		{
-			Team = new TeamDbContext(getDatabase, loggerFactory);
-			Player = new PlayerDbContext(getDatabase, loggerFactory);
-			Stats = new WeekStatsDbContext(getDatabase, loggerFactory);
-			Log = new LogDbContext(getDatabase, loggerFactory);
+			//Team = new TeamDbContext(getDatabase, loggerFactory);
+			//Player = new PlayerDbContext(getDatabase, loggerFactory);
+			//Stats = new WeekStatsDbContext(getDatabase, loggerFactory);
+			//Log = new LogDbContext(getDatabase, loggerFactory);
 
 			_getDatabase = getDatabase;
 			_logger = loggerFactory.CreateLogger<DbContext>();

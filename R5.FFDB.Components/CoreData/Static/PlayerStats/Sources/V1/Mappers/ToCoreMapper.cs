@@ -20,6 +20,7 @@ namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers
 			{
 				result.Add(new PlayerWeekStats
 				{
+					Week = week,
 					NflId = p.NflId,
 					Stats = p.Stats,
 					TeamId = p.TeamId

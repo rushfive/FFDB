@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.Extensions;
 using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Pipelines.CommonStages;
@@ -38,10 +39,9 @@ namespace R5.FFDB.Components.Pipelines.Players
 			AsyncPipelineStage<Context> fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
 			AsyncPipelineStage<Context> updatePlayers = sp.Create<UpdatePlayersStage<Context>>();
 
-			AsyncPipelineStage<Context> chain = groupByNewExisting;
-			chain
-				.SetNext(fetchSavePlayers)
-				.SetNext(updatePlayers);
+			var chain = groupByNewExisting;
+			groupByNewExisting.SetNext(fetchSavePlayers);
+			fetchSavePlayers.SetNext(updatePlayers);
 
 			return sp.Create<UpdateCurrentlyRosteredPipeline>(chain);
 		}
@@ -50,17 +50,17 @@ namespace R5.FFDB.Components.Pipelines.Players
 		{
 			public class GroupByNewAndExisting : Stage<Context>
 			{
-				//private RostersValue _rosters { get; }
 				private IDatabaseProvider _dbProvider { get; }
+				private IRosterCache _rosterCache { get; }
 
 				public GroupByNewAndExisting(
 					ILogger<GroupByNewAndExisting> logger,
-					//RostersValue rosters,
-					IDatabaseProvider dbProvider)
+					IDatabaseProvider dbProvider,
+					IRosterCache rosterCache)
 					: base(logger, "Group by New and Existing")
 				{
-					//_rosters = rosters;
 					_dbProvider = dbProvider;
+					_rosterCache = rosterCache;
 				}
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
@@ -71,7 +71,7 @@ namespace R5.FFDB.Components.Pipelines.Players
 						.Select(p => p.NflId)
 						.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-					List<string> rosteredIds = null;// await _rosters.GetIdsAsync();
+					List<string> rosteredIds = await _rosterCache.GetRosteredIdsAsync();
 
 					var newIds = new List<string>();
 					var existingIds = new List<string>();

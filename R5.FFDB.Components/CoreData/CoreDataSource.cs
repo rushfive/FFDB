@@ -15,7 +15,7 @@ namespace R5.FFDB.Components.CoreData
 {
 	public interface ICoreDataSource<TCoreData, TKey>
 	{
-		Task<TCoreData> GetAsync(TKey key);
+		Task<SourceResult<TCoreData>> GetAsync(TKey key);
 	}
 
 	// TVersionedModel should represent whatever a week's worth of this source data is
@@ -50,18 +50,22 @@ namespace R5.FFDB.Components.CoreData
 			_webClient = webClient;
 		}
 
-		public async Task<TCoreData> GetAsync(TKey key)
+		public async Task<SourceResult<TCoreData>> GetAsync(TKey key)
 		{
 			TVersionedModel versioned = null;
+			bool fetchedFromWeb = false;
 
 			if (!TryGetVersionedFromDisk(key, out versioned))
 			{
-				versioned = await FetchFromSourceAsync(key);
+				var (versionedModel, fetchedWeb) = await FetchFromSourceAsync(key);
+
+				versioned = versionedModel;
+				fetchedFromWeb = fetchedWeb;
 			}
 
 			TCoreData coreData = await _toCoreMapper.MapAsync(versioned, key);
 
-			return coreData;
+			return new SourceResult<TCoreData>(coreData, fetchedFromWeb);
 		}
 
 		protected abstract bool SupportsSourceFilePersistence { get; }
@@ -90,8 +94,10 @@ namespace R5.FFDB.Components.CoreData
 			return true;
 		}
 
-		private async Task<TVersionedModel> FetchFromSourceAsync(TKey key)
+		private async Task<(TVersionedModel versioned, bool fetchedFromWeb)> FetchFromSourceAsync(TKey key)
 		{
+			bool fetchedFromWeb = false;
+
 			if (!TryGetSourceFile(key, out string sourceResponse))
 			{
 				string uri = GetSourceUri(key);
@@ -101,7 +107,8 @@ namespace R5.FFDB.Components.CoreData
 				{
 					File.WriteAllText(GetSourceFilePath(key), sourceResponse);
 				}
-				
+
+				fetchedFromWeb = true;
 			}
 
 			TVersionedModel versioned = await _toVersionedMapper.MapAsync(sourceResponse, key);
@@ -115,7 +122,7 @@ namespace R5.FFDB.Components.CoreData
 				File.WriteAllText(filePath, serializedModel);
 			}
 
-			return versioned;
+			return (versioned, fetchedFromWeb);
 		}
 
 		private bool TryGetSourceFile(TKey key, out string sourceResponse)

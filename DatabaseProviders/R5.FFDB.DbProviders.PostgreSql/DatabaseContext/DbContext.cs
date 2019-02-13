@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public class DbContext : DbContextBase, IDatabaseContext
+	public class DbContext : DbContextBase//, IDatabaseContext
 	{
-		public ITeamDatabaseContext Team { get; }
-		public IPlayerDatabaseContext Player { get; }
-		public IWeekStatsDatabaseContext Stats { get; }
-		public ILogDatabaseContext Log { get; }
+		//public ITeamDatabaseContext Team { get; }
+		//public IPlayerDatabaseContext Player { get; }
+		//public IWeekStatsDatabaseContext Stats { get; }
+		//public ILogDatabaseContext Log { get; }
 
 		public DbContext(
 			Func<NpgsqlConnection> getConnection,
 			ILoggerFactory loggerFactory)
 			: base(getConnection, loggerFactory)
 		{
-			Team = new TeamDbContext(getConnection, loggerFactory);
-			Player = new PlayerDbContext(getConnection, loggerFactory);
-			Stats = new WeekStatsDbContext(getConnection, loggerFactory);
-			Log = new LogDbContext(getConnection, loggerFactory);
+			//Team = new TeamDbContext(getConnection, loggerFactory);
+			//Player = new PlayerDbContext(getConnection, loggerFactory);
+			//Stats = new WeekStatsDbContext(getConnection, loggerFactory);
+			//Log = new LogDbContext(getConnection, loggerFactory);
 		}
 		
 

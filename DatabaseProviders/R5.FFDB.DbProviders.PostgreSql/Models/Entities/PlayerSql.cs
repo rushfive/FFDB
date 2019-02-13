@@ -66,10 +66,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				Position = position,
 				Status = status,
 				Number = number,
-				Height = player.Height,
-				Weight = player.Weight,
-				DateOfBirth = player.DateOfBirth,
-				College = player.College
+				//Height = player.Height,
+				//Weight = player.Weight,
+				//DateOfBirth = player.DateOfBirth,
+				//College = player.College
 			};
 		}
 
@@ -83,10 +83,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				GsisId = sql.GsisId,
 				FirstName = sql.FirstName,
 				LastName = sql.LastName,
-				Height = sql.Height,
-				Weight = sql.Weight,
-				DateOfBirth = sql.DateOfBirth,
-				College = sql.College
+				//Height = sql.Height,
+				//Weight = sql.Weight,
+				//DateOfBirth = sql.DateOfBirth,
+				//College = sql.College
 			};
 		}
 

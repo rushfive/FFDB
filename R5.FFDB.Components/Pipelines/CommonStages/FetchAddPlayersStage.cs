@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Components.CoreData;
+using R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
@@ -28,25 +30,19 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		where TContext : IFetchAddPlayersContext
 	{
 		private IDatabaseProvider _dbProvider { get; }
-		//private RostersValue _rosters { get; }
-		private DataDirectoryPath _dataPath { get; }
-		//private IPlayerSource _playerSource { get; }
 		private WebRequestThrottle _throttle { get; }
+		private IPlayerAddSource _playerAddSource { get; }
 
 		public FetchAddPlayersStage(
 			ILogger<FetchAddPlayersStage<TContext>> logger,
 			IDatabaseProvider dbProvider,
-			//RostersValue rosters,
-			DataDirectoryPath dataPath,
-			//IPlayerSource playerSource,
-			WebRequestThrottle throttle)
+			WebRequestThrottle throttle,
+			IPlayerAddSource playerAddSource)
 			: base(logger, "Fetch and Save Players")
 		{
 			_dbProvider = dbProvider;
-			//_rosters = rosters;
-			_dataPath = dataPath;
-			//_playerSource = playerSource;
 			_throttle = throttle;
+			_playerAddSource = playerAddSource;
 		}
 		
 		public override async Task<ProcessStageResult> ProcessAsync(TContext context)
@@ -60,62 +56,24 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 			}
 
 			LogDebug($"Will fetch and save {context.FetchAddNflIds.Count} players.");
-
-			Dictionary<string, RosterPlayer> rosterPlayerMap = null;// wait _rosters.GetPlayerMapAsync();
+			
+			IDatabaseContext dbContext = _dbProvider.GetContext();
 
 			foreach(string nflId in context.FetchAddNflIds)
 			{
-				Player player = await FetchAsync(nflId, rosterPlayerMap);
-				
-				await SaveAsync(player);
-				
-				await _throttle.DelayAsync();
+				SourceResult<PlayerAdd> result = await _playerAddSource.GetAsync(nflId);
 
-				LogDebug($"Successfully fetched and saved '{nflId}' ({player.FirstName} {player.LastName})");
+				await dbContext.Player.AddAsync(result.Value);
+
+				if (result.FetchedFromWeb)
+				{
+					await _throttle.DelayAsync();
+				}
+
+				LogDebug($"Successfully fetched and saved '{nflId}'.");
 			}
 			
 			return ProcessResult.Continue;
-		}
-		
-		private async Task<Player> FetchAsync(string nflId, Dictionary<string, RosterPlayer> rosterPlayerMap)
-		{
-			if (!TryGetFromDisk(nflId, out Player player))
-			{
-				//player = await _playerSource.GetAsync(nflId);
-			}
-
-			if (rosterPlayerMap.TryGetValue(nflId, out RosterPlayer rosterPlayer))
-			{
-				player.Number = rosterPlayer.Number;
-				player.Position = rosterPlayer.Position;
-				player.Status = rosterPlayer.Status;
-			}
-
-			return player;
-		}
-
-		private bool TryGetFromDisk(string nflId, out Player player)
-		{
-			player = null;
-
-			string filePath = null;// _dataPath.Temp.Player + $"{nflId}.json";
-			if (!File.Exists(filePath))
-			{
-				return false;
-			}
-
-			string serialized = File.ReadAllText(filePath);
-
-			//PlayerJson json = JsonConvert.DeserializeObject<PlayerJson>(serialized);
-			//player = PlayerJson.ToCoreEntity(json);
-
-			return true;
-		}
-
-		private Task SaveAsync(Player player)
-		{
-			IDatabaseContext dbContext = _dbProvider.GetContext();
-			return dbContext.Player.AddAsync(player);
 		}
 	}
 }

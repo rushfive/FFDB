@@ -18,7 +18,6 @@ using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers;
 using R5.FFDB.Components.Extensions.JsonConverters;
 using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Http;
-using R5.FFDB.Components.Pipelines.Stats;
 using R5.FFDB.Components.Resolvers;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core;
@@ -85,7 +84,7 @@ namespace DevTester
 
 
 			var playerAddSource = _serviceProvider.GetRequiredService<IPlayerAddSource>();
-			PlayerAdd playerAdd = await playerAddSource.GetAsync("2558865");
+			//PlayerAdd playerAdd = await playerAddSource.GetAsync("2558865");
 
 			// 2530747   doug baldwin
 			// 2558865	chris carson
@@ -124,9 +123,9 @@ namespace DevTester
 
 
 
-		private static List<WeekGameMatchup> GetMatchups(WeekInfo week)
+		private static List<WeekMatchup> GetMatchups(WeekInfo week)
 		{
-			var result = new List<WeekGameMatchup>();
+			var result = new List<WeekMatchup>();
 
 			string filePath = null;// _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
 
@@ -136,7 +135,7 @@ namespace DevTester
 
 			foreach (XElement game in gameNode.Elements("g"))
 			{
-				var matchup = new WeekGameMatchup
+				var matchup = new WeekMatchup
 				{
 					Week = week
 				};

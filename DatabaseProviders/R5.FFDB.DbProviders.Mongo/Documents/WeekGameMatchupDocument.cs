@@ -32,7 +32,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("gsisGameId")]
 		public string GsisGameId { get; set; }
 		
-		public static WeekGameMatchupDocument FromCoreEntity(WeekGameMatchup entity)
+		public static WeekGameMatchupDocument FromCoreEntity(WeekMatchup entity)
 		{
 			return new WeekGameMatchupDocument
 			{

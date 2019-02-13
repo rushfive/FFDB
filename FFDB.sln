@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.FFDB.Components.Tests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Lib", "R5.Lib\R5.Lib.csproj", "{EAE544CC-57B8-46A0-A960-66F65C8E6332}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.Lib.Tests", "R5.Lib.Tests\R5.Lib.Tests.csproj", "{309D395B-56AB-420F-8B7D-6E15B71E6BDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Lib.Tests", "R5.Lib.Tests\R5.Lib.Tests.csproj", "{309D395B-56AB-420F-8B7D-6E15B71E6BDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

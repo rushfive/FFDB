@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 {
-	public interface IToCoreMapper : IAsyncMapper<WeekMatchupsVersioned, List<WeekGameMatchup>, WeekInfo> { }
+	public interface IToCoreMapper : IAsyncMapper<WeekMatchupsVersioned, List<WeekMatchup>, WeekInfo> { }
 
 	public class ToCoreMapper : IToCoreMapper
 	{
-		public Task<List<WeekGameMatchup>> MapAsync(WeekMatchupsVersioned versionedModel, WeekInfo week)
+		public Task<List<WeekMatchup>> MapAsync(WeekMatchupsVersioned versionedModel, WeekInfo week)
 		{
-			var result = new List<WeekGameMatchup>();
+			var result = new List<WeekMatchup>();
 
 			foreach (WeekMatchupsVersioned.Game game in versionedModel.Games)
 			{
-				result.Add(new WeekGameMatchup
+				result.Add(new WeekMatchup
 				{
 					Week = versionedModel.Week,
 					HomeTeamId = game.HomeTeamId,

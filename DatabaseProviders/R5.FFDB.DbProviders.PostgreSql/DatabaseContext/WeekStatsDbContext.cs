@@ -14,7 +14,7 @@ using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public class WeekStatsDbContext : DbContextBase, IWeekStatsDatabaseContext
+	public class WeekStatsDbContext : DbContextBase//, IWeekStatsDatabaseContext
 	{
 		private static List<Type> _weekStatTypes = new List<Type>
 		{
@@ -35,12 +35,15 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 		}
 		
-		public Task AddWeekAsync(WeekStats stats)
+		//public Task AddWeekAsync(WeekStats stats)
+		public Task AddWeekAsync()
 		{
-			return AddWeeksAsync(new List<WeekStats> { stats });
+			return AddWeeksAsync();
+			//return AddWeeksAsync(new List<WeekStats> { stats });
 		}
 
-		public async Task AddWeeksAsync(List<WeekStats> stats)
+		// async Task AddWeeksAsync(List<WeekStats> stats)
+		public async Task AddWeeksAsync()
 		{
 			var logger = GetLogger<WeekStatsDbContext>();
 
@@ -49,10 +52,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			var nflPlayerIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
 			var teamNflIdMap = TeamDataStore.GetAll().ToDictionary(t => t.NflId, t => t.Id);
 
-			List<WeekStatsSqlAdd> statsAdd = GetStatsAdd(stats, nflPlayerIdMap, teamNflIdMap, logger);
+			List<WeekStatsSqlAdd> statsAdd = null;// GetStatsAdd(stats, nflPlayerIdMap, teamNflIdMap, logger);
 
 			logger.LogInformation($"Adding week stats stats for {statsAdd.Count} week(s).");
-			logger.LogTrace($"Adding week stats for: {string.Join(", ", stats.Select(s => s.Week))}");
+			//logger.LogTrace($"Adding week stats for: {string.Join(", ", stats.Select(s => s.Week))}");
 
 			foreach(WeekStatsSqlAdd add in statsAdd)
 			{
@@ -98,77 +101,77 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		}
 
 		private static List<WeekStatsSqlAdd> GetStatsAdd(
-			List<WeekStats> stats,
+			//List<WeekStats> stats,
 			Dictionary<string, Guid> nflPlayerIdMap,
 			Dictionary<string, int> teamNflIdMap,
 			ILogger<WeekStatsDbContext> logger)
 		{
 			var result = new List<WeekStatsSqlAdd>();
 
-			foreach (WeekStats weekStats in stats)
-			{
-				var update = new WeekStatsSqlAdd
-				{
-					Week = weekStats.Week
-				};
+			//foreach (WeekStats weekStats in stats)
+			//{
+			//	var update = new WeekStatsSqlAdd
+			//	{
+			//		Week = weekStats.Week
+			//	};
 
-				foreach (PlayerWeekStats playerStats in weekStats.Players)
-				{
-					if (teamNflIdMap.TryGetValue(playerStats.NflId, out int teamId))
-					{
-						var statValues = WeekStatsDstSql.FilterStatValues(playerStats);
-						if (statValues.Any())
-						{
-							WeekStatsDstSql statsSql = WeekStatsDstSql.FromCoreEntity(teamId, weekStats.Week, statValues);
-							update.DstStats.Add(statsSql);
-						}
+			//	foreach (PlayerWeekStats playerStats in weekStats.Players)
+			//	{
+			//		if (teamNflIdMap.TryGetValue(playerStats.NflId, out int teamId))
+			//		{
+			//			var statValues = WeekStatsDstSql.FilterStatValues(playerStats);
+			//			if (statValues.Any())
+			//			{
+			//				WeekStatsDstSql statsSql = WeekStatsDstSql.FromCoreEntity(teamId, weekStats.Week, statValues);
+			//				update.DstStats.Add(statsSql);
+			//			}
 
-						continue;
-					}
+			//			continue;
+			//		}
 
-					if (nflPlayerIdMap.TryGetValue(playerStats.NflId, out Guid playerId))
-					{
-						List<WeekStatsPlayerSql> playerStatSqls = WeekStatsPlayerSql.FromCoreEntity(playerStats, playerId, weekStats.Week);
+			//		if (nflPlayerIdMap.TryGetValue(playerStats.NflId, out Guid playerId))
+			//		{
+			//			List<WeekStatsPlayerSql> playerStatSqls = WeekStatsPlayerSql.FromCoreEntity(playerStats, playerId, weekStats.Week);
 
-						foreach (var sql in playerStatSqls)
-						{
-							switch (sql)
-							{
-								case WeekStatsPassSql pass:
-									update.PassStats.Add(pass);
-									break;
-								case WeekStatsRushSql rush:
-									update.RushStats.Add(rush);
-									break;
-								case WeekStatsReceiveSql receive:
-									update.ReceiveStats.Add(receive);
-									break;
-								case WeekStatsReturnSql returnStats:
-									update.ReturnStats.Add(returnStats);
-									break;
-								case WeekStatsMiscSql misc:
-									update.MiscStats.Add(misc);
-									break;
-								case WeekStatsKickSql kick:
-									update.KickStats.Add(kick);
-									break;
-								case WeekStatsIdpSql idp:
-									update.IdpStats.Add(idp);
-									break;
-								default:
-									throw new ArgumentOutOfRangeException(nameof(sql), $"'{sql.GetType().Name}' is an invalid '{nameof(WeekStatsPlayerSql)}' type.");
-							}
-						}
+			//			foreach (var sql in playerStatSqls)
+			//			{
+			//				switch (sql)
+			//				{
+			//					case WeekStatsPassSql pass:
+			//						update.PassStats.Add(pass);
+			//						break;
+			//					case WeekStatsRushSql rush:
+			//						update.RushStats.Add(rush);
+			//						break;
+			//					case WeekStatsReceiveSql receive:
+			//						update.ReceiveStats.Add(receive);
+			//						break;
+			//					case WeekStatsReturnSql returnStats:
+			//						update.ReturnStats.Add(returnStats);
+			//						break;
+			//					case WeekStatsMiscSql misc:
+			//						update.MiscStats.Add(misc);
+			//						break;
+			//					case WeekStatsKickSql kick:
+			//						update.KickStats.Add(kick);
+			//						break;
+			//					case WeekStatsIdpSql idp:
+			//						update.IdpStats.Add(idp);
+			//						break;
+			//					default:
+			//						throw new ArgumentOutOfRangeException(nameof(sql), $"'{sql.GetType().Name}' is an invalid '{nameof(WeekStatsPlayerSql)}' type.");
+			//				}
+			//			}
 
-						continue;
-					}
+			//			continue;
+			//		}
 
-					logger.LogWarning($"Failed to map NFL id '{playerStats.NflId}' to either a Team id or Player id. "
-						+ $"They have stats recorded for week {weekStats.Week.Week} ({weekStats.Week.Season}) but cannot be added to the database.");
-				}
+			//		logger.LogWarning($"Failed to map NFL id '{playerStats.NflId}' to either a Team id or Player id. "
+			//			+ $"They have stats recorded for week {weekStats.Week.Week} ({weekStats.Week.Season}) but cannot be added to the database.");
+			//	}
 
-				result.Add(update);
-			}
+			//	result.Add(update);
+			//}
 
 			return result;
 		}

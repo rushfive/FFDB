@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.Extensions;
 using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Pipelines.CommonStages;
@@ -26,13 +27,10 @@ namespace R5.FFDB.Components.Pipelines.Team
 			_logger = logger;
 		}
 
-
 		public class Context : IFetchAddPlayersContext
 		{
 			public List<string> FetchAddNflIds { get; set; }
 		}
-
-		
 
 		public static UpdateRosterMappingsPipeline Create(IServiceProvider sp)
 		{
@@ -40,10 +38,9 @@ namespace R5.FFDB.Components.Pipelines.Team
 			AsyncPipelineStage<Context> fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
 			AsyncPipelineStage<Context> update = sp.Create<Stages.Update>();
 
-			AsyncPipelineStage<Context> chain = resolveNewRosteredPlayers;
-			chain
-				.SetNext(fetchSavePlayers)
-				.SetNext(update);
+			var chain = resolveNewRosteredPlayers;
+			resolveNewRosteredPlayers.SetNext(fetchSavePlayers);
+			fetchSavePlayers.SetNext(update);
 
 			return sp.Create<UpdateRosterMappingsPipeline>(chain);
 		}
@@ -52,17 +49,17 @@ namespace R5.FFDB.Components.Pipelines.Team
 		{
 			public class ResolveNewRosteredPlayers : Stage<Context>
 			{
-				//private RostersValue _rosters { get; }
 				private IDatabaseProvider _dbProvider { get; }
+				private IRosterCache _rosterCache { get; }
 
 				public ResolveNewRosteredPlayers(
 					ILogger<ResolveNewRosteredPlayers> logger,
-					//RostersValue rosters,
-					IDatabaseProvider dbProvider) 
+					IDatabaseProvider dbProvider,
+					IRosterCache rosterCache)
 					: base(logger, "Resolve New Rostered Players")
 				{
-					//_rosters = rosters;
 					_dbProvider = dbProvider;
+					_rosterCache = rosterCache;
 				}
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
@@ -73,36 +70,36 @@ namespace R5.FFDB.Components.Pipelines.Team
 						.Select(p => p.NflId)
 						.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-					List<string> newIds = null;// (await _rosters.GetIdsAsync())
-						//.Where(id => !existingPlayers.Contains(id))
-						//.ToList();
+					List<string> newIds = (await _rosterCache.GetRosteredIdsAsync())
+						.Where(id => !existingPlayers.Contains(id))
+						.ToList();
 
 					context.FetchAddNflIds = newIds;
 
 					return ProcessResult.Continue;
 				}
 			}
-			
+
 			public class Update : Stage<Context>
 			{
-				//private RostersValue _rosters { get; }
 				private IDatabaseProvider _dbProvider { get; }
+				private IRosterCache _rosterCache { get; }
 
 				public Update(
 					ILogger<Update> logger,
-					//RostersValue rosters,
-					IDatabaseProvider dbProvider)
+					IDatabaseProvider dbProvider,
+					IRosterCache rosterCache)
 					: base(logger, "Update Rosters")
 				{
-					//_rosters = rosters;
 					_dbProvider = dbProvider;
+					_rosterCache = rosterCache;
 				}
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
 					IDatabaseContext dbContext = _dbProvider.GetContext();
 
-					List<Roster> rosters = null;// await _rosters.GetAsync();
+					List<Roster> rosters = await _rosterCache.GetAsync();
 
 					await dbContext.Team.UpdateRosterMappingsAsync(rosters);
 

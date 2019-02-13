@@ -2,7 +2,7 @@
 
 namespace R5.FFDB.Core.Entities
 {
-	public class WeekGameMatchup
+	public class WeekMatchup
 	{
 		public WeekInfo Week { get; set; }
 		public int HomeTeamId { get; set; }

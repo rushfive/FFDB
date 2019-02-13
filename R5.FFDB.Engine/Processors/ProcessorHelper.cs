@@ -59,7 +59,7 @@ namespace R5.FFDB.Engine.Processors
 
 			List<Roster> rosters = null;// await _rostersValue.GetAsync();
 
-			await dbContext.Player.AddAsync(playerProfiles, rosters);
+			//await dbContext.Player.AddAsync(playerProfiles, rosters);
 		}
 	}
 }

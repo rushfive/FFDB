@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 //using R5.FFDB.Components.CoreData.WeekStats;
-using R5.FFDB.Components.Pipelines.Stats;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
@@ -57,7 +56,7 @@ namespace R5.FFDB.Engine.Processors
 		public async Task AddMissingAsync()
 		{
 			IDatabaseContext dbContext = _dbProvider.GetContext();
-			HashSet<WeekInfo> alreadyUpdated = (await dbContext.Log.GetUpdatedWeeksAsync()).ToHashSet();
+			HashSet<WeekInfo> alreadyUpdated = null;// (await dbContext.Log.GetUpdatedWeeksAsync()).ToHashSet();
 
 			List<WeekInfo> available = await _availableWeeksValue.GetAsync();
 
@@ -85,7 +84,7 @@ namespace R5.FFDB.Engine.Processors
 			_logger.LogInformation($"Adding stats for {week}.");
 
 			IDatabaseContext dbContext = _dbProvider.GetContext();
-			bool alreadyUpdated = await dbContext.Log.HasUpdatedWeekAsync(week);
+			bool alreadyUpdated = false;// await dbContext.Log.HasUpdatedWeekAsync(week);
 			if (alreadyUpdated)
 			{
 				_logger.LogWarning($"Stats for {week} have already been added. Remove them first before try again.");
@@ -111,20 +110,18 @@ namespace R5.FFDB.Engine.Processors
 			//await dbContext.Stats.AddWeekAsync(weekStats);
 
 			List<TeamWeekStats> teamStats = null;// _teamStatsService.GetForWeek(week); // team game data cache
-			await dbContext.Team.AddGameStatsAsync(teamStats);
+			//await dbContext.Team.AddGameStatsAsync(teamStats);
 
 			/// INSTEAD: get this from the IWeekGameDataCache
 			//List<WeekGameMatchup> gameMatchups = _gameMatchupService.GetForWeek(week); // game info cache
 			//await dbContext.Team.AddGameMatchupsAsync(gameMatchups);
 
-			await dbContext.Log.AddUpdateForWeekAsync(week);
+			//await dbContext.Log.AddUpdateForWeekAsync(week);
 		}
 
 		public Task RemoveAllAsync()
 		{
-			var pipeline = RemoveAllPipeline.Create(_serviceProvider);
-
-			return pipeline.ProcessAsync(null);
+			throw new NotImplementedException();
 
 			//_logger.LogInformation("Removing all stats (WeekStats and TeamGameStats) and logs.");
 
@@ -139,11 +136,8 @@ namespace R5.FFDB.Engine.Processors
 
 		public Task RemoveForWeekAsync(WeekInfo week)
 		{
-			var context = new RemoveWeekPipeline.Context { Week = week };
-
-			var pipeline = RemoveWeekPipeline.Create(_serviceProvider);
-
-			return pipeline.ProcessAsync(context);
+			throw new NotImplementedException();
+			
 
 
 			//_logger.LogInformation($"Removing stats (WeekStats and TeamGameStats) and logs for {week}.");
