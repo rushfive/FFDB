@@ -19,6 +19,11 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			_loggerFactory = loggerFactory;
 		}
 
+		protected IMongoDatabase GetDatabase()
+		{
+			return _getDatabase();
+		}
+
 		protected MongoDbContext GetMongoDbContext()
 		{
 			return new MongoDbContext(_getDatabase());
