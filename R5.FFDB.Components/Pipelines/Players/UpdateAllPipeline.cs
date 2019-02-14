@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.Extensions;
-using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Pipelines.CommonStages;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
+using R5.Lib.ExtensionMethods;
 using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;
@@ -33,10 +33,10 @@ namespace R5.FFDB.Components.Pipelines.Players
 
 		public static UpdateAllPipeline Create(IServiceProvider sp)
 		{
-			AsyncPipelineStage<Context> resolveAllExisting = sp.Create<Stages.ResolveAllExistingPlayers>();
-			AsyncPipelineStage<Context> updatePlayers = sp.Create<UpdatePlayersStage<Context>>();
+			var resolveAllExisting = sp.Create<Stages.ResolveAllExistingPlayers>();
+			var updatePlayers = sp.Create<UpdatePlayersStage<Context>>();
 
-			var chain = resolveAllExisting;
+			AsyncPipelineStage<Context> chain = resolveAllExisting;
 			chain.SetNext(updatePlayers);
 
 			return sp.Create<UpdateAllPipeline>(chain);

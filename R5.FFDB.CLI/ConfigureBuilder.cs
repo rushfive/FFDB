@@ -23,11 +23,9 @@ namespace R5.FFDB.CLI
 
 			builder.Commands
 				.Add(InitialSetup.Command)
-				.Add(CheckHealth.Command)
 				.Add(ViewUpdated.Command)
 				.Add(UpdateRosters.Command)
 				.Add(AddStats.Command)
-				.Add(RemoveStats.Command)
 				.Add(UpdatePlayers.Command);
 
 			builder.Parser.SetPredicateForType<WeekInfo?>(value =>

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.Extensions;
-using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Pipelines.CommonStages;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
+using R5.Lib.ExtensionMethods;
 using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;
@@ -35,13 +35,14 @@ namespace R5.FFDB.Components.Pipelines.Players
 
 		public static UpdateCurrentlyRosteredPipeline Create(IServiceProvider sp)
 		{
-			AsyncPipelineStage<Context> groupByNewExisting = sp.Create<Stages.GroupByNewAndExisting>();
-			AsyncPipelineStage<Context> fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
-			AsyncPipelineStage<Context> updatePlayers = sp.Create<UpdatePlayersStage<Context>>();
+			var groupByNewExisting = sp.Create<Stages.GroupByNewAndExisting>();
+			var fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
+			var updatePlayers = sp.Create<UpdatePlayersStage<Context>>();
 
-			var chain = groupByNewExisting;
-			groupByNewExisting.SetNext(fetchSavePlayers);
-			fetchSavePlayers.SetNext(updatePlayers);
+			AsyncPipelineStage<Context> chain = groupByNewExisting;
+			chain
+				.SetNext(fetchSavePlayers)
+				.SetNext(updatePlayers);
 
 			return sp.Create<UpdateCurrentlyRosteredPipeline>(chain);
 		}

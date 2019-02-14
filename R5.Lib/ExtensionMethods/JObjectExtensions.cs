@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace R5.FFDB.Components.Extensions.Methods
+namespace R5.Lib.ExtensionMethods
 {
 	public static class JObjectExtensions
 	{

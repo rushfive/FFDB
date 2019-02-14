@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace R5.FFDB.Core.Extensions
+namespace R5.Lib.ExtensionMethods
 {
 	public static class TypeExtensions
 	{

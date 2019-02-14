@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.Extensions;
-using R5.FFDB.Components.Extensions.Methods;
 using R5.FFDB.Components.Pipelines.CommonStages;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
+using R5.Lib.ExtensionMethods;
 using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.Pipelines.Team
+namespace R5.FFDB.Components.Pipelines.Teams
 {
 	public class UpdateRosterMappingsPipeline : Pipeline<UpdateRosterMappingsPipeline.Context>
 	{
@@ -34,13 +34,14 @@ namespace R5.FFDB.Components.Pipelines.Team
 
 		public static UpdateRosterMappingsPipeline Create(IServiceProvider sp)
 		{
-			AsyncPipelineStage<Context> resolveNewRosteredPlayers = sp.Create<Stages.ResolveNewRosteredPlayers>();
-			AsyncPipelineStage<Context> fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
-			AsyncPipelineStage<Context> update = sp.Create<Stages.Update>();
+			var resolveNewRosteredPlayers = sp.Create<Stages.ResolveNewRosteredPlayers>();
+			var fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
+			var update = sp.Create<Stages.Update>();
 
-			var chain = resolveNewRosteredPlayers;
-			resolveNewRosteredPlayers.SetNext(fetchSavePlayers);
-			fetchSavePlayers.SetNext(update);
+			AsyncPipelineStage<Context> chain = resolveNewRosteredPlayers;
+			chain
+				.SetNext(fetchSavePlayers)
+				.SetNext(update);
 
 			return sp.Create<UpdateRosterMappingsPipeline>(chain);
 		}

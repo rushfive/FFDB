@@ -20,12 +20,8 @@ namespace R5.FFDB.Core.Database.DbContext
 		ITeamStatsDbContext TeamStats { get; }
 		IUpdateLogDbContext UpdateLog { get; }
 
-
+		Task InitializeAsync();
 		Task<bool> HasBeenInitializedAsync();
-
-		// force allows re-initialization, by first clearing all existing 
-		// ffdb then re-running normal init routine.
-		Task InitializeAsync(bool force);
 	}
 
 	public interface IPlayerDbContext
