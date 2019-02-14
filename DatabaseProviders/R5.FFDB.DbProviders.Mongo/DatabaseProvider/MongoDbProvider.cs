@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using R5.FFDB.Core.Database;
+using R5.FFDB.DbProviders.Mongo.DatabaseContext;
 using R5.FFDB.DbProviders.Mongo.Serialization;
-using System;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseProvider
 {
 	public class MongoDbProvider : IDatabaseProvider
 	{
-
 		private MongoConfig _config { get; }
 		private ILoggerFactory _loggerFactory { get; }
 
@@ -31,8 +30,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseProvider
 
 		public IDatabaseContext GetContext()
 		{
-			throw new NotImplementedException();
-			//return null;// new DbContext(GetDatabase, _loggerFactory);
+			return new DbContext(GetDatabase, _loggerFactory);
 		}
 
 		private IMongoDatabase GetDatabase()

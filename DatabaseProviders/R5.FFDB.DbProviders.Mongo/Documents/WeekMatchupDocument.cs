@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName(CollectionConstants.FfdbPrefix + "weekGameMatchup")]
-	public class WeekGameMatchupDocument : DocumentBase
+	[CollectionName(CollectionConstants.FfdbPrefix + "weekMatchup")]
+	public class WeekMatchupDocument : DocumentBase
 	{
 		[BsonElement("season")]
 		public int Season { get; set; }
@@ -32,9 +32,21 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("gsisGameId")]
 		public string GsisGameId { get; set; }
 		
-		public static WeekGameMatchupDocument FromCoreEntity(WeekMatchup entity)
+		public static WeekMatchup ToCoreEntity(WeekMatchupDocument doc)
 		{
-			return new WeekGameMatchupDocument
+			return new WeekMatchup
+			{
+				Week = new WeekInfo(doc.Season, doc.Week),
+				HomeTeamId = doc.HomeTeamId,
+				AwayTeamId = doc.AwayTeamId,
+				NflGameId = doc.NflGameId,
+				GsisGameId = doc.GsisGameId
+			};
+		}
+
+		public static WeekMatchupDocument FromCoreEntity(WeekMatchup entity)
+		{
+			return new WeekMatchupDocument
 			{
 				Season = entity.Week.Season,
 				Week = entity.Week.Week,
@@ -47,7 +59,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 
 		public static Task CreateIndexAsync(IMongoDatabase database)
 		{
-			var keys = Builders<WeekGameMatchupDocument>.IndexKeys
+			var keys = Builders<WeekMatchupDocument>.IndexKeys
 				.Ascending(t => t.HomeTeamId)
 				.Ascending(t => t.AwayTeamId)
 				.Ascending(t => t.Week)
@@ -55,9 +67,9 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 
 			var options = new CreateIndexOptions { Unique = true };
 
-			var model = new CreateIndexModel<WeekGameMatchupDocument>(keys);
+			var model = new CreateIndexModel<WeekMatchupDocument>(keys);
 
-			var collection = CollectionResolver.GetCollectionFor<WeekGameMatchupDocument>(database);
+			var collection = CollectionResolver.GetCollectionFor<WeekMatchupDocument>(database);
 			collection.Indexes.CreateOne(model);
 
 			return collection.Indexes.CreateOneAsync(model);

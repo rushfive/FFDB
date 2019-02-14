@@ -56,23 +56,23 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("college")]
 		public string College { get; set; }
 
-		public static PlayerDocument FromCoreEntity(Player player)
+		public static PlayerDocument FromCoreAddEntity(PlayerAdd add)
 		{
 			return new PlayerDocument
 			{
-				Id = player.Id == Guid.Empty ? Guid.NewGuid() : player.Id,
-				NflId = player.NflId,
-				EsbId = player.EsbId,
-				GsisId = player.GsisId,
-				FirstName = player.FirstName,
-				LastName = player.LastName,
-				//Position = player.Position,
-				//Status = player.Status,
-				//Number = player.Number,
-				//Height = player.Height,
-				//Weight = player.Weight,
-				//DateOfBirth = player.DateOfBirth,
-				//College = player.College,
+				Id = Guid.NewGuid(),
+				NflId = add.NflId,
+				EsbId = add.EsbId,
+				GsisId = add.GsisId,
+				FirstName = add.FirstName,
+				LastName = add.LastName,
+				Position = add.Position,
+				Status = add.Status,
+				Number = add.Number,
+				Height = add.Height,
+				Weight = add.Weight,
+				DateOfBirth = add.DateOfBirth,
+				College = add.College,
 				TeamId = null
 			};
 		}
@@ -86,11 +86,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 				EsbId = document.EsbId,
 				GsisId = document.GsisId,
 				FirstName = document.FirstName,
-				LastName = document.LastName,
-				//Height = document.Height,
-				//Weight = document.Weight,
-				//DateOfBirth = document.DateOfBirth,
-				//College = document.College
+				LastName = document.LastName
 			};
 		}
 

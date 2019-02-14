@@ -88,7 +88,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 					List<Team> teams = TeamDataStore.GetAll();
 
 					IDatabaseContext dbContext = _dbProvider.GetContext();
-					await dbContext.Team.AddAllAsync(teams);
+					await dbContext.Team.AddAsync(teams);
 
 					return ProcessResult.Continue;
 				}

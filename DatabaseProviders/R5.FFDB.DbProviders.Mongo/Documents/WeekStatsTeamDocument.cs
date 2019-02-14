@@ -11,8 +11,8 @@ using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName(CollectionConstants.FfdbPrefix + "teamGameStats")]
-	public class TeamGameStatsDocument : DocumentBase
+	[CollectionName(CollectionConstants.FfdbPrefix + "weekStatsTeam")]
+	public class WeekStatsTeamDocument : DocumentBase
 	{
 		[BsonElement("teamId")]
 		public int TeamId { get; set; }
@@ -71,45 +71,70 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("timeOfPossessionSeconds")]
 		public int TimeOfPossessionSeconds { get; set; }
 
-		public static TeamGameStatsDocument FromCoreEntity(TeamWeekStats stats)
+		public static TeamWeekStats ToCoreEntity(WeekStatsTeamDocument doc)
 		{
-			return new TeamGameStatsDocument
+			return new TeamWeekStats
 			{
-				TeamId = stats.TeamId,
-				Season = stats.Week.Season,
-				Week = stats.Week.Week,
-				PointsFirstQuarter = stats.PointsFirstQuarter,
-				PointsSecondQuarter = stats.PointsSecondQuarter,
-				PointsThirdQuarter = stats.PointsThirdQuarter,
-				PointsFourthQuarter = stats.PointsFourthQuarter,
-				PointsOverTime = stats.PointsOverTime,
-				PointsTotal = stats.PointsTotal,
-				FirstDowns = stats.FirstDowns,
-				TotalYards = stats.TotalYards,
-				PassingYards = stats.PassingYards,
-				RushingYards = stats.RushingYards,
-				Penalties = stats.Penalties,
-				PenaltyYards = stats.PenaltyYards,
-				Turnovers = stats.Turnovers,
-				Punts = stats.Punts,
-				PuntYards = stats.PuntYards,
-				TimeOfPossessionSeconds = stats.TimeOfPossessionSeconds
+				TeamId = doc.TeamId,
+				Week = new WeekInfo(doc.Season, doc.Week),
+				PointsFirstQuarter = doc.PointsFirstQuarter,
+				PointsSecondQuarter = doc.PointsSecondQuarter,
+				PointsThirdQuarter = doc.PointsThirdQuarter,
+				PointsFourthQuarter = doc.PointsFourthQuarter,
+				PointsOverTime = doc.PointsOverTime,
+				PointsTotal = doc.PointsTotal,
+				FirstDowns = doc.FirstDowns,
+				TotalYards = doc.TotalYards,
+				PassingYards = doc.PassingYards,
+				RushingYards = doc.RushingYards,
+				Penalties = doc.Penalties,
+				PenaltyYards = doc.PenaltyYards,
+				Turnovers = doc.Turnovers,
+				Punts = doc.Punts,
+				PuntYards = doc.PuntYards,
+				TimeOfPossessionSeconds = doc.TimeOfPossessionSeconds
+			};
+		}
+
+		public static WeekStatsTeamDocument FromCoreEntity(TeamWeekStats entity)
+		{
+			return new WeekStatsTeamDocument
+			{
+				TeamId = entity.TeamId,
+				Season = entity.Week.Season,
+				Week = entity.Week.Week,
+				PointsFirstQuarter = entity.PointsFirstQuarter,
+				PointsSecondQuarter = entity.PointsSecondQuarter,
+				PointsThirdQuarter = entity.PointsThirdQuarter,
+				PointsFourthQuarter = entity.PointsFourthQuarter,
+				PointsOverTime = entity.PointsOverTime,
+				PointsTotal = entity.PointsTotal,
+				FirstDowns = entity.FirstDowns,
+				TotalYards = entity.TotalYards,
+				PassingYards = entity.PassingYards,
+				RushingYards = entity.RushingYards,
+				Penalties = entity.Penalties,
+				PenaltyYards = entity.PenaltyYards,
+				Turnovers = entity.Turnovers,
+				Punts = entity.Punts,
+				PuntYards = entity.PuntYards,
+				TimeOfPossessionSeconds = entity.TimeOfPossessionSeconds
 			};
 		}
 
 		public static Task CreateIndexAsync(IMongoDatabase database)
 		{
 			// compound index
-			var keys = Builders<TeamGameStatsDocument>.IndexKeys
+			var keys = Builders<WeekStatsTeamDocument>.IndexKeys
 				.Ascending(t => t.TeamId)
 				.Ascending(t => t.Week)
 				.Ascending(t => t.Season);
 
 			var options = new CreateIndexOptions { Unique = true };
 
-			var model = new CreateIndexModel<TeamGameStatsDocument>(keys, options);
+			var model = new CreateIndexModel<WeekStatsTeamDocument>(keys, options);
 
-			var collection = CollectionResolver.GetCollectionFor<TeamGameStatsDocument>(database);
+			var collection = CollectionResolver.GetCollectionFor<WeekStatsTeamDocument>(database);
 
 			return collection.Indexes.CreateOneAsync(model);
 		}

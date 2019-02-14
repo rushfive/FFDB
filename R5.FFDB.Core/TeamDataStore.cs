@@ -8,21 +8,21 @@ namespace R5.FFDB.Core
 {
 	public static class TeamDataStore
 	{
-		private static HashSet<string> _nflIds { get; }
+		private static Dictionary<string, int> _nflIdMap { get; }
 		private static Dictionary<string, string> _abbreviationShortNameMap { get; }
 		private static Dictionary<string, int> _shortNameIdMap { get; }
 		private static Dictionary<string, int> _abbreviationIdMap { get; }
 
 		static TeamDataStore()
 		{
-			_nflIds = new HashSet<string>();
+			_nflIdMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			_abbreviationShortNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_shortNameIdMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			_abbreviationIdMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 			_teams.ForEach(t =>
 			{
-				_nflIds.Add(t.NflId);
+				_nflIdMap.Add(t.NflId, t.Id);
 				_abbreviationShortNameMap[t.Abbreviation] = t.ShortName;
 				_shortNameIdMap[t.ShortName] = t.Id;
 				_abbreviationIdMap[t.Abbreviation] = t.Id;
@@ -36,7 +36,17 @@ namespace R5.FFDB.Core
 
 		public static bool IsTeam(string nflId)
 		{
-			return _nflIds.Contains(nflId);
+			return _nflIdMap.ContainsKey(nflId);
+		}
+
+		public static int GetIdFromNflId(string nflId)
+		{
+			if (!_nflIdMap.TryGetValue(nflId, out int id))
+			{
+				throw new InvalidOperationException($"Failed to find team's id by nfl id '{nflId}'.");
+			}
+
+			return id;
 		}
 
 		public static string GetShortNameFromAbbreviation(string abbreviation)

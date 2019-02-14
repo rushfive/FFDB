@@ -1,11 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
+using R5.FFDB.DbProviders.Mongo.Collections;
+using R5.FFDB.DbProviders.Mongo.Documents;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
@@ -19,14 +22,130 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 		}
 
-		public Task<List<PlayerWeekStats>> GetAsync(WeekInfo week)
+		public async Task<List<string>> GetPlayerNflIdsAsync(WeekInfo week)
 		{
-			throw new NotImplementedException();
+			var logger = GetLogger<PlayerStatsDbContext>();
+			var collectionName = CollectionNames.GetForType<WeekStatsPlayerDocument>();
+
+			MongoDbContext mongoDbContext = GetMongoDbContext();
+
+			List<Guid> ids = await GetPlayerIdsAsync(week, mongoDbContext);
+
+			Dictionary<Guid, string> idNflMap = await GetIdNflMapAsync(mongoDbContext);
+
+			return ids
+				.Where(id => idNflMap.ContainsKey(id))
+				.Select(id => idNflMap[id])
+				.ToList();
 		}
 
-		public Task AddAsync(List<PlayerWeekStats> stats)
+		private Task<List<Guid>> GetPlayerIdsAsync(WeekInfo week, MongoDbContext mongoDbContext)
 		{
-			throw new NotImplementedException();
+			var builder = Builders<WeekStatsPlayerDocument>.Filter;
+			var filter = builder.Eq(s => s.Season, week.Season)
+				& builder.Eq(s => s.Week, week.Week);
+
+			var findOptions = new FindOptions<WeekStatsPlayerDocument, Guid>
+			{
+				Projection = Builders<WeekStatsPlayerDocument>.Projection
+					.Expression(p => p.PlayerId)
+			};
+
+			return mongoDbContext.FindAsync(filter, findOptions);
+		}
+
+		private async Task<Dictionary<Guid, string>> GetIdNflMapAsync(MongoDbContext mongoDbContext)
+		{
+			var playerFindOptions = new FindOptions<PlayerDocument>
+			{
+				Projection = Builders<PlayerDocument>.Projection
+					.Include(p => p.Id)
+					.Include(p => p.NflId)
+			};
+
+			List<PlayerDocument> playerDocuments = await mongoDbContext.FindAsync(findOptions: playerFindOptions);
+
+			return playerDocuments.ToDictionary(p => p.Id, p => p.NflId);
+		}
+
+		public async Task AddAsync(List<PlayerWeekStats> stats)
+		{
+			if (stats == null)
+			{
+				throw new ArgumentNullException(nameof(stats), "Stats must be provided.");
+			}
+
+			MongoDbContext mongoDbContext = GetMongoDbContext();
+
+			var logger = GetLogger<PlayerStatsDbContext>();
+			logger.LogDebug($"Adding {stats.Count} week stats..");
+			
+			var (playerStats, dstStats) = GroupStats(stats);
+			
+			await AddPlayerStatsAsync(playerStats, mongoDbContext);
+
+			logger.LogInformation("Added player week stats to '{0}' collection.",
+				CollectionNames.GetForType<WeekStatsPlayerDocument>());
+
+			await AddDstStatsAsync(dstStats, mongoDbContext);
+
+			logger.LogInformation("Added DST week stats to '{0}' collection.",
+				CollectionNames.GetForType<WeekStatsDstDocument>());
+		}
+
+		private (List<PlayerWeekStats> player, List<PlayerWeekStats> dst) GroupStats(List<PlayerWeekStats> stats)
+		{
+			var playerStats = new List<PlayerWeekStats>();
+			var dstStats = new List<PlayerWeekStats>();
+
+			foreach (var s in stats)
+			{
+				if (TeamDataStore.IsTeam(s.NflId))
+				{
+					dstStats.Add(s);
+				}
+				else
+				{
+					playerStats.Add(s);
+				}
+			}
+
+			return (playerStats, dstStats);
+		}
+
+		private async Task AddPlayerStatsAsync(List<PlayerWeekStats> stats, MongoDbContext mongoDbContext)
+		{
+			Dictionary<string, Guid> nflIdMap = await GetNflIdMapAsync(mongoDbContext);
+
+			List<WeekStatsPlayerDocument> playerStats = stats
+				.Where(s => nflIdMap.ContainsKey(s.NflId))
+				.Select(s => WeekStatsPlayerDocument.FromCoreEntity(s, nflIdMap))
+				.ToList();
+
+			await mongoDbContext.InsertManyAsync(playerStats);
+		}
+
+		private async Task<Dictionary<string, Guid>> GetNflIdMapAsync(MongoDbContext mongoDbContext)
+		{
+			var playerFindOptions = new FindOptions<PlayerDocument>
+			{
+				Projection = Builders<PlayerDocument>.Projection
+					.Include(p => p.Id)
+					.Include(p => p.NflId)
+			};
+
+			List<PlayerDocument> playerDocuments = await mongoDbContext.FindAsync(findOptions: playerFindOptions);
+
+			return playerDocuments.ToDictionary(p => p.NflId, p => p.Id, StringComparer.OrdinalIgnoreCase);
+		}
+
+		private async Task AddDstStatsAsync(List<PlayerWeekStats> stats, MongoDbContext mongoDbContext)
+		{
+			List<WeekStatsDstDocument> dstStats = stats
+				.Select(WeekStatsDstDocument.FromCoreEntity)
+				.ToList();
+
+			await mongoDbContext.InsertManyAsync(dstStats);
 		}
 	}
 }

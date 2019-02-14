@@ -51,15 +51,14 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("hasIdp")]
 		public bool HasIdp { get; set; }
 
-		public static WeekStatsPlayerDocument FromCoreEntity(PlayerWeekStats stats,
-			Guid playerId, WeekInfo week)
+		public static WeekStatsPlayerDocument FromCoreEntity(PlayerWeekStats stats, Dictionary<string, Guid> nflIdMap)
 		{
 			var result = new WeekStatsPlayerDocument
 			{
-				PlayerId = playerId,
+				PlayerId = nflIdMap[stats.NflId],
 				TeamId = stats.TeamId,
-				Season = week.Season,
-				Week = week.Week
+				Season = stats.Week.Season,
+				Week = stats.Week.Week
 			};
 
 			var playerStats = new Dictionary<MongoWeekStatType, double>();

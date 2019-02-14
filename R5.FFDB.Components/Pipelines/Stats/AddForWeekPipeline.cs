@@ -6,6 +6,7 @@ using R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1;
 using R5.FFDB.Components.CoreData.Static.WeekMatchups;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Pipelines.CommonStages;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
@@ -151,8 +152,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				{
 					IDatabaseContext dbContext = _dbProvider.GetContext();
 
-					HashSet<string> alreadyUpdated = (await dbContext.PlayerStats.GetAsync(context.Week))
-						.Select(s => s.NflId)
+					HashSet<string> alreadyUpdated = (await dbContext.PlayerStats.GetPlayerNflIdsAsync(context.Week))
 						.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
 					if (alreadyUpdated.Any())

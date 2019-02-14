@@ -30,13 +30,13 @@ namespace R5.FFDB.Core.Database
 
 	public interface IPlayerStatsDbContext
 	{
-		Task<List<PlayerWeekStats>> GetAsync(WeekInfo week);
+		Task<List<string>> GetPlayerNflIdsAsync(WeekInfo week);
 		Task AddAsync(List<PlayerWeekStats> stats);
 	}
 
 	public interface ITeamDbContext
 	{
-		Task AddAllAsync(List<Team> teams);
+		Task AddAsync(List<Team> teams);
 		Task UpdateRosterMappingsAsync(List<Roster> rosters);
 	}
 

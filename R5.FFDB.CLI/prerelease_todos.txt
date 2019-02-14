@@ -1,6 +1,8 @@
 - add Sql lite (use entity framework core)
 - use entity framework core for postgresql provider
 
+- for adding missing weeks pipeline, SCOPE the caches per week!!! (or will chew up a TON of mem)
+
 --------------
 
 TeamsProcessor

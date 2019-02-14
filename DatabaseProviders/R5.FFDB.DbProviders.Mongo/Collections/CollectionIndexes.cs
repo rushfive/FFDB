@@ -23,11 +23,11 @@ namespace R5.FFDB.DbProviders.Mongo.Collections
 		{
 			{ typeof(PlayerDocument), db => PlayerDocument.CreateIndexAsync(db) },
 			{ typeof(TeamDocument), db => TeamDocument.CreateIndexAsync(db) },
-			{ typeof(TeamGameStatsDocument), db => TeamGameStatsDocument.CreateIndexAsync(db) },
+			{ typeof(WeekStatsTeamDocument), db => WeekStatsTeamDocument.CreateIndexAsync(db) },
 			{ typeof(UpdateLogDocument), db => UpdateLogDocument.CreateIndexAsync(db) },
 			{ typeof(WeekStatsPlayerDocument), db => WeekStatsPlayerDocument.CreateIndexAsync(db) },
 			{ typeof(WeekStatsDstDocument), db => WeekStatsDstDocument.CreateIndexAsync(db) },
-			{ typeof(WeekGameMatchupDocument), db => WeekGameMatchupDocument.CreateIndexAsync(db) }
+			{ typeof(WeekMatchupDocument), db => WeekMatchupDocument.CreateIndexAsync(db) }
 		};
 	}
 }

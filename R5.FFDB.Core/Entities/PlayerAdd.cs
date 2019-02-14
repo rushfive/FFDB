@@ -5,7 +5,6 @@ namespace R5.FFDB.Core.Entities
 {
 	public class PlayerAdd : PlayerUpdate
 	{
-		public Guid Id { get; set; }
 		public string NflId { get; set; }
 		public string EsbId { get; set; }
 		public string GsisId { get; set; }

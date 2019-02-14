@@ -17,8 +17,6 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public ITeamStatsDbContext TeamStats { get; }
 		public IUpdateLogDbContext UpdateLog { get; }
 		public IWeekMatchupsDbContext WeekMatchups { get; }
-		
-		private ILogger<DbContext> _logger { get; }
 
 		public DbContext(
 			Func<IMongoDatabase> getDatabase,
@@ -31,25 +29,24 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			TeamStats = new TeamStatsDbContext(getDatabase, loggerFactory);
 			UpdateLog = new UpdateLogDbContext(getDatabase, loggerFactory);
 			WeekMatchups = new WeekMatchupsDbContext(getDatabase, loggerFactory);
-			
-			_logger = loggerFactory.CreateLogger<DbContext>();
 		}
 
 		
 		public async Task InitializeAsync()
 		{
+			var logger = GetLogger<DbContext>();
+
+			logger.LogDebug("Initializing FFDB - creating required collections.");
+
 			IMongoDatabase db = GetDatabase();
 
 			List<Type> missingCollections = await GetMissingCollectionTypesAsync(db);
 			foreach (var type in missingCollections)
 			{
-				var name = CollectionNames.GetForType(type);
-				await db.CreateCollectionAsync(name);
-
-				await CollectionIndexes.CreateForTypeAsync(type, db);
+				await CreateCollectionAsync(type, db);
 			}
 
-			_logger.LogInformation("Successfully initialized FFDB.");
+			logger.LogInformation("Successfully initialized FFDB.");
 		}
 
 		private async Task<List<Type>> GetMissingCollectionTypesAsync(IMongoDatabase db)
@@ -62,6 +59,14 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 				.Where(t => !existing.Contains(
 					CollectionNames.GetForType(t)))
 				.ToList();
+		}
+
+		private async Task CreateCollectionAsync(Type collectionType, IMongoDatabase db)
+		{
+			var name = CollectionNames.GetForType(collectionType);
+			await db.CreateCollectionAsync(name);
+
+			await CollectionIndexes.CreateForTypeAsync(collectionType, db);
 		}
 
 		public async Task<bool> HasBeenInitializedAsync()

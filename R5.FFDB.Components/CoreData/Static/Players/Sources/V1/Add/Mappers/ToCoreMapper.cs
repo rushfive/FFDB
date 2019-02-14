@@ -36,7 +36,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
 
 			return new PlayerAdd
 			{
-				Id = Guid.NewGuid(),
 				NflId = versioned.NflId,
 				EsbId = versioned.EsbId,
 				GsisId = versioned.EsbId,

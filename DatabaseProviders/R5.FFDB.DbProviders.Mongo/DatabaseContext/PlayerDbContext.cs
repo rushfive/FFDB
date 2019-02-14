@@ -21,141 +21,65 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 		}
 
-		public Task<List<Player>> GetAllAsync()
+		public async Task<List<Player>> GetAllAsync()
 		{
-			throw new NotImplementedException();
+			var logger = GetLogger<PlayerDbContext>();
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+
+			List<PlayerDocument> documents = await GetMongoDbContext().FindAsync<PlayerDocument>();
+
+			logger.LogDebug($"Retrieved all players from '{collectionName}' collection.");
+
+			return documents.Select(PlayerDocument.ToCoreEntity).ToList();
 		}
 
-		public Task AddAsync(PlayerAdd player)
+		public async Task AddAsync(PlayerAdd player)
 		{
-			throw new NotImplementedException();
+			if (player == null)
+			{
+				throw new ArgumentNullException(nameof(player), "Player add model must be provided.");
+			}
+
+			var logger = GetLogger<PlayerDbContext>();
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+
+			logger.LogTrace($"Adding player '{player.NflId}'..");
+
+			PlayerDocument document = PlayerDocument.FromCoreAddEntity(player);
+
+			await GetMongoDbContext().InsertOneAsync(document);
+
+			logger.LogInformation($"Added player '{player.NflId}' as '{document.Id}' to '{collectionName}' collection.");
 		}
 
-		public Task UpdateAsync(Guid id, PlayerUpdate update)
+		public async Task UpdateAsync(Guid id, PlayerUpdate update)
 		{
-			throw new NotImplementedException();
+			if (id == Guid.Empty)
+			{
+				throw new ArgumentException("", nameof(id));
+			}
+			if (update == null)
+			{
+				throw new ArgumentNullException(nameof(update), "Player update model must be provided.");
+			}
+
+			var logger = GetLogger<PlayerDbContext>();
+			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+
+			logger.LogDebug($"Updating player '{id}'..");
+
+			var updateDefinition = Builders<PlayerDocument>.Update
+				.Set(p => p.FirstName, update.FirstName)
+				.Set(p => p.LastName, update.LastName)
+				.Set(p => p.Number, update.Number)
+				.Set(p => p.Position, update.Position)
+				.Set(p => p.Status, update.Status);
+
+			UpdateResult result = await GetMongoDbContext().UpdateOneAsync(p => p.Id == id, updateDefinition);
+			if (result.MatchedCount != 1)
+			{
+				throw new InvalidOperationException($"Failed to update player '{id}' because it doesn't exist.");
+			}
 		}
-
-		// NEW FOR PIPELINE
-
-		//public async Task AddAsync(Player player)
-		//{
-		//	PlayerDocument document = PlayerDocument.FromCoreEntity(player);
-
-		//	await GetMongoDbContext().InsertOneAsync(document);
-
-		//	var collectionName = CollectionNames.GetForType<PlayerDocument>();
-		//	GetLogger<PlayerDbContext>().LogTrace($"Saved player {player} to collection '{collectionName}'.");
-		//}
-
-		//public async Task UpdateAsync(Player player)
-		//{
-		//	PlayerDocument document = PlayerDocument.FromCoreEntity(player);
-
-		//	await GetMongoDbContext().ReplaceOneAsync(p => p.Id == player.Id, document);
-
-		//	var collectionName = CollectionNames.GetForType<PlayerDocument>();
-		//	GetLogger<PlayerDbContext>().LogTrace($"Updated player {player} in collection '{collectionName}'.");
-		//}
-
-		//// OLD BELOW
-
-		//public async Task AddAsync(List<Player> players, List<Roster> rosters)
-		//{
-		//	var logger = GetLogger<PlayerDbContext>();
-		//	var collectionName = CollectionNames.GetForType<PlayerDocument>();
-
-		//	logger.LogInformation($"Adding {players.Count} players to the '{collectionName}' collection.");
-
-		//	List<PlayerDocument> documents = MapToDocuments(players, rosters);
-
-		//	await GetMongoDbContext().InsertManyAsync(documents);
-
-		//	logger.LogInformation($"Successfully added {players.Count} players to the '{collectionName}' collection.");
-		//}
-
-		//public async Task UpdateAsync(List<Player> players, List<Roster> rosters)
-		//{
-		//	var logger = GetLogger<PlayerDbContext>();
-		//	var collectionName = CollectionNames.GetForType<PlayerDocument>();
-
-		//	logger.LogInformation($"Updating {players.Count} players in the '{collectionName}' collection.");
-
-		//	MongoDbContext mongoDbContext = GetMongoDbContext();
-		//	List<PlayerDocument> documents = MapToDocuments(players, rosters);
-
-		//	foreach(var player in documents)
-		//	{
-		//		await mongoDbContext.ReplaceOneAsync(p => p.Id == player.Id, player);
-		//	}
-
-		//	logger.LogInformation($"Successfully updated {players.Count} players in the '{collectionName}' collection.");
-		//}
-
-		//private List<PlayerDocument> MapToDocuments(List<Player> players, List<Roster> rosters)
-		//{
-		//	var result = new List<PlayerDocument>();
-
-		//	Dictionary<string, RosterPlayer> rosterPlayerMap = rosters
-		//		.SelectMany(r => r.Players)
-		//		.ToDictionary(p => p.NflId, p => p);
-
-		//	foreach (var player in players)
-		//	{
-		//		int? number = null;
-		//		Position? position = null;
-		//		RosterStatus? status = null;
-		//		if (rosterPlayerMap.TryGetValue(player.NflId, out RosterPlayer rosterPlayer))
-		//		{
-		//			number = rosterPlayer.Number;
-		//			position = rosterPlayer.Position;
-		//			status = rosterPlayer.Status;
-		//		}
-
-		//		//var document = PlayerDocument.FromCoreEntity(player, number, position, status);
-		//		var document = PlayerDocument.FromCoreEntity(player);
-		//		result.Add(document);
-		//	}
-
-		//	return result;
-		//}
-
-		//public async Task<List<Player>> GetAllAsync()
-		//{
-		//	var logger = GetLogger<PlayerDbContext>();
-		//	var collectionName = CollectionNames.GetForType<PlayerDocument>();
-
-		//	List<PlayerDocument> documents = await GetMongoDbContext().FindAsync<PlayerDocument>();
-		//	var result = documents.Select(PlayerDocument.ToCoreEntity).ToList();
-
-		//	logger.LogInformation($"Successfully retrieved all players from '{collectionName}' collection.");
-
-		//	return result;
-		//}
-
-		//public async Task<List<Player>> GetByTeamForWeekAsync(int teamId, WeekInfo week)
-		//{
-		//	var builder = Builders<WeekStatsPlayerDocument>.Filter;
-
-		//	FilterDefinition<WeekStatsPlayerDocument> filter = builder.And(
-		//		builder.Eq(ws => ws.TeamId, teamId),
-		//		builder.Eq(ws => ws.Season, week.Season),
-		//		builder.Eq(ws => ws.Week, week.Week));
-
-		//	var findOptions = new FindOptions<WeekStatsPlayerDocument, Guid>
-		//	{
-		//		Projection = Builders<WeekStatsPlayerDocument>.Projection
-		//			.Expression(ws => ws.PlayerId)
-		//	};
-
-		//	MongoDbContext mongoDbContext = GetMongoDbContext();
-
-		//	List<Guid> ids = await mongoDbContext.FindAsync(filter, findOptions);
-
-		//	var playerFilter = Builders<PlayerDocument>.Filter.In(p => p.Id, ids);
-		//	List<PlayerDocument> players = await mongoDbContext.FindAsync(playerFilter);
-
-		//	return players.Select(PlayerDocument.ToCoreEntity).ToList();
-		//}
 	}
 }
