@@ -78,7 +78,10 @@ namespace R5.FFDB.Components
 
 			private void CreateMissingPaths()
 			{
+				Directory.CreateDirectory(_weekMatchup);
+				Directory.CreateDirectory(_playerAdd);
 				Directory.CreateDirectory(_playerWeekStats);
+				Directory.CreateDirectory(_teamStats);
 			}
 		}
 	}

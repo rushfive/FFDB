@@ -22,11 +22,11 @@ namespace R5.FFDB.CLI
 
 		public async Task RunAsync(RunInfoBase runInfo)
 		{
-			if (runInfo is InitialSetup.RunInfo initialSetup)
-			{
-				await RunInitialSetupAsync(initialSetup);
-				return;
-			}
+			//if (runInfo is InitialSetup.RunInfo initialSetup)
+			//{
+			//	await RunInitialSetupAsync(initialSetup);
+			//	return;
+			//}
 			
 			bool ffdbInitialized = await _engine.HasBeenInitializedAsync();
 			if (!ffdbInitialized)
@@ -54,9 +54,9 @@ namespace R5.FFDB.CLI
 			}
 		}
 
-		private Task RunInitialSetupAsync(InitialSetup.RunInfo runInfo)
+		private Task RunInitialSetupAsync()
 		{
-			return _engine.RunInitialSetupAsync(forceReinitialize: runInfo.ForceReinitialize);
+			return _engine.RunInitialSetupAsync();
 		}
 
 		private Task RunRostersUpdateAsync()

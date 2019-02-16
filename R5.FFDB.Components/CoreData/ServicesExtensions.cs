@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using R5.FFDB.Components.CoreData.Static.Players.Sources.V1;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using R5.FFDB.Components.CoreData.Static.Players;
 
 namespace R5.FFDB.Components.CoreData
 {
@@ -11,14 +8,14 @@ namespace R5.FFDB.Components.CoreData
 		public static IServiceCollection AddCoreDataSources(this IServiceCollection services)
 		{
 			return services
-				.AddRoster()
-				.AddWeekMatchup()
-				.AddTeamStats()
-				.AddPlayerWeekStats()
-				.AddPlayers();
+				.AddRosterServices()
+				.AddWeekMatchupServices()
+				.AddTeamStatsServices()
+				.AddPlayerWeekStatsServices()
+				.AddPlayerAddServices();
 		}
 
-		private static IServiceCollection AddRoster(this IServiceCollection services)
+		private static IServiceCollection AddRosterServices(this IServiceCollection services)
 		{
 			return services
 				.AddRosterVersionedServices();
@@ -46,7 +43,7 @@ namespace R5.FFDB.Components.CoreData
 			return services;
 		}
 
-		private static IServiceCollection AddWeekMatchup(this IServiceCollection services)
+		private static IServiceCollection AddWeekMatchupServices(this IServiceCollection services)
 		{
 			return services
 				.AddWeekMatchupVersionedServices();
@@ -71,7 +68,7 @@ namespace R5.FFDB.Components.CoreData
 			return services;
 		}
 
-		private static IServiceCollection AddTeamStats(this IServiceCollection services)
+		private static IServiceCollection AddTeamStatsServices(this IServiceCollection services)
 		{
 			return services
 				.AddTeamStatsVersionedServices();
@@ -96,7 +93,7 @@ namespace R5.FFDB.Components.CoreData
 			return services;
 		}
 
-		private static IServiceCollection AddPlayerWeekStats(this IServiceCollection services)
+		private static IServiceCollection AddPlayerWeekStatsServices(this IServiceCollection services)
 		{
 			return services
 				.AddPlayerWeekStatsVersionedServices();
@@ -118,51 +115,29 @@ namespace R5.FFDB.Components.CoreData
 			return services;
 		}
 
-		private static IServiceCollection AddPlayers(this IServiceCollection services)
+		private static IServiceCollection AddPlayerAddServices(this IServiceCollection services)
 		{
 			return services
-				.AddPlayersVersionedServices()
-				.AddScoped<
-					Static.Players.IPlayerIdMappings,
-					Static.Players.PlayerIdMappings>();
+				.AddScoped<IPlayerIdMappings, PlayerIdMappings>()
+				.AddPlayerAddVersionedServices();
 		}
 
-		private static IServiceCollection AddPlayersVersionedServices(this IServiceCollection services)
-		{
-			return services
-				.AddScoped<IPlayerScraper, PlayerScraper>()
-				.AddPlayerAddVersionedServices()
-				.AddPlayerUpdateVersionedServices();
-		}
 
 		private static IServiceCollection AddPlayerAddVersionedServices(this IServiceCollection services)
 		{
 			services
 				.AddScoped<
-					Static.Players.Sources.V1.Add.IPlayerAddSource,
-					Static.Players.Sources.V1.Add.PlayerAddSource>()
+					Static.Players.Add.Sources.V1.IPlayerScraper,
+					Static.Players.Add.Sources.V1.PlayerScraper>()
 				.AddScoped<
-					Static.Players.Sources.V1.Add.Mappers.IToVersionedMapper,
-					Static.Players.Sources.V1.Add.Mappers.ToVersionedMapper>()
+					Static.Players.Add.Sources.V1.IPlayerAddSource,
+					Static.Players.Add.Sources.V1.PlayerAddSource>()
 				.AddScoped<
-					Static.Players.Sources.V1.Add.Mappers.IToCoreMapper,
-					Static.Players.Sources.V1.Add.Mappers.ToCoreMapper>();
-
-			return services;
-		}
-
-		private static IServiceCollection AddPlayerUpdateVersionedServices(this IServiceCollection services)
-		{
-			services
+					Static.Players.Add.Sources.V1.Mappers.IToVersionedMapper,
+					Static.Players.Add.Sources.V1.Mappers.ToVersionedMapper>()
 				.AddScoped<
-					Static.Players.Sources.V1.Update.IPlayerUpdateSource,
-					Static.Players.Sources.V1.Update.PlayerUpdateSource>()
-				.AddScoped<
-					Static.Players.Sources.V1.Update.Mappers.IToVersionedMapper,
-					Static.Players.Sources.V1.Update.Mappers.ToVersionedMapper>()
-				.AddScoped<
-					Static.Players.Sources.V1.Update.Mappers.IToCoreMapper,
-					Static.Players.Sources.V1.Update.Mappers.ToCoreMapper>();
+					Static.Players.Add.Sources.V1.Mappers.IToCoreMapper,
+					Static.Players.Add.Sources.V1.Mappers.ToCoreMapper>();
 
 			return services;
 		}

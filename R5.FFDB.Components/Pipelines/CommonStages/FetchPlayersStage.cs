@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using R5.FFDB.Components.CoreData;
-using R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add;
+using R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1;
 using R5.FFDB.Components.Http;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.Lib.Pipeline;
@@ -20,24 +21,25 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 	// no filtering! this assumes all players in FetchAddNflIds have already
 	// been verified to NOT already exist
 
-	public interface IFetchAddPlayersContext
+	public interface IFetchPlayersContext
 	{
-		List<string> FetchAddNflIds { get; set; }
+		List<string> FetchNflIds { get; set; }
 	}
 
-	public class FetchAddPlayersStage<TContext> : Stage<TContext>
-		where TContext : IFetchAddPlayersContext
+	public class FetchPlayersStage<TContext> : Stage<TContext>
+		where TContext : IFetchPlayersContext
 	{
 		private IDatabaseProvider _dbProvider { get; }
 		private WebRequestThrottle _throttle { get; }
 		private IPlayerAddSource _playerAddSource { get; }
 
-		public FetchAddPlayersStage(
-			ILogger<FetchAddPlayersStage<TContext>> logger,
+		public FetchPlayersStage(
+			ILogger<FetchPlayersStage<TContext>> logger,
 			IDatabaseProvider dbProvider,
 			WebRequestThrottle throttle,
-			IPlayerAddSource playerAddSource)
-			: base(logger, "Fetch and Save Players")
+			IPlayerAddSource playerAddSource,
+			int nestedDepth = 0)
+			: base(logger, "Fetch Players", nestedDepth)
 		{
 			_dbProvider = dbProvider;
 			_throttle = throttle;
@@ -46,20 +48,23 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		
 		public override async Task<ProcessStageResult> ProcessAsync(TContext context)
 		{
-			Debug.Assert(context.FetchAddNflIds != null, $"'{nameof(context.FetchAddNflIds)}' list must be set before this stage runs.");
+			Debug.Assert(context.FetchNflIds != null, $"'{nameof(context.FetchNflIds)}' list must be set before this stage runs.");
 
-			if (!context.FetchAddNflIds.Any())
+			if (!context.FetchNflIds.Any())
 			{
 				LogInformation("No players to add. Continuing to next stage.");
 				return ProcessResult.Continue;
 			}
 
-			LogDebug($"Will fetch and save {context.FetchAddNflIds.Count} players.");
+			LogDebug($"Will fetch {context.FetchNflIds.Count} players.");
 			
 			IDatabaseContext dbContext = _dbProvider.GetContext();
 
-			foreach(string nflId in context.FetchAddNflIds)
+			foreach(string nflId in context.FetchNflIds)
 			{
+				Debug.Assert(!TeamDataStore.IsTeam(nflId),
+					$"NFL id '{nflId}' represents a team so shouldn't be fetched as a player.");
+
 				SourceResult<PlayerAdd> result = await _playerAddSource.GetAsync(nflId);
 
 				await dbContext.Player.AddAsync(result.Value);
@@ -69,7 +74,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 					await _throttle.DelayAsync();
 				}
 
-				LogDebug($"Successfully fetched and saved '{nflId}'.");
+				LogDebug($"Successfully fetched '{nflId}'.");
 			}
 			
 			return ProcessResult.Continue;

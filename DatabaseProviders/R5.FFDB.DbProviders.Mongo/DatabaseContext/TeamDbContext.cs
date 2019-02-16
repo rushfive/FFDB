@@ -30,8 +30,6 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
 			var collectionName = CollectionNames.GetForType<TeamDocument>();
 
-			logger.LogDebug($"Adding {teams.Count} teams to '{collectionName}' collection..");
-
 			MongoDbContext mongoDbContext = GetMongoDbContext();
 
 			HashSet<int> existing = await GetExistingTeamIdsAsync(mongoDbContext);
@@ -40,10 +38,15 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 				.Where(t => !existing.Contains(t.Id))
 				.Select(TeamDocument.FromCoreEntity)
 				.ToList();
+
+			if (!missing.Any())
+			{
+				return;
+			}
 			
 			await mongoDbContext.InsertManyAsync(missing);
 
-			logger.LogInformation($"Added teams to '{collectionName}' collection.");
+			logger.LogTrace($"Added {missing.Count} teams to '{collectionName}' collection.");
 		}
 
 		private async Task<HashSet<int>> GetExistingTeamIdsAsync(MongoDbContext mongoDbContext)
@@ -70,7 +73,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
 			var collectionName = CollectionNames.GetForType<PlayerDocument>();
 
-			logger.LogDebug($"Updating roster mappings..");
+			logger.LogTrace($"Updating roster mappings..");
 
 			MongoDbContext mongoDbContext = GetMongoDbContext();
 			
@@ -83,7 +86,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 				await UpdateForRosterAsync(roster, nflIdMap, mongoDbContext);
 			}
 
-			logger.LogInformation($"Updated roster mappings for players in '{collectionName}' collection.");
+			logger.LogTrace($"Updated roster mappings for players in '{collectionName}' collection.");
 
 			throw new NotImplementedException();
 		}

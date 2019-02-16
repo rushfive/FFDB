@@ -12,6 +12,7 @@ namespace R5.Lib.Cache.AsyncLazyCache
 	{
 		Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> taskFactory);
 		T GetOrCreate<T>(string key, Func<T> factory);
+		void Remove(string key);
 	}
 
 	public class AsyncLazyCache : IAsyncLazyCache
@@ -80,6 +81,22 @@ namespace R5.Lib.Cache.AsyncLazyCache
 			return _cache.Get<T>(key);
 		}
 
+		public void Remove(string key)
+		{
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				throw new ArgumentNullException(nameof(key), "Valid cache key must be provided.");
+			}
+
+			using (_locks.Lock(key))
+			{
+				if (_cache.TryGetValue(key, out _))
+				{
+					_cache.Remove(key);
+				}
+			}
+		}
+
 		public void Dispose()
 		{
 			_cache?.Dispose();
@@ -121,7 +138,9 @@ namespace R5.Lib.Cache.AsyncLazyCache
 						_locks[key] = exclusiveLock;
 					}
 				}
-
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine($"ACQUIRED LOCK: {key}");
+				Console.ResetColor();
 				return exclusiveLock.Lock;
 			}
 
@@ -171,7 +190,9 @@ namespace R5.Lib.Cache.AsyncLazyCache
 							_locks.Remove(_key);
 						}
 					}
-
+					Console.ForegroundColor = ConsoleColor.Green;
+					Console.WriteLine($"RELEASED LOCK: {_key}");
+					Console.ResetColor();
 					exclusiveLock.Lock.Release();
 				}
 			}

@@ -7,7 +7,7 @@ namespace R5.FFDB.Components.Configurations
 	public class ProgramOptions
 	{
 		public bool SkipRosterFetch { get; set; }
-		public bool SaveToDisk { get; set; } // should be defaulted to TRUE
-		public bool SaveOriginalSourceFiles { get; set; } // default = FALSE
+		public bool SaveToDisk { get; set; }
+		public bool SaveOriginalSourceFiles { get; set; }
 	}
 }

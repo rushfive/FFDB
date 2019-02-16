@@ -21,14 +21,5 @@ namespace R5.FFDB.Engine.Processors
 
 			return pipeline.ProcessAsync(context);
 		}
-
-		public Task UpdateAllExistingAsync()
-		{
-			var context = new UpdateAllPipeline.Context();
-
-			var pipeline = UpdateAllPipeline.Create(_serviceProvider);
-
-			return pipeline.ProcessAsync(context);
-		}
 	}
 }

@@ -32,7 +32,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			List<WeekStatsTeamDocument> documents = await GetMongoDbContext().FindAsync(filter);
 
-			logger.LogDebug($"Retrieved team week stats for week '{week}' from '{collectionName}' collection.");
+			logger.LogTrace($"Retrieved team week stats for week '{week}' from '{collectionName}' collection.");
 
 			return documents.Select(WeekStatsTeamDocument.ToCoreEntity).ToList();
 		}
@@ -47,13 +47,13 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			var logger = GetLogger<TeamStatsDbContext>();
 			var collectionName = CollectionNames.GetForType<WeekStatsTeamDocument>();
 
-			logger.LogDebug($"Adding {stats.Count} team week stats to '{collectionName}' collection..");
+			logger.LogTrace($"Adding {stats.Count} team week stats to '{collectionName}' collection..");
 
 			List<WeekStatsTeamDocument> documents = stats.Select(WeekStatsTeamDocument.FromCoreEntity).ToList();
 
 			await GetMongoDbContext().InsertManyAsync(documents);
 
-			logger.LogInformation($"Added team week stats to '{collectionName}' collection.");
+			logger.LogTrace($"Added team week stats to '{collectionName}' collection.");
 		}
 	}
 }

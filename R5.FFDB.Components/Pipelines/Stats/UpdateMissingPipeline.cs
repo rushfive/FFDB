@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components.CoreData.Static.TeamStats;
+using R5.FFDB.Components.CoreData.Static.WeekMatchups;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Models;
+using R5.Lib.Cache.AsyncLazyCache;
 using R5.Lib.ExtensionMethods;
 using R5.Lib.Pipeline;
 using System;
@@ -83,30 +86,43 @@ namespace R5.FFDB.Components.Pipelines.Stats
 			public class AddMissingWeeks : Stage<Context>
 			{
 				private IServiceProvider _serviceProvider { get; }
+				private IAsyncLazyCache _cache { get; }
 
 				public AddMissingWeeks(
 					ILogger<AddMissingWeeks> logger,
-					IServiceProvider serviceProvider)
+					IServiceProvider serviceProvider,
+					IAsyncLazyCache cache)
 					: base(logger, "Add Missing Weeks")
 				{
 					_serviceProvider = serviceProvider;
+					_cache = cache;
 				}
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
 					LogDebug($"Adding stats for {context.MissingWeeks.Count} weeks.");
 
-					foreach(var week in context.MissingWeeks)
+					foreach (var week in context.MissingWeeks)
 					{
-						var pipeline = AddForWeekPipeline.Create(_serviceProvider);
+						var pipeline = AddForWeekPipeline.Create(_serviceProvider, nestedDepth: 1);
 
-						await pipeline.ProcessAsync(
-							new AddForWeekPipeline.Context());
+						await pipeline.ProcessAsync(new AddForWeekPipeline.Context
+						{
+							Week = week
+						});
+
+						ClearWeekScopedCaches(week);
 
 						LogDebug($"Finished adding stats for week '{week}'.");
 					}
 
 					return ProcessResult.Continue;
+				}
+
+				private void ClearWeekScopedCaches(WeekInfo week)
+				{
+					_cache.Remove(WeekMatchupsCache.CacheKey(week));
+					_cache.Remove(TeamWeekStatsCache.CacheKey(week));
 				}
 			}
 		}

@@ -28,7 +28,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			List<PlayerDocument> documents = await GetMongoDbContext().FindAsync<PlayerDocument>();
 
-			logger.LogDebug($"Retrieved all players from '{collectionName}' collection.");
+			logger.LogTrace($"Retrieved all players from '{collectionName}' collection.");
 
 			return documents.Select(PlayerDocument.ToCoreEntity).ToList();
 		}
@@ -43,13 +43,11 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			var logger = GetLogger<PlayerDbContext>();
 			var collectionName = CollectionNames.GetForType<PlayerDocument>();
 
-			logger.LogTrace($"Adding player '{player.NflId}'..");
-
 			PlayerDocument document = PlayerDocument.FromCoreAddEntity(player);
 
 			await GetMongoDbContext().InsertOneAsync(document);
 
-			logger.LogInformation($"Added player '{player.NflId}' as '{document.Id}' to '{collectionName}' collection.");
+			logger.LogTrace($"Added player '{player.NflId}' as '{document.Id}' to '{collectionName}' collection.");
 		}
 
 		public async Task UpdateAsync(Guid id, PlayerUpdate update)
@@ -66,11 +64,9 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			var logger = GetLogger<PlayerDbContext>();
 			var collectionName = CollectionNames.GetForType<PlayerDocument>();
 
-			logger.LogDebug($"Updating player '{id}'..");
+			logger.LogTrace($"Updating player '{id}'..");
 
 			var updateDefinition = Builders<PlayerDocument>.Update
-				.Set(p => p.FirstName, update.FirstName)
-				.Set(p => p.LastName, update.LastName)
 				.Set(p => p.Number, update.Number)
 				.Set(p => p.Position, update.Position)
 				.Set(p => p.Status, update.Status);

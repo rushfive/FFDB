@@ -1,11 +1,9 @@
 ﻿using HtmlAgilityPack;
-using R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Models;
+using R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add.Mappers
+namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1.Mappers
 {
 	public interface IToVersionedMapper : IAsyncMapper<string, PlayerAddVersioned, string> { }
 

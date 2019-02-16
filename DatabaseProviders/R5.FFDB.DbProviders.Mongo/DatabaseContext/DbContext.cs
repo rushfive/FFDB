@@ -36,7 +36,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 			var logger = GetLogger<DbContext>();
 
-			logger.LogDebug("Initializing FFDB - creating required collections.");
+			logger.LogInformation("Initializing FFDB - creating required collections.");
 
 			IMongoDatabase db = GetDatabase();
 

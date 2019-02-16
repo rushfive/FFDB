@@ -22,7 +22,7 @@ namespace R5.FFDB.CLI
 			builder.Version.Set("v1.0.0-alpha.1");
 
 			builder.Commands
-				.Add(InitialSetup.Command)
+				//.Add(InitialSetup.Command)
 				.Add(ViewUpdated.Command)
 				.Add(UpdateRosters.Command)
 				.Add(AddStats.Command)

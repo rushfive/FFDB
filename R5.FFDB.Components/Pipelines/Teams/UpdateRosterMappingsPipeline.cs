@@ -26,15 +26,15 @@ namespace R5.FFDB.Components.Pipelines.Teams
 			_logger = logger;
 		}
 
-		public class Context : IFetchAddPlayersContext
+		public class Context : IFetchPlayersContext
 		{
-			public List<string> FetchAddNflIds { get; set; }
+			public List<string> FetchNflIds { get; set; }
 		}
 
 		public static UpdateRosterMappingsPipeline Create(IServiceProvider sp)
 		{
 			var resolveNewRosteredPlayers = sp.Create<Stages.ResolveNewRosteredPlayers>();
-			var fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
+			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>();
 			var update = sp.Create<Stages.Update>();
 
 			AsyncPipelineStage<Context> chain = resolveNewRosteredPlayers;
@@ -74,7 +74,7 @@ namespace R5.FFDB.Components.Pipelines.Teams
 						.Where(id => !existingPlayers.Contains(id))
 						.ToList();
 
-					context.FetchAddNflIds = newIds;
+					context.FetchNflIds = newIds;
 
 					return ProcessResult.Continue;
 				}

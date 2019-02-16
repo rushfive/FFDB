@@ -26,36 +26,37 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 		public AddForWeekPipeline(
 			ILogger<AddForWeekPipeline> logger,
-			AsyncPipelineStage<Context> head)
-			: base(logger, head, "Add Stats for Week")
+			AsyncPipelineStage<Context> head,
+			int nestedDepth)
+			: base(logger, head, "Add Stats for Week", nestedDepth)
 		{
 			_logger = logger;
 		}
 
-		public class Context : IFetchAddPlayersContext
+		public class Context : IFetchPlayersContext
 		{
 			public WeekInfo Week { get; set; }
-			public List<string> FetchAddNflIds { get; set; }
+			public List<string> FetchNflIds { get; set; }
 			public List<PlayerWeekStats> PlayerWeekStats { get; set; }
 			public List<TeamWeekStats> TeamWeekStats { get; set; }
 			public List<WeekMatchup> WeekMatchups { get; set; }
 		}
 
-		public static AddForWeekPipeline Create(IServiceProvider sp)
+		public static AddForWeekPipeline Create(IServiceProvider sp, int nestedDepth)
 		{
-			var checkAlreadyUpdated = sp.Create<Stages.CheckAlreadyUpdated>();
+			var checkAlreadyUpdated = sp.Create<Stages.CheckAlreadyUpdated>(nestedDepth);
 
-			var getPlayerWeekStats = sp.Create<Stages.GetPlayerWeekStats>();
-			var fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
-			var addPlayerWeekStats = sp.Create<Stages.AddPlayerWeekStats>();
+			var getPlayerWeekStats = sp.Create<Stages.GetPlayerWeekStats>(nestedDepth);
+			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>(nestedDepth);
+			var addPlayerWeekStats = sp.Create<Stages.AddPlayerWeekStats>(nestedDepth);
 
-			var getTeamWeekStats = sp.Create<Stages.GetTeamWeekStats>();
-			var addTeamWeekStats = sp.Create<Stages.AddTeamWeekStats>();
+			var getTeamWeekStats = sp.Create<Stages.GetTeamWeekStats>(nestedDepth);
+			var addTeamWeekStats = sp.Create<Stages.AddTeamWeekStats>(nestedDepth);
 
-			var getWeekMatchups = sp.Create<Stages.GetWeekMatchups>();
-			var addWeekMatchups = sp.Create<Stages.AddWeekMatchups>();
+			var getWeekMatchups = sp.Create<Stages.GetWeekMatchups>(nestedDepth);
+			var addWeekMatchups = sp.Create<Stages.AddWeekMatchups>(nestedDepth);
 
-			var addUpdateLog = sp.Create<Stages.AddUpdateLog>();
+			var addUpdateLog = sp.Create<Stages.AddUpdateLog>(nestedDepth);
 
 			AsyncPipelineStage<Context> chain = checkAlreadyUpdated;
 			chain
@@ -68,7 +69,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				.SetNext(addWeekMatchups)
 				.SetNext(addUpdateLog);
 
-			return sp.Create<AddForWeekPipeline>(chain);
+			return sp.Create<AddForWeekPipeline>(chain, nestedDepth);
 		}
 
 		public static class Stages
@@ -79,8 +80,9 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public CheckAlreadyUpdated(
 					ILogger<CheckAlreadyUpdated> logger,
-					IDatabaseProvider dbProvider)
-					: base(logger, "Check Stats Already Updated")
+					IDatabaseProvider dbProvider,
+					int nestedDepth)
+					: base(logger, "Check Stats Already Updated", nestedDepth)
 				{
 					_dbProvider = dbProvider;
 				}
@@ -108,8 +110,9 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				public GetPlayerWeekStats(
 					ILogger<GetPlayerWeekStats> logger,
 					IDatabaseProvider dbProvider,
-					IPlayerWeekStatsSource source)
-					: base(logger, "Get Player Week Stats")
+					IPlayerWeekStatsSource source,
+					int nestedDepth)
+					: base(logger, "Get Player Week Stats", nestedDepth)
 				{
 					_dbProvider = dbProvider;
 					_source = source;
@@ -126,11 +129,11 @@ namespace R5.FFDB.Components.Pipelines.Stats
 					SourceResult<List<PlayerWeekStats>> result = await _source.GetAsync(context.Week);
 
 					List<string> newIds = (result.Value.Select(s => s.NflId))
-						.Where(id => !existingPlayers.Contains(id))
+						.Where(id => !existingPlayers.Contains(id) && !TeamDataStore.IsTeam(id))
 						.ToList();
 
 					context.PlayerWeekStats = result.Value;
-					context.FetchAddNflIds = newIds;
+					context.FetchNflIds = newIds;
 
 					return ProcessResult.Continue;
 				}
@@ -142,8 +145,9 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public AddPlayerWeekStats(
 					ILogger<AddPlayerWeekStats> logger,
-					IDatabaseProvider dbProvider)
-					: base(logger, "Add Player Week Stats")
+					IDatabaseProvider dbProvider,
+					int nestedDepth)
+					: base(logger, "Add Player Week Stats", nestedDepth)
 				{
 					_dbProvider = dbProvider;
 				}
@@ -182,8 +186,9 @@ namespace R5.FFDB.Components.Pipelines.Stats
 					ILogger<GetTeamWeekStats> logger,
 					ITeamWeekStatsSource source,
 					IWeekMatchupsCache weekMatchupsCache,
-					WebRequestThrottle throttle)
-					: base(logger, "Get Team Week Stats")
+					WebRequestThrottle throttle,
+					int nestedDepth)
+					: base(logger, "Get Team Week Stats", nestedDepth)
 				{
 					_source = source;
 					_weekMatchupsCache = weekMatchupsCache;
@@ -219,8 +224,9 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public AddTeamWeekStats(
 					ILogger<AddTeamWeekStats> logger,
-					IDatabaseProvider dbProvider)
-					: base(logger, "Add Team Week Stats")
+					IDatabaseProvider dbProvider,
+					int nestedDepth)
+					: base(logger, "Add Team Week Stats", nestedDepth)
 				{
 					_dbProvider = dbProvider;
 				}
@@ -256,8 +262,9 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public GetWeekMatchups(
 					ILogger<GetWeekMatchups> logger,
-					IWeekMatchupsCache cache)
-					: base(logger, "Get Week Matchups")
+					IWeekMatchupsCache cache,
+					int nestedDepth)
+					: base(logger, "Get Week Matchups", nestedDepth)
 				{
 					_cache = cache;
 				}
@@ -278,8 +285,9 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public AddWeekMatchups(
 					ILogger<AddWeekMatchups> logger,
-					IDatabaseProvider dbProvider)
-					: base(logger, "Add Week Matchups")
+					IDatabaseProvider dbProvider,
+					int nestedDepth)
+					: base(logger, "Add Week Matchups", nestedDepth)
 				{
 					_dbProvider = dbProvider;
 				}
@@ -315,8 +323,9 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public AddUpdateLog(
 					ILogger<AddUpdateLog> logger,
-					IDatabaseProvider dbProvider)
-					: base(logger, "Add Update Log")
+					IDatabaseProvider dbProvider,
+					int nestedDepth)
+					: base(logger, "Add Update Log", nestedDepth)
 				{
 					_dbProvider = dbProvider;
 				}

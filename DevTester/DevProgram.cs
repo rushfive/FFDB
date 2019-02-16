@@ -8,7 +8,6 @@ using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
-using R5.FFDB.Components.CoreData.Static.Players.Sources.V1.Add;
 using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1;
 using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers;
 using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1;
@@ -66,88 +65,18 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			_serviceProvider = DevTestServiceProvider.Build();
-			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
-			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-			_dbContext = dbProvider.GetContext();
-			_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
+			//_serviceProvider = DevTestServiceProvider.Build();
+			//_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
+			//var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
+			//_dbContext = dbProvider.GetContext();
+			//_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
-			//var playerStatsSource = _serviceProvider.GetRequiredService<IPlayerWeekStatsSource>();
-
-
-			//await playerStatsSource.GetAsync(new WeekInfo(2018, 16));
-
-
-			var playerAddSource = _serviceProvider.GetRequiredService<IPlayerAddSource>();
-			//PlayerAdd playerAdd = await playerAddSource.GetAsync("2558865");
-
-			// 2530747   doug baldwin
-			// 2558865	chris carson
-
+			FfdbEngine engine = GetConfiguredMongoEngine();
+			await engine.RunInitialSetupAsync();
 
 			return;
 			Console.ReadKey();
 		}
-
-		//public static JObject GetStatsObjectForPlayer(JToken playerValue, WeekInfo week)
-		//{
-		//	var playerObject = playerValue as JObject;
-
-		//	return playerObject?.SelectToken($"stats.week.{week.Season}.{week.Week}") as JObject;
-		//}
-
-		//public static Dictionary<WeekStatType, double> GetStatsForPlayer(JObject statsObject)
-		//{
-		//	foreach (var s in statsObject)
-		//	{
-		//		string key = s.Key;
-		//		string value = s.Value.ToObject<string>();
-
-		//		Console.WriteLine($"{key} = {value}");
-		//	}
-		//}
-
-
-
-
-
-
-
-
-
-
-
-
-		private static List<WeekMatchup> GetMatchups(WeekInfo week)
-		{
-			var result = new List<WeekMatchup>();
-
-			string filePath = null;// _dataPath.Static.WeekGames + $"{week.Season}-{week.Week}.xml";
-
-			XElement weekGameXml = XElement.Load(filePath);
-
-			XElement gameNode = weekGameXml.Elements("gms").Single();
-
-			foreach (XElement game in gameNode.Elements("g"))
-			{
-				var matchup = new WeekMatchup
-				{
-					Week = week
-				};
-
-				matchup.HomeTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("h").Value, includePriorLookup: true);
-				matchup.AwayTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("v").Value, includePriorLookup: true);
-				matchup.NflGameId = game.Attribute("eid").Value;
-				matchup.GsisGameId = game.Attribute("gsis").Value;
-
-				result.Add(matchup);
-			}
-
-			return result;
-		}
-
-
-
 
 
 
@@ -218,8 +147,8 @@ namespace DevTester
 
 			setup.UseMongo(new MongoConfig
 			{
-				ConnectionString = "mongodb://localhost:27017/FFDB_Test_1?replicaSet=rs_local",
-				DatabaseName = "FFDB_Test_1"
+				ConnectionString = "mongodb://localhost:27017/FFDB_Test_2?replicaSet=rs_local",
+				DatabaseName = "FFDB_Test_2"
 			});
 
 			return GetConfiguredEngine(setup);
@@ -227,26 +156,22 @@ namespace DevTester
 
 		private static FfdbEngine GetConfiguredEngine(EngineSetup setup)
 		{
-			//var setup = new EngineSetup();
-
 			setup
-				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_2\");
-				//.UsePostgreSql(new PostgresConfig
-				//{
-				//	DatabaseName = "ffdb_test_1",
-				//	Host = "localhost",
-				//	Username = "ffdb",
-				//	Password = "welc0me!"
-				//});
+				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_3\");
 
 			setup.WebRequest
-				.SetThrottle(1000)
+				.SetThrottle(3000)
 				.AddDefaultBrowserHeaders();
 
 			setup.Logging
-				.SetLogDirectory(@"D:\Repos\ffdb_data_2\dev_test_logs\")
+				.SetLogDirectory(@"D:\Repos\ffdb_data_3\dev_test_logs\")
 				.SetRollingInterval(RollingInterval.Day)
 				.SetLogLevel(LogEventLevel.Debug);
+
+			setup
+				.SkipRosterFetch()
+				.SaveToDisk()
+				.SaveOriginalSourceFiles();
 
 			return setup.Create();
 		}

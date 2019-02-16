@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace R5.FFDB.Components.CoreData.Static.Players.Sources.V1
+namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 {
 	public interface IPlayerScraper
 	{

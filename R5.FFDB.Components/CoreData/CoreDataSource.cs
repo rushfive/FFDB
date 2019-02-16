@@ -17,11 +17,7 @@ namespace R5.FFDB.Components.CoreData
 	{
 		Task<SourceResult<TCoreData>> GetAsync(TKey key);
 	}
-
-	// TVersionedModel should represent whatever a week's worth of this source data is
-	//  - eg if we're collecting a list of stats for a week, the model should contain a list of the stats
-	// similarly, TCoreData should represent whatever represents a weeks worth of the core data
-	//  in a lot of cases, its gonna be a list of something
+	
 	public abstract class CoreDataSource<TVersionedModel, TCoreData, TKey>
 		where TVersionedModel : class
 		where TCoreData : class
@@ -145,4 +141,22 @@ namespace R5.FFDB.Components.CoreData
 		}
 	}
 
+	public interface IAsyncMapper<TIn, TOut, TSourceKey>
+	{
+		Task<TOut> MapAsync(TIn input, TSourceKey sourceKey);
+	}
+
+	public class SourceResult<TCoreData>
+	{
+		public TCoreData Value { get; }
+		public bool FetchedFromWeb { get; }
+
+		public SourceResult(
+			TCoreData value,
+			bool fetchedFromWeb)
+		{
+			Value = value;
+			FetchedFromWeb = fetchedFromWeb;
+		}
+	}
 }

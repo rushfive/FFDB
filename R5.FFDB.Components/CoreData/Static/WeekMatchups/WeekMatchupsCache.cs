@@ -18,7 +18,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups
 
 	public class WeekMatchupsCache : IWeekMatchupsCache
 	{
-		private static string CacheKey(WeekInfo week) => $"week_matchups_{week}";
+		public static string CacheKey(WeekInfo week) => $"week_matchups_{week}";
 
 		private ILogger<WeekMatchupsCache> _logger { get; }
 		private IAsyncLazyCache _cache { get; }

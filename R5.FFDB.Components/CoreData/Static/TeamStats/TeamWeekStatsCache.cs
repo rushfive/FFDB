@@ -21,7 +21,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats
 
 	public class TeamWeekStatsCache : ITeamWeekStatsCache
 	{
-		private static string CacheKey(WeekInfo week) => $"team_week_stats_{week}";
+		public static string CacheKey(WeekInfo week) => $"team_week_stats_{week}";
 
 		private ILogger<TeamWeekStatsCache> _logger { get; }
 		private IAsyncLazyCache _cache { get; }
@@ -58,12 +58,16 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats
 		{
 			var data = new TeamWeekStatsCacheData();
 
+			_logger.LogInformation($"Resolving team week stats for week '{week}'.");
+
 			List<string> gameIds = await _weekMatchups.GetGameIdsForWeekAsync(week);
 			foreach(var id in gameIds)
 			{
 				SourceResult<TeamWeekStatsSourceModel> result = await _source.GetAsync((id, week));
 				data.UpdateWith(result.Value.HomeTeamStats);
 				data.UpdateWith(result.Value.AwayTeamStats);
+
+				_logger.LogDebug($"Resolved team week stats for game '{id}'.");
 			}
 
 			return data;

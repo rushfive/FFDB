@@ -76,6 +76,8 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 		{
 			var data = new RosterCacheData();
 
+			_logger.LogInformation("Resolving rosters for all teams.");
+
 			foreach (Team t in TeamDataStore.GetAll())
 			{
 				bool shouldThrottle = false;
@@ -92,6 +94,15 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 				}
 
 				SourceResult<Roster> roster = await _source.GetAsync(t);
+
+				if (roster.FetchedFromWeb)
+				{
+					_logger.LogInformation($"Fetched roster for '{t}' from web.");
+				}
+				else
+				{
+					_logger.LogInformation($"Retrieved saved roster for '{t}' from disk.");
+				}
 
 				data.UpdateWith(roster.Value);
 				

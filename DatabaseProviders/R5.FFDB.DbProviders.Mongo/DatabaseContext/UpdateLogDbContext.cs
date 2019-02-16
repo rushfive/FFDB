@@ -27,7 +27,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			var logs = await GetMongoDbContext().FindAsync<UpdateLogDocument>();
 
-			logger.LogDebug($"Retrieved updated weeks from '{collectionName}' collection.");
+			logger.LogTrace($"Retrieved updated weeks from '{collectionName}' collection.");
 
 			return logs.Select(l => new WeekInfo(l.Season, l.Week)).ToList();
 		}
@@ -46,7 +46,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			await GetMongoDbContext().InsertOneAsync(log);
 
-			logger.LogInformation($"Successfully added update log for {week} to '{collectionName}' collection.");
+			logger.LogTrace($"Successfully added update log for {week} to '{collectionName}' collection.");
 		}
 
 		public async Task<bool> HasUpdatedWeekAsync(WeekInfo week)

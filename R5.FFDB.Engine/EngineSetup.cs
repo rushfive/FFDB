@@ -77,6 +77,18 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
+		public EngineSetup SaveToDisk()
+		{
+			_programOptions.SaveToDisk = true;
+			return this;
+		}
+
+		public EngineSetup SaveOriginalSourceFiles()
+		{
+			_programOptions.SaveOriginalSourceFiles = true;
+			return this;
+		}
+
 		public FfdbEngine Create()
 		{
 			var baseServiceCollection = new EngineBaseServiceCollection();

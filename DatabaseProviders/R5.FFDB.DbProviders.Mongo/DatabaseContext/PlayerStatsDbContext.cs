@@ -78,18 +78,18 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			MongoDbContext mongoDbContext = GetMongoDbContext();
 
 			var logger = GetLogger<PlayerStatsDbContext>();
-			logger.LogDebug($"Adding {stats.Count} week stats..");
+			logger.LogTrace($"Adding {stats.Count} week stats..");
 			
 			var (playerStats, dstStats) = GroupStats(stats);
 			
 			await AddPlayerStatsAsync(playerStats, mongoDbContext);
 
-			logger.LogInformation("Added player week stats to '{0}' collection.",
+			logger.LogTrace("Added player week stats to '{0}' collection.",
 				CollectionNames.GetForType<WeekStatsPlayerDocument>());
 
 			await AddDstStatsAsync(dstStats, mongoDbContext);
 
-			logger.LogInformation("Added DST week stats to '{0}' collection.",
+			logger.LogTrace("Added DST week stats to '{0}' collection.",
 				CollectionNames.GetForType<WeekStatsDstDocument>());
 		}
 

@@ -51,7 +51,7 @@ namespace R5.FFDB.Engine
 			};
 		}
 		
-		public Task RunInitialSetupAsync(bool forceReinitialize)
+		public Task RunInitialSetupAsync()
 		{
 			_logger.LogInformation("Running initial setup..");
 

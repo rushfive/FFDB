@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters;
+using R5.FFDB.Components.CoreData.Static.Players;
 using R5.FFDB.Components.Extensions;
 using R5.FFDB.Components.Pipelines.CommonStages;
 using R5.FFDB.Core.Database;
+using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
 using R5.Lib.ExtensionMethods;
 using R5.Lib.Pipeline;
 using System;
@@ -26,17 +29,17 @@ namespace R5.FFDB.Components.Pipelines.Players
 		}
 
 
-		public class Context : IFetchAddPlayersContext, IUpdatePlayersContext
+		public class Context : IFetchPlayersContext
 		{
-			public List<string> FetchAddNflIds { get; set; }
+			public List<string> FetchNflIds { get; set; }
 			public List<string> UpdateNflIds { get; set; }
 		}
 
 		public static UpdateCurrentlyRosteredPipeline Create(IServiceProvider sp)
 		{
 			var groupByNewExisting = sp.Create<Stages.GroupByNewAndExisting>();
-			var fetchSavePlayers = sp.Create<FetchAddPlayersStage<Context>>();
-			var updatePlayers = sp.Create<UpdatePlayersStage<Context>>();
+			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>();
+			var updatePlayers = sp.Create<Stages.UpdatePlayersStage>();
 
 			AsyncPipelineStage<Context> chain = groupByNewExisting;
 			chain
@@ -88,8 +91,61 @@ namespace R5.FFDB.Components.Pipelines.Players
 						}
 					}
 					
-					context.FetchAddNflIds = newIds;
+					context.FetchNflIds = newIds;
 					context.UpdateNflIds = existingIds;
+
+					return ProcessResult.Continue;
+				}
+			}
+
+			public class UpdatePlayersStage : Stage<Context>
+			{
+				private IDatabaseProvider _dbProvider { get; }
+				private IRosterCache _rosterCache { get; }
+				private IPlayerIdMappings _playerIdMappings { get; }
+
+				public UpdatePlayersStage(
+					ILogger<UpdatePlayersStage> logger,
+					IDatabaseProvider dbProvider,
+					IRosterCache rosterCache,
+					IPlayerIdMappings playerIdMappings)
+					: base(logger, "Update Players")
+				{
+					_dbProvider = dbProvider;
+					_rosterCache = rosterCache;
+					_playerIdMappings = playerIdMappings;
+				}
+
+				public override async Task<ProcessStageResult> ProcessAsync(Context context)
+				{
+					IDatabaseContext dbContext = _dbProvider.GetContext();
+					Dictionary<string, Guid> nflIdMap = await _playerIdMappings.GetNflToIdMapAsync();
+
+					foreach (var nflId in context.UpdateNflIds)
+					{
+						var playerData = await _rosterCache.GetPlayerDataAsync(nflId);
+
+						if (!playerData.HasValue)
+						{
+							// log
+							continue;
+						}
+
+						if (!nflIdMap.TryGetValue(nflId, out Guid id))
+						{
+							LogWarning($"Failed to find player '{nflId}' in database. Will skip update.");
+							continue;
+						}
+
+						var update = new PlayerUpdate
+						{
+							Number = playerData.Value.number,
+							Position = playerData.Value.position,
+							Status = playerData.Value.status
+						};
+
+						await dbContext.Player.UpdateAsync(id, update);
+					}
 
 					return ProcessResult.Continue;
 				}

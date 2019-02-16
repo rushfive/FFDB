@@ -9,34 +9,58 @@ namespace R5.FFDB.Components.Pipelines
 	public abstract class Pipeline<TContext> : AsyncPipeline<TContext>
 	{
 		private ILogger<Pipeline<TContext>> _logger { get; }
+		private string _pipelineIndent { get; set; }
+		private string _stageIndent { get; set; }
 
 		protected Pipeline(
 			ILogger<Pipeline<TContext>> logger,
 			AsyncPipelineStage<TContext> head,
-			string name)
+			string name,
+			int nestedDepth = 0)
 			: base(head, name)
 		{
 			_logger = logger;
+
+			SetLoggingIndents(nestedDepth);
+		}
+
+		private void SetLoggingIndents(int nestedDepth)
+		{
+			string pipeline = "";
+			string stage = "  ";
+
+			while (nestedDepth > 0)
+			{
+				pipeline += "    ";
+				stage += "    ";
+
+				nestedDepth--;
+			}
+
+			_pipelineIndent = pipeline;
+			_stageIndent = stage;
 		}
 
 		protected override void OnPipelineProcessStart(TContext context, string name)
 		{
-			_logger.LogInformation($"Starting pipeline '{name}'.");
+			_logger.LogInformation($"{_pipelineIndent}[Pipeline - {name}] Starting.");
 		}
 
 		protected override void OnPipelineProcessEnd(TContext context, string name)
 		{
-			_logger.LogInformation($"Finished processing pipeline '{name}'.");
+			_logger.LogInformation($"{_pipelineIndent}[Pipeline - {name}] Ended.");
 		}
 
 		protected override void OnStageProcessStart(TContext context, string name)
 		{
-			_logger.LogDebug($"Starting stage '{name}'.");
+			_logger.LogDebug($"{_stageIndent}[Stage - {name}] Starting.");
 		}
 
 		protected override void OnStageProcessEnd(TContext context, string name)
 		{
-			_logger.LogInformation($"Finished processing stage '{name}'.");
+			_logger.LogInformation($"{_stageIndent}[Stage - {name}] Ended.");
 		}
+
+
 	}
 }

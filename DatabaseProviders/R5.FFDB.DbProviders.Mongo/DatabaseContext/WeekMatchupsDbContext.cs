@@ -32,7 +32,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			List<WeekMatchupDocument> documents = await GetMongoDbContext().FindAsync(filter);
 
-			logger.LogDebug($"Retrieved week matchups for week '{week}' from '{collectionName}' collection.");
+			logger.LogTrace($"Retrieved week matchups for week '{week}' from '{collectionName}' collection.");
 
 			return documents.Select(WeekMatchupDocument.ToCoreEntity).ToList();
 		}
@@ -47,13 +47,13 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			var logger = GetLogger<WeekMatchupsDbContext>();
 			var collectionName = CollectionNames.GetForType<WeekMatchupDocument>();
 
-			logger.LogDebug($"Adding {matchups.Count} week matchups to '{collectionName}' collection..");
+			logger.LogTrace($"Adding {matchups.Count} week matchups to '{collectionName}' collection..");
 
 			List<WeekMatchupDocument> documents = matchups.Select(WeekMatchupDocument.FromCoreEntity).ToList();
 
 			await GetMongoDbContext().InsertManyAsync(documents);
 
-			logger.LogInformation($"Added week matchups to '{collectionName}' collection.");
+			logger.LogTrace($"Added week matchups to '{collectionName}' collection.");
 		}
 	}
 }
