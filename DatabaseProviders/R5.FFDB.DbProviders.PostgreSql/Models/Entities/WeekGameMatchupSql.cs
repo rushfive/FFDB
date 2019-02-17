@@ -37,12 +37,12 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("gsis_game_id", PostgresDataType.TEXT)]
 		public string GsisGameId { get; set; }
 
-		public static WeekGameMatchupSql FromCoreEntity(WeekGameMatchup entity)
+		public static WeekGameMatchupSql FromCoreEntity(WeekMatchup entity)
 		{
 			return new WeekGameMatchupSql
 			{
-				Season = entity.Season,
-				Week = entity.Week,
+				Season = entity.Week.Season,
+				Week = entity.Week.Week,
 				HomeTeamId = entity.HomeTeamId,
 				AwayTeamId = entity.AwayTeamId,
 				NflGameId = entity.NflGameId,

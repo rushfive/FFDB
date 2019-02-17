@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using R5.FFDB.CLI.Configuration;
 using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.CoreData.WeekStats.Models;
+//using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.Engine;
 using Serilog;

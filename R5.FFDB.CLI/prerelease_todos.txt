@@ -1,10 +1,22 @@
-RunInfoBuilder needs to be updated to allow for 
-global options that can be accessed in any command.
-- for now, making it work by adding the same --config option
-to every option in the command tree
+- add Sql lite (use entity framework core)
+- use entity framework core for postgresql provider
+
+
+
+-logging
+
+
+update access modifiers to as restrictive as needed (mainly public -> internal)
+-unit & functional tests for everything
+- documentation
+- get image/diagram of db schemas (both mongo and postgres) for alpha release discussion
+
+
+
+------------------------------------------
+
 
 cleanup baseservicecollection adding of services
 
-go through and update access modifiers (internal, etc)
 
 add readme docs and c# comments

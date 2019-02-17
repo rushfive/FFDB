@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using R5.FFDB.Core;
-using R5.FFDB.Core.Database.DbContext;
+using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
-using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.Mongo.Collections;
 using R5.FFDB.DbProviders.Mongo.Documents;
 using System;
@@ -13,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 {
-	public class TeamDbContext : DbContextBase, ITeamDatabaseContext
+	public class TeamDbContext : DbContextBase, ITeamDbContext
 	{
 		public TeamDbContext(
 			Func<IMongoDatabase> getDatabase,
@@ -22,38 +20,84 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 		}
 
-		public async Task AddTeamsAsync()
+		public async Task AddAsync(List<Team> teams)
 		{
+			if (teams == null)
+			{
+				throw new ArgumentNullException(nameof(teams), "Teams must be provided.");
+			}
+
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionNames.GetForType<TeamDocument>();
-
-			logger.LogDebug($"Adding NFL team documents to '{collectionName}' collection.");
-
-			List<TeamDocument> teamSqls = TeamDataStore
-				.GetAll()
-				.Select(TeamDocument.FromCoreEntity)
-				.ToList();
-
-			MongoDbContext context = GetMongoDbContext();
-			await context.InsertManyAsync(teamSqls);
-
-			logger.LogInformation($"Successfully added team documents to '{collectionName}' collection.");
-		}
-
-		public async Task UpdateRostersAsync(List<Roster> rosters)
-		{
-			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionNames.GetForType<PlayerDocument>();
-
-			logger.LogDebug($"Updating player's team associations in '{collectionName}' collection.");
-			logger.LogTrace($"Updating rosters for: {string.Join(", ", rosters.Select(r => r.TeamAbbreviation))}");
+			var collectionName = CollectionResolver.GetName<TeamDocument>();
 
 			MongoDbContext mongoDbContext = GetMongoDbContext();
 
-			// first set all team ids to null
-			var clearTeamUpdate = Builders<PlayerDocument>.Update.Set(p => p.TeamId, null);
-			await mongoDbContext.UpdateAsync(clearTeamUpdate);
+			HashSet<int> existing = await GetExistingTeamIdsAsync(mongoDbContext);
 
+			List<TeamDocument> missing = teams
+				.Where(t => !existing.Contains(t.Id))
+				.Select(TeamDocument.FromCoreEntity)
+				.ToList();
+
+			if (!missing.Any())
+			{
+				return;
+			}
+			
+			await mongoDbContext.InsertManyAsync(missing);
+
+			logger.LogTrace($"Added {missing.Count} teams to '{collectionName}' collection.");
+		}
+
+		private async Task<HashSet<int>> GetExistingTeamIdsAsync(MongoDbContext mongoDbContext)
+		{
+			var findOptions = new FindOptions<TeamDocument, int>
+			{
+				Projection = Builders<TeamDocument>.Projection
+					.Expression(t => t.Id)
+			};
+
+			List<int> ids = await mongoDbContext.FindAsync(findOptions: findOptions) ?? new List<int>();
+
+			return ids.ToHashSet();
+		}
+
+		// first set all player's team ids to null, then update
+		public async Task UpdateRosterMappingsAsync(List<Roster> rosters)
+		{
+			if (rosters == null)
+			{
+				throw new ArgumentNullException(nameof(rosters), "Rosters must be provided.");
+			}
+
+			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
+			var collectionName = CollectionResolver.GetName<PlayerDocument>();
+
+			logger.LogTrace($"Updating roster mappings..");
+
+			MongoDbContext mongoDbContext = GetMongoDbContext();
+			
+			await ClearRosterMappingsAsync(mongoDbContext);
+			
+			Dictionary<string, Guid> nflIdMap = await GetNflIdMapAsync(mongoDbContext);
+
+			foreach (Roster roster in rosters)
+			{
+				await UpdateForRosterAsync(roster, nflIdMap, mongoDbContext);
+			}
+
+			logger.LogTrace($"Updated roster mappings for players in '{collectionName}' collection.");
+		}
+
+		private Task ClearRosterMappingsAsync(MongoDbContext mongoDbContext)
+		{
+			var clearUpdate = Builders<PlayerDocument>.Update.Set(p => p.TeamId, null);
+
+			return mongoDbContext.UpdateAsync(clearUpdate);
+		}
+
+		private async Task<Dictionary<string, Guid>> GetNflIdMapAsync(MongoDbContext mongoDbContext)
+		{
 			var findOptions = new FindOptions<PlayerDocument>
 			{
 				Projection = Builders<PlayerDocument>.Projection
@@ -61,85 +105,26 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 					.Include(p => p.NflId)
 			};
 
-			List<PlayerDocument> playerDocuments = await mongoDbContext.FindAsync(findOptions: findOptions);
-			Dictionary<string, Guid> nflIdMap = playerDocuments.ToDictionary(p => p.NflId, p => p.Id);
+			List<PlayerDocument> players = await mongoDbContext.FindAsync(findOptions: findOptions);
 
-			foreach (Roster roster in rosters)
+			return players.ToDictionary(p => p.NflId, p => p.Id, StringComparer.OrdinalIgnoreCase);
+		}
+
+		private async Task UpdateForRosterAsync(Roster roster, 
+			Dictionary<string, Guid> nflIdMap, MongoDbContext mongoDbContext)
+		{
+			var playerIds = roster.Players
+				.Where(p => nflIdMap.ContainsKey(p.NflId))
+				.Select(p => nflIdMap[p.NflId]);
+
+			var update = Builders<PlayerDocument>.Update.Set(p => p.TeamId, roster.TeamId);
+			var filter = Builders<PlayerDocument>.Filter.In(p => p.Id, playerIds);
+
+			UpdateResult result = await mongoDbContext.UpdateAsync(update, filter);
+			if (result.MatchedCount == 0)
 			{
-				HashSet<Guid> playersHash = roster.Players
-					.Where(p => nflIdMap.ContainsKey(p.NflId))
-					.Select(p => nflIdMap[p.NflId])
-					.ToHashSet();
-
-				var update = Builders<PlayerDocument>.Update.Set(p => p.TeamId, roster.TeamId);
-				var filter = Builders<PlayerDocument>.Filter.In(p => p.Id, playersHash);
-
-				UpdateResult result = await mongoDbContext.UpdateAsync(update, filter);
-				if (result.MatchedCount == 0)
-				{
-					throw new InvalidOperationException($"Updating roster ({nameof(PlayerDocument)}'s {nameof(PlayerDocument.TeamId)}) failed for team '{roster.TeamAbbreviation}'.");
-				}
+				throw new InvalidOperationException($"Updating roster mappings failed for team '{roster.TeamAbbreviation}'.");
 			}
-
-			logger.LogInformation($"Successfully updated player's team associations in '{collectionName}' collection.");
-		}
-
-		public async Task AddGameStatsAsync(List<TeamWeekStats> stats)
-		{
-			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionNames.GetForType<TeamGameStatsDocument>();
-
-			logger.LogDebug($"Adding team game stats to '{collectionName}' collection.");
-			logger.LogTrace($"Adding team game stats for: {string.Join(", ", stats.Select(s => s.Week))}");
-
-			List<TeamGameStatsDocument> documents = stats.Select(TeamGameStatsDocument.FromCoreEntity).ToList();
-
-			await GetMongoDbContext().InsertManyAsync(documents);
-
-			logger.LogInformation($"Successfully added team game stats to '{collectionName}' collection.");
-		}
-
-		public async Task RemoveAllGameStatsAsync()
-		{
-			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionNames.GetForType<TeamGameStatsDocument>();
-
-			logger.LogDebug($"Removing all team game stats documents from '{collectionName}' collection.");
-
-			await GetMongoDbContext().DeleteManyAsync<TeamGameStatsDocument>();
-
-			logger.LogInformation($"Successfully removed all team game stats documents from '{collectionName}' collection.");
-		}
-
-		public async Task RemoveGameStatsForWeekAsync(WeekInfo week)
-		{
-			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionNames.GetForType<TeamGameStatsDocument>();
-
-			logger.LogDebug($"Removing team game stats documents for {week} from '{collectionName}' collection.");
-
-			var filterBuilder = Builders<TeamGameStatsDocument>.Filter;
-			FilterDefinition<TeamGameStatsDocument> filter = 
-				filterBuilder.Eq(s => s.Season, week.Season)
-				& filterBuilder.Eq(s => s.Week, week.Week);
-
-			await GetMongoDbContext().DeleteManyAsync(filter);
-
-			logger.LogInformation($"Successfully removed team game stats documents for {week} from '{collectionName}' collection.");
-		}
-
-		public async Task AddGameMatchupsAsync(List<WeekGameMatchup> gameMatchups)
-		{
-			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionNames.GetForType<WeekGameMatchupDocument>();
-
-			logger.LogDebug($"Adding week game matchup documents to '{collectionName}' collection.");
-
-			List<WeekGameMatchupDocument> documents = gameMatchups.Select(WeekGameMatchupDocument.FromCoreEntity).ToList();
-
-			await GetMongoDbContext().InsertManyAsync(documents);
-
-			logger.LogInformation($"Successfully added week game matchup documents to '{collectionName}' collection.");
 		}
 	}
 }

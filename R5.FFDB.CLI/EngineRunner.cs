@@ -22,11 +22,11 @@ namespace R5.FFDB.CLI
 
 		public async Task RunAsync(RunInfoBase runInfo)
 		{
-			if (runInfo is InitialSetup.RunInfo initialSetup)
-			{
-				await RunInitialSetupAsync(initialSetup);
-				return;
-			}
+			//if (runInfo is InitialSetup.RunInfo initialSetup)
+			//{
+			//	await RunInitialSetupAsync(initialSetup);
+			//	return;
+			//}
 			
 			bool ffdbInitialized = await _engine.HasBeenInitializedAsync();
 			if (!ffdbInitialized)
@@ -37,17 +37,11 @@ namespace R5.FFDB.CLI
 
 			switch (runInfo)
 			{
-				case CheckHealth.RunInfo _:
-					await RunCheckHealthAsync();
-					break;
 				case UpdateRosters.RunInfo _:
 					await RunRostersUpdateAsync();
 					break;
 				case AddStats.RunInfo addStats:
 					await RunAddStatsAsync(addStats);
-					break;
-				case RemoveStats.RunInfo removeStats:
-					await RunRemoveStatsAsync(removeStats);
 					break;
 				case UpdatePlayers.RunInfo updatePlayers:
 					await RunUpdatePlayersAsync(updatePlayers);
@@ -60,28 +54,14 @@ namespace R5.FFDB.CLI
 			}
 		}
 
-		private Task RunInitialSetupAsync(InitialSetup.RunInfo runInfo)
+		private Task RunInitialSetupAsync()
 		{
-			return _engine.RunInitialSetupAsync(forceReinitialize: runInfo.ForceReinitialize);
-		}
-
-		private async Task RunCheckHealthAsync()
-		{
-			try
-			{
-				await _engine.CheckSourcesHealthAsync();
-				CM.WriteLineColored("Health check passed.", ConsoleColor.Green);
-			}
-			catch (Exception ex)
-			{
-				CM.WriteError($"Health check failed with error: {ex.Message}");
-				Console.WriteLine(ex.StackTrace);
-			}
+			return _engine.RunInitialSetupAsync();
 		}
 
 		private Task RunRostersUpdateAsync()
 		{
-			return _engine.Team.UpdateRostersAsync();
+			return _engine.Team.UpdateRosterMappingsAsync();
 		}
 
 		private async Task RunAddStatsAsync(AddStats.RunInfo runInfo)
@@ -109,25 +89,6 @@ namespace R5.FFDB.CLI
 			}
 
 			await _engine.Stats.AddForWeekAsync(specifiedWeek);
-		}
-
-		private async Task RunRemoveStatsAsync(RemoveStats.RunInfo runInfo)
-		{
-			if (!runInfo.Week.HasValue)
-			{
-				await _engine.Stats.RemoveAllAsync();
-				return;
-			}
-
-			var specifiedWeek = runInfo.Week.Value;
-
-			List<WeekInfo> allUpdatedWeeks = await _engine.GetAllUpdatedWeeksAsync();
-			if (!allUpdatedWeeks.Contains(specifiedWeek))
-			{
-				throw new InvalidOperationException($"Cannot remove stats for week '{specifiedWeek}' because they don't exist.");
-			}
-
-			await _engine.Stats.RemoveForWeekAsync(specifiedWeek);
 		}
 
 		private async Task RunUpdatePlayersAsync(UpdatePlayers.RunInfo runInfo)

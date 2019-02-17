@@ -1,46 +1,26 @@
-﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.Rosters.Values;
-using R5.FFDB.Core.Database;
-using R5.FFDB.Core.Database.DbContext;
-using R5.FFDB.Core.Entities;
-using System.Collections.Generic;
-using System.Linq;
+﻿using R5.FFDB.Components.Pipelines.Teams;
+using System;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine.Processors
 {
 	public class TeamProcessor
 	{
-		private ILogger<TeamProcessor> _logger { get; }
-		private IDatabaseProvider _dbProvider { get; }
-		private RostersValue _rostersValue { get; }
-		private IProcessorHelper _helper { get; }
+		private IServiceProvider _serviceProvider { get; }
 
-		public TeamProcessor(
-			ILogger<TeamProcessor> logger,
-			IDatabaseProvider dbProvider,
-			RostersValue rostersValue,
-			IProcessorHelper helper)
+		public TeamProcessor(IServiceProvider serviceProvider)
 		{
-			_logger = logger;
-			_dbProvider = dbProvider;
-			_rostersValue = rostersValue;
-			_helper = helper;
+			_serviceProvider = serviceProvider;
 		}
 
-		public async Task UpdateRostersAsync()
+		// Updates player-team mappings. Doesn't update player data
+		public Task UpdateRosterMappingsAsync()
 		{
-			_logger.LogInformation("Beginning rosters update in database.");
+			var context = new UpdateRosterMappingsPipeline.Context();
 
-			IDatabaseContext dbContext = _dbProvider.GetContext();
-			List<Roster> rosters = await _rostersValue.GetAsync();
+			var pipeline = UpdateRosterMappingsPipeline.Create(_serviceProvider);
 
-			List<string> rosterNflIds = rosters.SelectMany(r => r.Players).Select(p => p.NflId).ToList();
-			await _helper.AddPlayerProfilesAsync(rosterNflIds, dbContext);
-
-			await dbContext.Team.UpdateRostersAsync(rosters);
-
-			_logger.LogInformation("Successfully updated rosters in database.");
+			return pipeline.ProcessAsync(context);
 		}
 	}
 }

@@ -10,19 +10,22 @@ namespace R5.FFDB.CLI
 {
 	internal static class ConfigureBuilder
 	{
+		// todo: help and version triggers
 		internal static RunInfoBuilder.RunInfoBuilder Get()
 		{
 			var builder = new RunInfoBuilder.RunInfoBuilder();
 
-			builder.Help.DisplayOnBuildFail();
+			builder.Help
+				.SetProgramName("ffdb")
+				.InvokeOnBuildFail(suppressException: false);
+
+			builder.Version.Set("v1.0.0-alpha.1");
 
 			builder.Commands
-				.Add(InitialSetup.Command)
-				.Add(CheckHealth.Command)
+				//.Add(InitialSetup.Command)
 				.Add(ViewUpdated.Command)
 				.Add(UpdateRosters.Command)
 				.Add(AddStats.Command)
-				.Add(RemoveStats.Command)
 				.Add(UpdatePlayers.Command);
 
 			builder.Parser.SetPredicateForType<WeekInfo?>(value =>

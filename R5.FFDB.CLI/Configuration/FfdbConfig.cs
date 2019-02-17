@@ -1,4 +1,4 @@
-﻿using R5.FFDB.DbProviders.Mongo.DatabaseProvider;
+﻿using R5.FFDB.DbProviders.Mongo;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using Serilog;
 using Serilog.Events;

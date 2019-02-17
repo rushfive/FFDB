@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
 using R5.FFDB.Core;
-using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
-	public class TeamDbContext : DbContextBase, ITeamDatabaseContext
+	public class TeamDbContext : DbContextBase//, ITeamDatabaseContext
 	{
 		public TeamDbContext(
 			Func<NpgsqlConnection> getConnection,
@@ -41,7 +40,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogInformation($"Successfully added team entries to '{tableName}' table.");
 		}
 		
-		public async Task UpdateRostersAsync(List<Roster> rosters)
+		public async Task UpdateRosterMappingsAsync(List<Roster> rosters)
 		{
 			string playerTeamMapTableName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
 			var logger = GetLogger<TeamDbContext>();
@@ -121,7 +120,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogInformation($"Successfully removed team game stats rows for {week} from database.");
 		}
 
-		public async Task AddGameMatchupsAsync(List<WeekGameMatchup> gameMatchups)
+		public async Task AddGameMatchupsAsync(List<WeekMatchup> gameMatchups)
 		{
 			string tableName = EntityInfoMap.TableName(typeof(WeekGameMatchupSql));
 

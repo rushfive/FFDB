@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
 using R5.FFDB.Core.Database;
-using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseContext;
+using System;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseProvider
 {
@@ -21,7 +21,8 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseProvider
 
 		public IDatabaseContext GetContext()
 		{
-			return new DbContext(GetConnection, _loggerFactory);
+			throw new NotImplementedException();
+			//return default(IDatabaseContext);// new DbContext(GetConnection, _loggerFactory);
 		}
 
 		private NpgsqlConnection GetConnection()

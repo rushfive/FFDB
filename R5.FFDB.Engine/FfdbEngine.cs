@@ -1,13 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData;
-using R5.FFDB.Components.CoreData.Players;
-using R5.FFDB.Components.CoreData.Rosters;
-using R5.FFDB.Components.CoreData.TeamGames;
-using R5.FFDB.Components.CoreData.WeekStats;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using R5.FFDB.Components.Extensions.JsonConverters;
+using R5.FFDB.Components.Pipelines.Setup;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
-using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Engine.Processors;
 using System;
@@ -18,71 +14,52 @@ namespace R5.FFDB.Engine
 {
 	public class FfdbEngine
 	{
-		public StatsProcessor Stats { get; private set; }
-		public TeamProcessor Team { get; private set; }
-		public PlayerProcessor Player { get; private set; }
+		public StatsProcessor Stats { get;  }
+		public TeamProcessor Team { get; }
+		public PlayerProcessor Player { get; }
 
 		private ILogger<FfdbEngine> _logger { get; }
+		private IServiceProvider _serviceProvider { get; }
 		private IDatabaseProvider _databaseProvider { get; }
-		private List<ICoreDataSource> _coreDataSources { get; set; }
 		private LatestWeekValue _latestWeekValue { get; }
 
 		public FfdbEngine(
 			ILogger<FfdbEngine> logger,
+			IServiceProvider serviceProvider,
 			IDatabaseProvider databaseProvider,
-			LatestWeekValue latestWeekValue,
-			IServiceProvider serviceProvider)
+			LatestWeekValue latestWeekValue)
 		{
 			_logger = logger;
+			_serviceProvider = serviceProvider;
 			_databaseProvider = databaseProvider;
 			_latestWeekValue = latestWeekValue;
-
-			InitializeSourcesProcessors(serviceProvider);
+			
+			Stats = new StatsProcessor(serviceProvider);
+			Team = new TeamProcessor(serviceProvider);
+			Player = new PlayerProcessor(serviceProvider);
 		}
 
-		private void InitializeSourcesProcessors(IServiceProvider serviceProvider)
+		static FfdbEngine()
 		{
-			_coreDataSources = new List<ICoreDataSource>
+			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
 			{
-				serviceProvider.GetRequiredService<IPlayerSource>(),
-				serviceProvider.GetRequiredService<IRosterSource>(),
-				serviceProvider.GetRequiredService<IWeekStatsSource>(),
-				serviceProvider.GetRequiredService<ITeamGamesSource>()
+				Formatting = Formatting.None,
+				Converters = new List<JsonConverter>
+				{
+					new WeekInfoJsonConverter()
+				}
 			};
-
-			Stats = ActivatorUtilities.CreateInstance<StatsProcessor>(serviceProvider);
-			Team = ActivatorUtilities.CreateInstance<TeamProcessor>(serviceProvider);
-			Player = ActivatorUtilities.CreateInstance<PlayerProcessor>(serviceProvider);
 		}
-
-		public async Task RunInitialSetupAsync(bool forceReinitialize)
+		
+		public Task RunInitialSetupAsync()
 		{
 			_logger.LogInformation("Running initial setup..");
 
-			await CheckSourcesHealthAsync();
+			var context = new InitialSetupPipeline.Context();
 
-			IDatabaseContext dbContext = _databaseProvider.GetContext();
-			_logger.LogInformation($"Will run using database provider '{_databaseProvider.GetType().Name}'.");
+			var pipeline = InitialSetupPipeline.Create(_serviceProvider);
 
-			await dbContext.InitializeAsync(forceReinitialize);
-			await dbContext.Team.AddTeamsAsync();
-
-			await Stats.AddMissingAsync();
-			await Team.UpdateRostersAsync();
-
-			_logger.LogInformation("Successfully finished running initial setup.");
-		}
-
-		public async Task CheckSourcesHealthAsync()
-		{
-			_logger.LogInformation("Starting health checks for all core data sources.");
-
-			foreach (ICoreDataSource source in _coreDataSources)
-			{
-				await source.CheckHealthAsync();
-			}
-
-			_logger.LogInformation("All health checks successfully passed.");
+			return pipeline.ProcessAsync(context);
 		}
 
 		public Task<bool> HasBeenInitializedAsync()
@@ -99,7 +76,7 @@ namespace R5.FFDB.Engine
 		public Task<List<WeekInfo>> GetAllUpdatedWeeksAsync()
 		{
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
-			return dbContext.Log.GetUpdatedWeeksAsync();
+			return null;// dbContext.Log.GetUpdatedWeeksAsync();
 		}
 	}
 }

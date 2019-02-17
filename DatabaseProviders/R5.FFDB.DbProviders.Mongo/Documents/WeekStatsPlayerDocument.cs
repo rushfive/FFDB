@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
@@ -12,7 +11,7 @@ using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName(CollectionConstants.FfdbPrefix + "weekStatsPlayer")]
+	[CollectionName(Collection.WeekStatsPlayer)]
 	public class WeekStatsPlayerDocument : DocumentBase
 	{
 		[BsonElement("playerId")]
@@ -51,15 +50,14 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 		[BsonElement("hasIdp")]
 		public bool HasIdp { get; set; }
 
-		public static WeekStatsPlayerDocument FromCoreEntity(PlayerWeekStats stats,
-			Guid playerId, WeekInfo week)
+		public static WeekStatsPlayerDocument FromCoreEntity(PlayerWeekStats stats, Dictionary<string, Guid> nflIdMap)
 		{
 			var result = new WeekStatsPlayerDocument
 			{
-				PlayerId = playerId,
+				PlayerId = nflIdMap[stats.NflId],
 				TeamId = stats.TeamId,
-				Season = week.Season,
-				Week = week.Week
+				Season = stats.Week.Season,
+				Week = stats.Week.Week
 			};
 
 			var playerStats = new Dictionary<MongoWeekStatType, double>();
@@ -118,7 +116,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 
 			var model = new CreateIndexModel<WeekStatsPlayerDocument>(keys, options);
 
-			var collection = CollectionResolver.GetCollectionFor<WeekStatsPlayerDocument>(database);
+			var collection = CollectionResolver.Get<WeekStatsPlayerDocument>(database);
 
 			return collection.Indexes.CreateOneAsync(model);
 		}

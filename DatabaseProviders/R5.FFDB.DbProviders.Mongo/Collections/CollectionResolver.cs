@@ -1,17 +1,45 @@
 ﻿using MongoDB.Driver;
-using R5.FFDB.Core.Extensions;
 using R5.FFDB.DbProviders.Mongo.Documents;
-using R5.FFDB.DbProviders.Mongo.Models;
+using R5.Lib.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace R5.FFDB.DbProviders.Mongo.Collections
 {
 	public static class CollectionResolver
 	{
+		public static List<string> GetAllNames()
+		{
+			return CollectionResolver.GetDocumentTypes()
+				.Select(GetName)
+				.ToList();
+		}
+
+		public static string GetName<T>()
+			where T : DocumentBase
+		{
+			return GetName(typeof(T));
+		}
+
+		public static string GetName(Type type)
+		{
+			if (!type.IsClass || type.IsAbstract || !type.IsSubclassOf(typeof(DocumentBase)))
+			{
+				throw new ArgumentException($"Type must be a non-abstract class deriving from '{nameof(DocumentBase)}'.");
+			}
+
+			CollectionNameAttribute attr = type.GetCustomAttributeOrNull<CollectionNameAttribute>();
+
+			if (attr == null)
+			{
+				throw new InvalidOperationException($"Document '{type.Name}' is missing its collection name.");
+			}
+
+			return attr.Name;
+		}
+
 		public static List<Type> GetDocumentTypes()
 		{
 			return Assembly.GetAssembly(typeof(DocumentBase))
@@ -21,14 +49,12 @@ namespace R5.FFDB.DbProviders.Mongo.Collections
 				.ToList();
 		}
 
-		public static IMongoCollection<T> GetCollectionFor<T>(IMongoDatabase database)
+		public static IMongoCollection<T> Get<T>(IMongoDatabase database)
 			where T : DocumentBase
 		{
-			var name = CollectionNames.GetForType<T>();
+			var name = GetName<T>();
 
 			return database.GetCollection<T>(name);
 		}
-
-		
 	}
 }

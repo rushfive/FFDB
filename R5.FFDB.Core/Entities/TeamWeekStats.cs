@@ -1,4 +1,5 @@
 ﻿using R5.FFDB.Core.Models;
+using System.Collections.Generic;
 
 namespace R5.FFDB.Core.Entities
 {
@@ -6,6 +7,7 @@ namespace R5.FFDB.Core.Entities
 	{
 		public int TeamId { get; set; }
 		public WeekInfo Week { get; set; }
+		public List<string> PlayerNflIds { get; set; }
 
 		// points
 		public int PointsFirstQuarter { get; set; }
@@ -25,7 +27,11 @@ namespace R5.FFDB.Core.Entities
 		public int Turnovers { get; set; }
 		public int Punts { get; set; }
 		public int PuntYards { get; set; }
-		public int PuntYardsAverage { get; set; }
 		public int TimeOfPossessionSeconds { get; set; }
+
+		public override string ToString()
+		{
+			return $"{TeamId} | {Week}";
+		}
 	}
 }

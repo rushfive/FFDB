@@ -6,20 +6,27 @@ using Newtonsoft.Json.Linq;
 using Npgsql;
 using R5.FFDB.Components;
 using R5.FFDB.Components.CoreData;
-using R5.FFDB.Components.CoreData.WeekStats;
-using R5.FFDB.Components.Resolvers;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
+using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1;
+using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers;
+using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1;
+using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers;
+using R5.FFDB.Components.Extensions.JsonConverters;
+using R5.FFDB.Components.Http;
+using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
-using R5.FFDB.Core.Database.DbContext;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.Mongo.DatabaseProvider;
+using R5.FFDB.DbProviders.Mongo;
 using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using R5.FFDB.Engine;
+using R5.Lib.Pipeline;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -32,6 +39,11 @@ using System.Xml.Linq;
 
 namespace DevTester
 {
+	public class TestContext
+	{
+		public bool Bool { get; set; }
+	}
+
 	public class DevProgram
 	{
 		private static IServiceProvider _serviceProvider { get; set; }
@@ -39,71 +51,32 @@ namespace DevTester
 		private static IDatabaseContext _dbContext { get; set; }
 		private static DataDirectoryPath _dataPath { get; set; }
 
+		static DevProgram()
+		{
+			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+			{
+				Formatting = Formatting.None,
+				Converters = new List<JsonConverter>
+				{
+					new WeekInfoJsonConverter()
+				}
+			};
+		}
+
 		public static async Task Main(string[] args)
 		{
-			_serviceProvider = DevTestServiceProvider.Build();
-			_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
-			var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-			_dbContext = dbProvider.GetContext();
-			_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
-			/// DONT TOUCH ABOVE ///
-			/// 
-
-			//var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-			//MongoDbProvider mongoProvider = GetMongoDbProvider(loggerFactory);
-			//IDatabaseContext mongoContext = mongoProvider.GetContext();
-
-			//List<WeekInfo> logs = await mongoContext.Log.GetUpdatedWeeksAsync();
-
-			//var matchups = GetMatchups(new WeekInfo(2018, 17));
-			
+			//_serviceProvider = DevTestServiceProvider.Build();
+			//_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
+			//var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
+			//_dbContext = dbProvider.GetContext();
+			//_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
 			FfdbEngine engine = GetConfiguredMongoEngine();
-			//await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 5));
-			//await engine.Team.UpdateRostersAsync();
-			//await engine.Stats.RemoveForWeekAsync(new WeekInfo(2018, 5));
-			await engine.RunInitialSetupAsync(forceReinitialize: false);
-
-			//await engine.Stats.AddMissingAsync();
-
-
+			await engine.RunInitialSetupAsync();
 
 			return;
 			Console.ReadKey();
 		}
-
-
-		private static List<WeekGameMatchup> GetMatchups(WeekInfo week)
-		{
-			var result = new List<WeekGameMatchup>();
-
-			var filePath = _dataPath.Static.TeamGameHistoryWeekGames + $"{week.Season}-{week.Week}.xml";
-
-			XElement weekGameXml = XElement.Load(filePath);
-
-			XElement gameNode = weekGameXml.Elements("gms").Single();
-
-			foreach (XElement game in gameNode.Elements("g"))
-			{
-				var matchup = new WeekGameMatchup
-				{
-					Season = week.Season,
-					Week = week.Week
-				};
-
-				matchup.HomeTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("h").Value, includePriorLookup: true);
-				matchup.AwayTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("v").Value, includePriorLookup: true);
-				matchup.NflGameId = game.Attribute("eid").Value;
-				matchup.GsisGameId = game.Attribute("gsis").Value;
-
-				result.Add(matchup);
-			}
-
-			return result;
-		}
-
-
-
 
 
 
@@ -117,6 +90,19 @@ namespace DevTester
 			};
 
 			return new MongoDbProvider(config, loggerFactory);
+		}
+
+		private static PostgresDbProvider GetPostgresDbProvider(ILoggerFactory loggerFactory)
+		{
+			var _config = new PostgresConfig
+			{
+				DatabaseName = "ffdb_test_1",
+				Host = "localhost",
+				Username = "ffdb",
+				Password = "welc0me!"
+			};
+
+			return new PostgresDbProvider(_config, loggerFactory);
 		}
 
 
@@ -161,8 +147,8 @@ namespace DevTester
 
 			setup.UseMongo(new MongoConfig
 			{
-				ConnectionString = "mongodb://localhost:27017/FFDB_Test_1?replicaSet=rs_local",
-				DatabaseName = "FFDB_Test_1"
+				ConnectionString = "mongodb://localhost:27017/FFDB_Test_2?replicaSet=rs_local",
+				DatabaseName = "FFDB_Test_2"
 			});
 
 			return GetConfiguredEngine(setup);
@@ -170,26 +156,22 @@ namespace DevTester
 
 		private static FfdbEngine GetConfiguredEngine(EngineSetup setup)
 		{
-			//var setup = new EngineSetup();
-
 			setup
-				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_2\");
-				//.UsePostgreSql(new PostgresConfig
-				//{
-				//	DatabaseName = "ffdb_test_1",
-				//	Host = "localhost",
-				//	Username = "ffdb",
-				//	Password = "welc0me!"
-				//});
+				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_3\");
 
 			setup.WebRequest
-				.SetThrottle(1000)
+				.SetThrottle(3000)
 				.AddDefaultBrowserHeaders();
 
 			setup.Logging
-				.SetLogDirectory(@"D:\Repos\ffdb_data_2\dev_test_logs\")
+				.SetLogDirectory(@"D:\Repos\ffdb_data_3\dev_test_logs\")
 				.SetRollingInterval(RollingInterval.Day)
 				.SetLogLevel(LogEventLevel.Debug);
+
+			setup
+				.SkipRosterFetch()
+				.SaveToDisk()
+				.SaveOriginalSourceFiles();
 
 			return setup.Create();
 		}

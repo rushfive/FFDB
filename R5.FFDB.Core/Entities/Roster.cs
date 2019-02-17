@@ -21,9 +21,7 @@ namespace R5.FFDB.Core.Entities
 	{
 		public string NflId { get; set; }
 		public int? Number { get; set; }
-		public string FirstName { get; set; }
-		public string LastName { get; set; }
 		public Position Position { get; set; }
-		public RosterStatus Status { get; set; }	
+		public RosterStatus Status { get; set; }
 	}
 }

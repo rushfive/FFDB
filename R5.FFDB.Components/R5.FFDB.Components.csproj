@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.1</TargetFramework>
 		<LangVersion>latest</LangVersion>
+		<AssemblyName>R5.FFDB.Components</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,6 +16,11 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
+		<ProjectReference Include="..\R5.Lib\R5.Lib.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="CoreData\Static\Players\Add\" />
 	</ItemGroup>
 
 </Project>

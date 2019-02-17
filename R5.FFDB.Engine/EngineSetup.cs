@@ -2,8 +2,7 @@
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Core.Database;
-using R5.FFDB.DbProviders.Mongo.DatabaseProvider;
-using R5.FFDB.DbProviders.PostgreSql;
+using R5.FFDB.DbProviders.Mongo;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.Engine.ConfigBuilders;
 using System;
@@ -77,6 +76,18 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
+		public EngineSetup SaveToDisk()
+		{
+			_programOptions.SaveToDisk = true;
+			return this;
+		}
+
+		public EngineSetup SaveOriginalSourceFiles()
+		{
+			_programOptions.SaveOriginalSourceFiles = true;
+			return this;
+		}
+
 		public FfdbEngine Create()
 		{
 			var baseServiceCollection = new EngineBaseServiceCollection();
@@ -108,7 +119,8 @@ namespace R5.FFDB.Engine
 			{
 				throw new InvalidOperationException("Engine can only be configured to use a single database type.");
 			}
-			
+			// TODO: Configuring the engine with a datbase config should create this 
+			// dbProviderFactory on the spot, so we dont even need to have this method.
 			Func<ILoggerFactory, IDatabaseProvider> dbProviderFactory = null;
 			if (_postgresConfig != null)
 			{

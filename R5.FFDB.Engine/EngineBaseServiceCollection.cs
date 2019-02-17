@@ -2,15 +2,11 @@
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
-using R5.FFDB.Components.CoreData.Players;
-using R5.FFDB.Components.CoreData.Rosters;
-using R5.FFDB.Components.CoreData.Rosters.Values;
-using R5.FFDB.Components.CoreData.TeamGames;
-using R5.FFDB.Components.CoreData.WeekStats;
+using R5.FFDB.Components.CoreData;
+using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
 using R5.FFDB.Components.Http;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
-using R5.FFDB.Engine.Processors;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -49,7 +45,7 @@ namespace R5.FFDB.Engine
 				.AddScoped(sp => throttle)
 				.AddScoped<LatestWeekValue>()
 				.AddScoped<AvailableWeeksValue>()
-				.AddScoped<RostersValue>()
+				//.AddScoped<RostersValue>()
 				.AddScoped<ProgramOptions>(sp => programOptions)
 				.AddScoped<IDatabaseProvider>(sp =>
 				{
@@ -58,19 +54,31 @@ namespace R5.FFDB.Engine
 				});
 
 			services
-				.AddScoped<IWebRequestClient, WebRequestClient>()
-				.AddScoped<IPlayerSource, PlayerSource>()
-				.AddScoped<IPlayerService, PlayerService>()
-				.AddScoped<IPlayerScraper, PlayerScraper>()
-				.AddScoped<IRosterSource, RosterSource>()
-				.AddScoped<IRosterScraper, RosterScraper>()
-				.AddScoped<IWeekStatsSource, WeekStatsSource>()
-				.AddScoped<IWeekStatsService, WeekStatsService>()
-				.AddScoped<ITeamGamesSource, TeamGamesSource>()
-				.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
-				.AddScoped<IWeekGameMatchupService, WeekGameMatchupService>()
-				.AddScoped<IProcessorHelper, ProcessorHelper>()
-				.AddScoped<IPlayerWeekTeamResolverFactory, PlayerWeekTeamResolverFactory>();
+				.AddScoped<IWebRequestClient, WebRequestClient>();
+			//.AddScoped<IPlayerSource, PlayerSource>()
+			//.AddScoped<IPlayerService, PlayerService>()
+			//.AddScoped<IPlayerScraper, PlayerScraper>()
+			//.AddScoped<IRosterSource, RosterSource>()
+			//.AddScoped<IRosterScraper, RosterScraper>()
+			//.AddScoped<IWeekStatsSource, WeekStatsSource>()
+			//.AddScoped<IWeekStatsService, WeekStatsService>()
+			//.AddScoped<ITeamGamesSource, TeamGamesSource>()
+			//.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
+			//.AddScoped<IWeekGameMatchupService, WeekGameMatchupService>()
+			//.AddScoped<IProcessorHelper, ProcessorHelper>()
+			//.AddScoped<IPlayerMatcherFactory, PlayerMatcherFactory>()
+			//.AddScoped<ITeamGamesDataMapper, TeamGamesDataMapper>()
+			//.AddScoped<ITeamGameDataCache, TeamGameDataCache>()
+			//.AddScoped<IWeekGameDataCache, WeekGameDataCache>()
+			//.AddScoped<IPlayerWeekTeamResolverFactory, PlayerWeekTeamResolverFactory>();
+
+			// NEW:
+
+			services.AddAsyncLazyCache();
+
+			// for RosterSource
+			services
+				.AddCoreDataSources();
 
 			return services;
 		}
