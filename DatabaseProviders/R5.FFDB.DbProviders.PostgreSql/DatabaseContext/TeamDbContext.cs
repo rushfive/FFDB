@@ -50,7 +50,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			string playerTableName = EntityMetadata.TableName(typeof(PlayerSql));
 
-			List<PlayerSql> players = await SelectAsEntitiesAsync<PlayerSql>($"SELECT id, nfl_id FROM {playerTableName};");
+			List<PlayerSql> players = await SelectAsync<PlayerSql>($"SELECT id, nfl_id FROM {playerTableName};");
 			Dictionary<string, Guid> nflIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
 
 			var sqlEntries = new List<PlayerTeamMapSql>();
@@ -72,10 +72,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			string truncateCommand = $"TRUNCATE {playerTeamMapTableName};";
 			string insertCommands = SqlCommandBuilder.Rows.InsertMany(sqlEntries);
 
-			await ExecuteTransactionWrappedAsync(new List<string>
-			{
-				truncateCommand, insertCommands
-			});
+			//await ExecuteTransactionWrappedAsync(new List<string>
+			//{
+			//	truncateCommand, insertCommands
+			//});
 
 			logger.LogInformation($"Successfully added player-team mapping entries to '{playerTeamMapTableName}' table.");
 		}

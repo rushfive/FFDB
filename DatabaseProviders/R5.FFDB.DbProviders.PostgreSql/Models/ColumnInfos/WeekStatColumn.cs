@@ -8,11 +8,11 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
 {
-	public class WeekStatColumnInfo : ColumnInfo
+	public class WeekStatColumn : TableColumn
 	{
 		public WeekStatType StatType { get; }
 
-		private WeekStatColumnInfo(
+		private WeekStatColumn(
 			string name,
 			WeekStatType statType,
 			PropertyInfo property)
@@ -21,13 +21,18 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
 			StatType = statType;
 		}
 
-		public static WeekStatColumnInfo FromProperty(PropertyInfo property)
+		public static WeekStatColumn FromProperty(PropertyInfo property)
 		{
 			var attr = property
 				.GetCustomAttributes()
 				.Single(a => a is WeekStatColumnAttribute) as WeekStatColumnAttribute;
 
-			return new WeekStatColumnInfo(attr.Name, attr.StatType, property);
+			return new WeekStatColumn(attr.Name, attr.StatType, property);
+		}
+
+		internal override string GetSqlColumnDefinition()
+		{
+			return $"{Name} {DataType}";
 		}
 	}
 }

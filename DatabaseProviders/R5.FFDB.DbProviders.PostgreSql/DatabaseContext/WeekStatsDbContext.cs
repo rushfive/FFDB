@@ -47,7 +47,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 			var logger = GetLogger<WeekStatsDbContext>();
 
-			List<PlayerSql> players = await SelectAsEntitiesAsync<PlayerSql>($"SELECT id, nfl_id FROM {EntityMetadata.TableName(typeof(PlayerSql))};");
+			List<PlayerSql> players = await SelectAsync<PlayerSql>($"SELECT id, nfl_id FROM {EntityMetadata.TableName(typeof(PlayerSql))};");
 
 			var nflPlayerIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
 			var teamNflIdMap = TeamDataStore.GetAll().ToDictionary(t => t.NflId, t => t.Id);

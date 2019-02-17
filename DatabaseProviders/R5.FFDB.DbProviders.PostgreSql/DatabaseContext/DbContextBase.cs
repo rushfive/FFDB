@@ -22,6 +22,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			_getConnection = getConnection;
 			_loggerFactory = loggerFactory;
 		}
+
+		protected PostgresDbContext GetPostgresDbContext()
+		{
+			return new PostgresDbContext(
+				_loggerFactory.CreateLogger<PostgresDbContext>(),
+				_getConnection);
+		}
 		
 		public async Task ExecuteNonQueryAsync(string sqlCommand, List<(string key, string value)> parameters = null)
 		{
@@ -44,8 +51,32 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			}
 		}
 
-		public async Task ExecuteReaderAsync(string sqlCommand, Action<NpgsqlDataReader> readerCallback)
+		//public async Task ExecuteReaderAsync(string sqlCommand, Action<NpgsqlDataReader> readerCallback)
+		//{
+		//	using (NpgsqlConnection connection = _getConnection())
+		//	{
+		//		await connection.OpenAsync();
+
+		//		using (var command = new NpgsqlCommand())
+		//		{
+		//			command.Connection = connection;
+		//			command.CommandText = sqlCommand;
+
+		//			using (NpgsqlDataReader reader = command.ExecuteReader())
+		//			{
+		//				readerCallback?.Invoke(reader);
+		//			}
+		//		}
+		//	}
+		//}
+
+		public async Task<TReturn> ExecuteReaderAsync<TReturn>(string sqlCommand, Func<NpgsqlDataReader, TReturn> onReadMapper)
 		{
+			if (onReadMapper == null)
+			{
+				throw new ArgumentNullException(nameof(onReadMapper), "On-read mapper callback must be provided to execute a command with returning value.");
+			}
+
 			using (NpgsqlConnection connection = _getConnection())
 			{
 				await connection.OpenAsync();
@@ -57,37 +88,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 					using (NpgsqlDataReader reader = command.ExecuteReader())
 					{
-						readerCallback?.Invoke(reader);
+						return onReadMapper.Invoke(reader);
 					}
 				}
 			}
 		}
 
-		public async Task<TReturn> ExecuteReaderAsync<TReturn>(string sqlCommand, Func<NpgsqlDataReader, TReturn> readerCallback)
-		{
-			if (readerCallback == null)
-			{
-				throw new ArgumentNullException(nameof(readerCallback), "Npgsql reader callback must be provided to execute a command with returning value.");
-			}
-
-			using (NpgsqlConnection connection = _getConnection())
-			{
-				await connection.OpenAsync();
-
-				using (var command = new NpgsqlCommand())
-				{
-					command.Connection = connection;
-					command.CommandText = sqlCommand;
-
-					using (NpgsqlDataReader reader = command.ExecuteReader())
-					{
-						return readerCallback.Invoke(reader);
-					}
-				}
-			}
-		}
-
-		public Task<List<TSqlEntity>> SelectAsEntitiesAsync<TSqlEntity>(string sqlCommand = null)
+		public Task<List<TSqlEntity>> SelectAsync<TSqlEntity>(string sqlCommand = null)
 			where TSqlEntity : SqlEntity, new()
 		{
 			if (string.IsNullOrWhiteSpace(sqlCommand))
@@ -98,19 +105,19 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			return ExecuteReaderAsync<List<TSqlEntity>>(sqlCommand, SqlEntityMapper.SelectAsEntitiesAsync<TSqlEntity>);
 		}
 
-		public Task ExecuteTransactionWrappedAsync(IEnumerable<string> commands)
-		{
-			string sqlCommand = "BEGIN;" + Environment.NewLine;
+		//public Task ExecuteTransactionWrappedAsync(IEnumerable<string> commands)
+		//{
+		//	string sqlCommand = "BEGIN;" + Environment.NewLine;
 
-			foreach(string command in commands)
-			{
-				sqlCommand += command;
-			}
+		//	foreach(string command in commands)
+		//	{
+		//		sqlCommand += command;
+		//	}
 
-			sqlCommand += Environment.NewLine + "COMMIT;";
+		//	sqlCommand += Environment.NewLine + "COMMIT;";
 
-			return ExecuteNonQueryAsync(sqlCommand);
-		}
+		//	return ExecuteNonQueryAsync(sqlCommand);
+		//}
 
 		public async Task<bool> ExecuteAsBoolAsync(string sqlCommand)
 		{

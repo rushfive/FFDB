@@ -96,7 +96,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task<List<Player>> GetAllAsync()
 		{
-			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>();
+			var playerSqls = await SelectAsync<PlayerSql>();
 			return playerSqls.Select(PlayerSql.ToCoreEntity).ToList();
 		}
 
@@ -120,7 +120,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			string sql = $"SELECT * FROM {player} WHERE id in ({string.Join(" UNION ALL ", idsByTable)});";
 
-			var playerSqls = await SelectAsEntitiesAsync<PlayerSql>(sql);
+			var playerSqls = await SelectAsync<PlayerSql>(sql);
 			return playerSqls.Select(PlayerSql.ToCoreEntity).ToList();
 		}
 

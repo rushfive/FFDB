@@ -6,7 +6,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
 {
-	public class PropertyColumnInfo : ColumnInfo
+	public class PropertyColumn : TableColumn
 	{
 		public bool PrimaryKey { get; set; }
 		public bool NotNull { get; set; }
@@ -16,7 +16,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
 		public bool HasForeignKeyConstraint =>
 			ForeignTableType != null && !string.IsNullOrWhiteSpace(ForeignKeyColumn);
 
-		private PropertyColumnInfo(
+		private PropertyColumn(
 			string name,
 			PostgresDataType dataType,
 			PropertyInfo property = null)
@@ -24,7 +24,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
 		{
 		}
 
-		public static PropertyColumnInfo FromProperty(PropertyInfo property)
+		public static PropertyColumn FromProperty(PropertyInfo property)
 		{
 			string name = null;
 			PostgresDataType? dataType = null;
@@ -54,13 +54,34 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
 				}
 			}
 
-			return new PropertyColumnInfo(name, dataType.Value, property)
+			return new PropertyColumn(name, dataType.Value, property)
 			{
 				PrimaryKey = primaryKey,
 				NotNull = notNull,
 				ForeignTableType = foreignTableType,
 				ForeignKeyColumn = foreignColumnName
 			};
+		}
+
+		internal override string GetSqlColumnDefinition()
+		{
+			string sql = $"{Name} {DataType} ";
+
+			if (PrimaryKey)
+			{
+				sql += "PRIMARY KEY ";
+			}
+			else if (NotNull)
+			{
+				sql += "NOT NULL ";
+			}
+
+			if (HasForeignKeyConstraint)
+			{
+				sql += $"REFERENCES {EntityMetadata.TableName(ForeignTableType)}({ForeignKeyColumn})";
+			}
+
+			return sql.TrimEnd();
 		}
 	}
 }

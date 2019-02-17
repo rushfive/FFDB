@@ -2,6 +2,7 @@
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.PostgreSql.Attributes;
+using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,8 +73,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 
 			foreach (var kv in stats)
 			{
-				PropertyInfo property = EntityMetadata.GetPropertyByStat(kv.Key);
-				property.SetValue(result, kv.Value);
+				WeekStatColumn column = EntityMetadata.GetWeekStatColumnByType(kv.Key);
+				column.SetValue(result, kv.Value);
+
+				//PropertyInfo property = EntityMetadata.GetPropertyByStat(kv.Key);
+				//property.SetValue(result, kv.Value);
 			}
 
 			return result;

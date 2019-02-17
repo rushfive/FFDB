@@ -38,8 +38,9 @@ namespace R5.FFDB.DbProviders.PostgreSql
 
 		private static Dictionary<Type, string> _tableNames { get; } = new Dictionary<Type, string>();
 		private static Dictionary<Type, List<string>> _compositePrimaryKeys { get; } = new Dictionary<Type, List<string>>();
-		private static Dictionary<Type, List<ColumnInfo>> _tableColumnInfos { get; } = new Dictionary<Type, List<ColumnInfo>>();
-		private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; } = new Dictionary<WeekStatType, PropertyInfo>();
+		private static Dictionary<Type, List<TableColumn>> _tableColumns { get; } = new Dictionary<Type, List<TableColumn>>();
+		//private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; } = new Dictionary<WeekStatType, PropertyInfo>();
+		private static Dictionary<WeekStatType, WeekStatColumn> _weekStatColumn { get; } = new Dictionary<WeekStatType, WeekStatColumn>();
 
 		public static string TableName(Type entityType)
 		{
@@ -56,43 +57,52 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			return _compositePrimaryKeys.TryGetValue(entityType, out keys);
 		}
 
-		public static List<ColumnInfo> ColumnInfos(Type entityType)
+		public static List<TableColumn> Columns(Type entityType)
 		{
-			if (!_tableColumnInfos.TryGetValue(entityType, out List<ColumnInfo> infos))
+			if (!_tableColumns.TryGetValue(entityType, out List<TableColumn> columns))
 			{
-				throw new InvalidOperationException($"Table column infos don't exist for type '{entityType.Name}'.");
+				throw new InvalidOperationException($"Table columns don't exist for type '{entityType.Name}'.");
 			}
-			return infos;
+			return columns;
 		}
 
-		public static PropertyInfo GetPropertyByStat(WeekStatType type)
+		public static WeekStatColumn GetWeekStatColumnByType(WeekStatType type)
 		{
-			if (!_weekStatProperty.TryGetValue(type, out PropertyInfo info))
+			if (!_weekStatColumn.TryGetValue(type, out WeekStatColumn column))
 			{
-				throw new InvalidOperationException($"Failed to find property info mapped to week stat type '{type}'.");
+				throw new InvalidOperationException($"Failed to find week stat column mapped to week stat type '{type}'.");
 			}
-			return info;
+			return column;
 		}
+
+		//public static PropertyInfo GetPropertyByStat(WeekStatType type)
+		//{
+		//	if (!_weekStatProperty.TryGetValue(type, out PropertyInfo info))
+		//	{
+		//		throw new InvalidOperationException($"Failed to find property info mapped to week stat type '{type}'.");
+		//	}
+		//	return info;
+		//}
 
 		// initialization
 		static EntityMetadata()
 		{
-			ResolveMapData();
+			CacheMetadata();
 		}
 
-		private static void ResolveMapData()
+		private static void CacheMetadata()
 		{
-			EntityTypes.ForEach(t =>
+			EntityTypes.ForEach((Action<Type>)(t =>
 			{
 				_tableNames[t] = GetTableName(t);
-				_tableColumnInfos[t] = GetColumnInfos(t);
+				_tableColumns[t] = EntityMetadata.GetColumns((Type)t);
 
 				List<string> compositeKeys = GetCompositePrimaryKeys(t);
 				if (compositeKeys != null)
 				{
 					_compositePrimaryKeys[t] = compositeKeys;
 				}
-			});
+			}));
 		}
 
 		private static string GetTableName(Type entityType)
@@ -114,36 +124,37 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			return attr?.ColumnNames;
 		}
 
-		private static List<ColumnInfo> GetColumnInfos(Type entityType)
+		private static List<TableColumn> GetColumns(Type entityType)
 		{
-			var result = new List<ColumnInfo>();
+			var result = new List<TableColumn>();
 
-			List<PropertyColumnInfo> propertyColumns = GetPropertyColumns(entityType);
+			List<PropertyColumn> propertyColumns = GetPropertyColumns(entityType);
 			result.AddRange(propertyColumns);
 
-			List<WeekStatColumnInfo> weekStatColumns = GetWeekStatColumns(entityType);
-			foreach (var c in weekStatColumns)
+			List<WeekStatColumn> weekStatColumns = GetWeekStatColumns(entityType);
+			foreach (WeekStatColumn c in weekStatColumns)
 			{
 				result.Add(c);
-				_weekStatProperty[c.StatType] = c.Property;
+				_weekStatColumn[c.StatType] = c;
+				//_weekStatProperty[c.StatType] = c.Property;
 			}
 
 			return result;
 		}
 
-		private static List<PropertyColumnInfo> GetPropertyColumns(Type entityType)
+		private static List<PropertyColumn> GetPropertyColumns(Type entityType)
 		{
 			return entityType
 				.GetPropertiesContainingAttribute<ColumnAttribute>()
-				.Select(PropertyColumnInfo.FromProperty)
+				.Select(PropertyColumn.FromProperty)
 				.ToList();
 		}
 
-		private static List<WeekStatColumnInfo> GetWeekStatColumns(Type entityType)
+		private static List<WeekStatColumn> GetWeekStatColumns(Type entityType)
 		{
 			return entityType
 				.GetPropertiesContainingAttribute<WeekStatColumnAttribute>()
-				.Select(WeekStatColumnInfo.FromProperty)
+				.Select(WeekStatColumn.FromProperty)
 				.ToList();
 		}
 	}

@@ -17,8 +17,8 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		{
 			var result = new List<T>();
 
-			List<ColumnInfo> columnInfos = EntityMetadata.ColumnInfos(typeof(T));
-			Dictionary<string, ColumnInfo> columnMap = columnInfos.ToDictionary(i => i.Name, i => i);
+			List<TableColumn> columns = EntityMetadata.Columns(typeof(T));
+			Dictionary<string, TableColumn> columnMap = columns.ToDictionary(i => i.Name, i => i);
 
 			while (reader.Read())
 			{
@@ -28,18 +28,19 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				{
 					string columnName = reader.GetName(i);
 
-					if (columnMap.TryGetValue(columnName, out ColumnInfo info))
+					if (columnMap.TryGetValue(columnName, out TableColumn column))
 					{
 						object columnValue = reader.GetValue(i);
+						column.SetValue(entity, columnValue);
 
-						if (info.Property.PropertyType.IsNullable())
-						{
-							SetValueForNullable(entity, columnValue, info);
-						}
-						else
-						{
-							SetValueForNonNullable(entity, columnValue, info);
-						}
+						//if (info.Property.PropertyType.IsNullable())
+						//{
+						//	SetValueForNullable(entity, columnValue, info);
+						//}
+						//else
+						//{
+						//	SetValueForNonNullable(entity, columnValue, info);
+						//}
 					}
 				}
 
@@ -49,56 +50,58 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			return result;
 		}
 
-		private static void SetValueForNullable(object entity, object columnValue, ColumnInfo info)
-		{
-			if (columnValue == null || columnValue.GetType() == typeof(DBNull))
-			{
-				info.Property.SetValue(entity, null);
-				return;
-			}
+		// todo:: should we move this logic into a property on TableColumn?
+		// might be able to have Property be private, encapsulate it 
+		//private static void SetValueForNullable(object entity, object columnValue, TableColumn column)
+		//{
+		//	if (columnValue == null || columnValue.GetType() == typeof(DBNull))
+		//	{
+		//		column.Property.SetValue(entity, null);
+		//		return;
+		//	}
 
-			Type type = info.Property.PropertyType;
+		//	Type type = column.Property.PropertyType;
 
-			if (type.IsNullableEnum())
-			{
-				Type nullableType = Nullable.GetUnderlyingType(type);
-				info.Property.SetValue(entity, Enum.Parse(nullableType, (string)columnValue));
-				return;
-			}
+		//	if (type.IsNullableEnum())
+		//	{
+		//		Type nullableType = Nullable.GetUnderlyingType(type);
+		//		column.Property.SetValue(entity, Enum.Parse(nullableType, (string)columnValue));
+		//		return;
+		//	}
 
-			info.Property.SetValue(entity, columnValue);
-		}
+		//	column.Property.SetValue(entity, columnValue);
+		//}
 
-		private static void SetValueForNonNullable(object entity, object columnValue, ColumnInfo info)
-		{
-			Type type = info.Property.PropertyType;
+		//private static void SetValueForNonNullable(object entity, object columnValue, TableColumn info)
+		//{
+		//	Type type = info.Property.PropertyType;
 
-			object convertedValue = columnValue;
-			switch (info.DataType)
-			{
-				case PostgresDataType.TEXT:
-					if (type.IsEnum)
-					{
-						convertedValue = Enum.Parse(type, (string)columnValue);
-					}
-					break;
-				case PostgresDataType.DATE:
-				case PostgresDataType.TIMESTAMPTZ:
-					DateTime dt = (DateTime)columnValue;
-					dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+		//	object convertedValue = columnValue;
+		//	switch (info.DataType)
+		//	{
+		//		case PostgresDataType.TEXT:
+		//			if (type.IsEnum)
+		//			{
+		//				convertedValue = Enum.Parse(type, (string)columnValue);
+		//			}
+		//			break;
+		//		case PostgresDataType.DATE:
+		//		case PostgresDataType.TIMESTAMPTZ:
+		//			DateTime dt = (DateTime)columnValue;
+		//			dt = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
 
-					DateTimeOffset dtOffset = dt;
-					convertedValue = dtOffset;
-					break;
-				case PostgresDataType.UUID:
-				case PostgresDataType.INT:
-				case PostgresDataType.FLOAT8:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException(nameof(info.DataType), $"'{info.DataType}' is an invalid '{nameof(PostgresDataType)}'.");
-			}
+		//			DateTimeOffset dtOffset = dt;
+		//			convertedValue = dtOffset;
+		//			break;
+		//		case PostgresDataType.UUID:
+		//		case PostgresDataType.INT:
+		//		case PostgresDataType.FLOAT8:
+		//			break;
+		//		default:
+		//			throw new ArgumentOutOfRangeException(nameof(info.DataType), $"'{info.DataType}' is an invalid '{nameof(PostgresDataType)}'.");
+		//	}
 
-			info.Property.SetValue(entity, convertedValue);
-		}
+		//	info.Property.SetValue(entity, convertedValue);
+		//}
 	}
 }

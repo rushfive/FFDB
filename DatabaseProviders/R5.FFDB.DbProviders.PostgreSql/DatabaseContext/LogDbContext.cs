@@ -42,7 +42,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task<List<WeekInfo>> GetUpdatedWeeksAsync()
 		{
-			var logs = await SelectAsEntitiesAsync<UpdateLogSql>();
+			var logs = await SelectAsync<UpdateLogSql>();
 			return logs.Select(sql => new WeekInfo(sql.Season, sql.Week)).ToList();
 		}
 

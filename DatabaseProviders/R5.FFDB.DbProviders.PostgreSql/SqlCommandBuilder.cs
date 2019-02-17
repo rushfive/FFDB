@@ -15,22 +15,11 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		{
 			public static string Create(Type entityType)
 			{
-				IEnumerable<string> columnsSqlList = EntityMetadata.ColumnInfos(entityType)
-					.Select(c =>
-					{
-						switch (c)
-						{
-							case PropertyColumnInfo property:
-								return ColumnByPropertyColumn(property);
-							case WeekStatColumnInfo weekStat:
-								return ColumnByWeekStatColumn(weekStat);
-							default:
-								throw new ArgumentOutOfRangeException($"Invalid column info type '{c.GetType().Name}'.");
-						}
-					});
+				IEnumerable<string> columns = EntityMetadata.Columns(entityType)
+					.Select(c => c.GetSqlColumnDefinition());
 
 				string nameSql = EntityMetadata.TableName(entityType);
-				string columnsSql = string.Join(", ", columnsSqlList);
+				string columnsSql = string.Join(", ", columns);
 
 				if (EntityMetadata.TryGetCompositePrimaryKeys(entityType, out List<string> compositeKeys))
 				{
@@ -38,32 +27,6 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				}
 
 				return $"CREATE TABLE {nameSql} ({columnsSql});";
-			}
-
-			private static string ColumnByPropertyColumn(PropertyColumnInfo info)
-			{
-				string sql = $"{info.Name} {info.DataType} ";
-
-				if (info.PrimaryKey)
-				{
-					sql += "PRIMARY KEY ";
-				}
-				else if (info.NotNull)
-				{
-					sql += "NOT NULL ";
-				}
-
-				if (info.HasForeignKeyConstraint)
-				{
-					sql += $"REFERENCES {EntityMetadata.TableName(info.ForeignTableType)}({info.ForeignKeyColumn})";
-				}
-
-				return sql.TrimEnd();
-			}
-
-			private static string ColumnByWeekStatColumn(WeekStatColumnInfo info)
-			{
-				return $"{info.Name} {info.DataType}";
 			}
 		}
 
@@ -80,12 +43,12 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			{
 				string tableName = EntityMetadata.TableName(typeof(T));
 
-				List<ColumnInfo> columnInfos = EntityMetadata.ColumnInfos(typeof(T));
-				string columnsSql = string.Join(", ", columnInfos.Select(i => i.Name));
+				List<TableColumn> columns = EntityMetadata.Columns(typeof(T));
+				string columnsSql = string.Join(", ", columns.Select(i => i.Name));
 
 				string sql = $"INSERT INTO {tableName} ({columnsSql}) VALUES ";
 
-				IEnumerable<string> entityValues = entities.Select(e => EntityValues(columnInfos, e, excludeKeys: false));
+				IEnumerable<string> entityValues = entities.Select(e => EntityValues(columns, e, excludeKeys: false));
 				sql += string.Join(", ", entityValues);
 
 				return sql + ";";
@@ -102,12 +65,12 @@ namespace R5.FFDB.DbProviders.PostgreSql
 					compositePrimaryKeys = compositeKeys.ToHashSet();
 				}
 
-				List<ColumnInfo> columnInfos = EntityMetadata.ColumnInfos(typeof(T));
+				List<TableColumn> columns = EntityMetadata.Columns(typeof(T));
 
 				// dont update columns that are primary keys, or used as composite primary keys
-				Func<ColumnInfo, bool> usedAsKey = info =>
+				Func<TableColumn, bool> usedAsKey = info =>
 				{
-					var propertyInfo = info as PropertyColumnInfo;
+					var propertyInfo = info as PropertyColumn;
 					if (propertyInfo == null)
 					{
 						return false;
@@ -116,31 +79,31 @@ namespace R5.FFDB.DbProviders.PostgreSql
 					return propertyInfo.PrimaryKey || compositePrimaryKeys.Contains(propertyInfo.Name);
 				};
 
-				columnInfos = columnInfos.Where(i => !usedAsKey(i)).ToList();
+				columns = columns.Where(i => !usedAsKey(i)).ToList();
 
-				string columnsSql = string.Join(", ", columnInfos.Select(i => i.Name));
-				string values = EntityValues(columnInfos, entity, excludeKeys: true);
+				string columnsSql = string.Join(", ", columns.Select(i => i.Name));
+				string values = EntityValues(columns, entity, excludeKeys: true);
 
 				return $"UPDATE {tableName} SET ({columnsSql}) = {values} WHERE {entity.PrimaryKeyMatchCondition()};";
 			}
 
-			private static string EntityValues<T>(List<ColumnInfo> columnInfos, T entity, bool excludeKeys)
+			private static string EntityValues<T>(List<TableColumn> columns, T entity, bool excludeKeys)
 				where T : SqlEntity
 			{
 				var values = new List<string>();
 
-				foreach (ColumnInfo info in columnInfos)
+				foreach (TableColumn col in columns)
 				{
-					object value = info.Property.GetValue(entity);
+					object value = col.GetValue(entity);
 
 					// column based validations for value
 					// REFACTOR into better validating strategy
-					switch (info)
+					switch (col)
 					{
-						case PropertyColumnInfo property:
+						case PropertyColumn property:
 							if (value == null && property.NotNull)
 							{
-								throw new InvalidOperationException($"Column '{info.Name}' on type '{entity.GetType().Name}' requires a value.");
+								throw new InvalidOperationException($"Column '{col.Name}' on type '{entity.GetType().Name}' requires a value.");
 							}
 							if (property.DataType == PostgresDataType.UUID)
 							{
@@ -148,17 +111,17 @@ namespace R5.FFDB.DbProviders.PostgreSql
 									|| (value.GetType() == typeof(Guid?) && ((Guid?)value).HasValue && ((Guid?)value).Value == Guid.Empty);
 								if (isGuidEmpty)
 								{
-									throw new InvalidOperationException($"Column '{info.Name}' on type '{entity.GetType().Name}' requires a valid Guid value.");
+									throw new InvalidOperationException($"Column '{col.Name}' on type '{entity.GetType().Name}' requires a valid Guid value.");
 								}
 							}
 							break;
-						case WeekStatColumnInfo weekStat:
+						case WeekStatColumn weekStat:
 							break;
 						default:
-							throw new ArgumentOutOfRangeException($"'{info.GetType().Name}' is not a valid '{nameof(ColumnInfo)}' type.");
+							throw new ArgumentOutOfRangeException($"'{col.GetType().Name}' is not a valid '{nameof(TableColumn)}' type.");
 					}
 
-					string valueString = ValueStringByDataType(info.DataType, value);
+					string valueString = ValueStringByDataType(col.DataType, value);
 					values.Add(valueString);
 				}
 
