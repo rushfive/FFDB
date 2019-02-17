@@ -42,6 +42,12 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		//private static Dictionary<WeekStatType, PropertyInfo> _weekStatProperty { get; } = new Dictionary<WeekStatType, PropertyInfo>();
 		private static Dictionary<WeekStatType, WeekStatColumn> _weekStatColumn { get; } = new Dictionary<WeekStatType, WeekStatColumn>();
 
+		public static string TableName<TEntity>()
+			where TEntity : SqlEntity
+		{
+			return TableName(typeof(TEntity));
+		}
+
 		public static string TableName(Type entityType)
 		{
 			if (!_tableNames.TryGetValue(entityType, out string name))
