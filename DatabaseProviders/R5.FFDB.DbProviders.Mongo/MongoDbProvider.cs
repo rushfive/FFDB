@@ -4,7 +4,7 @@ using R5.FFDB.Core.Database;
 using R5.FFDB.DbProviders.Mongo.DatabaseContext;
 using R5.FFDB.DbProviders.Mongo.Serialization;
 
-namespace R5.FFDB.DbProviders.Mongo.DatabaseProvider
+namespace R5.FFDB.DbProviders.Mongo
 {
 	public class MongoDbProvider : IDatabaseProvider
 	{

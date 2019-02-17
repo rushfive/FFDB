@@ -25,7 +25,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task<List<string>> GetPlayerNflIdsAsync(WeekInfo week)
 		{
 			var logger = GetLogger<PlayerStatsDbContext>();
-			var collectionName = CollectionNames.GetForType<WeekStatsPlayerDocument>();
+			var collectionName = CollectionResolver.GetName<WeekStatsPlayerDocument>();
 
 			MongoDbContext mongoDbContext = GetMongoDbContext();
 
@@ -85,12 +85,12 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			await AddPlayerStatsAsync(playerStats, mongoDbContext);
 
 			logger.LogTrace("Added player week stats to '{0}' collection.",
-				CollectionNames.GetForType<WeekStatsPlayerDocument>());
+				CollectionResolver.GetName<WeekStatsPlayerDocument>());
 
 			await AddDstStatsAsync(dstStats, mongoDbContext);
 
 			logger.LogTrace("Added DST week stats to '{0}' collection.",
-				CollectionNames.GetForType<WeekStatsDstDocument>());
+				CollectionResolver.GetName<WeekStatsDstDocument>());
 		}
 
 		private (List<PlayerWeekStats> player, List<PlayerWeekStats> dst) GroupStats(List<PlayerWeekStats> stats)

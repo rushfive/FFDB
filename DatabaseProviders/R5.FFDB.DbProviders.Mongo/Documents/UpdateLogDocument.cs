@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using R5.FFDB.DbProviders.Mongo.Collections;
-using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName(CollectionConstants.FfdbPrefix + "updateLog")]
+	[CollectionName(Collection.UpdateLog)]
 	public class UpdateLogDocument : DocumentBase
 	{
 		[BsonElement("season")]
@@ -32,7 +29,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 
 			var model = new CreateIndexModel<UpdateLogDocument>(keys, options);
 
-			var collection = CollectionResolver.GetCollectionFor<UpdateLogDocument>(database);
+			var collection = CollectionResolver.Get<UpdateLogDocument>(database);
 
 			return collection.Indexes.CreateOneAsync(model);
 		}

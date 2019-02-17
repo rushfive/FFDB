@@ -69,7 +69,7 @@ namespace R5.FFDB.Components.Pipelines.Teams
 					HashSet<string> existingPlayers = (await dbContext.Player.GetAllAsync())
 						.Select(p => p.NflId)
 						.ToHashSet(StringComparer.OrdinalIgnoreCase);
-
+					List<string> rostered = await _rosterCache.GetRosteredIdsAsync();///////TEMP
 					List<string> newIds = (await _rosterCache.GetRosteredIdsAsync())
 						.Where(id => !existingPlayers.Contains(id))
 						.ToList();

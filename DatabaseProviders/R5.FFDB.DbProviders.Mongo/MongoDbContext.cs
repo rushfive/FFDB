@@ -23,14 +23,14 @@ namespace R5.FFDB.DbProviders.Mongo
 		public Task InsertOneAsync<T>(T document)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.InsertOneAsync(document);
 		}
 
 		public Task InsertManyAsync<T>(List<T> documents)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.InsertManyAsync(documents);
 		}
 
@@ -38,7 +38,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			FindOptions<T> findOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 
 			if (filter == null)
 			{
@@ -54,7 +54,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			FindOptions<T> findOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 
 			var asyncCursor = await collection.FindAsync(filter, findOptions).ConfigureAwait(false);
 			return await asyncCursor.SingleOrDefaultAsync().ConfigureAwait(false);
@@ -80,7 +80,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			FindOptions<T> findOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 
 			if (filter == null)
 			{
@@ -100,7 +100,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			FindOptions<T, TProjection> findOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 
 			if (filter == null)
 			{
@@ -116,7 +116,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			FindOptions<T, TProjection> findOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 
 			IAsyncCursor<TProjection> asyncCursor = await collection.FindAsync(filter, findOptions).ConfigureAwait(false);
 			return await asyncCursor.ToListAsync().ConfigureAwait(false);
@@ -125,14 +125,14 @@ namespace R5.FFDB.DbProviders.Mongo
 		public Task<DeleteResult> DeleteOneAsync<T>(FilterDefinition<T> filter)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.DeleteOneAsync(filter);
 		}
 
 		public Task<DeleteResult> DeleteOneAsync<T>(Expression<Func<T, bool>> filter)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.DeleteOneAsync(filter);
 		}
 
@@ -145,14 +145,14 @@ namespace R5.FFDB.DbProviders.Mongo
 				filter = new BsonDocumentFilterDefinition<T>(new MongoDB.Bson.BsonDocument());
 			}
 
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.DeleteManyAsync(filter);
 		}
 
 		public Task<DeleteResult> DeleteManyAsync<T>(Expression<Func<T, bool>> filter)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.DeleteManyAsync(filter);
 		}
 
@@ -160,7 +160,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			UpdateOptions updateOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.UpdateOneAsync(filter, updateDefinition, updateOptions);
 		}
 
@@ -168,7 +168,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			UpdateDefinition<T> updateDefinition, UpdateOptions updateOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.UpdateOneAsync(filter, updateDefinition, updateOptions);
 		}
 
@@ -176,7 +176,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			UpdateOptions updateOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.UpdateManyAsync(filter, updateDefinition, updateOptions);
 		}
 
@@ -191,7 +191,7 @@ namespace R5.FFDB.DbProviders.Mongo
 				filter = new BsonDocumentFilterDefinition<T>(new BsonDocument());
 			}
 
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.UpdateManyAsync(filter, updateDefinition, updateOptions);
 		}
 
@@ -199,7 +199,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			UpdateOptions updateOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.ReplaceOneAsync(filter, document, updateOptions);
 		}
 
@@ -207,7 +207,7 @@ namespace R5.FFDB.DbProviders.Mongo
 			UpdateOptions updateOptions = null)
 			where T : DocumentBase
 		{
-			var collection = CollectionResolver.GetCollectionFor<T>(_database);
+			var collection = CollectionResolver.Get<T>(_database);
 			return collection.ReplaceOneAsync(filter, document, updateOptions);
 		}
 	}

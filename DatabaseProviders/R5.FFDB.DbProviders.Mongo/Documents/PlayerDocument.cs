@@ -3,15 +3,12 @@ using MongoDB.Driver;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.Mongo.Collections;
-using R5.FFDB.DbProviders.Mongo.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName(CollectionConstants.FfdbPrefix + "player")]
+	[CollectionName(Collection.Player)]
 	public class PlayerDocument : DocumentBase
 	{
 		[BsonId]
@@ -96,7 +93,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 
 			var model = new CreateIndexModel<PlayerDocument>(keys);
 
-			var collection = CollectionResolver.GetCollectionFor<PlayerDocument>(database);
+			var collection = CollectionResolver.Get<PlayerDocument>(database);
 			collection.Indexes.CreateOne(model);
 
 			return collection.Indexes.CreateOneAsync(model);

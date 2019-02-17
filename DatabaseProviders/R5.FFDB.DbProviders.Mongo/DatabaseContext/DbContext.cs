@@ -52,30 +52,30 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		private async Task<List<Type>> GetMissingCollectionTypesAsync(IMongoDatabase db)
 		{
 			HashSet<string> existing = (await db.ListCollectionNames().ToListAsync())
-				.Where(n => n.StartsWith(CollectionConstants.FfdbPrefix))
+				.Where(n => n.StartsWith(Collection.FfdbPrefix))
 				.ToHashSet();
 
 			return CollectionResolver.GetDocumentTypes()
 				.Where(t => !existing.Contains(
-					CollectionNames.GetForType(t)))
+					CollectionResolver.GetName(t)))
 				.ToList();
 		}
 
 		private async Task CreateCollectionAsync(Type collectionType, IMongoDatabase db)
 		{
-			var name = CollectionNames.GetForType(collectionType);
+			var name = CollectionResolver.GetName(collectionType);
 			await db.CreateCollectionAsync(name);
 
-			await CollectionIndexes.CreateForTypeAsync(collectionType, db);
+			await Indexes.CreateForTypeAsync(collectionType, db);
 		}
 
 		public async Task<bool> HasBeenInitializedAsync()
 		{
-			List<string> ffdbCollectionNames = CollectionNames.GetAll();
+			List<string> ffdbCollections = CollectionResolver.GetAllNames();
 
 			var existingNames = await GetDatabase().ListCollectionNames().ToListAsync();
 
-			return existingNames.Any(n => ffdbCollectionNames.Contains(n));
+			return existingNames.Any(n => ffdbCollections.Contains(n));
 		}
 	}
 }

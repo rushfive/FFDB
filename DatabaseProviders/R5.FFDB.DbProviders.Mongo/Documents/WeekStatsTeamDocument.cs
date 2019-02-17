@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.Mongo.Collections;
-using R5.FFDB.DbProviders.Mongo.Models;
 
 namespace R5.FFDB.DbProviders.Mongo.Documents
 {
-	[CollectionName(CollectionConstants.FfdbPrefix + "weekStatsTeam")]
+	[CollectionName(Collection.WeekStatsTeam)]
 	public class WeekStatsTeamDocument : DocumentBase
 	{
 		[BsonElement("teamId")]
@@ -134,7 +130,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 
 			var model = new CreateIndexModel<WeekStatsTeamDocument>(keys, options);
 
-			var collection = CollectionResolver.GetCollectionFor<WeekStatsTeamDocument>(database);
+			var collection = CollectionResolver.Get<WeekStatsTeamDocument>(database);
 
 			return collection.Indexes.CreateOneAsync(model);
 		}

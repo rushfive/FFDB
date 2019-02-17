@@ -28,7 +28,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			}
 
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionNames.GetForType<TeamDocument>();
+			var collectionName = CollectionResolver.GetName<TeamDocument>();
 
 			MongoDbContext mongoDbContext = GetMongoDbContext();
 
@@ -71,7 +71,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			}
 
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+			var collectionName = CollectionResolver.GetName<PlayerDocument>();
 
 			logger.LogTrace($"Updating roster mappings..");
 
@@ -87,8 +87,6 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			}
 
 			logger.LogTrace($"Updated roster mappings for players in '{collectionName}' collection.");
-
-			throw new NotImplementedException();
 		}
 
 		private Task ClearRosterMappingsAsync(MongoDbContext mongoDbContext)

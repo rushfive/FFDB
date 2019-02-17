@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.Mongo.DatabaseProvider
+namespace R5.FFDB.DbProviders.Mongo
 {
 	public class MongoConfig
 	{

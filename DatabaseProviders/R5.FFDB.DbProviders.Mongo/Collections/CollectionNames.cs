@@ -1,43 +1,15 @@
-﻿using R5.FFDB.DbProviders.Mongo.Documents;
-using R5.FFDB.DbProviders.Mongo.Models;
-using R5.Lib.ExtensionMethods;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace R5.FFDB.DbProviders.Mongo.Collections
+﻿namespace R5.FFDB.DbProviders.Mongo.Collections
 {
-	public static class CollectionNames
+	public static class Collection
 	{
-		public static List<string> GetAll()
-		{
-			return CollectionResolver.GetDocumentTypes()
-				.Select(GetForType)
-				.ToList();
-		}
+		internal const string FfdbPrefix = "ffdb.";
 
-		public static string GetForType<T>()
-			where T : DocumentBase
-		{
-			return GetForType(typeof(T));
-		}
-
-		public static string GetForType(Type type)
-		{
-			if (!type.IsClass || type.IsAbstract || !type.IsSubclassOf(typeof(DocumentBase)))
-			{
-				throw new ArgumentException($"Type must be a non-abstract class deriving from '{nameof(DocumentBase)}'.");
-			}
-
-			CollectionNameAttribute attr = type.GetCustomAttributeOrNull<CollectionNameAttribute>();
-
-			if (attr == null)
-			{
-				throw new InvalidOperationException($"Document '{type.Name}' is missing its collection name.");
-			}
-
-			return attr.Name;
-		}
+		internal const string Player = FfdbPrefix + "player";
+		internal const string Team = FfdbPrefix + "team";
+		internal const string UpdateLog = FfdbPrefix + "updateLog";
+		internal const string WeekMatchup = FfdbPrefix + "weekMatchup";
+		internal const string WeekStatsDst = FfdbPrefix + "weekStatsDst";
+		internal const string WeekStatsPlayer = FfdbPrefix + "weekStatsPlayer";
+		internal const string WeekStatsTeam = FfdbPrefix + "weekStatsTeam";
 	}
 }

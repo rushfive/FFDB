@@ -19,7 +19,7 @@ using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.Mongo.DatabaseProvider;
+using R5.FFDB.DbProviders.Mongo;
 using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.DbProviders.PostgreSql.Models;

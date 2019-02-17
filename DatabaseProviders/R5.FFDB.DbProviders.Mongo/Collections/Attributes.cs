@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace R5.FFDB.DbProviders.Mongo.Models
+namespace R5.FFDB.DbProviders.Mongo.Collections
 {
 	public class CollectionNameAttribute : Attribute
 	{

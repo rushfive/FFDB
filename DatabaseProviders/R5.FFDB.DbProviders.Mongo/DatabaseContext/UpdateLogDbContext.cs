@@ -23,7 +23,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task<List<WeekInfo>> GetAsync()
 		{
 			var logger = GetLogger<UpdateLogDbContext>();
-			var collectionName = CollectionNames.GetForType<UpdateLogDocument>();
+			var collectionName = CollectionResolver.GetName<UpdateLogDocument>();
 
 			var logs = await GetMongoDbContext().FindAsync<UpdateLogDocument>();
 
@@ -35,7 +35,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task AddAsync(WeekInfo week)
 		{
 			var logger = GetLogger<UpdateLogDbContext>();
-			var collectionName = CollectionNames.GetForType<UpdateLogDocument>();
+			var collectionName = CollectionResolver.GetName<UpdateLogDocument>();
 
 			var log = new UpdateLogDocument
 			{
@@ -51,7 +51,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 		public async Task<bool> HasUpdatedWeekAsync(WeekInfo week)
 		{
-			var collectionName = CollectionNames.GetForType<UpdateLogDocument>();
+			var collectionName = CollectionResolver.GetName<UpdateLogDocument>();
 
 			var builder = Builders<UpdateLogDocument>.Filter;
 			var filter = builder.Eq(l => l.Season, week.Season)

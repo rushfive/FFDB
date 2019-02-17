@@ -2,8 +2,7 @@
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Core.Database;
-using R5.FFDB.DbProviders.Mongo.DatabaseProvider;
-using R5.FFDB.DbProviders.PostgreSql;
+using R5.FFDB.DbProviders.Mongo;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.Engine.ConfigBuilders;
 using System;

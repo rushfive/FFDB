@@ -74,7 +74,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 					await _throttle.DelayAsync();
 				}
 
-				LogDebug($"Successfully fetched '{nflId}'.");
+				LogInformation($"Successfully fetched '{nflId}'.");
 			}
 			
 			return ProcessResult.Continue;

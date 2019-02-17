@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.Mongo.Collections
 {
-	public static class CollectionIndexes
+	public static class Indexes
 	{
 		public static Task CreateForTypeAsync(Type documentType, IMongoDatabase db)
 		{

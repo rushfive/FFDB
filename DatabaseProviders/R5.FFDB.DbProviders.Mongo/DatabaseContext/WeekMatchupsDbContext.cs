@@ -24,7 +24,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task<List<WeekMatchup>> GetAsync(WeekInfo week)
 		{
 			var logger = GetLogger<WeekMatchupsDbContext>();
-			var collectionName = CollectionNames.GetForType<WeekMatchupDocument>();
+			var collectionName = CollectionResolver.GetName<WeekMatchupDocument>();
 
 			var builder = Builders<WeekMatchupDocument>.Filter;
 			var filter = builder.Eq(s => s.Season, week.Season)
@@ -45,7 +45,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			}
 
 			var logger = GetLogger<WeekMatchupsDbContext>();
-			var collectionName = CollectionNames.GetForType<WeekMatchupDocument>();
+			var collectionName = CollectionResolver.GetName<WeekMatchupDocument>();
 
 			logger.LogTrace($"Adding {matchups.Count} week matchups to '{collectionName}' collection..");
 

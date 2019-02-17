@@ -24,7 +24,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		public async Task<List<Player>> GetAllAsync()
 		{
 			var logger = GetLogger<PlayerDbContext>();
-			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+			var collectionName = CollectionResolver.GetName<PlayerDocument>();
 
 			List<PlayerDocument> documents = await GetMongoDbContext().FindAsync<PlayerDocument>();
 
@@ -41,7 +41,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			}
 
 			var logger = GetLogger<PlayerDbContext>();
-			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+			var collectionName = CollectionResolver.GetName<PlayerDocument>();
 
 			PlayerDocument document = PlayerDocument.FromCoreAddEntity(player);
 
@@ -62,7 +62,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			}
 
 			var logger = GetLogger<PlayerDbContext>();
-			var collectionName = CollectionNames.GetForType<PlayerDocument>();
+			var collectionName = CollectionResolver.GetName<PlayerDocument>();
 
 			logger.LogTrace($"Updating player '{id}'..");
 
