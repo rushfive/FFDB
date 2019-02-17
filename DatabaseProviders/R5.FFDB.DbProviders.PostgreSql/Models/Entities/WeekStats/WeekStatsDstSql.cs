@@ -72,7 +72,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 
 			foreach (var kv in stats)
 			{
-				PropertyInfo property = EntityInfoMap.GetPropertyByStat(kv.Key);
+				PropertyInfo property = EntityMetadata.GetPropertyByStat(kv.Key);
 				property.SetValue(result, kv.Value);
 			}
 

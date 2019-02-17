@@ -40,7 +40,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogDebug("Starting creation of database tables..");
 
-			foreach(Type entity in EntityInfoMap.EntityTypes)
+			foreach(Type entity in EntityMetadata.EntityTypes)
 			{
 				await CreateTableAsync(entity, logger);
 			}
@@ -50,7 +50,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		private async Task CreateTableAsync(Type entityType, ILogger<DbContext> logger)
 		{
-			string tableName = EntityInfoMap.TableName(entityType);
+			string tableName = EntityMetadata.TableName(entityType);
 			logger.LogDebug($"Creating table '{tableName}'.");
 
 			string sql = SqlCommandBuilder.Table.Create(entityType);

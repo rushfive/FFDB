@@ -22,7 +22,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task AddTeamsAsync()
 		{
-			string tableName = EntityInfoMap.TableName(typeof(TeamSql));
+			string tableName = EntityMetadata.TableName(typeof(TeamSql));
 			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
 
 			logger.LogDebug($"Adding NFL team entries to '{tableName}' table.");
@@ -42,13 +42,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		
 		public async Task UpdateRosterMappingsAsync(List<Roster> rosters)
 		{
-			string playerTeamMapTableName = EntityInfoMap.TableName(typeof(PlayerTeamMapSql));
+			string playerTeamMapTableName = EntityMetadata.TableName(typeof(PlayerTeamMapSql));
 			var logger = GetLogger<TeamDbContext>();
 
 			logger.LogDebug($"Adding player-team mapping entries to '{playerTeamMapTableName}' table (will first remove all existing entries).");
 			logger.LogTrace($"Updating rosters for: {string.Join(", ", rosters.Select(r => r.TeamAbbreviation))}");
 
-			string playerTableName = EntityInfoMap.TableName(typeof(PlayerSql));
+			string playerTableName = EntityMetadata.TableName(typeof(PlayerSql));
 
 			List<PlayerSql> players = await SelectAsEntitiesAsync<PlayerSql>($"SELECT id, nfl_id FROM {playerTableName};");
 			Dictionary<string, Guid> nflIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
@@ -82,7 +82,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task AddGameStatsAsync(List<TeamWeekStats> stats)
 		{
-			string tableName = EntityInfoMap.TableName(typeof(TeamGameStatsSql));
+			string tableName = EntityMetadata.TableName(typeof(TeamGameStatsSql));
 			var logger = GetLogger<TeamDbContext>();
 
 			logger.LogDebug($"Adding team game stats to '{tableName}' table.");
@@ -111,7 +111,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			var logger = GetLogger<TeamDbContext>();
 			logger.LogInformation($"Removing team game stats rows for {week} from database.");
 
-			string tableName = EntityInfoMap.TableName(typeof(TeamGameStatsSql));
+			string tableName = EntityMetadata.TableName(typeof(TeamGameStatsSql));
 
 			string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
 
@@ -122,7 +122,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task AddGameMatchupsAsync(List<WeekMatchup> gameMatchups)
 		{
-			string tableName = EntityInfoMap.TableName(typeof(WeekGameMatchupSql));
+			string tableName = EntityMetadata.TableName(typeof(WeekGameMatchupSql));
 
 			var logger = GetLogger<TeamDbContext>();
 			logger.LogInformation($"Adding {gameMatchups.Count} week game matchup rows into '{tableName}' table.");

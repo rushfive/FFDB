@@ -17,7 +17,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		{
 			var result = new List<T>();
 
-			List<ColumnInfo> columnInfos = EntityInfoMap.ColumnInfos(typeof(T));
+			List<ColumnInfo> columnInfos = EntityMetadata.ColumnInfos(typeof(T));
 			Dictionary<string, ColumnInfo> columnMap = columnInfos.ToDictionary(i => i.Name, i => i);
 
 			while (reader.Read())

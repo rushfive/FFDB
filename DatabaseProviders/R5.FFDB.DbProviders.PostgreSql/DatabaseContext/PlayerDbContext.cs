@@ -32,7 +32,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public async Task AddAsync(List<Player> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
-			string tableName = EntityInfoMap.TableName(typeof(PlayerSql));
+			string tableName = EntityMetadata.TableName(typeof(PlayerSql));
 
 			logger.LogInformation($"Adding {players.Count} players to the '{tableName}' table.");
 
@@ -49,7 +49,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public async Task UpdateAsync(List<Player> players, List<Roster> rosters)
 		{
 			var logger = GetLogger<PlayerDbContext>();
-			string tableName = EntityInfoMap.TableName(typeof(PlayerSql));
+			string tableName = EntityMetadata.TableName(typeof(PlayerSql));
 
 			logger.LogInformation($"Updating {players.Count} players in the '{tableName}' table.");
 
@@ -102,17 +102,17 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task<List<Player>> GetByTeamForWeekAsync(int teamId, WeekInfo week)
 		{
-			var player = EntityInfoMap.TableName(typeof(PlayerSql));
+			var player = EntityMetadata.TableName(typeof(PlayerSql));
 
 			var tables = new List<string>
 			{
-				EntityInfoMap.TableName(typeof(WeekStatsRushSql)),
-				EntityInfoMap.TableName(typeof(WeekStatsReturnSql)),
-				EntityInfoMap.TableName(typeof(WeekStatsReceiveSql)),
-				EntityInfoMap.TableName(typeof(WeekStatsPassSql)),
-				EntityInfoMap.TableName(typeof(WeekStatsMiscSql)),
-				EntityInfoMap.TableName(typeof(WeekStatsKickSql)),
-				EntityInfoMap.TableName(typeof(WeekStatsIdpSql))
+				EntityMetadata.TableName(typeof(WeekStatsRushSql)),
+				EntityMetadata.TableName(typeof(WeekStatsReturnSql)),
+				EntityMetadata.TableName(typeof(WeekStatsReceiveSql)),
+				EntityMetadata.TableName(typeof(WeekStatsPassSql)),
+				EntityMetadata.TableName(typeof(WeekStatsMiscSql)),
+				EntityMetadata.TableName(typeof(WeekStatsKickSql)),
+				EntityMetadata.TableName(typeof(WeekStatsIdpSql))
 			};
 
 			IEnumerable<string> idsByTable = tables

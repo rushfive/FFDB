@@ -21,7 +21,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task AddUpdateForWeekAsync(WeekInfo week)
 		{
-			string tableName = EntityInfoMap.TableName(typeof(UpdateLogSql));
+			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
 			var logger = GetLogger<DbContext>();
 
 			var log = new UpdateLogSql
@@ -48,7 +48,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public Task<bool> HasUpdatedWeekAsync(WeekInfo week)
 		{
-			string tableName = EntityInfoMap.TableName(typeof(UpdateLogSql));
+			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
 			string sqlCommand = $"SELECT exists(SELECT * FROM {tableName} WHERE season = {week.Season} AND week = {week.Week})";
 			return ExecuteAsBoolAsync(sqlCommand);
 		}
@@ -68,7 +68,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			var logger = GetLogger<UpdateLogSql>();
 			logger.LogInformation($"Removing update log rows for {week} from database.");
 
-			string tableName = EntityInfoMap.TableName(typeof(UpdateLogSql));
+			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
 
 			string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
 

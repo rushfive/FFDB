@@ -92,7 +92,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 			if (string.IsNullOrWhiteSpace(sqlCommand))
 			{
-				sqlCommand = $"SELECT * FROM {EntityInfoMap.TableName(typeof(TSqlEntity))}";
+				sqlCommand = $"SELECT * FROM {EntityMetadata.TableName(typeof(TSqlEntity))}";
 			}
 
 			return ExecuteReaderAsync<List<TSqlEntity>>(sqlCommand, SqlEntityMapper.SelectAsEntitiesAsync<TSqlEntity>);

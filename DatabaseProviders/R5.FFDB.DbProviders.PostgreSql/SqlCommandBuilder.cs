@@ -15,7 +15,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		{
 			public static string Create(Type entityType)
 			{
-				IEnumerable<string> columnsSqlList = EntityInfoMap.ColumnInfos(entityType)
+				IEnumerable<string> columnsSqlList = EntityMetadata.ColumnInfos(entityType)
 					.Select(c =>
 					{
 						switch (c)
@@ -29,10 +29,10 @@ namespace R5.FFDB.DbProviders.PostgreSql
 						}
 					});
 
-				string nameSql = EntityInfoMap.TableName(entityType);
+				string nameSql = EntityMetadata.TableName(entityType);
 				string columnsSql = string.Join(", ", columnsSqlList);
 
-				if (EntityInfoMap.TryGetCompositePrimaryKeys(entityType, out List<string> compositeKeys))
+				if (EntityMetadata.TryGetCompositePrimaryKeys(entityType, out List<string> compositeKeys))
 				{
 					columnsSql += $", PRIMARY KEY({string.Join(", ", compositeKeys)})";
 				}
@@ -55,7 +55,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 
 				if (info.HasForeignKeyConstraint)
 				{
-					sql += $"REFERENCES {EntityInfoMap.TableName(info.ForeignTableType)}({info.ForeignKeyColumn})";
+					sql += $"REFERENCES {EntityMetadata.TableName(info.ForeignTableType)}({info.ForeignKeyColumn})";
 				}
 
 				return sql.TrimEnd();
@@ -78,9 +78,9 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			public static string InsertMany<T>(IEnumerable<T> entities)
 				where T : SqlEntity
 			{
-				string tableName = EntityInfoMap.TableName(typeof(T));
+				string tableName = EntityMetadata.TableName(typeof(T));
 
-				List<ColumnInfo> columnInfos = EntityInfoMap.ColumnInfos(typeof(T));
+				List<ColumnInfo> columnInfos = EntityMetadata.ColumnInfos(typeof(T));
 				string columnsSql = string.Join(", ", columnInfos.Select(i => i.Name));
 
 				string sql = $"INSERT INTO {tableName} ({columnsSql}) VALUES ";
@@ -94,15 +94,15 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			public static string Update<T>(T entity)
 				where T : SqlEntity
 			{
-				string tableName = EntityInfoMap.TableName(typeof(T));
+				string tableName = EntityMetadata.TableName(typeof(T));
 
 				var compositePrimaryKeys = new HashSet<string>();
-				if (EntityInfoMap.TryGetCompositePrimaryKeys(typeof(T), out List<string> compositeKeys))
+				if (EntityMetadata.TryGetCompositePrimaryKeys(typeof(T), out List<string> compositeKeys))
 				{
 					compositePrimaryKeys = compositeKeys.ToHashSet();
 				}
 
-				List<ColumnInfo> columnInfos = EntityInfoMap.ColumnInfos(typeof(T));
+				List<ColumnInfo> columnInfos = EntityMetadata.ColumnInfos(typeof(T));
 
 				// dont update columns that are primary keys, or used as composite primary keys
 				Func<ColumnInfo, bool> usedAsKey = info =>
@@ -198,14 +198,14 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			public static string DeleteAll(Type entityType)
 			{
 				// todo: validate entityType is SqlEntity
-				string tableName = EntityInfoMap.TableName(entityType);
+				string tableName = EntityMetadata.TableName(entityType);
 				return $"DELETE FROM {tableName};";
 			}
 
 			public static string Delete<T>(T entity)
 				where T : SqlEntity
 			{
-				string tableName = EntityInfoMap.TableName(typeof(T));
+				string tableName = EntityMetadata.TableName(typeof(T));
 				return $"DELETE FROM {tableName} WHERE {entity.PrimaryKeyMatchCondition()};";
 			}
 		}

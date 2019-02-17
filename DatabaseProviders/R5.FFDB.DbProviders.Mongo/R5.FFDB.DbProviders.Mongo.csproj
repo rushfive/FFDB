@@ -14,8 +14,4 @@
 	  <ProjectReference Include="..\..\R5.Lib\R5.Lib.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="DatabaseProvider\" />
-	</ItemGroup>
-
 </Project>

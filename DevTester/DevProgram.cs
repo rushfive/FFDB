@@ -71,8 +71,11 @@ namespace DevTester
 			//_dbContext = dbProvider.GetContext();
 			//_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
 
-			FfdbEngine engine = GetConfiguredMongoEngine();
-			await engine.RunInitialSetupAsync();
+			//FfdbEngine engine = GetConfiguredMongoEngine();
+			//await engine.RunInitialSetupAsync();
+
+			var teamType = typeof(TeamSql);
+			string createTable = SqlCommandBuilder.Table.Create(teamType);
 
 			return;
 			Console.ReadKey();

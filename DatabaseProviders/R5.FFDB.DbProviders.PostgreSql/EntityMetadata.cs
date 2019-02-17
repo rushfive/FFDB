@@ -13,10 +13,11 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql
 {
-	// Building sql commands uses attributes and reflection,
-	// so pre-cache everything for better performance
-	public static class EntityInfoMap
+	// Caches metadata deriving from attributes and reflection for better performance.
+	// Metadata is used in SqlCommandBuilder to dynamically generate SQL queries/commands.
+	public static class EntityMetadata
 	{
+		// Tables are created in the order as defined in this list
 		public static List<Type> EntityTypes = new List<Type>
 		{
 			typeof(TeamSql),
@@ -74,7 +75,7 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		}
 
 		// initialization
-		static EntityInfoMap()
+		static EntityMetadata()
 		{
 			ResolveMapData();
 		}
@@ -110,41 +111,40 @@ namespace R5.FFDB.DbProviders.PostgreSql
 		{
 			CompositePrimaryKeysAttribute attr = entityType.GetCustomAttributeOrNull<CompositePrimaryKeysAttribute>();
 
-			if (attr == null)
-			{
-				return null;
-			}
-
-			return attr.ColumnNames;
+			return attr?.ColumnNames;
 		}
 
 		private static List<ColumnInfo> GetColumnInfos(Type entityType)
 		{
-			List<PropertyInfo> columnProperties = entityType
-				.GetProperties()
-				.Where(p => p.GetCustomAttributes()
-					.Any(a => a.GetType().BaseType == typeof(EntityColumnAttribute)))
-				.ToList();
-
-			if (!columnProperties.Any())
-			{
-				throw new InvalidOperationException($"Type '{entityType.Name}' doesn't contain any column attributes.");
-			}
-
 			var result = new List<ColumnInfo>();
 
-			foreach (PropertyInfo property in columnProperties)
-			{
-				ColumnInfo info = ColumnInfoResolver.FromProperty(property);
-				result.Add(info);
+			List<PropertyColumnInfo> propertyColumns = GetPropertyColumns(entityType);
+			result.AddRange(propertyColumns);
 
-				if (info is WeekStatColumnInfo weekStatInfo)
-				{
-					_weekStatProperty[weekStatInfo.StatType] = weekStatInfo.Property;
-				}
+			List<WeekStatColumnInfo> weekStatColumns = GetWeekStatColumns(entityType);
+			foreach (var c in weekStatColumns)
+			{
+				result.Add(c);
+				_weekStatProperty[c.StatType] = c.Property;
 			}
 
 			return result;
+		}
+
+		private static List<PropertyColumnInfo> GetPropertyColumns(Type entityType)
+		{
+			return entityType
+				.GetPropertiesContainingAttribute<ColumnAttribute>()
+				.Select(PropertyColumnInfo.FromProperty)
+				.ToList();
+		}
+
+		private static List<WeekStatColumnInfo> GetWeekStatColumns(Type entityType)
+		{
+			return entityType
+				.GetPropertiesContainingAttribute<WeekStatColumnAttribute>()
+				.Select(WeekStatColumnInfo.FromProperty)
+				.ToList();
 		}
 	}
 }

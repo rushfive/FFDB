@@ -47,7 +47,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 			var logger = GetLogger<WeekStatsDbContext>();
 
-			List<PlayerSql> players = await SelectAsEntitiesAsync<PlayerSql>($"SELECT id, nfl_id FROM {EntityInfoMap.TableName(typeof(PlayerSql))};");
+			List<PlayerSql> players = await SelectAsEntitiesAsync<PlayerSql>($"SELECT id, nfl_id FROM {EntityMetadata.TableName(typeof(PlayerSql))};");
 
 			var nflPlayerIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
 			var teamNflIdMap = TeamDataStore.GetAll().ToDictionary(t => t.NflId, t => t.Id);
@@ -209,7 +209,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			foreach(Type type in _weekStatTypes)
 			{
-				string tableName = EntityInfoMap.TableName(type);
+				string tableName = EntityMetadata.TableName(type);
 
 				string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
 
