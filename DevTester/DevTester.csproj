@@ -8,8 +8,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj" />
-		<ProjectReference Include="..\DatabaseProviders\R5.PostgresMapper\R5.PostgresMapper.csproj" />
-		<ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
+		<ProjectReference Include="..\Engine\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
+		<ProjectReference Include="..\R5.Internals\R5.PostgresMapper\R5.PostgresMapper.csproj" />
 	</ItemGroup>
 
 </Project>

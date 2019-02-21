@@ -10,8 +10,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
-	  <ProjectReference Include="..\R5.PostgresMapper\R5.PostgresMapper.csproj" />
+	  <ProjectReference Include="..\..\Engine\R5.FFDB.Core\R5.FFDB.Core.csproj" />
+	  <ProjectReference Include="..\..\R5.Internals\R5.PostgresMapper\R5.PostgresMapper.csproj" />
 	</ItemGroup>
 
 </Project>

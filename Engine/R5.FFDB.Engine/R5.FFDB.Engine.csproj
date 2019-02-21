@@ -14,8 +14,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DatabaseProviders\R5.FFDB.DbProviders.Mongo\R5.FFDB.DbProviders.Mongo.csproj" />
-	  <ProjectReference Include="..\DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj" />
+	  <ProjectReference Include="..\..\DatabaseProviders\R5.FFDB.DbProviders.Mongo\R5.FFDB.DbProviders.Mongo.csproj" />
+	  <ProjectReference Include="..\..\DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj" />
 	  <ProjectReference Include="..\R5.FFDB.Components\R5.FFDB.Components.csproj" />
 	</ItemGroup>
 
