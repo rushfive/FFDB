@@ -1,12 +1,13 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace R5.Lib.Cache.AsyncLazyCache
+namespace R5.Internals.Caching.Caches
 {
 	public interface IAsyncLazyCache : IDisposable
 	{
@@ -196,6 +197,22 @@ namespace R5.Lib.Cache.AsyncLazyCache
 					exclusiveLock.Lock.Release();
 				}
 			}
+		}
+	}
+
+	public static class ServiceCollectionExtensions
+	{
+		public static IServiceCollection AddAsyncLazyCache(this IServiceCollection services)
+		{
+			if (services == null)
+			{
+				throw new ArgumentNullException(nameof(services), "Service collection must be provided.");
+			}
+
+			services.TryAdd(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
+			services.TryAdd(ServiceDescriptor.Singleton<IAsyncLazyCache, AsyncLazyCache>());
+
+			return services;
 		}
 	}
 }

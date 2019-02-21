@@ -1,13 +1,13 @@
 ﻿using R5.Lib.ExtensionMethods;
-using R5.PostgresMapper.Attributes;
-using R5.PostgresMapper.Models;
+using R5.Internals.PostgresMapper.Attributes;
+using R5.Internals.PostgresMapper.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace R5.PostgresMapper
+namespace R5.Internals.PostgresMapper
 {
 	internal static class MetadataResolver
 	{

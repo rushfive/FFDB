@@ -1,13 +1,13 @@
 ﻿using R5.Lib.ExtensionMethods;
-using R5.PostgresMapper.Attributes;
-using R5.PostgresMapper.Mappers;
+using R5.Internals.PostgresMapper.Attributes;
+using R5.Internals.PostgresMapper.Mappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace R5.PostgresMapper.Models
+namespace R5.Internals.PostgresMapper.Models
 {
 	public class TableColumn
 	{

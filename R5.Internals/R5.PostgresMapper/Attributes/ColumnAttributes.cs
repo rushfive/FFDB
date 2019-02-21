@@ -1,10 +1,10 @@
-﻿using R5.PostgresMapper.Mappers;
-using R5.PostgresMapper.Models;
+﻿using R5.Internals.PostgresMapper.Mappers;
+using R5.Internals.PostgresMapper.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.PostgresMapper.Attributes
+namespace R5.Internals.PostgresMapper.Attributes
 {
 	[AttributeUsage(AttributeTargets.Property)]
 	public abstract class EntityColumnAttribute : Attribute

@@ -6,7 +6,7 @@ using R5.FFDB.Components.Http;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
-using R5.Lib.Cache.AsyncLazyCache;
+using R5.Internals.Caching.Caches;
 using System;
 using System.Collections.Generic;
 using System.IO;

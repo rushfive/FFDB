@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.PostgresMapper.Models
+namespace R5.Internals.PostgresMapper.Models
 {
 	public enum PostgresDataType
 	{

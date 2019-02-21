@@ -1,9 +1,9 @@
-﻿using R5.PostgresMapper.Models;
+﻿using R5.Internals.PostgresMapper.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.PostgresMapper.Mappers
+namespace R5.Internals.PostgresMapper.Mappers
 {
 	public static class ToPostgresDataTypeMapper
 	{

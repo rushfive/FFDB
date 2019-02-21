@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.PostgresMapper.Attributes
+namespace R5.Internals.PostgresMapper.Attributes
 {
 	[AttributeUsage(AttributeTargets.Class)]
 	public abstract class EntityTableAttribute : Attribute { }

@@ -1,9 +1,9 @@
-﻿using R5.PostgresMapper.Attributes;
+﻿using R5.Internals.PostgresMapper.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.PostgresMapper.Models
+namespace R5.Internals.PostgresMapper.Models
 {
 	public abstract class SqlEntity
 	{
