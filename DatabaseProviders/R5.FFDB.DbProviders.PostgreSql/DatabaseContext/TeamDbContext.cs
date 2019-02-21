@@ -63,8 +63,8 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			PostgresDbContext db = GetPostgresDbContext();
 
 			logger.LogTrace($"Updating roster mappings..");
-
-			await ClearRosterMappingsAsync(db);
+			
+			await db.TruncateAsync<PlayerTeamMapSql>();
 
 			Dictionary<string, Guid> nflIdMap = await GetNflIdMapAsync(db);
 
@@ -76,14 +76,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogTrace($"Updated roster mappings for players in '{EntityMetadata.TableName<PlayerTeamMapSql>()}' table.");
 		}
 
-		private Task ClearRosterMappingsAsync(PostgresDbContext db)
-		{
-			string playerTeamMapTableName = EntityMetadata.TableName(typeof(PlayerTeamMapSql));
-
-			string truncateMappingsSql = $"TRUNCATE {playerTeamMapTableName};";
-			return db.ExecuteCommandAsync(truncateMappingsSql);
-		}
-
 		private async Task<Dictionary<string, Guid>> GetNflIdMapAsync(PostgresDbContext db)
 		{
 			string playerTableName = EntityMetadata.TableName(typeof(PlayerSql));
@@ -92,23 +84,15 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			return players.ToDictionary(p => p.NflId, p => p.Id);
 		}
 
-		private async Task UpdateForRosterAsync(Roster roster,
+		private Task UpdateForRosterAsync(Roster roster,
 			Dictionary<string, Guid> nflIdMap, PostgresDbContext db)
 		{
-			var entries = new List<PlayerTeamMapSql>();
-
-			IEnumerable<Guid> playerIds = roster.Players
+			var entries = roster.Players
 				.Where(p => nflIdMap.ContainsKey(p.NflId))
-				.Select(p => nflIdMap[p.NflId]);
+				.Select(p => PlayerTeamMapSql.ToSqlEntity(
+					nflIdMap[p.NflId], roster.TeamId));
 
-			foreach(var id in playerIds)
-			{
-				entries.Add(PlayerTeamMapSql.ToSqlEntity(id, roster.TeamId));
-			}
-
-			string insertSql = SqlCommandBuilder.Rows.InsertMany(entries);
-
-			await db.ExecuteCommandAsync(insertSql);
+			return db.InsertManyAsync(entries);
 		}
 
 		//public async Task AddTeamsAsync()

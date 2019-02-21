@@ -27,6 +27,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
 
 		internal abstract string GetSqlColumnDefinition();
 
+		internal string GetPropertyName()
+		{
+			return _property.Name;
+		}
+
 		internal object GetValue(object obj)
 		{
 			return _property.GetValue(obj);

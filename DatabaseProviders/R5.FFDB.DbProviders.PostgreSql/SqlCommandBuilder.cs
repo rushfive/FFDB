@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql
@@ -52,6 +54,65 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				sql += string.Join(", ", entityValues);
 
 				return sql + ";";
+			}
+
+			public static string UpdateNEW<T>(string whereCondition, 
+				params (Expression<Func<T, object>> propertyExpression, object value)[] updates)
+				where T : SqlEntity
+			{
+				if (updates == null || !updates.Any())
+				{
+					throw new ArgumentNullException(nameof(updates), "Property updates list must be provided to perform update.");
+				}
+
+				var tableName = EntityMetadata.TableName<T>();
+
+				List<TableColumn> columns = EntityMetadata.Columns(typeof(T));
+				Dictionary<string, TableColumn> propertyColumnMap = columns.ToDictionary(c => c.GetPropertyName(), c => c);
+
+				var setClauses = new List<string>();
+				foreach(var update in updates)
+				{
+					PropertyInfo updateProperty = GetPropertyInfoFromExpression(update.propertyExpression);
+					
+					if (!propertyColumnMap.TryGetValue(updateProperty.Name, out TableColumn col))
+					{
+						throw new InvalidOperationException($"Failed to resolve property '{updateProperty.Name}' to a table column for '{tableName}'.");
+					}
+
+					setClauses.Add($"{col.Name} = {ValueStringByDataType(col.DataType, update.value)}");
+				}
+
+
+				string sql = $"UPDATE {tableName} SET {string.Join(", ", setClauses)}";
+				if (!string.IsNullOrWhiteSpace(whereCondition))
+				{
+					//sql += $" {whereCondition}";
+					sql = sql + " " + whereCondition;
+				}
+				sql += ";";
+
+				return sql;
+			}
+
+			
+
+			private static PropertyInfo GetPropertyInfoFromExpression<T>(Expression<Func<T, object>> expression)
+				where T : SqlEntity
+			{
+				var memberExpression = expression.Body as MemberExpression;
+				if (memberExpression == null)
+				{
+					throw new ArgumentException($"Failed to read the property expression body as a '{nameof(MemberExpression)}' type.");
+				}
+
+				var propertyInfo = memberExpression.Member as PropertyInfo;
+				if (propertyInfo == null)
+				{
+					throw new ArgumentException($"Failed to read the member expression as a '{nameof(PropertyInfo)}' type.");
+				}
+
+				return propertyInfo;
 			}
 
 			public static string Update<T>(T entity)

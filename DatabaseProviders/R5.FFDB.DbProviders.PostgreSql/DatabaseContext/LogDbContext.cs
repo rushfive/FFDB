@@ -35,22 +35,25 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			logger.LogTrace($"Adding update log for {week} using SQL command: " + Environment.NewLine + sql);
 
-			await ExecuteNonQueryAsync(sql);
+			//await ExecuteNonQueryAsync(sql);
 
 			logger.LogInformation($"Successfully added update log for {week} to '{tableName}' table.");
 		}
 
 		public async Task<List<WeekInfo>> GetUpdatedWeeksAsync()
 		{
-			var logs = await SelectAsync<UpdateLogSql>();
-			return logs.Select(sql => new WeekInfo(sql.Season, sql.Week)).ToList();
+			throw new NotImplementedException();
+			//var logs = await SelectAsync<UpdateLogSql>();
+			//return logs.Select(sql => new WeekInfo(sql.Season, sql.Week)).ToList();
 		}
 
 		public Task<bool> HasUpdatedWeekAsync(WeekInfo week)
 		{
 			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
 			string sqlCommand = $"SELECT exists(SELECT * FROM {tableName} WHERE season = {week.Season} AND week = {week.Week})";
-			return ExecuteAsBoolAsync(sqlCommand);
+
+			throw new NotImplementedException();
+			//return ExecuteAsBoolAsync(sqlCommand);
 		}
 
 		public async Task RemoveAllAsync()
@@ -58,7 +61,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			var logger = GetLogger<UpdateLogSql>();
 			logger.LogInformation("Removing all update log rows from database.");
 
-			await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(typeof(UpdateLogSql)));
+			//await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(typeof(UpdateLogSql)));
 
 			logger.LogInformation("Successfully removed all update log rows from database.");
 		}
@@ -72,7 +75,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
 
-			await ExecuteNonQueryAsync(sqlCommand);
+			//await ExecuteNonQueryAsync(sqlCommand);
 
 			logger.LogInformation($"Successfully removed update log rows for {week} from database.");
 		}

@@ -22,36 +22,16 @@ namespace R5.FFDB.DbProviders.PostgreSql
 			_getConnection = getConnection;
 		}
 
-		public async Task ExecuteCommandAsync(string sqlCommand, List<(string key, string value)> parameters = null)
-		{
-			using (NpgsqlConnection connection = _getConnection())
-			{
-				await connection.OpenAsync();
-
-				using (var command = new NpgsqlCommand())
-				{
-					command.Connection = connection;
-					command.CommandText = sqlCommand;
-
-					if (parameters?.Any() ?? false)
-					{
-						parameters.ForEach(p => command.Parameters.AddWithValue(p.key, p.value));
-					}
-
-					await command.ExecuteNonQueryAsync();
-				}
-			}
-		}
-
-		public Task<List<TSqlEntity>> SelectAsync<TSqlEntity>(string sqlCommand = null)
-			where TSqlEntity : SqlEntity, new()
+		public async Task<List<TEntity>> SelectAsync<TEntity>(string sqlCommand = null)
+			where TEntity : SqlEntity, new()
 		{
 			if (string.IsNullOrWhiteSpace(sqlCommand))
 			{
-				sqlCommand = $"SELECT * FROM {EntityMetadata.TableName(typeof(TSqlEntity))}";
+				sqlCommand = $"SELECT * FROM {EntityMetadata.TableName(typeof(TEntity))}";
 			}
 
-			return QueryAsync<List<TSqlEntity>>(sqlCommand, SqlEntityMapper.SelectAsEntitiesAsync<TSqlEntity>);
+			return await QueryAsync(sqlCommand, SqlEntityMapper.SelectAsEntitiesAsync<TEntity>)
+				.ConfigureAwait(false);
 		}
 
 		private async Task<TReturn> QueryAsync<TReturn>(string sqlCommand, Func<NpgsqlDataReader, TReturn> onReadMapper)
@@ -77,6 +57,68 @@ namespace R5.FFDB.DbProviders.PostgreSql
 				}
 			}
 		}
+
+		public async Task TruncateAsync<TEntity>()
+			where TEntity : SqlEntity
+		{
+			string tableName = EntityMetadata.TableName(typeof(TEntity));
+
+			string sqlCommand = $"TRUNCATE {tableName};";
+
+			await ExecuteCommandAsync(sqlCommand).ConfigureAwait(false);
+		}
+
+		public async Task InsertAsync<TEntity>(TEntity entity)
+			where TEntity : SqlEntity
+		{
+			if (entity == null)
+			{
+				throw new ArgumentNullException(nameof(entity), "Entity must be provided to perform insert.");
+			}
+
+			string sqlCommand = SqlCommandBuilder.Rows.Insert(entity);
+
+			await ExecuteCommandAsync(sqlCommand).ConfigureAwait(false);
+		}
+
+		public async Task InsertManyAsync<TEntity>(IEnumerable<TEntity> entities)
+			where TEntity : SqlEntity
+		{
+			if (entities == null || !entities.Any())
+			{
+				throw new ArgumentNullException(nameof(entities), "Entities must be provided to perform inserts.");
+			}
+
+			string sqlCommand = SqlCommandBuilder.Rows.InsertMany(entities);
+
+			await ExecuteCommandAsync(sqlCommand).ConfigureAwait(false);
+		}
+
+
+		// OLD BELOW - check to make private!
+
+		public async Task ExecuteCommandAsync(string sqlCommand, List<(string key, string value)> parameters = null)
+		{
+			using (NpgsqlConnection connection = _getConnection())
+			{
+				await connection.OpenAsync();
+
+				using (var command = new NpgsqlCommand())
+				{
+					command.Connection = connection;
+					command.CommandText = sqlCommand;
+
+					if (parameters?.Any() ?? false)
+					{
+						parameters.ForEach(p => command.Parameters.AddWithValue(p.key, p.value));
+					}
+
+					await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+				}
+			}
+		}
+
+		
 
 		public async Task<bool> QueryBoolAsync(string sqlCommand)
 		{

@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Lib", "R5.Lib\R5.Lib.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Lib.Tests", "R5.Lib.Tests\R5.Lib.Tests.csproj", "{309D395B-56AB-420F-8B7D-6E15B71E6BDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.PostgresMapper", "DatabaseProviders\R5.PostgresMapper\R5.PostgresMapper.csproj", "{36FF341C-788C-4723-A1D5-0007EAF43D88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{309D395B-56AB-420F-8B7D-6E15B71E6BDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{309D395B-56AB-420F-8B7D-6E15B71E6BDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{309D395B-56AB-420F-8B7D-6E15B71E6BDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36FF341C-788C-4723-A1D5-0007EAF43D88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36FF341C-788C-4723-A1D5-0007EAF43D88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36FF341C-788C-4723-A1D5-0007EAF43D88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36FF341C-788C-4723-A1D5-0007EAF43D88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +90,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1EF20706-D610-4D34-A5B9-F504BF57CA6C} = {D8EB869E-CFF0-434C-87C3-F06F1400070B}
 		{79B18893-A4B2-4923-B5C0-2DAAA6A9EA50} = {D8EB869E-CFF0-434C-87C3-F06F1400070B}
+		{36FF341C-788C-4723-A1D5-0007EAF43D88} = {D8EB869E-CFF0-434C-87C3-F06F1400070B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2BAF5E7F-EB9F-4D18-93CA-91644AE0282C}

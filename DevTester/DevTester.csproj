@@ -2,12 +2,13 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<TargetFramework>netcoreapp2.2</TargetFramework>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj" />
+		<ProjectReference Include="..\DatabaseProviders\R5.PostgresMapper\R5.PostgresMapper.csproj" />
 		<ProjectReference Include="..\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
 	</ItemGroup>
 

@@ -52,24 +52,23 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 		[Column("college", PostgresDataType.TEXT)]
 		public string College { get; set; }
 
-		public static PlayerSql FromCoreEntity(Player player,
-			int? number, Position? position, RosterStatus? status)
+		public static PlayerSql FromCoreAddEntity(PlayerAdd add)
 		{
 			return new PlayerSql
 			{
-				Id =  player.Id == Guid.Empty ? Guid.NewGuid() : player.Id,
-				NflId = player.NflId,
-				EsbId = player.EsbId,
-				GsisId = player.GsisId,
-				FirstName = player.FirstName,
-				LastName = player.LastName,
-				Position = position,
-				Status = status,
-				Number = number,
-				//Height = player.Height,
-				//Weight = player.Weight,
-				//DateOfBirth = player.DateOfBirth,
-				//College = player.College
+				Id = Guid.NewGuid(),
+				NflId = add.NflId,
+				EsbId = add.EsbId,
+				GsisId = add.GsisId,
+				FirstName = add.FirstName,
+				LastName = add.LastName,
+				Position = add.Position,
+				Status = add.Status,
+				Number = add.Number,
+				Height = add.Height,
+				Weight = add.Weight,
+				DateOfBirth = add.DateOfBirth,
+				College = add.College
 			};
 		}
 
@@ -82,11 +81,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
 				EsbId = sql.EsbId,
 				GsisId = sql.GsisId,
 				FirstName = sql.FirstName,
-				LastName = sql.LastName,
-				//Height = sql.Height,
-				//Weight = sql.Weight,
-				//DateOfBirth = sql.DateOfBirth,
-				//College = sql.College
+				LastName = sql.LastName
 			};
 		}
 

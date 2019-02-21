@@ -27,6 +27,7 @@ using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using R5.FFDB.Engine;
 using R5.Lib.Pipeline;
+using R5.PostgresMapper.Models;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -74,8 +75,22 @@ namespace DevTester
 			//FfdbEngine engine = GetConfiguredMongoEngine();
 			//await engine.RunInitialSetupAsync();
 
-			var teamType = typeof(TeamSql);
-			string createTable = SqlCommandBuilder.Table.Create(teamType);
+			//var teamType = typeof(TeamSql);
+			//string createTable = SqlCommandBuilder.Table.Create(teamType);
+
+
+			var test1 = new TestEntity();
+			var test2 = new TestEntity2();
+
+			var t1Name = test1.TableName;
+			var t2Name = test2.TableName;
+
+			var t1Cols = test1.Columns();
+			var t1bCols = test1.Columns();
+			var t2Cols = test2.Columns();
+
+
+
 
 			return;
 			Console.ReadKey();

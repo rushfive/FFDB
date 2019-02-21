@@ -45,59 +45,61 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		// async Task AddWeeksAsync(List<WeekStats> stats)
 		public async Task AddWeeksAsync()
 		{
+			throw new NotImplementedException();
+
 			var logger = GetLogger<WeekStatsDbContext>();
 
-			List<PlayerSql> players = await SelectAsync<PlayerSql>($"SELECT id, nfl_id FROM {EntityMetadata.TableName(typeof(PlayerSql))};");
+			//List<PlayerSql> players = await SelectAsync<PlayerSql>($"SELECT id, nfl_id FROM {EntityMetadata.TableName(typeof(PlayerSql))};");
 
-			var nflPlayerIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
-			var teamNflIdMap = TeamDataStore.GetAll().ToDictionary(t => t.NflId, t => t.Id);
+			//var nflPlayerIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
+			//var teamNflIdMap = TeamDataStore.GetAll().ToDictionary(t => t.NflId, t => t.Id);
 
-			List<WeekStatsSqlAdd> statsAdd = null;// GetStatsAdd(stats, nflPlayerIdMap, teamNflIdMap, logger);
+			//List<WeekStatsSqlAdd> statsAdd = null;// GetStatsAdd(stats, nflPlayerIdMap, teamNflIdMap, logger);
 
-			logger.LogInformation($"Adding week stats stats for {statsAdd.Count} week(s).");
-			//logger.LogTrace($"Adding week stats for: {string.Join(", ", stats.Select(s => s.Week))}");
+			//logger.LogInformation($"Adding week stats stats for {statsAdd.Count} week(s).");
+			////logger.LogTrace($"Adding week stats for: {string.Join(", ", stats.Select(s => s.Week))}");
 
-			foreach(WeekStatsSqlAdd add in statsAdd)
-			{
-				logger.LogDebug($"Beginning stats add for week {add.Week}.");
+			//foreach(WeekStatsSqlAdd add in statsAdd)
+			//{
+			//	logger.LogDebug($"Beginning stats add for week {add.Week}.");
 
-				if (add.PassStats.Any())
-				{
-					await AddStatsAsync(add.PassStats, add.Week, "Week Stats (Pass)", logger);
-				}
-				if (add.RushStats.Any())
-				{
-					await AddStatsAsync(add.RushStats, add.Week, "Week Stats (Rush)", logger);
-				}
-				if (add.ReceiveStats.Any())
-				{
-					await AddStatsAsync(add.ReceiveStats, add.Week, "Week Stats (Receive)", logger);
-				}
-				if (add.ReturnStats.Any())
-				{
-					await AddStatsAsync(add.ReturnStats, add.Week, "Week Stats (Return)", logger);
-				}
-				if (add.MiscStats.Any())
-				{
-					await AddStatsAsync(add.MiscStats, add.Week, "Week Stats (Misc)", logger);
-				}
-				if (add.KickStats.Any())
-				{
-					await AddStatsAsync(add.KickStats, add.Week, "Week Stats (Kick)", logger);
-				}
-				if (add.DstStats.Any())
-				{
-					await AddStatsAsync(add.DstStats, add.Week, "Week Stats (DST)", logger);
-				}
-				if (add.IdpStats.Any())
-				{
-					await AddStatsAsync(add.IdpStats, add.Week, "Week Stats (IDP)", logger);
-				}
+			//	if (add.PassStats.Any())
+			//	{
+			//		await AddStatsAsync(add.PassStats, add.Week, "Week Stats (Pass)", logger);
+			//	}
+			//	if (add.RushStats.Any())
+			//	{
+			//		await AddStatsAsync(add.RushStats, add.Week, "Week Stats (Rush)", logger);
+			//	}
+			//	if (add.ReceiveStats.Any())
+			//	{
+			//		await AddStatsAsync(add.ReceiveStats, add.Week, "Week Stats (Receive)", logger);
+			//	}
+			//	if (add.ReturnStats.Any())
+			//	{
+			//		await AddStatsAsync(add.ReturnStats, add.Week, "Week Stats (Return)", logger);
+			//	}
+			//	if (add.MiscStats.Any())
+			//	{
+			//		await AddStatsAsync(add.MiscStats, add.Week, "Week Stats (Misc)", logger);
+			//	}
+			//	if (add.KickStats.Any())
+			//	{
+			//		await AddStatsAsync(add.KickStats, add.Week, "Week Stats (Kick)", logger);
+			//	}
+			//	if (add.DstStats.Any())
+			//	{
+			//		await AddStatsAsync(add.DstStats, add.Week, "Week Stats (DST)", logger);
+			//	}
+			//	if (add.IdpStats.Any())
+			//	{
+			//		await AddStatsAsync(add.IdpStats, add.Week, "Week Stats (IDP)", logger);
+			//	}
 
-				logger.LogDebug($"Successfully added stats for week {add.Week}.");
-			}
+			//	logger.LogDebug($"Successfully added stats for week {add.Week}.");
+			//}
 
-			logger.LogInformation($"Successfully finished adding week stats for {statsAdd.Count} weeks.");
+			//logger.LogInformation($"Successfully finished adding week stats for {statsAdd.Count} weeks.");
 		}
 
 		private static List<WeekStatsSqlAdd> GetStatsAdd(
@@ -184,7 +186,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			logger.LogTrace($"Adding '{itemLabel}' for {week} using SQL command:"
 				+ Environment.NewLine + sqlCommand);
 
-			await ExecuteNonQueryAsync(sqlCommand);
+			//await ExecuteNonQueryAsync(sqlCommand);
 
 			logger.LogDebug($"Successfully added '{itemLabel}' for {week} ({items.Count} total rows).");
 		}
@@ -196,7 +198,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			foreach(Type type in _weekStatTypes)
 			{
-				await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(type));
+				//await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(type));
 			}
 
 			logger.LogInformation("Successfully removed all week stats rows from database.");
@@ -213,7 +215,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 				string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
 
-				await ExecuteNonQueryAsync(sqlCommand);
+				//await ExecuteNonQueryAsync(sqlCommand);
 			}
 
 			logger.LogInformation($"Successfully removed week stats rows for {week} from database.");

@@ -27,16 +27,18 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public Task<bool> HasBeenInitializedAsync()
 		{
 			string sqlCommand = "SELECT exists(select schema_name FROM information_schema.schemata WHERE schema_name = 'ffdb');";
-			return ExecuteAsBoolAsync(sqlCommand);
+			throw new NotImplementedException();
+			//return ExecuteAsBoolAsync(sqlCommand);
 		}
 
 		public async Task InitializeAsync(bool force)
 		{
+			throw new NotImplementedException();
 			var logger = GetLogger<DbContext>();
 
 			logger.LogInformation("Creating postgresql schema 'ffdb'.");
 
-			await ExecuteNonQueryAsync("CREATE SCHEMA ffdb;");
+			//await ExecuteNonQueryAsync("CREATE SCHEMA ffdb;");
 
 			logger.LogDebug("Starting creation of database tables..");
 
@@ -56,7 +58,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			string sql = SqlCommandBuilder.Table.Create(entityType);
 			logger.LogTrace($"Adding using SQL command:" + Environment.NewLine + sql);
 
-			await ExecuteNonQueryAsync(sql);
+			//await ExecuteNonQueryAsync(sql);
 			logger.LogInformation($"Successfully added table '{tableName}'.");
 		}
 	}
