@@ -1,4 +1,4 @@
-﻿using R5.Lib.ExtensionMethods;
+﻿using R5.Internals.Extensions.Reflection;
 using R5.Internals.PostgresMapper.Attributes;
 using R5.Internals.PostgresMapper.Models;
 using System;

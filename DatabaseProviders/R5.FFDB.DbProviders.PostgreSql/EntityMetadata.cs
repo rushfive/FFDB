@@ -4,7 +4,7 @@ using R5.FFDB.DbProviders.PostgreSql.Models;
 using R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
-using R5.Lib.ExtensionMethods;
+using R5.Internals.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;

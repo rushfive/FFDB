@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
-namespace R5.Lib.ExtensionMethods
+namespace R5.Internals.Extensions.Reflection
 {
 	public static class TypeExtensions
 	{

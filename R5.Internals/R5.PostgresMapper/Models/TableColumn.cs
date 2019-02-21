@@ -1,5 +1,4 @@
-﻿using R5.Lib.ExtensionMethods;
-using R5.Internals.PostgresMapper.Attributes;
+﻿using R5.Internals.PostgresMapper.Attributes;
 using R5.Internals.PostgresMapper.Mappers;
 using System;
 using System.Collections.Generic;

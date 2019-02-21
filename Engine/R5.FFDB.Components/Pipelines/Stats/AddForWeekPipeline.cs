@@ -10,7 +10,7 @@ using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
-using R5.Lib.ExtensionMethods;
+using R5.Internals.Extensions.DependencyInjection;
 using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;

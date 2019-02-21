@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace R5.Lib.ExtensionMethods
+namespace R5.Internals.Extensions.DependencyInjection
 {
 	public static class ServiceProviderExtensions
 	{

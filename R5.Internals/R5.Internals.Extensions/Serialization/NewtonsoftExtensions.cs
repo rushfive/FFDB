@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
-namespace R5.Lib.ExtensionMethods
+namespace R5.Internals.Extensions.Serialization
 {
-	public static class JObjectExtensions
+	public static class NewtonsoftExtensions
 	{
 		public static bool TryGetToken(this JToken root, string key, out JToken token)
 		{
