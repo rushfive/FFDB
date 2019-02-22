@@ -29,12 +29,11 @@ namespace R5.Internals.PostgresMapper.Models
 		public void SetForeignKeyColumn(string columnName) => ForeignKeyColumn = columnName;
 		public void SetPropertyType(Type type) => PropertyType = type;
 
-		public TableColumn(PropertyInfo property)
+		private TableColumn(PropertyInfo property)
 		{
 			PropertyType = property.PropertyType;
 			_property = property;
 		}
-		
 
 		public static TableColumn FromProperty(PropertyInfo property)
 		{
@@ -75,6 +74,7 @@ namespace R5.Internals.PostgresMapper.Models
 			return _property.GetValue(obj);
 		}
 
+		// set value on CLR object from db value returned by pg reader
 		public void SetValue(object obj, object value)
 		{
 			object resolvedValue = DbValueToObjectMapper.Map(value, _property.PropertyType, DataType);
@@ -85,6 +85,27 @@ namespace R5.Internals.PostgresMapper.Models
 			}
 
 			_property.SetValue(obj, resolvedValue);
+		}
+
+		internal string DefinitionForCreateTable()
+		{
+			string sql = $"{Name} {DataType} ";
+
+			if (PrimaryKey)
+			{
+				sql += "PRIMARY KEY ";
+			}
+			else if (NotNull)
+			{
+				sql += "NOT NULL ";
+			}
+
+			if (HasForeignKeyConstraint)
+			{
+				sql += $"REFERENCES {MetadataResolver.TableName(ForeignTableType)}({ForeignKeyColumn})";
+			}
+
+			return sql.TrimEnd();
 		}
 	}
 }

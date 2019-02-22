@@ -13,35 +13,35 @@ namespace R5.Internals.PostgresMapper
 	{
 		private static readonly MetadataCache _cache = new MetadataCache();
 
-		internal static string GetTableName<TEntity>()
+		internal static string TableName<TEntity>()
 			where TEntity : SqlEntity
 		{
-			return GetTableName(typeof(TEntity));
+			return TableName(typeof(TEntity));
 		}
 
-		internal static string GetTableName(Type type)
+		internal static string TableName(Type type)
 		{
 			return _cache.GetTableName(type);
 		}
 
-		internal static List<string> GetCompositePrimaryKeys<TEntity>()
+		internal static List<string> CompositePrimaryKeys<TEntity>()
 			where TEntity : SqlEntity
 		{
-			return GetCompositePrimaryKeys(typeof(TEntity));
+			return CompositePrimaryKeys(typeof(TEntity));
 		}
 
-		internal static List<string> GetCompositePrimaryKeys(Type type)
+		internal static List<string> CompositePrimaryKeys(Type type)
 		{
 			return _cache.GetCompositePrimaryKeys(type);
 		}
 		// todo test
-		internal static List<TableColumn> GetColumns<TEntity>()
+		internal static List<TableColumn> TableColumns<TEntity>()
 			where TEntity : SqlEntity
 		{
-			return GetColumns(typeof(TEntity));
+			return TableColumns(typeof(TEntity));
 		}
 
-		internal static List<TableColumn> GetColumns(Type type)
+		internal static List<TableColumn> TableColumns(Type type)
 		{
 			return _cache.GetColumns(type);
 		}
@@ -55,10 +55,7 @@ namespace R5.Internals.PostgresMapper
 
 			internal string GetTableName(Type type)
 			{
-				if (!IsSqlEntity(type))
-				{
-					throw new ArgumentException($"Type must derive from '{nameof(SqlEntity)}'.", nameof(type));
-				}
+				type.ThrowIfNotSqlEntity();
 
 				if (_tableNames.ContainsKey(type))
 				{
@@ -88,10 +85,7 @@ namespace R5.Internals.PostgresMapper
 
 			internal List<string> GetCompositePrimaryKeys(Type type)
 			{
-				if (!IsSqlEntity(type))
-				{
-					throw new ArgumentException($"Type must derive from '{nameof(SqlEntity)}'.", nameof(type));
-				}
+				type.ThrowIfNotSqlEntity();
 
 				if (_compositePrimaryKeys.ContainsKey(type))
 				{
@@ -116,10 +110,7 @@ namespace R5.Internals.PostgresMapper
 
 			internal List<TableColumn> GetColumns(Type type)
 			{
-				if (!IsSqlEntity(type))
-				{
-					throw new ArgumentException($"Type must derive from '{nameof(SqlEntity)}'.", nameof(type));
-				}
+				type.ThrowIfNotSqlEntity();
 
 				if (_columns.ContainsKey(type))
 				{
@@ -145,11 +136,6 @@ namespace R5.Internals.PostgresMapper
 				}
 
 				return _columns[type];
-			}
-
-			private static bool IsSqlEntity(Type type)
-			{
-				return type.IsClass && !type.IsAbstract && type.BaseType == typeof(SqlEntity);
 			}
 		}
 	}

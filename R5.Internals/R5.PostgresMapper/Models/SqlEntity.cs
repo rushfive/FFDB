@@ -8,8 +8,8 @@ namespace R5.Internals.PostgresMapper.Models
 	public abstract class SqlEntity
 	{
 		//public abstract string TableName { get; }
-		public string TableName => MetadataResolver.GetTableName(this.GetType());
-		public List<TableColumn> Columns() => MetadataResolver.GetColumns(this.GetType());
+		public string TableName => MetadataResolver.TableName(this.GetType());
+		public List<TableColumn> Columns() => MetadataResolver.TableColumns(this.GetType());
 	}
 
 

@@ -22,6 +22,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using R5.Internals.PostgresMapper;
+using R5.Internals.PostgresMapper.Builders;
+using System.Linq.Expressions;
 
 namespace DevTester
 {
@@ -51,35 +54,278 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			//_serviceProvider = DevTestServiceProvider.Build();
-			//_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
-			//var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-			//_dbContext = dbProvider.GetContext();
-			//_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
+			Expression<Func<int, int, int>> addition = (a, b) => a + b;
 
-			//FfdbEngine engine = GetConfiguredMongoEngine();
-			//await engine.RunInitialSetupAsync();
+			// root node is type LambdaExpression
 
-			//var teamType = typeof(TeamSql);
-			//string createTable = SqlCommandBuilder.Table.Create(teamType);
+			// parameters? (left of =>)
+			var addParams = addition.Parameters;
 
-
-			var test1 = new TestEntity();
-			var test2 = new TestEntity2();
-
-			var t1Name = test1.TableName;
-			var t2Name = test2.TableName;
-
-			var t1Cols = test1.Columns();
-			var t1bCols = test1.Columns();
-			var t2Cols = test2.Columns();
+			// BinaryExpression in this case, but what if we dont know?
+			
+			Expression body = addition.Body; 
+			// (a + b)	BinaryExpression
+			// body.Left	ParameterExpression
+			// body.Right	PArameterExpression
 
 
 
 
+
+
+
+
+
+			ConstantExpression constant = Expression.Constant("wer", typeof(int));
+
+			ExpressionType expressionType = constant.NodeType;
+			object valueOf = constant.Value;
+			Type valueType = constant.Type;
+
+			switch (expressionType)
+			{
+				case ExpressionType.Add:
+					break;
+				case ExpressionType.AddAssign:
+					break;
+				case ExpressionType.AddAssignChecked:
+					break;
+				case ExpressionType.AddChecked:
+					break;
+				case ExpressionType.And:
+					break;
+				case ExpressionType.AndAlso:
+					break;
+				case ExpressionType.AndAssign:
+					break;
+				case ExpressionType.ArrayIndex:
+					break;
+				case ExpressionType.ArrayLength:
+					break;
+				case ExpressionType.Assign:
+					break;
+				case ExpressionType.Block:
+					break;
+				case ExpressionType.Call:
+					break;
+				case ExpressionType.Coalesce:
+					break;
+				case ExpressionType.Conditional:
+					break;
+				case ExpressionType.Constant:
+					break;
+				case ExpressionType.Convert:
+					break;
+				case ExpressionType.ConvertChecked:
+					break;
+				case ExpressionType.DebugInfo:
+					break;
+				case ExpressionType.Decrement:
+					break;
+				case ExpressionType.Default:
+					break;
+				case ExpressionType.Divide:
+					break;
+				case ExpressionType.DivideAssign:
+					break;
+				case ExpressionType.Dynamic:
+					break;
+				case ExpressionType.Equal:
+					break;
+				case ExpressionType.ExclusiveOr:
+					break;
+				case ExpressionType.ExclusiveOrAssign:
+					break;
+				case ExpressionType.Extension:
+					break;
+				case ExpressionType.Goto:
+					break;
+				case ExpressionType.GreaterThan:
+					break;
+				case ExpressionType.GreaterThanOrEqual:
+					break;
+				case ExpressionType.Increment:
+					break;
+				case ExpressionType.Index:
+					break;
+				case ExpressionType.Invoke:
+					break;
+				case ExpressionType.IsFalse:
+					break;
+				case ExpressionType.IsTrue:
+					break;
+				case ExpressionType.Label:
+					break;
+				case ExpressionType.Lambda:
+					break;
+				case ExpressionType.LeftShift:
+					break;
+				case ExpressionType.LeftShiftAssign:
+					break;
+				case ExpressionType.LessThan:
+					break;
+				case ExpressionType.LessThanOrEqual:
+					break;
+				case ExpressionType.ListInit:
+					break;
+				case ExpressionType.Loop:
+					break;
+				case ExpressionType.MemberAccess:
+					break;
+				case ExpressionType.MemberInit:
+					break;
+				case ExpressionType.Modulo:
+					break;
+				case ExpressionType.ModuloAssign:
+					break;
+				case ExpressionType.Multiply:
+					break;
+				case ExpressionType.MultiplyAssign:
+					break;
+				case ExpressionType.MultiplyAssignChecked:
+					break;
+				case ExpressionType.MultiplyChecked:
+					break;
+				case ExpressionType.Negate:
+					break;
+				case ExpressionType.NegateChecked:
+					break;
+				case ExpressionType.New:
+					break;
+				case ExpressionType.NewArrayBounds:
+					break;
+				case ExpressionType.NewArrayInit:
+					break;
+				case ExpressionType.Not:
+					break;
+				case ExpressionType.NotEqual:
+					break;
+				case ExpressionType.OnesComplement:
+					break;
+				case ExpressionType.Or:
+					break;
+				case ExpressionType.OrAssign:
+					break;
+				case ExpressionType.OrElse:
+					break;
+				case ExpressionType.Parameter:
+					break;
+				case ExpressionType.PostDecrementAssign:
+					break;
+				case ExpressionType.PostIncrementAssign:
+					break;
+				case ExpressionType.Power:
+					break;
+				case ExpressionType.PowerAssign:
+					break;
+				case ExpressionType.PreDecrementAssign:
+					break;
+				case ExpressionType.PreIncrementAssign:
+					break;
+				case ExpressionType.Quote:
+					break;
+				case ExpressionType.RightShift:
+					break;
+				case ExpressionType.RightShiftAssign:
+					break;
+				case ExpressionType.RuntimeVariables:
+					break;
+				case ExpressionType.Subtract:
+					break;
+				case ExpressionType.SubtractAssign:
+					break;
+				case ExpressionType.SubtractAssignChecked:
+					break;
+				case ExpressionType.SubtractChecked:
+					break;
+				case ExpressionType.Switch:
+					break;
+				case ExpressionType.Throw:
+					break;
+				case ExpressionType.Try:
+					break;
+				case ExpressionType.TypeAs:
+					break;
+				case ExpressionType.TypeEqual:
+					break;
+				case ExpressionType.TypeIs:
+					break;
+				case ExpressionType.UnaryPlus:
+					break;
+				case ExpressionType.Unbox:
+					break;
+			}
+
+			string breakpoint = "";
+			
+			QueryBuilder.Test2<TestEntity, string>(
+				e => e.String,
+				s => s == "what"
+				);
+				
+			
 			return;
 			Console.ReadKey();
 		}
+
+		public abstract class ExpressionTreeVisitor
+		{
+			public ExpressionType NodeType => _node.NodeType;
+			private readonly Expression _node;
+
+			protected ExpressionTreeVisitor(Expression node)
+			{
+				_node = node;
+			}
+
+			protected abstract void Visit();
+
+			public static ExpressionTreeVisitor FromExpression(Expression node)
+			{
+				switch (node)
+				{
+					case ConstantExpression constant:
+						return new ConstantVisitor(constant);
+					case LambdaExpression lambda:
+						break;
+					case ParameterExpression param:
+						break;
+					default:
+						throw new ArgumentException($"Expression type '{node.NodeType}' is missing a visitor implementation.");
+				}
+			}
+		}
+
+		public class ConstantVisitor : ExpressionTreeVisitor
+		{
+			private readonly ConstantExpression _node;
+
+			public ConstantVisitor(ConstantExpression node)
+				: base(node)
+			{
+				_node = node;
+			}
+
+			protected override void Visit()
+			{
+				Console.WriteLine($"Visiting a '{NodeType}' node:");
+				Console.WriteLine($"    value = {_node.Value} type = {_node.Type}");
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
