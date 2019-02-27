@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace R5.Internals.PostgresMapper.Builders
+namespace R5.Internals.PostgresMapper.Query
 {
 	public class QueryBuilder
 	{
@@ -56,14 +56,14 @@ namespace R5.Internals.PostgresMapper.Builders
 				string rightTypeName = right.GetType().Name;
 				string rightTypeName2 = right.Type.Name;
 
-				
 
 
 
-				
+
+
 			}
 
-			
+
 
 			//if (predicateBody is MethodBinaryExpression)
 

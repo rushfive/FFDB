@@ -18,14 +18,14 @@ namespace R5.Internals.PostgresMapper.Mappers
 			{ typeof(bool), FromBool },
 		};
 
-		internal static string Map(object value, TableColumn column)
+		internal static string Map(object value, PostgresDataType dataType)
 		{
 			if (value == null)
 			{
 				return "null";
 			}
 
-			switch (column.DataType)
+			switch (dataType)
 			{
 				case PostgresDataType.UUID:
 					return _converters[typeof(Guid)](value);
@@ -41,7 +41,7 @@ namespace R5.Internals.PostgresMapper.Mappers
 				case PostgresDataType.BOOLEAN:
 					return _converters[typeof(bool)](value);
 				default:
-					throw new ArgumentOutOfRangeException($"'{column.DataType}' is not a valid postgres data type.");
+					throw new ArgumentOutOfRangeException($"'{dataType}' is not a valid postgres data type.");
 			}
 
 			//if (column.DataType.HasValue)

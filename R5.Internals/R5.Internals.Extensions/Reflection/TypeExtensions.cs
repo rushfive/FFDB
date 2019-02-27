@@ -8,6 +8,12 @@ namespace R5.Internals.Extensions.Reflection
 {
 	public static class TypeExtensions
 	{
+		public static bool TryGetNullableUnderlyingType(this Type type, out Type underlying)
+		{
+			underlying = Nullable.GetUnderlyingType(type);
+			return underlying != null;
+		}
+
 		public static bool IsNullable(this Type type)
 		{
 			return Nullable.GetUnderlyingType(type) != null;

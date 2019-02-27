@@ -16,14 +16,20 @@ namespace R5.Internals.PostgresMapper.Models
 	[Table("Test")]
 	public class TestEntity : SqlEntity
 	{
-		[Column("String")]
+		[Column("StringColName")]
 		public string String { get; set; }
 
-		[Column("Int")]
+		[Column("IntColName")]
 		public int Int { get; set; }
 
-		[Column("NullableDouble")]
+		[Column("NullableDoubleColName")]
 		public double? NullableDouble { get; set; }
+
+		[Column("NullableDoubleColName2")]
+		public double? NullableDouble2 { get; set; }
+
+		[Column("BoolColName")]
+		public bool Bool { get; set; }
 	}
 
 	[Table("Test2")]

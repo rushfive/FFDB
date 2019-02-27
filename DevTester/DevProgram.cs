@@ -23,8 +23,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using R5.Internals.PostgresMapper;
-using R5.Internals.PostgresMapper.Builders;
 using System.Linq.Expressions;
+using System.Text;
+using R5.Internals.PostgresMapper.Query;
 
 namespace DevTester
 {
@@ -54,265 +55,93 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			Expression<Func<int, int, int>> addition = (a, b) => a + b;
 
-			// root node is type LambdaExpression
 
-			// parameters? (left of =>)
-			var addParams = addition.Parameters;
+			//Expression<Func<TestEntity, bool>> filter = e => e.Int < 50 &&
+			//	e.NullableDouble >= 25 || e.String == "hello";
 
-			// BinaryExpression in this case, but what if we dont know?
+			Expression<Func<TestEntity, bool>> filter = e => e.NullableDouble == null &&
+				e.NullableDouble >= 25 || e.String == "hello" || e.NullableDouble != e.NullableDouble2;
+
+
+			//Expression<Func<TestEntity, bool>> filter = e => e.NullableDouble >= 25;
+
+			var whereFilter = new WhereFilterResolver<TestEntity>();
+			string result = whereFilter.FromExpression(filter);
+
 			
-			Expression body = addition.Body; 
-			// (a + b)	BinaryExpression
-			// body.Left	ParameterExpression
-			// body.Right	PArameterExpression
 
 
-
-
-
-
-
-
-
-			ConstantExpression constant = Expression.Constant("wer", typeof(int));
-
-			ExpressionType expressionType = constant.NodeType;
-			object valueOf = constant.Value;
-			Type valueType = constant.Type;
-
-			switch (expressionType)
-			{
-				case ExpressionType.Add:
-					break;
-				case ExpressionType.AddAssign:
-					break;
-				case ExpressionType.AddAssignChecked:
-					break;
-				case ExpressionType.AddChecked:
-					break;
-				case ExpressionType.And:
-					break;
-				case ExpressionType.AndAlso:
-					break;
-				case ExpressionType.AndAssign:
-					break;
-				case ExpressionType.ArrayIndex:
-					break;
-				case ExpressionType.ArrayLength:
-					break;
-				case ExpressionType.Assign:
-					break;
-				case ExpressionType.Block:
-					break;
-				case ExpressionType.Call:
-					break;
-				case ExpressionType.Coalesce:
-					break;
-				case ExpressionType.Conditional:
-					break;
-				case ExpressionType.Constant:
-					break;
-				case ExpressionType.Convert:
-					break;
-				case ExpressionType.ConvertChecked:
-					break;
-				case ExpressionType.DebugInfo:
-					break;
-				case ExpressionType.Decrement:
-					break;
-				case ExpressionType.Default:
-					break;
-				case ExpressionType.Divide:
-					break;
-				case ExpressionType.DivideAssign:
-					break;
-				case ExpressionType.Dynamic:
-					break;
-				case ExpressionType.Equal:
-					break;
-				case ExpressionType.ExclusiveOr:
-					break;
-				case ExpressionType.ExclusiveOrAssign:
-					break;
-				case ExpressionType.Extension:
-					break;
-				case ExpressionType.Goto:
-					break;
-				case ExpressionType.GreaterThan:
-					break;
-				case ExpressionType.GreaterThanOrEqual:
-					break;
-				case ExpressionType.Increment:
-					break;
-				case ExpressionType.Index:
-					break;
-				case ExpressionType.Invoke:
-					break;
-				case ExpressionType.IsFalse:
-					break;
-				case ExpressionType.IsTrue:
-					break;
-				case ExpressionType.Label:
-					break;
-				case ExpressionType.Lambda:
-					break;
-				case ExpressionType.LeftShift:
-					break;
-				case ExpressionType.LeftShiftAssign:
-					break;
-				case ExpressionType.LessThan:
-					break;
-				case ExpressionType.LessThanOrEqual:
-					break;
-				case ExpressionType.ListInit:
-					break;
-				case ExpressionType.Loop:
-					break;
-				case ExpressionType.MemberAccess:
-					break;
-				case ExpressionType.MemberInit:
-					break;
-				case ExpressionType.Modulo:
-					break;
-				case ExpressionType.ModuloAssign:
-					break;
-				case ExpressionType.Multiply:
-					break;
-				case ExpressionType.MultiplyAssign:
-					break;
-				case ExpressionType.MultiplyAssignChecked:
-					break;
-				case ExpressionType.MultiplyChecked:
-					break;
-				case ExpressionType.Negate:
-					break;
-				case ExpressionType.NegateChecked:
-					break;
-				case ExpressionType.New:
-					break;
-				case ExpressionType.NewArrayBounds:
-					break;
-				case ExpressionType.NewArrayInit:
-					break;
-				case ExpressionType.Not:
-					break;
-				case ExpressionType.NotEqual:
-					break;
-				case ExpressionType.OnesComplement:
-					break;
-				case ExpressionType.Or:
-					break;
-				case ExpressionType.OrAssign:
-					break;
-				case ExpressionType.OrElse:
-					break;
-				case ExpressionType.Parameter:
-					break;
-				case ExpressionType.PostDecrementAssign:
-					break;
-				case ExpressionType.PostIncrementAssign:
-					break;
-				case ExpressionType.Power:
-					break;
-				case ExpressionType.PowerAssign:
-					break;
-				case ExpressionType.PreDecrementAssign:
-					break;
-				case ExpressionType.PreIncrementAssign:
-					break;
-				case ExpressionType.Quote:
-					break;
-				case ExpressionType.RightShift:
-					break;
-				case ExpressionType.RightShiftAssign:
-					break;
-				case ExpressionType.RuntimeVariables:
-					break;
-				case ExpressionType.Subtract:
-					break;
-				case ExpressionType.SubtractAssign:
-					break;
-				case ExpressionType.SubtractAssignChecked:
-					break;
-				case ExpressionType.SubtractChecked:
-					break;
-				case ExpressionType.Switch:
-					break;
-				case ExpressionType.Throw:
-					break;
-				case ExpressionType.Try:
-					break;
-				case ExpressionType.TypeAs:
-					break;
-				case ExpressionType.TypeEqual:
-					break;
-				case ExpressionType.TypeIs:
-					break;
-				case ExpressionType.UnaryPlus:
-					break;
-				case ExpressionType.Unbox:
-					break;
-			}
-
-			string breakpoint = "";
-			
-			QueryBuilder.Test2<TestEntity, string>(
-				e => e.String,
-				s => s == "what"
-				);
-				
-			
 			return;
 			Console.ReadKey();
 		}
 
-		public abstract class ExpressionTreeVisitor
-		{
-			public ExpressionType NodeType => _node.NodeType;
-			private readonly Expression _node;
 
-			protected ExpressionTreeVisitor(Expression node)
-			{
-				_node = node;
-			}
+		
 
-			protected abstract void Visit();
 
-			public static ExpressionTreeVisitor FromExpression(Expression node)
-			{
-				switch (node)
-				{
-					case ConstantExpression constant:
-						return new ConstantVisitor(constant);
-					case LambdaExpression lambda:
-						break;
-					case ParameterExpression param:
-						break;
-					default:
-						throw new ArgumentException($"Expression type '{node.NodeType}' is missing a visitor implementation.");
-				}
-			}
-		}
 
-		public class ConstantVisitor : ExpressionTreeVisitor
-		{
-			private readonly ConstantExpression _node;
+		//public abstract class ExpressionTreeVisitor
+		//{
+		//	public ExpressionType NodeType => _node.NodeType;
+		//	private readonly Expression _node;
 
-			public ConstantVisitor(ConstantExpression node)
-				: base(node)
-			{
-				_node = node;
-			}
+		//	protected ExpressionTreeVisitor(Expression node)
+		//	{
+		//		_node = node;
+		//	}
 
-			protected override void Visit()
-			{
-				Console.WriteLine($"Visiting a '{NodeType}' node:");
-				Console.WriteLine($"    value = {_node.Value} type = {_node.Type}");
-			}
-		}
+		//	protected abstract void Visit();
 
+		//	public static ExpressionTreeVisitor FromExpression(Expression node)
+		//	{
+		//		switch (node)
+		//		{
+		//			case ConstantExpression constant:
+		//				return new ConstantVisitor(constant);
+		//			case LambdaExpression lambda:
+		//				break;
+		//			case ParameterExpression param:
+		//				break;
+		//			default:
+		//				throw new ArgumentException($"Expression type '{node.NodeType}' is missing a visitor implementation.");
+		//		}
+		//	}
+		//}
+
+		//public class ConstantVisitor : ExpressionTreeVisitor
+		//{
+		//	private readonly ConstantExpression _node;
+
+		//	public ConstantVisitor(ConstantExpression node)
+		//		: base(node)
+		//	{
+		//		_node = node;
+		//	}
+
+		//	protected override void Visit()
+		//	{
+		//		Console.WriteLine($"Visiting a '{NodeType}' node:");
+		//		Console.WriteLine($"    value = {_node.Value} type = {_node.Type}");
+		//	}
+		//}
+
+		//public class LambdaVisitor : ExpressionTreeVisitor
+		//{
+		//	private readonly ConstantExpression _node;
+
+		//	public LambdaVisitor(ConstantExpression node)
+		//		: base(node)
+		//	{
+		//		_node = node;
+		//	}
+
+		//	protected override void Visit()
+		//	{
+		//		Console.WriteLine($"Visiting a '{NodeType}' node:");
+		//		Console.WriteLine($"    value = {_node.Value} type = {_node.Type}");
+		//	}
+		//}
 
 
 
@@ -424,7 +253,7 @@ namespace DevTester
 
 			return setup.Create();
 		}
-		
+
 
 		private static async Task<HtmlDocument> DownloadPageAsync(
 			string pageUri, string filePath, bool skipFetch)
@@ -438,7 +267,7 @@ namespace DevTester
 				HtmlDocument doc = await web.LoadFromWebAsync(pageUri);
 				doc.Save(filePath);
 			}
-			
+
 			string html = File.ReadAllText(filePath);
 			var page = new HtmlDocument();
 			page.LoadHtml(html);
