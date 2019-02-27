@@ -1,6 +1,7 @@
 ﻿using R5.Internals.PostgresMapper.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace R5.Internals.PostgresMapper.Models
@@ -8,8 +9,8 @@ namespace R5.Internals.PostgresMapper.Models
 	public abstract class SqlEntity
 	{
 		//public abstract string TableName { get; }
-		public string TableName => MetadataResolver.TableName(this.GetType());
-		public List<TableColumn> Columns() => MetadataResolver.TableColumns(this.GetType());
+		//public string TableName => MetadataResolver.TableName(this.GetType());
+		//public List<TableColumn> Columns() => MetadataResolver.TableColumns(this.GetType());
 	}
 
 

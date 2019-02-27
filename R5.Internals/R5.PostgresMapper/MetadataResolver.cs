@@ -46,6 +46,21 @@ namespace R5.Internals.PostgresMapper
 			return _cache.GetColumns(type);
 		}
 
+		internal static Dictionary<string, TableColumn> PropertyColumnMap<TEntity>()
+			where TEntity : SqlEntity
+		{
+			return PropertyColumnMap(typeof(TEntity));
+		}
+
+		internal static Dictionary<string, TableColumn> PropertyColumnMap(Type type)
+		{
+			type.ThrowIfNotSqlEntity();
+
+			List<TableColumn> columns = TableColumns(type);
+
+			return columns.ToDictionary(c => c.GetPropertyName(), c => c);
+		}
+
 		// todo: use a richer cache model (per entity, containing for ex a map of col name to col)
 		class MetadataCache
 		{

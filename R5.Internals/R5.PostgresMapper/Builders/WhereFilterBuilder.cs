@@ -8,22 +8,20 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace R5.Internals.PostgresMapper.Query
+namespace R5.Internals.PostgresMapper.Builders
 {
-	public class WhereFilterResolver<TEntity> : ExpressionVisitor
+	public class WhereFilterBuilder<TEntity> : ExpressionVisitor
 			where TEntity : SqlEntity
 	{
 		private static readonly Dictionary<ExpressionType, string> _operatorMap;
-		private static readonly Dictionary<Type, Dictionary<string, TableColumn>> _entityPropertyColumns = new Dictionary<Type, Dictionary<string, TableColumn>>();
 
 		private readonly StringBuilder _whereFilterBuilder = new StringBuilder();
 		private readonly Dictionary<string, TableColumn> _propertyColumns;
 		private readonly Stack<TableColumn> _columnStack = new Stack<TableColumn>();
 
-		static WhereFilterResolver()
+		static WhereFilterBuilder()
 		{
-			// static constructor is called for each closed class type, 
-			// init operators once
+			// static constructor is called for each closed class type, init operators once
 			if (_operatorMap == null)
 			{
 				_operatorMap = new Dictionary<ExpressionType, string>
@@ -38,33 +36,27 @@ namespace R5.Internals.PostgresMapper.Query
 					[ExpressionType.OrElse] = "OR"
 				};
 			}
-
-			Type entityType = typeof(TEntity);
-
-			if (!_entityPropertyColumns.ContainsKey(entityType))
-			{
-				_entityPropertyColumns[entityType] = new Dictionary<string, TableColumn>();
-
-				List<TableColumn> columns = MetadataResolver.TableColumns(entityType);
-				foreach(var col in columns)
-				{
-					_entityPropertyColumns[entityType][col.GetPropertyName()] = col;
-				}
-			}
 		}
 
-		public WhereFilterResolver()
+		private WhereFilterBuilder()
 		{
-			_propertyColumns = _entityPropertyColumns[typeof(TEntity)];
+			_propertyColumns = MetadataResolver.PropertyColumnMap<TEntity>();
 		}
 
 		private static bool IsSupportedOperator(ExpressionType type)
 			=> _operatorMap.ContainsKey(type);
 
-		public string FromExpression(LambdaExpression predicateExpression)
+		public static string FromExpression(LambdaExpression predicateExpression)
 		{
-			Visit(predicateExpression.Body);
+			var resolver = new WhereFilterBuilder<TEntity>();
 
+			resolver.Visit(predicateExpression.Body);
+
+			return resolver.GetResult();
+		}
+
+		private string GetResult()
+		{
 			var result = _whereFilterBuilder.ToString();
 
 			_whereFilterBuilder.Clear();

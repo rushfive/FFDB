@@ -25,7 +25,7 @@ using System.Xml.Linq;
 using R5.Internals.PostgresMapper;
 using System.Linq.Expressions;
 using System.Text;
-using R5.Internals.PostgresMapper.Query;
+using R5.Internals.PostgresMapper.Builders;
 
 namespace DevTester
 {
@@ -55,22 +55,29 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-
-
 			//Expression<Func<TestEntity, bool>> filter = e => e.Int < 50 &&
 			//	e.NullableDouble >= 25 || e.String == "hello";
 
-			Expression<Func<TestEntity, bool>> filter = e => e.NullableDouble == null &&
-				e.NullableDouble >= 25 || e.String == "hello" || e.NullableDouble != e.NullableDouble2;
+			//Expression<Func<TestEntity, bool>> filter = e => e.NullableDouble == null &&
+			//	e.NullableDouble >= 25 || e.String == "hello" || e.NullableDouble != e.NullableDouble2;
 
 
 			//Expression<Func<TestEntity, bool>> filter = e => e.NullableDouble >= 25;
 
-			var whereFilter = new WhereFilterResolver<TestEntity>();
-			string result = whereFilter.FromExpression(filter);
+			//var whereFilter = new WhereFilterResolver<TestEntity>();
+			//string result = whereFilter.FromExpression(filter);
 
-			
 
+			//var rrrrrrrr = WhereFilterBuilder<TestEntity>.FromExpression(filter);
+
+			var props = new List<Expression<Func<TestEntity, object>>>
+			{
+				e => e.Int,
+				e => e.NullableDouble,
+				e => e.String
+			};
+
+			var selectBuilder = new SelectBuilder<TestEntity>(props);
 
 			return;
 			Console.ReadKey();
