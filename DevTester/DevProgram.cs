@@ -25,7 +25,7 @@ using System.Xml.Linq;
 using R5.Internals.PostgresMapper;
 using System.Linq.Expressions;
 using System.Text;
-using R5.Internals.PostgresMapper.Builders;
+using R5.Internals.PostgresMapper.SqlBuilders;
 
 namespace DevTester
 {
@@ -55,29 +55,33 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			//Expression<Func<TestEntity, bool>> filter = e => e.Int < 50 &&
-			//	e.NullableDouble >= 25 || e.String == "hello";
-
-			//Expression<Func<TestEntity, bool>> filter = e => e.NullableDouble == null &&
-			//	e.NullableDouble >= 25 || e.String == "hello" || e.NullableDouble != e.NullableDouble2;
-
-
-			//Expression<Func<TestEntity, bool>> filter = e => e.NullableDouble >= 25;
-
-			//var whereFilter = new WhereFilterResolver<TestEntity>();
-			//string result = whereFilter.FromExpression(filter);
+			//SelectBuilder<TestEntity> selectBuilder = Builders<TestEntity>
+			//	.Select()
+			//	.Where(
+			//		e => e.NullableDouble == null && e.NullableDouble >= 25 || e.String == "hello" 
+			//		|| e.NullableDouble != e.NullableDouble2);
 
 
-			//var rrrrrrrr = WhereFilterBuilder<TestEntity>.FromExpression(filter);
+			//SelectBuilder<TestEntity> selectBuilder = Builders<TestEntity>
+			//	.Select(
+			//		e => e.NullableDouble,
+			//		e => e.Bool,
+			//		e => e.Int > 0) // VALIDATE AGAINST THIS! it should be a simple SINGLE lambda, with the body being a SINGLE
+			//		                //                    member access expression (prob has to be a run time check?)
+			//	.Where(e => e.NullableDouble != null && e.Bool == true);
 
-			var props = new List<Expression<Func<TestEntity, object>>>
-			{
-				e => e.Int,
-				e => e.NullableDouble,
-				e => e.String
-			};
+			SelectBuilder<TestEntity> selectBuilder = Builders<TestEntity>
+				.Select(
+					e => e.NullableDouble,
+					e => e.Bool)
+				.Where(e => e.Bool == (e.NullableDouble != e.NullableDouble2) && !e.Bool || (e.Bool != e.Bool));
+			// .Where(e => e.NullableDouble != null && e.Bool);    =>
+			// SELECT NullableDoubleColName, BoolColName FROM Test WHERE ((NullableDoubleColName != null) AND BoolColName)
+			// which is OKAY, but if we want to allow !e.Bool, we need to write "NOT BoolColName"
 
-			var selectBuilder = new SelectBuilder<TestEntity>(props);
+			Console.WriteLine(selectBuilder);
+
+			
 
 			return;
 			Console.ReadKey();

@@ -8,9 +8,14 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace R5.Internals.PostgresMapper.Builders
+namespace R5.Internals.PostgresMapper.SqlBuilders
 {
-	public class WhereFilterBuilder<TEntity> : ExpressionVisitor
+	// TODO:
+	// handle bool constants in expression
+	// eg Where(e => e.BoolProp)
+	// curr handling Where(e => e.BoolProp == true)
+
+	public class WhereConditionBuilder<TEntity> : ExpressionVisitor
 			where TEntity : SqlEntity
 	{
 		private static readonly Dictionary<ExpressionType, string> _operatorMap;
@@ -19,7 +24,7 @@ namespace R5.Internals.PostgresMapper.Builders
 		private readonly Dictionary<string, TableColumn> _propertyColumns;
 		private readonly Stack<TableColumn> _columnStack = new Stack<TableColumn>();
 
-		static WhereFilterBuilder()
+		static WhereConditionBuilder()
 		{
 			// static constructor is called for each closed class type, init operators once
 			if (_operatorMap == null)
@@ -33,12 +38,13 @@ namespace R5.Internals.PostgresMapper.Builders
 					[ExpressionType.LessThanOrEqual] = "<=",
 					[ExpressionType.NotEqual] = "!=",
 					[ExpressionType.AndAlso] = "AND",
-					[ExpressionType.OrElse] = "OR"
+					[ExpressionType.OrElse] = "OR",
+					[ExpressionType.Not] = "NOT",
 				};
 			}
 		}
 
-		private WhereFilterBuilder()
+		private WhereConditionBuilder()
 		{
 			_propertyColumns = MetadataResolver.PropertyColumnMap<TEntity>();
 		}
@@ -48,7 +54,7 @@ namespace R5.Internals.PostgresMapper.Builders
 
 		public static string FromExpression(LambdaExpression predicateExpression)
 		{
-			var resolver = new WhereFilterBuilder<TEntity>();
+			var resolver = new WhereConditionBuilder<TEntity>();
 
 			resolver.Visit(predicateExpression.Body);
 
@@ -66,13 +72,24 @@ namespace R5.Internals.PostgresMapper.Builders
 
 		protected override Expression VisitUnary(UnaryExpression node)
 		{
-			if (node.Operand.NodeType == ExpressionType.Convert || node.Operand.NodeType == ExpressionType.Constant)
+			if (node.NodeType == ExpressionType.Not && node.Operand is MemberExpression member)
+			{
+				string memberName = member.Member.Name;
+
+				if (!_propertyColumns.TryGetValue(memberName, out TableColumn column))
+				{
+					throw new InvalidOperationException($"Failed to find column matching property '{memberName}'.");
+				}
+
+				_whereFilterBuilder.Append($"NOT {column.Name}");
+			}
+			else if (node.Operand.NodeType == ExpressionType.Convert || node.Operand.NodeType == ExpressionType.Constant)
 			{
 				Visit(node.Operand);
 			}
 			else if (!IsSupportedOperator(node.NodeType))
 			{
-				throw new NotSupportedException("Unary expressions not supported for building where filters.");
+				throw new NotSupportedException($"UnaryExpressions of type '{node.NodeType}' are not supported for building where-conditions.");
 			}
 
 			return node;
@@ -83,7 +100,7 @@ namespace R5.Internals.PostgresMapper.Builders
 		{
 			if (!IsSupportedOperator(node.NodeType))
 			{
-				throw new NotSupportedException("Unary expressions not supported for building where filters.");
+				throw new NotSupportedException($"BinaryExpressions of type '{node.NodeType}' are not supported for building where-conditions.");
 			}
 
 			_whereFilterBuilder.Append("(");
@@ -117,6 +134,9 @@ namespace R5.Internals.PostgresMapper.Builders
 				throw new InvalidOperationException($"Failed to find column associated to property "
 					+ $"'{node.Member.Name}' on entity type '{typeof(TEntity).Name}'.");
 			}
+
+			// if member access AND its type is bool, just append the col.name 
+			// (already doing this, except not for !prop)
 
 			_columnStack.Push(column);
 			

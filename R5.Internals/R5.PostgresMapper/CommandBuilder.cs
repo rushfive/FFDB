@@ -1,5 +1,6 @@
 ﻿using R5.Internals.Extensions.Collections;
 using R5.Internals.PostgresMapper.Models;
+using R5.Internals.PostgresMapper.SqlBuilders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +26,9 @@ namespace R5.Internals.PostgresMapper
 
 			List<string> columnDefinitions = GetColumnDefinitions(entityType);
 
-			return new SqlTextConcat()
-				.AddText($"CREATE TABLE {MetadataResolver.TableName(entityType)} ")
-				.AddText($" ({string.Join(", ", columnDefinitions)}) ")
+			return new ConcatSqlBuilder()
+				.Append($"CREATE TABLE {MetadataResolver.TableName(entityType)} ")
+				.Append($" ({string.Join(", ", columnDefinitions)}) ")
 				.GetResult();
 		}
 
@@ -56,32 +57,9 @@ namespace R5.Internals.PostgresMapper
 		{
 			entityType.ThrowIfNotSqlEntity();
 
-			return new SqlTextConcat()
-				.AddText($"TRUNCATE {MetadataResolver.TableName(entityType)}")
+			return new ConcatSqlBuilder()
+				.Append($"TRUNCATE {MetadataResolver.TableName(entityType)}")
 				.GetResult();
-		}
-	}
-
-	public class SqlTextConcat
-	{
-		private StringBuilder _sb = new StringBuilder();
-
-		public SqlTextConcat AddText(string text)
-		{
-			_sb.Append(text);
-			return this;
-		}
-
-		public string GetResult()
-		{
-			var result = _sb.ToString().Trim();
-
-			if (string.IsNullOrWhiteSpace(result))
-			{
-				throw new InvalidOperationException("SQL command/query is invalid: cannot be null or empty.");
-			}
-
-			return result.EndsWith(";") ? result : result + ";";
 		}
 	}
 }
