@@ -12,6 +12,9 @@ namespace R5.Internals.PostgresMapper.Models
 		TIMESTAMPTZ,
 		FLOAT8,
 		DATE,
-		BOOLEAN
+		BOOLEAN,
+
+		// System
+		SQL_IDENTIFIER
 	}
 }

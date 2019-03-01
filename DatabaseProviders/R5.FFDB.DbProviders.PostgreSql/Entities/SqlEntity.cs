@@ -1,4 +1,4 @@
-﻿namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
+﻿namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
 	public abstract class SqlEntity
 	{

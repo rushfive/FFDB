@@ -1,12 +1,16 @@
-﻿using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.PostgreSql.Attributes;
+﻿using R5.FFDB.Core;
+using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
+using R5.Internals.PostgresMapper.Attributes;
+using R5.Internals.PostgresMapper.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
+namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
-	[TableName(Table.WeekStats.IDP)]
+	[Table(Table.WeekStats.IDP)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
 	public class WeekStatsIdpSql : WeekStatsPlayerSql
 	{

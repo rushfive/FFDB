@@ -1,38 +1,38 @@
-﻿using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.PostgreSql.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿//using R5.FFDB.Core.Models;
+//using R5.Internals.PostgresMapper.Models;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Reflection;
+//using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
-{
-	public class WeekStatColumn : TableColumn
-	{
-		public WeekStatType StatType { get; }
+//namespace R5.FFDB.DbProviders.PostgreSql.Models.ColumnInfos
+//{
+//	public class WeekStatColumn : TableColumn
+//	{
+//		public WeekStatType StatType { get; }
 
-		private WeekStatColumn(
-			string name,
-			WeekStatType statType,
-			PropertyInfo property)
-			: base(name, PostgresDataType.FLOAT8, property)
-		{
-			StatType = statType;
-		}
+//		private WeekStatColumn(
+//			string name,
+//			WeekStatType statType,
+//			PropertyInfo property)
+//			: base(name, PostgresDataType.FLOAT8, property)
+//		{
+//			StatType = statType;
+//		}
 
-		public static WeekStatColumn FromProperty(PropertyInfo property)
-		{
-			var attr = property
-				.GetCustomAttributes()
-				.Single(a => a is WeekStatColumnAttribute) as WeekStatColumnAttribute;
+//		public static WeekStatColumn FromProperty(PropertyInfo property)
+//		{
+//			var attr = property
+//				.GetCustomAttributes()
+//				.Single(a => a is WeekStatColumnAttribute) as WeekStatColumnAttribute;
 
-			return new WeekStatColumn(attr.Name, attr.StatType, property);
-		}
+//			return new WeekStatColumn(attr.Name, attr.StatType, property);
+//		}
 
-		internal override string GetSqlColumnDefinition()
-		{
-			return $"{Name} {DataType}";
-		}
-	}
-}
+//		internal override string GetSqlColumnDefinition()
+//		{
+//			return $"{Name} {DataType}";
+//		}
+//	}
+//}

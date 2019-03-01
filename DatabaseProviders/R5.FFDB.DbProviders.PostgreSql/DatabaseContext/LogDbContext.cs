@@ -1,83 +1,83 @@
-﻿using Microsoft.Extensions.Logging;
-using Npgsql;
-using R5.FFDB.Core.Database;
-using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿//using Microsoft.Extensions.Logging;
+//using Npgsql;
+//using R5.FFDB.Core.Database;
+//using R5.FFDB.Core.Models;
+//using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
 
-namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
-{
-	public class LogDbContext : DbContextBase//, ILogDatabaseContext
-	{
-		public LogDbContext(
-			Func<NpgsqlConnection> getConnection,
-			ILoggerFactory loggerFactory)
-			: base(getConnection, loggerFactory)
-		{
-		}
+//namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
+//{
+//	public class LogDbContext : DbContextBase//, ILogDatabaseContext
+//	{
+//		public LogDbContext(
+//			Func<NpgsqlConnection> getConnection,
+//			ILoggerFactory loggerFactory)
+//			: base(getConnection, loggerFactory)
+//		{
+//		}
 
-		public async Task AddUpdateForWeekAsync(WeekInfo week)
-		{
-			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
-			var logger = GetLogger<DbContext>();
+//		public async Task AddUpdateForWeekAsync(WeekInfo week)
+//		{
+//			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
+//			var logger = GetLogger<DbContext>();
 
-			var log = new UpdateLogSql
-			{
-				Season = week.Season,
-				Week = week.Week,
-				UpdateTime = DateTime.UtcNow
-			};
+//			var log = new UpdateLogSql
+//			{
+//				Season = week.Season,
+//				Week = week.Week,
+//				UpdateTime = DateTime.UtcNow
+//			};
 
-			var sql = SqlCommandBuilder.Rows.Insert(log);
+//			var sql = SqlCommandBuilder.Rows.Insert(log);
 
-			logger.LogTrace($"Adding update log for {week} using SQL command: " + Environment.NewLine + sql);
+//			logger.LogTrace($"Adding update log for {week} using SQL command: " + Environment.NewLine + sql);
 
-			//await ExecuteNonQueryAsync(sql);
+//			//await ExecuteNonQueryAsync(sql);
 
-			logger.LogInformation($"Successfully added update log for {week} to '{tableName}' table.");
-		}
+//			logger.LogInformation($"Successfully added update log for {week} to '{tableName}' table.");
+//		}
 
-		public async Task<List<WeekInfo>> GetUpdatedWeeksAsync()
-		{
-			throw new NotImplementedException();
-			//var logs = await SelectAsync<UpdateLogSql>();
-			//return logs.Select(sql => new WeekInfo(sql.Season, sql.Week)).ToList();
-		}
+//		public async Task<List<WeekInfo>> GetUpdatedWeeksAsync()
+//		{
+//			throw new NotImplementedException();
+//			//var logs = await SelectAsync<UpdateLogSql>();
+//			//return logs.Select(sql => new WeekInfo(sql.Season, sql.Week)).ToList();
+//		}
 
-		public Task<bool> HasUpdatedWeekAsync(WeekInfo week)
-		{
-			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
-			string sqlCommand = $"SELECT exists(SELECT * FROM {tableName} WHERE season = {week.Season} AND week = {week.Week})";
+//		public Task<bool> HasUpdatedWeekAsync(WeekInfo week)
+//		{
+//			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
+//			string sqlCommand = $"SELECT exists(SELECT * FROM {tableName} WHERE season = {week.Season} AND week = {week.Week})";
 
-			throw new NotImplementedException();
-			//return ExecuteAsBoolAsync(sqlCommand);
-		}
+//			throw new NotImplementedException();
+//			//return ExecuteAsBoolAsync(sqlCommand);
+//		}
 
-		public async Task RemoveAllAsync()
-		{
-			var logger = GetLogger<UpdateLogSql>();
-			logger.LogInformation("Removing all update log rows from database.");
+//		public async Task RemoveAllAsync()
+//		{
+//			var logger = GetLogger<UpdateLogSql>();
+//			logger.LogInformation("Removing all update log rows from database.");
 
-			//await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(typeof(UpdateLogSql)));
+//			//await ExecuteNonQueryAsync(SqlCommandBuilder.Rows.DeleteAll(typeof(UpdateLogSql)));
 
-			logger.LogInformation("Successfully removed all update log rows from database.");
-		}
+//			logger.LogInformation("Successfully removed all update log rows from database.");
+//		}
 
-		public async Task RemoveForWeekAsync(WeekInfo week)
-		{
-			var logger = GetLogger<UpdateLogSql>();
-			logger.LogInformation($"Removing update log rows for {week} from database.");
+//		public async Task RemoveForWeekAsync(WeekInfo week)
+//		{
+//			var logger = GetLogger<UpdateLogSql>();
+//			logger.LogInformation($"Removing update log rows for {week} from database.");
 
-			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
+//			string tableName = EntityMetadata.TableName(typeof(UpdateLogSql));
 
-			string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
+//			string sqlCommand = $"DELETE FROM {tableName} WHERE season = {week.Season} AND week = {week.Week};";
 
-			//await ExecuteNonQueryAsync(sqlCommand);
+//			//await ExecuteNonQueryAsync(sqlCommand);
 
-			logger.LogInformation($"Successfully removed update log rows for {week} from database.");
-		}
-	}
-}
+//			logger.LogInformation($"Successfully removed update log rows for {week} from database.");
+//		}
+//	}
+//}

@@ -1,20 +1,24 @@
-﻿using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.PostgreSql.Attributes;
+﻿using R5.FFDB.Core;
+using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
+using R5.Internals.PostgresMapper.Attributes;
+using R5.Internals.PostgresMapper.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
+namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
-	[TableName(Table.WeekStats.Receive)]
+	[Table(Table.WeekStats.Return)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
-	public class WeekStatsReceiveSql : WeekStatsPlayerSql
+	public class WeekStatsReturnSql : WeekStatsPlayerSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(PlayerSql), "id")]
 		[Column("player_id", PostgresDataType.UUID)]
 		public override Guid PlayerId { get; set; }
-		
+
 		[ForeignKey(typeof(TeamSql), "id")]
 		[Column("team_id", PostgresDataType.INT)]
 		public override int? TeamId { get; set; }
@@ -27,14 +31,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats
 		[Column("week", PostgresDataType.INT)]
 		public override int Week { get; set; }
 
-		[WeekStatColumn("receive_catches", WeekStatType.Receive_Catches)]
-		public double? ReceiveCatches { get; set; }
+		[WeekStatColumn("return_yards", WeekStatType.Return_Yards)]
+		public double? ReturnYards { get; set; }
 
-		[WeekStatColumn("receive_yards", WeekStatType.Receive_Yards)]
-		public double? ReceiveYards { get; set; }
-
-		[WeekStatColumn("receive_touchdowns", WeekStatType.Receive_Touchdowns)]
-		public double? ReceiveTouchdowns { get; set; }
+		[WeekStatColumn("return_touchdowns", WeekStatType.Return_Touchdowns)]
+		public double? ReturnTouchdowns { get; set; }
 
 		public override string PrimaryKeyMatchCondition()
 		{

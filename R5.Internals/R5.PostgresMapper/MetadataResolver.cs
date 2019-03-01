@@ -14,7 +14,6 @@ namespace R5.Internals.PostgresMapper
 		private static readonly MetadataCache _cache = new MetadataCache();
 
 		internal static string TableName<TEntity>()
-			where TEntity : SqlEntity
 		{
 			return TableName(typeof(TEntity));
 		}
@@ -25,7 +24,6 @@ namespace R5.Internals.PostgresMapper
 		}
 
 		internal static List<string> CompositePrimaryKeys<TEntity>()
-			where TEntity : SqlEntity
 		{
 			return CompositePrimaryKeys(typeof(TEntity));
 		}
@@ -36,7 +34,6 @@ namespace R5.Internals.PostgresMapper
 		}
 		// todo test
 		internal static List<TableColumn> TableColumns<TEntity>()
-			where TEntity : SqlEntity
 		{
 			return TableColumns(typeof(TEntity));
 		}
@@ -47,15 +44,12 @@ namespace R5.Internals.PostgresMapper
 		}
 
 		internal static Dictionary<string, TableColumn> PropertyColumnMap<TEntity>()
-			where TEntity : SqlEntity
 		{
 			return PropertyColumnMap(typeof(TEntity));
 		}
 
 		internal static Dictionary<string, TableColumn> PropertyColumnMap(Type type)
 		{
-			type.ThrowIfNotSqlEntity();
-
 			List<TableColumn> columns = TableColumns(type);
 
 			return columns.ToDictionary(c => c.GetPropertyName(), c => c);
@@ -70,8 +64,6 @@ namespace R5.Internals.PostgresMapper
 
 			internal string GetTableName(Type type)
 			{
-				type.ThrowIfNotSqlEntity();
-
 				if (_tableNames.ContainsKey(type))
 				{
 					return _tableNames[type];
@@ -100,8 +92,6 @@ namespace R5.Internals.PostgresMapper
 
 			internal List<string> GetCompositePrimaryKeys(Type type)
 			{
-				type.ThrowIfNotSqlEntity();
-
 				if (_compositePrimaryKeys.ContainsKey(type))
 				{
 					return _compositePrimaryKeys[type];
@@ -125,8 +115,6 @@ namespace R5.Internals.PostgresMapper
 
 			internal List<TableColumn> GetColumns(Type type)
 			{
-				type.ThrowIfNotSqlEntity();
-
 				if (_columns.ContainsKey(type))
 				{
 					return _columns[type];

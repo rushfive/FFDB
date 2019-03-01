@@ -60,6 +60,7 @@ namespace R5.Internals.PostgresMapper.Mappers
 				case PostgresDataType.UUID:
 				case PostgresDataType.INT:
 				case PostgresDataType.FLOAT8:
+				case PostgresDataType.SQL_IDENTIFIER:
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(dataType), $"'{dataType}' is an invalid '{nameof(PostgresDataType)}'.");

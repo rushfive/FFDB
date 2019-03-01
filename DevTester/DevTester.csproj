@@ -9,6 +9,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\DatabaseProviders\R5.FFDB.DbProviders.PostgreSql\R5.FFDB.DbProviders.PostgreSql.csproj" />
 		<ProjectReference Include="..\Engine\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
+		<ProjectReference Include="..\R5.Internals\R5.Internals.Abstractions\R5.Internals.Abstractions.csproj" />
 		<ProjectReference Include="..\R5.Internals\R5.PostgresMapper\R5.Internals.PostgresMapper.csproj" />
 	</ItemGroup>
 

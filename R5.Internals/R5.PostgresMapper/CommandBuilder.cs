@@ -15,15 +15,13 @@ namespace R5.Internals.PostgresMapper
 
 	public class TableCommandBuilder
 	{
-		public string Create<TEntity>() where TEntity : SqlEntity
+		public string Create<TEntity>()
 		{
 			return Create(typeof(TEntity));
 		}
 
 		public string Create(Type entityType)
 		{
-			entityType.ThrowIfNotSqlEntity();
-
 			List<string> columnDefinitions = GetColumnDefinitions(entityType);
 
 			return new ConcatSqlBuilder()
@@ -48,15 +46,13 @@ namespace R5.Internals.PostgresMapper
 			return definitions;
 		}
 
-		public string Truncate<TEntity>() where TEntity : SqlEntity
+		public string Truncate<TEntity>()
 		{
 			return Truncate(typeof(TEntity));
 		}
 
 		public string Truncate(Type entityType)
 		{
-			entityType.ThrowIfNotSqlEntity();
-
 			return new ConcatSqlBuilder()
 				.Append($"TRUNCATE {MetadataResolver.TableName(entityType)}")
 				.GetResult();

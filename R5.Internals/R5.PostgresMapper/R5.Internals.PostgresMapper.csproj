@@ -6,8 +6,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\R5.Lib\R5.Lib.csproj" />
-	  <ProjectReference Include="..\R5.Internals.Extensions\R5.Internals.Extensions.csproj" />
+		<PackageReference Include="Npgsql" Version="4.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\R5.Lib\R5.Lib.csproj" />
+		<ProjectReference Include="..\R5.Internals.Extensions\R5.Internals.Extensions.csproj" />
 	</ItemGroup>
 
 </Project>

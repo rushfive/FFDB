@@ -1,13 +1,14 @@
 ﻿using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.PostgreSql.Attributes;
+using R5.Internals.PostgresMapper.Attributes;
+using R5.Internals.PostgresMapper.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
+namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
-	[TableName(Table.WeekGameMatchup)]
+	[Table(Table.WeekGameMatchup)]
 	[CompositePrimaryKeys("season", "week", "home_team_id", "away_team_id")]
 	public class WeekGameMatchupSql : SqlEntity
 	{

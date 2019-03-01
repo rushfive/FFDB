@@ -1,5 +1,5 @@
 ﻿using R5.FFDB.Core.Models;
-using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
+using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -6,16 +6,17 @@ using System.Text;
 
 namespace R5.Internals.PostgresMapper.Models
 {
-	public abstract class SqlEntity
-	{
-		//public abstract string TableName { get; }
-		//public string TableName => MetadataResolver.TableName(this.GetType());
-		//public List<TableColumn> Columns() => MetadataResolver.TableColumns(this.GetType());
-	}
+	// do we even really need this base class??
+	//public abstract class SqlEntity
+	//{
+	//	//public abstract string TableName { get; }
+	//	//public string TableName => MetadataResolver.TableName(this.GetType());
+	//	//public List<TableColumn> Columns() => MetadataResolver.TableColumns(this.GetType());
+	//}
 
 
 	[Table("Test")]
-	public class TestEntity : SqlEntity
+	public class TestEntity// : SqlEntity
 	{
 		[Column("StringColName")]
 		public string String { get; set; }
@@ -31,10 +32,13 @@ namespace R5.Internals.PostgresMapper.Models
 
 		[Column("BoolColName")]
 		public bool Bool { get; set; }
+
+		[Column("DateTime")]
+		public DateTime DateTime { get; set; }
 	}
 
 	[Table("Test2")]
-	public class TestEntity2 : SqlEntity
+	public class TestEntity2// : SqlEntity
 	{
 		public string String { get; set; }
 

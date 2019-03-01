@@ -10,13 +10,7 @@ using System.Text;
 
 namespace R5.Internals.PostgresMapper.SqlBuilders
 {
-	// TODO:
-	// handle bool constants in expression
-	// eg Where(e => e.BoolProp)
-	// curr handling Where(e => e.BoolProp == true)
-
 	public class WhereConditionBuilder<TEntity> : ExpressionVisitor
-			where TEntity : SqlEntity
 	{
 		private static readonly Dictionary<ExpressionType, string> _operatorMap;
 
@@ -134,9 +128,6 @@ namespace R5.Internals.PostgresMapper.SqlBuilders
 				throw new InvalidOperationException($"Failed to find column associated to property "
 					+ $"'{node.Member.Name}' on entity type '{typeof(TEntity).Name}'.");
 			}
-
-			// if member access AND its type is bool, just append the col.name 
-			// (already doing this, except not for !prop)
 
 			_columnStack.Push(column);
 			

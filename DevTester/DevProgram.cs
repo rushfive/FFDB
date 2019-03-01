@@ -26,12 +26,29 @@ using R5.Internals.PostgresMapper;
 using System.Linq.Expressions;
 using System.Text;
 using R5.Internals.PostgresMapper.SqlBuilders;
+using R5.Internals.Abstractions.Expressions;
+using R5.Internals.PostgresMapper.Attributes;
 
 namespace DevTester
 {
-	public class TestContext
+	[Table("ffdb.team")]
+	public class TestTmSql
 	{
-		public bool Bool { get; set; }
+		[PrimaryKey]
+		[Column("id", PostgresDataType.INT)]
+		public int Id { get; set; }
+
+		[NotNull]
+		[Column("nfl_id", PostgresDataType.TEXT)]
+		public string NflId { get; set; }
+
+		[NotNull]
+		[Column("name", PostgresDataType.TEXT)]
+		public string Name { get; set; }
+
+		[NotNull]
+		[Column("abbreviation", PostgresDataType.TEXT)]
+		public string Abbreviation { get; set; }
 	}
 
 	public class DevProgram
@@ -56,38 +73,99 @@ namespace DevTester
 		public static async Task Main(string[] args)
 		{
 			//SelectBuilder<TestEntity> selectBuilder = Builders<TestEntity>
-			//	.Select()
-			//	.Where(
-			//		e => e.NullableDouble == null && e.NullableDouble >= 25 || e.String == "hello" 
-			//		|| e.NullableDouble != e.NullableDouble2);
-
-
-			//SelectBuilder<TestEntity> selectBuilder = Builders<TestEntity>
 			//	.Select(
 			//		e => e.NullableDouble,
-			//		e => e.Bool,
-			//		e => e.Int > 0) // VALIDATE AGAINST THIS! it should be a simple SINGLE lambda, with the body being a SINGLE
-			//		                //                    member access expression (prob has to be a run time check?)
-			//	.Where(e => e.NullableDouble != null && e.Bool == true);
+			//		e => e.Bool)
+			//	.Where(e => e.Bool == (e.NullableDouble != e.NullableDouble2) && !e.Bool || (e.Bool != e.Bool));
 
-			SelectBuilder<TestEntity> selectBuilder = Builders<TestEntity>
-				.Select(
-					e => e.NullableDouble,
-					e => e.Bool)
-				.Where(e => e.Bool == (e.NullableDouble != e.NullableDouble2) && !e.Bool || (e.Bool != e.Bool));
-			// .Where(e => e.NullableDouble != null && e.Bool);    =>
-			// SELECT NullableDoubleColName, BoolColName FROM Test WHERE ((NullableDoubleColName != null) AND BoolColName)
-			// which is OKAY, but if we want to allow !e.Bool, we need to write "NOT BoolColName"
+			//Console.WriteLine(selectBuilder);
 
-			Console.WriteLine(selectBuilder);
+			//var entity = new TestEntity
+			//{
+			//	Int = 32
+			//};
 
-			
+			//Expression<Func<TestEntity, bool>> testExpr1 = e => e.Bool;
+			//Expression<Func<TestEntity, bool>> testExpr2 = e => (e.Bool || e.Bool) && e.NullableDouble >= e.NullableDouble2;
+
+			//Expression<Func<int, int, int>> test = (a, b) => a + b + entity.Int;
+
+			//var mrInspector = new MisterInspector();
+			//mrInspector.Inspect(test);
+
+			//Console.WriteLine(testExpr2);
+			//bool canReduce = testExpr2.CanReduce;
+
+			var db = new DbConnection(NpgsqlConnectionFactory);
+
+			bool below30 = await db
+				.Exists<TestTmSql>()
+				.Where(t => t.Id < 30)
+				.QueryAsync();
+
+			bool above50 = await db
+				.Exists<TestTmSql>()
+				.Where(t => t.Id > 50)
+				.QueryAsync();
+
+
+			//List<TestTeamSql> something = await db
+			//	.Select<TestTeamSql>(
+			//		t => t.Id, 
+			//		t => t.Name,
+			//		t => t.NflId)
+			//	.Where(t => t.Id > 50)
+			//	.QueryAsync();
+
+			//List<TestTeamSql> something2 = await db
+			//	.Select<TestTeamSql>(
+			//		t => t.Id,
+			//		t => t.Name,
+			//		t => t.NflId)
+			//	.QueryAsync();
+
+
+
+
+
+
+
+
+
+
+
+
 
 			return;
 			Console.ReadKey();
 		}
 
 
+
+		private static NpgsqlConnection NpgsqlConnectionFactory()
+		{
+			var _config = new PostgresConfig
+			{
+				DatabaseName = "ffdb_test_1",
+				Host = "localhost",
+				Username = "ffdb",
+				Password = "welc0me!"
+			};
+
+			string connectionString = $"Host={_config.Host};Database={_config.DatabaseName};";
+
+			if (_config.IsSecured)
+			{
+				connectionString += $"Username={_config.Username};Password={_config.Password}";
+			}
+
+			return new NpgsqlConnection(connectionString);
+		}
+
+		public class Other
+		{
+			public bool OtherBool { get; set; }
+		}
 		
 
 

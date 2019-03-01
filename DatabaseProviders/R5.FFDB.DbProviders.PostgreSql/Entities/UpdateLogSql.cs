@@ -1,11 +1,14 @@
-﻿using R5.FFDB.DbProviders.PostgreSql.Attributes;
+﻿using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
+using R5.Internals.PostgresMapper.Attributes;
+using R5.Internals.PostgresMapper.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace R5.FFDB.DbProviders.PostgreSql.Models.Entities
+namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
-	[TableName(Table.UpdateLog)]
+	[Table(Table.UpdateLog)]
 	[CompositePrimaryKeys("season", "week")]
 	public class UpdateLogSql : SqlEntity
 	{
