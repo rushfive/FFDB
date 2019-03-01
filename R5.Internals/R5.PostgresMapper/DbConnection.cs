@@ -1,7 +1,5 @@
 ﻿using Npgsql;
-using R5.Internals.PostgresMapper.Models;
 using R5.Internals.PostgresMapper.QueryCommand;
-using R5.Internals.PostgresMapper.SqlBuilders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +21,7 @@ namespace R5.Internals.PostgresMapper
 		public SelectQuery<TEntity> Select<TEntity>()
 			where TEntity : new()
 		{
-			return new SelectQuery<TEntity>(this, null);
+			return new SelectQuery<TEntity>(_getConnection, null);
 		}
 
 		public SelectQuery<TEntity> Select<TEntity>(params Expression<Func<TEntity, object>>[] properties)
@@ -34,36 +32,22 @@ namespace R5.Internals.PostgresMapper
 				throw new ArgumentNullException(nameof(properties), "Property expressions must be provided.");
 			}
 
-			return new SelectQuery<TEntity>(this, properties.ToList());
+			return new SelectQuery<TEntity>(_getConnection, properties.ToList());
 		}
 
 		public ExistsQuery<TEntity> Exists<TEntity>()
 		{
-			return new ExistsQuery<TEntity>(this);
+			return new ExistsQuery<TEntity>(_getConnection);
 		}
 
-		public async Task<TReturn> ExecuteReaderAsync<TReturn>(string sqlCommand, Func<NpgsqlDataReader, TReturn> onReadMapper)
+		public CreateTableCommand<TEntity> CreateTable<TEntity>()
 		{
-			if (onReadMapper == null)
-			{
-				throw new ArgumentNullException(nameof(onReadMapper), "On-read mapper callback must be provided to execute a command with returning value.");
-			}
+			return new CreateTableCommand<TEntity>(_getConnection);
+		}
 
-			using (NpgsqlConnection connection = _getConnection())
-			{
-				await connection.OpenAsync();
-
-				using (var command = new NpgsqlCommand())
-				{
-					command.Connection = connection;
-					command.CommandText = sqlCommand;
-
-					using (NpgsqlDataReader reader = command.ExecuteReader())
-					{
-						return onReadMapper.Invoke(reader);
-					}
-				}
-			}
+		public TruncateCommand<TEntity> Truncate<TEntity>()
+		{
+			return new TruncateCommand<TEntity>(_getConnection);
 		}
 	}
 }

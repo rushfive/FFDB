@@ -11,12 +11,12 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 	// todo internal
 	public class ExistsQuery<TEntity>
 	{
-		private DbConnection _dbConnection { get; }
+		private Func<NpgsqlConnection> _getConnection { get; }
 		private ConcatSqlBuilder _sqlBuilder { get; } = new ConcatSqlBuilder();
 
-		public ExistsQuery(DbConnection dbConnection)
+		public ExistsQuery(Func<NpgsqlConnection> getConnection)
 		{
-			_dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
+			_getConnection = getConnection ?? throw new ArgumentNullException(nameof(getConnection));
 
 			var table = MetadataResolver.TableName<TEntity>();
 
@@ -39,18 +39,19 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 			return this;
 		}
 
-		public string CreateSql()
+		public string GetSqlCommand()
 		{
 			return _sqlBuilder.GetResult();
 		}
 
-		public Task<bool> QueryAsync()
+		public Task<bool> ExecuteAsync()
 		{
-			var sqlCommand = CreateSql();
+			var sqlCommand = GetSqlCommand();
 #if DEBUG
 			Console.WriteLine(sqlCommand);
 #endif
-			return _dbConnection.ExecuteReaderAsync(sqlCommand, r => r.HasRows);
+			NpgsqlConnection connection = _getConnection();
+			return connection.ExecuteReaderAsync(sqlCommand, r => r.HasRows);
 		}
 
 		private static bool QueryHasRowResults(NpgsqlDataReader reader)

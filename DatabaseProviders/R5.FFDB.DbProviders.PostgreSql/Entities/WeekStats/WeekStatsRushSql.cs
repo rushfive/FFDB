@@ -10,7 +10,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
-	[Table(Table.WeekStats.Rush)]
+	[Table(TableName.WeekStats.Rush)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
 	public class WeekStatsRushSql : WeekStatsPlayerSql
 	{

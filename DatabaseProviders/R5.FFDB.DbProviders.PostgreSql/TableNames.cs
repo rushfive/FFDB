@@ -1,6 +1,6 @@
 ﻿namespace R5.FFDB.DbProviders.PostgreSql
 {
-	public static class Table
+	public static class TableName
 	{
 		public const string Player = "ffdb.player";
 		public const string PlayerTeamMap = "ffdb.player_team_map";

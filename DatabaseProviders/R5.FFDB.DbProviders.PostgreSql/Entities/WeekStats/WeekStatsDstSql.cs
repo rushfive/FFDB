@@ -10,7 +10,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
-	[Table(Table.WeekStats.DST)]
+	[Table(TableName.WeekStats.DST)]
 	[CompositePrimaryKeys("team_id", "season", "week")]
 	public class WeekStatsDstSql : WeekStatsSql
 	{

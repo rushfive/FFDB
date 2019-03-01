@@ -8,7 +8,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
-	[Table(Table.UpdateLog)]
+	[Table(TableName.UpdateLog)]
 	[CompositePrimaryKeys("season", "week")]
 	public class UpdateLogSql : SqlEntity
 	{

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
-	[Table(Table.WeekGameMatchup)]
+	[Table(TableName.WeekGameMatchup)]
 	[CompositePrimaryKeys("season", "week", "home_team_id", "away_team_id")]
 	public class WeekGameMatchupSql : SqlEntity
 	{

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
-	[Table(Table.Player)]
+	[Table(TableName.Player)]
 	public class PlayerSql : SqlEntity
 	{
 		[PrimaryKey]

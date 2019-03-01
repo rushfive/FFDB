@@ -51,6 +51,12 @@ namespace DevTester
 		public string Abbreviation { get; set; }
 	}
 
+	[Table("ffdb.NOT_EXISTS")]
+	public class NotExists
+	{
+		public string LOL { get; set; }
+	}
+
 	public class DevProgram
 	{
 		private static IServiceProvider _serviceProvider { get; set; }
@@ -98,15 +104,20 @@ namespace DevTester
 
 			var db = new DbConnection(NpgsqlConnectionFactory);
 
+			await db.CreateTable<NotExists>().ExecuteAsync();
+
+			await db.Truncate<NotExists>().ExecuteAsync();
+
+
 			bool below30 = await db
 				.Exists<TestTmSql>()
 				.Where(t => t.Id < 30)
-				.QueryAsync();
+				.ExecuteAsync();
 
 			bool above50 = await db
 				.Exists<TestTmSql>()
 				.Where(t => t.Id > 50)
-				.QueryAsync();
+				.ExecuteAsync();
 
 
 			//List<TestTeamSql> something = await db

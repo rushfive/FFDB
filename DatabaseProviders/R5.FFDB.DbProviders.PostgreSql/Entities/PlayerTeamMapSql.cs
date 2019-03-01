@@ -8,7 +8,7 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
-	[Table(Table.PlayerTeamMap)]
+	[Table(TableName.PlayerTeamMap)]
 	[CompositePrimaryKeys("player_id", "team_id")]
 	public class PlayerTeamMapSql : SqlEntity
 	{

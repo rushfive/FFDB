@@ -16,14 +16,14 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 	public class SelectQuery<TEntity>
 		where TEntity : new()
 	{
-		private DbConnection _dbConnection { get; }
+		private Func<NpgsqlConnection> _getConnection { get; }
 		private ConcatSqlBuilder _sqlBuilder { get; } = new ConcatSqlBuilder();
 
 		public SelectQuery(
-			DbConnection dbConnection,
+			Func<NpgsqlConnection> getConnection,
 			List<Expression<Func<TEntity, object>>> propertySelections)
 		{
-			_dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
+			_getConnection = getConnection ?? throw new ArgumentNullException(nameof(getConnection));
 			SetSelectFrom(propertySelections);
 		}
 
@@ -121,18 +121,19 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 			return this;
 		}
 
-		public string CreateSql()
+		public string GetSqlCommand()
 		{
 			return _sqlBuilder.GetResult();
 		}
 
-		public Task<List<TEntity>> QueryAsync()
+		public Task<List<TEntity>> ExecuteAsync()
 		{
-			var sqlCommand = CreateSql();
+			var sqlCommand = GetSqlCommand();
 #if DEBUG
 			Console.WriteLine(sqlCommand);
 #endif
-			return _dbConnection.ExecuteReaderAsync(sqlCommand, MapQueryToEntities);
+			NpgsqlConnection connection = _getConnection();
+			return connection.ExecuteReaderAsync(sqlCommand, MapQueryToEntities);
 		}
 
 		private static List<TEntity> MapQueryToEntities(NpgsqlDataReader reader)
