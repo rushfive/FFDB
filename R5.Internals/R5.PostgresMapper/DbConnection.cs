@@ -45,6 +45,18 @@ namespace R5.Internals.PostgresMapper
 			return new InsertCommand<TEntity>(_getConnection, entities);
 		}
 
+		public DeleteCommand<TEntity> Delete<TEntity>(TEntity entity)
+			where TEntity : class
+		{
+			return new DeleteCommand<TEntity>(_getConnection, entity);
+		}
+
+		public DeleteWhereCommand<TEntity> DeleteWhere<TEntity>(Expression<Func<TEntity, bool>> conditionExpression)
+			where TEntity : class
+		{
+			return new DeleteWhereCommand<TEntity>(_getConnection, conditionExpression);
+		}
+
 		public ExistsQuery<TEntity> Exists<TEntity>()
 		{
 			return new ExistsQuery<TEntity>(_getConnection);

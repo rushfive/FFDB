@@ -2,29 +2,29 @@
 using R5.Internals.PostgresMapper.SqlBuilders;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace R5.Internals.PostgresMapper.QueryCommand
 {
-	public class DeleteCommand<TEntity>
-		where TEntity : class
+	public class DeleteWhereCommand<TEntity> where TEntity : class
 	{
 		private Func<NpgsqlConnection> _getConnection { get; }
 		private ConcatSqlBuilder _sqlBuilder { get; } = new ConcatSqlBuilder();
 
-		public DeleteCommand(
+		public DeleteWhereCommand(
 			Func<NpgsqlConnection> getConnection,
-			TEntity entity)
+			Expression<Func<TEntity, bool>> conditionExpression)
 		{
 			_getConnection = getConnection ?? throw new ArgumentNullException(nameof(getConnection));
-			if (entity == null)
+			if (conditionExpression == null)
 			{
-				throw new ArgumentNullException(nameof(entity), "Entity to be deleted must be provided.");
+				throw new ArgumentNullException(nameof(conditionExpression), "Condition expression must be provided..");
 			}
 
 			AppendDeleteFrom();
-			AppendWhereCondition(entity);
+			AppendWhereCondition(conditionExpression);
 		}
 
 		private void AppendDeleteFrom()
@@ -33,13 +33,12 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 			_sqlBuilder.Append($"DELETE FROM {tableName}");
 		}
 
-		private void AppendWhereCondition(TEntity entity)
+		private void AppendWhereCondition(Expression<Func<TEntity, bool>> conditionExpression)
 		{
-			Func<TEntity, string> getKeyMatch = MetadataResolver.GetPrimaryKeyMatchConditionFunc<TEntity>();
+			string whereCondition = WhereConditionBuilder<TEntity>.FromExpression(conditionExpression);
+			string where = $"WHERE {whereCondition}";
 
-			string condition = getKeyMatch(entity);
-
-			_sqlBuilder.Append($"WHERE {condition}");
+			_sqlBuilder.Append(where);
 		}
 
 		public string GetSqlCommand()

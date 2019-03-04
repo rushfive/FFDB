@@ -95,8 +95,38 @@ namespace DevTester
 			var cpk = MetadataResolver.CompositePrimaryKeys<CompositePrimaryKeys>();
 			var cols = MetadataResolver.TableColumns<CompositePrimaryKeys>();
 
+			var update = new UpdateCommand<CompositePrimaryKeys>(() => null);
+			update
+				.Set(c => c.String, "NEWSTR")
+				.Set(c => c.Int, 33);
 
+			var sqllll1 = update.GetSqlCommand();
 
+			var update2 = new UpdateCommand<CompositePrimaryKeys>(() => null);
+			update2
+				.Set(c => c.String, "NEWSTR");
+
+			var sqllll2 = update2.GetSqlCommand();
+
+			var update3 = new UpdateCommand<CompositePrimaryKeys>(() => null);
+			update3
+				.Where(c => c.String != "what" && c.Int < 55)
+				.Set(c => c.String, "NEWSTR")
+				.Set(c => c.Int, 33);
+
+			var sqllll13 = update3.GetSqlCommand();
+
+			var update4 = new UpdateCommand<CompositePrimaryKeys>(() => null);
+			update4
+				.Where(c => c.String != "what" && c.Int < 55)
+				.Set(c => c.String, "NEWSTR");
+
+			var sqllll4 = update4.GetSqlCommand();
+
+			var deleteWhere = new DeleteWhereCommand<CompositePrimaryKeys>(
+				() => null,
+				c => c.Int > 33 && c.String != "test");
+			var deleWhereSql = deleteWhere.GetSqlCommand();
 
 			var resolver = MetadataResolver.GetPrimaryKeyMatchConditionFunc<CompositePrimaryKeys>();
 
@@ -127,6 +157,15 @@ namespace DevTester
 				Name = "name2",
 				NflId = "sadfasdf2"
 			};
+
+			var deleteCmd1 = new DeleteCommand<CompositePrimaryKeys>(
+				() => null, t1);
+			string sql1 = deleteCmd1.GetSqlCommand();
+
+			var deleteCmd2 = new DeleteCommand<TestTmSql>(
+				() => null, tEntity);
+			string sql2 = deleteCmd2.GetSqlCommand();
+
 
 			var resolved1 = resolver(t1);
 			var resolved2 = resolver(t2);
