@@ -3,44 +3,49 @@ using R5.Internals.PostgresMapper.Attributes;
 using R5.Internals.PostgresMapper.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
 namespace R5.Internals.PostgresMapper
 {
-	internal static class MetadataResolver
+	// todo: internal
+	public static class MetadataResolver
 	{
 		private static readonly MetadataCache _cache = new MetadataCache();
 
-		internal static string TableName<TEntity>()
+		public static string TableName<TEntity>()
 		{
 			return TableName(typeof(TEntity));
 		}
 
 		internal static string TableName(Type type)
 		{
-			return _cache.GetTableName(type);
+			var metadata = _cache.GetMetadata(type) as EntityMetadata<object>;
+			return metadata.TableName;
 		}
 
-		internal static List<string> CompositePrimaryKeys<TEntity>()
+		public static List<string> CompositePrimaryKeys<TEntity>()
 		{
 			return CompositePrimaryKeys(typeof(TEntity));
 		}
 
 		internal static List<string> CompositePrimaryKeys(Type type)
 		{
-			return _cache.GetCompositePrimaryKeys(type);
+			var metadata = _cache.GetMetadata(type) as EntityMetadata<object>;
+			return metadata.CompositePrimaryKeys;
 		}
-		// todo test
-		internal static List<TableColumn> TableColumns<TEntity>()
+
+		public static List<TableColumn> TableColumns<TEntity>()
 		{
 			return TableColumns(typeof(TEntity));
 		}
 
 		internal static List<TableColumn> TableColumns(Type type)
 		{
-			return _cache.GetColumns(type);
+			var metadata = _cache.GetMetadata(type) as EntityMetadata<object>;
+			return metadata.Columns;
 		}
 
 		internal static Dictionary<string, TableColumn> PropertyColumnMap<TEntity>()
@@ -50,98 +55,152 @@ namespace R5.Internals.PostgresMapper
 
 		internal static Dictionary<string, TableColumn> PropertyColumnMap(Type type)
 		{
-			List<TableColumn> columns = TableColumns(type);
-
-			return columns.ToDictionary(c => c.GetPropertyName(), c => c);
+			var metadata = _cache.GetMetadata(type) as EntityMetadata<object>;
+			return metadata.Columns.ToDictionary(c => c.GetPropertyName(), c => c);
 		}
 
-		// todo: use a richer cache model (per entity, containing for ex a map of col name to col)
+		public static Func<TEntity, string> GetPrimaryKeyMatchConditionFunc<TEntity>()
+		{
+			return GetPrimaryKeyMatchConditionFunc(typeof(TEntity)) as Func<TEntity, string>;
+		}
+
+		internal static Func<object, string> GetPrimaryKeyMatchConditionFunc(Type type)
+		{
+			var metadata = _cache.GetMetadata(type) as EntityMetadata<object>;
+			return metadata.GetPrimaryKeyMatchCondition;
+		}
+		
 		class MetadataCache
 		{
-			private readonly Dictionary<Type, string> _tableNames = new Dictionary<Type, string>();
-			private readonly Dictionary<Type, List<string>> _compositePrimaryKeys = new Dictionary<Type, List<string>>();
-			private readonly Dictionary<Type, List<TableColumn>> _columns = new Dictionary<Type, List<TableColumn>>();
+			private readonly Dictionary<Type, object> _metadata = new Dictionary<Type, object>();
+			private readonly object _lock = new object();
 
-			internal string GetTableName(Type type)
+			internal EntityMetadata<TEntity> GetMetadata<TEntity>()
 			{
-				if (_tableNames.ContainsKey(type))
-				{
-					return _tableNames[type];
-				}
-
-				lock (_tableNames)
-				{
-					if (_tableNames.TryGetValue(type, out string tableName))
-					{
-						return tableName;
-					}
-					else
-					{
-						TableAttribute attr = type.GetCustomAttributeOrNull<TableAttribute>();
-						if (attr == null)
-						{
-							throw new InvalidOperationException($"Entity '{type.Name}' is missing its table name.");
-						}
-
-						_tableNames[type] = attr.Name;
-					}
-				}
-
-				return _tableNames[type];
+				return GetMetadata(typeof(TEntity)) as EntityMetadata<TEntity>;
 			}
 
-			internal List<string> GetCompositePrimaryKeys(Type type)
+			internal object GetMetadata(Type type)
 			{
-				if (_compositePrimaryKeys.ContainsKey(type))
+				if (_metadata.TryGetValue(type, out object metadata))
 				{
-					return _compositePrimaryKeys[type];
+					return metadata;
 				}
 
-				lock (_compositePrimaryKeys)
+				lock (_lock)
 				{
-					if (_compositePrimaryKeys.TryGetValue(type, out List<string> keys))
+					if (!_metadata.ContainsKey(type))
 					{
-						return keys;
-					}
-					else
-					{
-						CompositePrimaryKeysAttribute attr = type.GetCustomAttributeOrNull<CompositePrimaryKeysAttribute>();
-						_compositePrimaryKeys[type] = attr?.ColumnNames;
+						var resolved = ResolveMetadataForEntity(type);
+						_metadata[type] = resolved;
 					}
 				}
 
-				return _compositePrimaryKeys[type];
+				return _metadata[type];
 			}
 
-			internal List<TableColumn> GetColumns(Type type)
+			private EntityMetadata<object> ResolveMetadataForEntity(Type type)
 			{
-				if (_columns.ContainsKey(type))
+				var tableName = ResolveTableName(type);
+				var compositePrimaryKeys = ResolveCompositePrimaryKeys(type);
+				var columns = ResolveColumns(type);
+				var getPrimaryKeyMatchCondition = ResolveGetPrimaryKeyMatchCondition(compositePrimaryKeys, columns);
+
+				return new EntityMetadata<object>(type, tableName, compositePrimaryKeys, columns, getPrimaryKeyMatchCondition);
+			}
+
+			private string ResolveTableName(Type type)
+			{
+				TableAttribute attr = type.GetCustomAttributeOrNull<TableAttribute>();
+				if (attr == null)
 				{
-					return _columns[type];
+					throw new InvalidOperationException($"Entity '{type.Name}' is missing its table name (add the TableAttribute to the class)");
 				}
 
-				lock (_columns)
+				return attr.Name;
+			}
+
+			private List<string> ResolveCompositePrimaryKeys(Type type)
+			{
+				CompositePrimaryKeysAttribute attr = type.GetCustomAttributeOrNull<CompositePrimaryKeysAttribute>();
+				return attr?.ColumnNames;
+			}
+
+			private List<TableColumn> ResolveColumns(Type type)
+			{
+				List<TableColumn> columns = type.GetPropertiesContainingBaseAttribute<EntityColumnAttribute>()
+					.Select(TableColumn.FromProperty)
+					.ToList();
+
+				// todo:validate columns against each other
+
+				return columns;
+			}
+
+			private Func<object, string> ResolveGetPrimaryKeyMatchCondition(
+				List<string> compositePrimaryKeys, List<TableColumn> columns)
+			{
+				Dictionary<string, TableColumn> columnByNameMap = columns.ToDictionary(c => c.Name, c => c, StringComparer.OrdinalIgnoreCase);
+				IEnumerable<TableColumn> compositeKeyColumns = compositePrimaryKeys?.Select(c => columnByNameMap[c]);
+
+				TableColumn primaryKeyColumn = columns.SingleOrDefault(c => c.PrimaryKey);
+
+				if (compositeKeyColumns != null)
 				{
-					if (_columns.TryGetValue(type, out List<TableColumn> columns))
-					{
-						return columns;
-					}
-					else
-					{
-						// need to validate columns against each other after creating
+					Debug.Assert(primaryKeyColumn == null, "Primary key column cant be set if the table uses composite primary keys.");
 
-						columns = type.GetPropertiesContainingBaseAttribute<EntityColumnAttribute>()
-							.Select(TableColumn.FromProperty)
-							.ToList();
+					return entity =>
+					{
+						var columnEquals = compositeKeyColumns
+							.Select(c =>
+							{
+								var value = c.GetDbValueString(entity);
+								return $"{c.Name} = {value}";
+							});
 
-						_columns[type] = columns;
-					}
+						return string.Join(" AND ", columnEquals);
+					};
 				}
+				else
+				{
+					Debug.Assert(primaryKeyColumn != null, "Primary key column must be set if the table doesn't use composite primary keys.");
 
-				return _columns[type];
+					return entity =>
+					{
+						var value = primaryKeyColumn.GetDbValueString(entity);
+						return $"{primaryKeyColumn.Name} = {value}";
+					};
+				}
 			}
 		}
 	}
 
+	public class EntityMetadata<TEntity>
+	{
+		public Type Type { get; }
+		public string TableName { get; }
+		public List<string> CompositePrimaryKeys { get; }
+		public List<TableColumn> Columns { get; }
+		public Func<TEntity, string> GetPrimaryKeyMatchCondition { get; }
+
+		public EntityMetadata(
+			Type type,
+			string tableName,
+			List<string> compositePrimaryKeys,
+			List<TableColumn> columns,
+			Func<TEntity, string> getPrimaryKeyMatchCondition)
+		{
+			if (string.IsNullOrWhiteSpace(tableName))
+			{
+				throw new ArgumentNullException(nameof(tableName));
+			}
+
+			this.Type = type ?? throw new ArgumentNullException(nameof(type));
+			this.TableName = tableName;
+			this.CompositePrimaryKeys = compositePrimaryKeys;
+			this.Columns = columns ?? throw new ArgumentNullException(nameof(columns));
+			this.GetPrimaryKeyMatchCondition = getPrimaryKeyMatchCondition ?? throw new ArgumentNullException(nameof(getPrimaryKeyMatchCondition));
+		}
+	}
 	
 }

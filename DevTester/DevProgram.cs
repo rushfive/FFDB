@@ -28,6 +28,7 @@ using System.Text;
 using R5.Internals.PostgresMapper.SqlBuilders;
 using R5.Internals.Abstractions.Expressions;
 using R5.Internals.PostgresMapper.Attributes;
+using R5.Internals.PostgresMapper.QueryCommand;
 
 namespace DevTester
 {
@@ -57,6 +58,18 @@ namespace DevTester
 		public string LOL { get; set; }
 	}
 
+	[Table("cpk")]
+	[CompositePrimaryKeys("stringCol", "intCol", "boolCol")]
+	public class CompositePrimaryKeys
+	{
+		[Column("stringCol")]
+		public string String { get; set; }
+		[Column("intCol")]
+		public int Int { get; set; }
+		[Column("boolCol")]
+		public bool Bool { get; set; }
+	}
+
 	public class DevProgram
 	{
 		private static IServiceProvider _serviceProvider { get; set; }
@@ -78,67 +91,57 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			//SelectBuilder<TestEntity> selectBuilder = Builders<TestEntity>
-			//	.Select(
-			//		e => e.NullableDouble,
-			//		e => e.Bool)
-			//	.Where(e => e.Bool == (e.NullableDouble != e.NullableDouble2) && !e.Bool || (e.Bool != e.Bool));
-
-			//Console.WriteLine(selectBuilder);
-
-			//var entity = new TestEntity
-			//{
-			//	Int = 32
-			//};
-
-			//Expression<Func<TestEntity, bool>> testExpr1 = e => e.Bool;
-			//Expression<Func<TestEntity, bool>> testExpr2 = e => (e.Bool || e.Bool) && e.NullableDouble >= e.NullableDouble2;
-
-			//Expression<Func<int, int, int>> test = (a, b) => a + b + entity.Int;
-
-			//var mrInspector = new MisterInspector();
-			//mrInspector.Inspect(test);
-
-			//Console.WriteLine(testExpr2);
-			//bool canReduce = testExpr2.CanReduce;
-
-			var db = new DbConnection(NpgsqlConnectionFactory);
-
-			await db.CreateTable<NotExists>().ExecuteAsync();
-
-			await db.Truncate<NotExists>().ExecuteAsync();
-
-
-			bool below30 = await db
-				.Exists<TestTmSql>()
-				.Where(t => t.Id < 30)
-				.ExecuteAsync();
-
-			bool above50 = await db
-				.Exists<TestTmSql>()
-				.Where(t => t.Id > 50)
-				.ExecuteAsync();
-
-
-			//List<TestTeamSql> something = await db
-			//	.Select<TestTeamSql>(
-			//		t => t.Id, 
-			//		t => t.Name,
-			//		t => t.NflId)
-			//	.Where(t => t.Id > 50)
-			//	.QueryAsync();
-
-			//List<TestTeamSql> something2 = await db
-			//	.Select<TestTeamSql>(
-			//		t => t.Id,
-			//		t => t.Name,
-			//		t => t.NflId)
-			//	.QueryAsync();
+			var name = MetadataResolver.TableName<CompositePrimaryKeys>();
+			var cpk = MetadataResolver.CompositePrimaryKeys<CompositePrimaryKeys>();
+			var cols = MetadataResolver.TableColumns<CompositePrimaryKeys>();
 
 
 
 
+			var resolver = MetadataResolver.GetPrimaryKeyMatchConditionFunc<CompositePrimaryKeys>();
 
+			var t1 = new CompositePrimaryKeys
+			{
+				Bool = false,
+				Int = 33,
+				String = "string for t1111111"
+			};
+			var t2 = new CompositePrimaryKeys
+			{
+				Bool = true,
+				Int = 77,
+				String = "string for 222"
+			};
+
+			var tEntity = new TestTmSql
+			{
+				Abbreviation = "abbr1",
+				Id = 35,
+				Name = "name1",
+				NflId = "sadfasdf1"
+			};
+			var tEntity2 = new TestTmSql
+			{
+				Abbreviation = "abbr2",
+				Id = 36,
+				Name = "name2",
+				NflId = "sadfasdf2"
+			};
+
+			var resolved1 = resolver(t1);
+			var resolved2 = resolver(t2);
+
+			DbConnection dbConnection = GetPostgresDbConnection();
+
+			var insertCmd = dbConnection.InsertMany(new List<TestTmSql>
+			{
+				tEntity,
+					tEntity2
+			});
+
+			var sql = insertCmd.GetSqlCommand();
+
+			//await insertCmd.ExecuteAsync();
 
 
 
@@ -151,7 +154,11 @@ namespace DevTester
 			Console.ReadKey();
 		}
 
+		private static DbConnection GetPostgresDbConnection()
+		{
+			return new DbConnection(NpgsqlConnectionFactory);
 
+		}
 
 		private static NpgsqlConnection NpgsqlConnectionFactory()
 		{

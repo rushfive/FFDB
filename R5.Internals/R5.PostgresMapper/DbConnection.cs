@@ -35,6 +35,16 @@ namespace R5.Internals.PostgresMapper
 			return new SelectQuery<TEntity>(_getConnection, properties.ToList());
 		}
 
+		public InsertCommand<TEntity> Insert<TEntity>(TEntity entity)
+		{
+			return new InsertCommand<TEntity>(_getConnection, new List<TEntity> { entity });
+		}
+
+		public InsertCommand<TEntity> InsertMany<TEntity>(List<TEntity> entities)
+		{
+			return new InsertCommand<TEntity>(_getConnection, entities);
+		}
+
 		public ExistsQuery<TEntity> Exists<TEntity>()
 		{
 			return new ExistsQuery<TEntity>(_getConnection);

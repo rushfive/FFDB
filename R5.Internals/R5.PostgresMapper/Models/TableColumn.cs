@@ -74,6 +74,12 @@ namespace R5.Internals.PostgresMapper.Models
 			return _property.GetValue(obj);
 		}
 
+		public string GetDbValueString(object obj)
+		{
+			var value = _property.GetValue(obj);
+			return ToDbValueStringMapper.Map(value, this.DataType);
+		}
+
 		// set value on CLR object from db value returned by pg reader
 		public void SetValue(object obj, object value)
 		{

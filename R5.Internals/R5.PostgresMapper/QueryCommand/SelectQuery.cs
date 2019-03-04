@@ -24,10 +24,10 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 			List<Expression<Func<TEntity, object>>> propertySelections)
 		{
 			_getConnection = getConnection ?? throw new ArgumentNullException(nameof(getConnection));
-			SetSelectFrom(propertySelections);
+			AppendSelectFrom(propertySelections);
 		}
 
-		private void SetSelectFrom(List<Expression<Func<TEntity, object>>> propertySelections)
+		private void AppendSelectFrom(List<Expression<Func<TEntity, object>>> propertySelections)
 		{
 			propertySelections?.ForEach(ValidatePropertyExpression);
 
@@ -39,6 +39,7 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 		}
 
 		// expected to be a lambda, with the body being a simple MemberAccess
+		// todo: any way to get compile time checks on these??
 		private static void ValidatePropertyExpression<TProp>(Expression<Func<TEntity, TProp>> expression)
 		{
 			var lambda = expression as LambdaExpression;

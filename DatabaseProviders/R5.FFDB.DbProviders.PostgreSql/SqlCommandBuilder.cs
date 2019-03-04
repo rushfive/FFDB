@@ -13,48 +13,9 @@
 //{
 //	public static class SqlCommandBuilder
 //	{
-//		public static class Table
-//		{
-//			public static string Create(Type entityType)
-//			{
-//				IEnumerable<string> columns = EntityMetadata.Columns(entityType)
-//					.Select(c => c.GetSqlColumnDefinition());
-
-//				string nameSql = EntityMetadata.TableName(entityType);
-//				string columnsSql = string.Join(", ", columns);
-
-//				if (EntityMetadata.TryGetCompositePrimaryKeys(entityType, out List<string> compositeKeys))
-//				{
-//					columnsSql += $", PRIMARY KEY({string.Join(", ", compositeKeys)})";
-//				}
-
-//				return $"CREATE TABLE {nameSql} ({columnsSql});";
-//			}
-//		}
 
 //		public static class Rows
 //		{
-//			public static string Insert<T>(T entity)
-//				where T : SqlEntity
-//			{
-//				return InsertMany(new List<T> { entity });
-//			}
-
-//			public static string InsertMany<T>(IEnumerable<T> entities)
-//				where T : SqlEntity
-//			{
-//				string tableName = EntityMetadata.TableName(typeof(T));
-
-//				List<TableColumn> columns = EntityMetadata.Columns(typeof(T));
-//				string columnsSql = string.Join(", ", columns.Select(i => i.Name));
-
-//				string sql = $"INSERT INTO {tableName} ({columnsSql}) VALUES ";
-
-//				IEnumerable<string> entityValues = entities.Select(e => EntityValues(columns, e, excludeKeys: false));
-//				sql += string.Join(", ", entityValues);
-
-//				return sql + ";";
-//			}
 
 //			public static string UpdateNEW<T>(string whereCondition, 
 //				params (Expression<Func<T, object>> propertyExpression, object value)[] updates)
