@@ -19,6 +19,8 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseProvider
 			_loggerFactory = loggerFactory;
 		}
 
+
+
 		public IDatabaseContext GetContext()
 		{
 			throw new NotImplementedException();

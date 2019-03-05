@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 
 namespace R5.Internals.PostgresMapper.QueryCommand
 {
-	public class UpdateCommand<TEntity> where TEntity : class
+	public class UpdateCommand<TEntity> 
+		where TEntity : class
 	{
 		private Func<NpgsqlConnection> _getConnection { get; }
 		private ConcatSqlBuilder _sqlBuilder { get; } = new ConcatSqlBuilder();

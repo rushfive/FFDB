@@ -175,7 +175,7 @@ namespace R5.FFDB.Engine
 					rollOnFileSizeLimit: config.RollOnFileSizeLimit)
 				.CreateLogger();
 			
-			return services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog());
+			return services.AddLogging(lb => lb.AddSerilog());
 		}
 	}
 }

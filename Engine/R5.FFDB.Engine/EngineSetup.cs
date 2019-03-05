@@ -106,6 +106,9 @@ namespace R5.FFDB.Engine
 				.GetService<FfdbEngine>();
 		}
 
+		// another new change: The engine should accept an ILoggerFactory, if they want to use their own
+		// logging implementation. The CLI would provide options to configure the existing one using
+		// serilog. Whatever ILoggerFactory is configured, would then be passed onto the db providers
 		private void SetDatabaseProviderFactory(EngineBaseServiceCollection collection)
 		{
 			bool noneConfigured = _postgresConfig == null && _mongoConfig == null;

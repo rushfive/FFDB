@@ -1,13 +1,69 @@
-﻿//using Microsoft.Extensions.Logging;
-//using Npgsql;
-//using R5.FFDB.Core;
-//using R5.FFDB.Core.Database;
-//using R5.FFDB.Core.Entities;
-//using R5.FFDB.Core.Models;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using Npgsql;
+using R5.FFDB.Core;
+using R5.FFDB.Core.Database;
+using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
+using R5.FFDB.DbProviders.PostgreSql.Entities;
+using R5.Internals.PostgresMapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
+{
+	public class TeamDbContext : DbContextBase, ITeamDbContext
+	{
+		public TeamDbContext(
+			Func<DbConnection> getDbConnection,
+			ILoggerFactory loggerFactory)
+			: base(getDbConnection, loggerFactory)
+		{
+
+		}
+
+		public async Task AddAsync(List<Team> teams)
+		{
+			if (teams == null)
+			{
+				throw new ArgumentNullException(nameof(teams), "Teams must be provided.");
+			}
+
+			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
+			DbConnection dbConnection = GetDbConnection();
+
+			//
+			
+			HashSet<int> existing = await GetExistingTeamIdsAsync(dbConnection);
+
+			List<TeamSql> missing = teams
+				.Where(t => !existing.Contains(t.Id))
+				.Select(TeamSql.FromCoreEntity)
+				.ToList();
+
+			if (!missing.Any())
+			{
+				return;
+			}
+
+			await mongoDbContext.InsertManyAsync(missing);
+
+			logger.LogTrace($"Added {missing.Count} teams to '{collectionName}' collection.");
+		}
+
+		private async Task<HashSet<int>> GetExistingTeamIdsAsync(DbConnection dbConnection)
+		{
+			List<TeamSql> existing = await dbConnection.Select<TeamSql>(t => t.Id).ExecuteAsync();
+			return existing.Select(t => t.Id).ToHashSet();
+		}
+
+		public Task UpdateRosterMappingsAsync(List<Roster> rosters)
+		{
+			throw new NotImplementedException();
+		}
+	}
+}
 
 //namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 //{
@@ -62,7 +118,7 @@
 //			PostgresDbContext db = GetPostgresDbContext();
 
 //			logger.LogTrace($"Updating roster mappings..");
-			
+
 //			await db.TruncateAsync<PlayerTeamMapSql>();
 
 //			Dictionary<string, Guid> nflIdMap = await GetNflIdMapAsync(db);

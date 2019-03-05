@@ -1,7 +1,59 @@
-﻿//using Microsoft.Extensions.Logging;
-//using Npgsql;
-//using System;
-//using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using Npgsql;
+using R5.FFDB.Core.Database;
+using R5.Internals.PostgresMapper;
+using System;
+using System.Threading.Tasks;
+
+namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
+{
+	public class DbContext : DbContextBase, IDatabaseContext
+	{
+		public IPlayerDbContext Player { get; }
+		public IPlayerStatsDbContext PlayerStats { get; }
+		public ITeamDbContext Team { get; }
+		public ITeamStatsDbContext TeamStats { get; }
+		public IUpdateLogDbContext UpdateLog { get; }
+		public IWeekMatchupsDbContext WeekMatchups { get; }
+
+		public DbContext(
+			Func<DbConnection> getDbConnection,
+			ILoggerFactory loggerFactory)
+			: base(getDbConnection, loggerFactory)
+		{
+
+		}
+
+		public Task<bool> HasBeenInitializedAsync()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task InitializeAsync()
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+	public abstract class DbContextBase
+	{
+		protected Func<DbConnection> GetDbConnection { get; }
+		private ILoggerFactory _loggerFactory { get; }
+
+		protected DbContextBase(
+			Func<DbConnection> getDbConnection,
+			ILoggerFactory loggerFactory)
+		{
+			GetDbConnection = getDbConnection ?? throw new ArgumentNullException(nameof(getDbConnection));
+			_loggerFactory = loggerFactory;
+		}
+
+		protected ILogger<T> GetLogger<T>()
+		{
+			return _loggerFactory.CreateLogger<T>();
+		}
+	}
+}
 
 //namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 //{
@@ -22,7 +74,7 @@
 //			//Stats = new WeekStatsDbContext(getConnection, loggerFactory);
 //			//Log = new LogDbContext(getConnection, loggerFactory);
 //		}
-		
+
 
 //		public Task<bool> HasBeenInitializedAsync()
 //		{

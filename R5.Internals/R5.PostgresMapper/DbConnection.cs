@@ -45,6 +45,12 @@ namespace R5.Internals.PostgresMapper
 			return new InsertCommand<TEntity>(_getConnection, entities);
 		}
 
+		public UpdateCommand<TEntity> Update<TEntity>()
+			where TEntity : class
+		{
+			return new UpdateCommand<TEntity>(_getConnection);
+		}
+
 		public DeleteCommand<TEntity> Delete<TEntity>(TEntity entity)
 			where TEntity : class
 		{
