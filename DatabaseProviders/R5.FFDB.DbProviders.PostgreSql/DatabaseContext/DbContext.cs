@@ -1,8 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
 using R5.FFDB.Core.Database;
+using R5.FFDB.DbProviders.PostgreSql.Entities;
+using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
 using R5.Internals.PostgresMapper;
+using R5.Internals.PostgresMapper.System.Tables;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
@@ -15,42 +19,89 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public ITeamStatsDbContext TeamStats { get; }
 		public IUpdateLogDbContext UpdateLog { get; }
 		public IWeekMatchupsDbContext WeekMatchups { get; }
-
-		public DbContext(
-			Func<DbConnection> getDbConnection,
-			ILoggerFactory loggerFactory)
-			: base(getDbConnection, loggerFactory)
+		
+		public DbContext(DbConnection getDbConnection, ILoggerFactory loggerFactory)
+			: base(getDbConnection, loggerFactory.CreateLogger<DbContext>())
 		{
-
+			Player = new PlayerDbContext(getDbConnection, loggerFactory.CreateLogger<PlayerDbContext>());
+			Team = new TeamDbContext(getDbConnection, loggerFactory.CreateLogger<TeamDbContext>());
+			TeamStats = new TeamStatsDbContext(getDbConnection, loggerFactory.CreateLogger<TeamStatsDbContext>());
+			UpdateLog = new UpdateLogDbContext(getDbConnection, loggerFactory.CreateLogger<UpdateLogDbContext>());
+			WeekMatchups = new WeekMatchupsDbContext(getDbConnection, loggerFactory.CreateLogger<WeekMatchupsDbContext>());
 		}
 
 		public Task<bool> HasBeenInitializedAsync()
 		{
-			throw new NotImplementedException();
+			return SchemaExistsAsync();
 		}
 
-		public Task InitializeAsync()
+		public async Task InitializeAsync()
 		{
-			throw new NotImplementedException();
+			bool schemaExists = await SchemaExistsAsync();
+			if (!schemaExists)
+			{
+				Logger.LogInformation("Creating postgresql schema 'ffdb'.");
+				await DbConnection.CreateSchema("ffdb");
+			}
+
+			Logger.LogInformation("Creating database tables.");
+
+			await CreateTableAsync<TeamSql>();
+			await CreateTableAsync<PlayerSql>();
+			await CreateTableAsync<PlayerTeamMapSql>();
+			await CreateTableAsync<WeekStatsPassSql>();
+			await CreateTableAsync<WeekStatsRushSql>();
+			await CreateTableAsync<WeekStatsReceiveSql>();
+			await CreateTableAsync<WeekStatsMiscSql>();
+			await CreateTableAsync<WeekStatsKickSql>();
+			await CreateTableAsync<WeekStatsDstSql>();
+			await CreateTableAsync<WeekStatsIdpSql>();
+			await CreateTableAsync<WeekStatsReturnSql>();
+			await CreateTableAsync<TeamGameStatsSql>();
+			await CreateTableAsync<UpdateLogSql>();
+			await CreateTableAsync<WeekGameMatchupSql>();
+
+			Logger.LogInformation("Successfully initialized database by creating schema and creating tables.");
 		}
+
+		private async Task CreateTableAsync<TEntity>()
+		{
+			var tableName = MetadataResolver.TableName<TEntity>();
+			// TODO: check is table already exists, DONT create if so
+			bool exists = false;
+			if (exists)
+			{
+				Logger.LogDebug($"Table '{tableName}' already exists.");
+				// TODOOOOOOOOOOOOOOOOOOOO
+			}
+			else
+			{
+				await DbConnection.CreateTable<TEntity>().ExecuteAsync();
+				Logger.LogDebug($"Created table '{tableName}'.");
+			}
+		}
+
+		private Task<bool> SchemaExistsAsync()
+		{
+			return DbConnection.Exists<InformationSchema.Schemata>()
+				.Where(s => s.SchemaName == "ffdb")
+				.ExecuteAsync();
+		}
+
+
 	}
 
 	public abstract class DbContextBase
 	{
-		protected Func<DbConnection> GetDbConnection { get; }
-		private ILoggerFactory _loggerFactory { get; }
+		protected DbConnection DbConnection { get; }
+		protected ILogger<DbContextBase> Logger { get; }
 
 		protected DbContextBase(
-			Func<DbConnection> getDbConnection,
-			ILoggerFactory loggerFactory)
+			DbConnection dbConnection,
+			ILogger<DbContextBase> logger)
 		{
-			GetDbConnection = getDbConnection ?? throw new ArgumentNullException(nameof(getDbConnection));
-			_loggerFactory = loggerFactory;
-		}
-
-		protected ILogger<T> GetLogger<T>()
-		{
-			return _loggerFactory.CreateLogger<T>();
+			DbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
+			Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 	}
 }

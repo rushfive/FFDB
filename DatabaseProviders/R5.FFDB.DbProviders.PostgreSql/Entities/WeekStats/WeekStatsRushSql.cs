@@ -12,37 +12,32 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
 	[Table(TableName.WeekStats.Rush)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
-	public class WeekStatsRushSql : WeekStatsPlayerSql
+	public class WeekStatsRushSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(PlayerSql), "id")]
 		[Column("player_id", PostgresDataType.UUID)]
-		public override Guid PlayerId { get; set; }
+		public Guid PlayerId { get; set; }
 		
 		[ForeignKey(typeof(TeamSql), "id")]
 		[Column("team_id", PostgresDataType.INT)]
-		public override int? TeamId { get; set; }
+		public int? TeamId { get; set; }
 
 		[NotNull]
 		[Column("season", PostgresDataType.INT)]
-		public override int Season { get; set; }
+		public int Season { get; set; }
 
 		[NotNull]
 		[Column("week", PostgresDataType.INT)]
-		public override int Week { get; set; }
+		public int Week { get; set; }
 
-		[WeekStatColumn("rush_attempts", WeekStatType.Rush_Attempts)]
+		[Column("rush_attempts", PostgresDataType.FLOAT8)]
 		public double? RushAttempts { get; set; }
 
-		[WeekStatColumn("rush_yards", WeekStatType.Rush_Yards)]
+		[Column("rush_yards", PostgresDataType.FLOAT8)]
 		public double? RushYards { get; set; }
 
-		[WeekStatColumn("rush_touchdowns", WeekStatType.Rush_Touchdowns)]
+		[Column("rush_touchdowns", PostgresDataType.FLOAT8)]
 		public double? RushTouchdowns { get; set; }
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"player_id = '{PlayerId}' AND season = {Season} AND week = {Week}";
-		}
 	}
 }

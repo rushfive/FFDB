@@ -35,6 +35,11 @@ namespace R5.Internals.PostgresMapper
 			return new SelectQuery<TEntity>(_getConnection, properties.ToList());
 		}
 
+		public UnionSelectQuery<TResult> UnionSelect<TResult>()
+		{
+			return new UnionSelectQuery<TResult>(_getConnection);
+		}
+
 		public InsertCommand<TEntity> Insert<TEntity>(TEntity entity)
 		{
 			return new InsertCommand<TEntity>(_getConnection, new List<TEntity> { entity });
@@ -76,6 +81,18 @@ namespace R5.Internals.PostgresMapper
 		public TruncateCommand<TEntity> Truncate<TEntity>()
 		{
 			return new TruncateCommand<TEntity>(_getConnection);
+		}
+
+		public Task CreateSchema(string schema)
+		{
+			if (string.IsNullOrWhiteSpace(schema))
+			{
+				throw new ArgumentNullException(nameof(schema), "Schema must be provided.");
+			}
+
+			var sqlCommand = $"CREATE SCHEMA {schema};";
+
+			return _getConnection().ExecuteNonQueryAsync(sqlCommand);
 		}
 	}
 }

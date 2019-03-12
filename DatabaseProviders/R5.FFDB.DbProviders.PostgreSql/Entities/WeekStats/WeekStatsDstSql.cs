@@ -12,7 +12,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
 	[Table(TableName.WeekStats.DST)]
 	[CompositePrimaryKeys("team_id", "season", "week")]
-	public class WeekStatsDstSql : WeekStatsSql
+	public class WeekStatsDstSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(TeamSql), "id")]
@@ -21,75 +21,75 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 
 		[NotNull]
 		[Column("season", PostgresDataType.INT)]
-		public override int Season { get; set; }
+		public int Season { get; set; }
 
 		[NotNull]
 		[Column("week", PostgresDataType.INT)]
-		public override int Week { get; set; }
+		public int Week { get; set; }
 
-		[WeekStatColumn("sacks", WeekStatType.DST_Sacks)]
+		[Column("sacks", PostgresDataType.FLOAT8)]
 		public double? Sacks { get; set; }
 
-		[WeekStatColumn("interceptions", WeekStatType.DST_Interceptions)]
+		[Column("interceptions", PostgresDataType.FLOAT8)]
 		public double? Interceptions { get; set; }
 
-		[WeekStatColumn("fumbles_recovered", WeekStatType.DST_FumblesRecovered)]
+		[Column("fumbles_recovered", PostgresDataType.FLOAT8)]
 		public double? FumblesRecovered { get; set; }
 
-		[WeekStatColumn("fumbles_forced", WeekStatType.DST_FumblesForced)]
+		[Column("fumbles_forced", PostgresDataType.FLOAT8)]
 		public double? FumblesForced { get; set; }
 
-		[WeekStatColumn("safeties", WeekStatType.DST_Safeties)]
+		[Column("safeties", PostgresDataType.FLOAT8)]
 		public double? Safeties { get; set; }
 
-		[WeekStatColumn("touchdowns", WeekStatType.DST_Touchdowns)]
+		[Column("touchdowns", PostgresDataType.FLOAT8)]
 		public double? Touchdowns { get; set; }
 
-		[WeekStatColumn("blocked_kicks", WeekStatType.DST_BlockedKicks)]
+		[Column("blocked_kicks", PostgresDataType.FLOAT8)]
 		public double? BlockedKicks { get; set; }
 
-		[WeekStatColumn("return_yards", WeekStatType.DST_ReturnYards)]
+		[Column("return_yards", PostgresDataType.FLOAT8)]
 		public double? ReturnYards { get; set; }
 
-		[WeekStatColumn("return_touchdowns", WeekStatType.DST_ReturnTouchdowns)]
+		[Column("return_touchdowns", PostgresDataType.FLOAT8)]
 		public double? ReturnTouchdowns { get; set; }
 
-		[WeekStatColumn("points_allowed", WeekStatType.DST_PointsAllowed)]
+		[Column("points_allowed", PostgresDataType.FLOAT8)]
 		public double? PointsAllowed { get; set; }
 
-		[WeekStatColumn("yards_allowed", WeekStatType.DST_YardsAllowed)]
+		[Column("yards_allowed", PostgresDataType.FLOAT8)]
 		public double? YardsAllowed { get; set; }
 
-		public static WeekStatsDstSql FromCoreEntity(int teamId, WeekInfo week,
-			IEnumerable<KeyValuePair<WeekStatType, double>> stats)
-		{
-			var result = new WeekStatsDstSql
-			{
-				TeamId = teamId,
-				Season = week.Season,
-				Week = week.Week
-			};
+		//public static WeekStatsDstSql FromCoreEntity(int teamId, WeekInfo week,
+		//	IEnumerable<KeyValuePair<WeekStatType, double>> stats)
+		//{
+		//	var result = new WeekStatsDstSql
+		//	{
+		//		TeamId = teamId,
+		//		Season = week.Season,
+		//		Week = week.Week
+		//	};
 
-			foreach (var kv in stats)
-			{
-				//WeekStatColumn column = EntityMetadata.GetWeekStatColumnByType(kv.Key);
-				//column.SetValue(result, kv.Value);
+		//	foreach (var kv in stats)
+		//	{
+		//		//Column column = EntityMetadata.GetColumnByType(kv.Key);
+		//		//column.SetValue(result, kv.Value);
 
-				//PropertyInfo property = EntityMetadata.GetPropertyByStat(kv.Key);
-				//property.SetValue(result, kv.Value);
-			}
+		//		//PropertyInfo property = EntityMetadata.GetPropertyByStat(kv.Key);
+		//		//property.SetValue(result, kv.Value);
+		//	}
 
-			return result;
-		}
+		//	return result;
+		//}
 
-		public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerWeekStats stats)
-		{
-			return stats.Stats.Where(kv => WeekStatCategory.DST.Contains(kv.Key));
-		}
+		//public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerWeekStats stats)
+		//{
+		//	return stats.Stats.Where(kv => WeekStatCategory.DST.Contains(kv.Key));
+		//}
 
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"team_id = {TeamId} AND season = {Season} AND week = {Week}";
-		}
+		//public override string PrimaryKeyMatchCondition()
+		//{
+		//	return $"team_id = {TeamId} AND season = {Season} AND week = {Week}";
+		//}
 	}
 }

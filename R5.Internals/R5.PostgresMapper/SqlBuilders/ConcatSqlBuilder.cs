@@ -16,7 +16,7 @@ namespace R5.Internals.PostgresMapper.SqlBuilders
 			return this;
 		}
 
-		public string GetResult()
+		public string GetResult(bool omitTerminatingSemiColon = false)
 		{
 			var result = _sb.ToString().Trim();
 
@@ -25,7 +25,17 @@ namespace R5.Internals.PostgresMapper.SqlBuilders
 				throw new InvalidOperationException("SQL result is invalid: cannot be null or empty.");
 			}
 
-			return result.EndsWith(";") ? result : result + ";";
+			if (omitTerminatingSemiColon && result.EndsWith(";"))
+			{
+				throw new InvalidOperationException("Cannot omit terminating semi-colon because the SQL command already contains one.");
+			}
+
+			if (!omitTerminatingSemiColon)
+			{
+				return result.EndsWith(";") ? result : result + ";";
+			}
+
+			return result;
 		}
 
 		public override string ToString()

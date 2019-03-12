@@ -15,12 +15,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
 	public class TeamDbContext : DbContextBase, ITeamDbContext
 	{
-		public TeamDbContext(
-			Func<DbConnection> getDbConnection,
-			ILoggerFactory loggerFactory)
-			: base(getDbConnection, loggerFactory)
+		public TeamDbContext(DbConnection dbConnection, ILogger<TeamDbContext> logger)
+			: base(dbConnection, logger)
 		{
-
 		}
 
 		public async Task AddAsync(List<Team> teams)
@@ -30,12 +27,8 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 				throw new ArgumentNullException(nameof(teams), "Teams must be provided.");
 			}
 
-			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
-			DbConnection dbConnection = GetDbConnection();
-
-			//
-			
-			HashSet<int> existing = await GetExistingTeamIdsAsync(dbConnection);
+			// todo: move this checking of existing to the engine. dbContext shouldnt care about this kind of logic
+			HashSet<int> existing = await GetExistingTeamIdsAsync();
 
 			List<TeamSql> missing = teams
 				.Where(t => !existing.Contains(t.Id))
@@ -47,20 +40,46 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 				return;
 			}
 
-			await mongoDbContext.InsertManyAsync(missing);
+			Logger.LogDebug($"Adding {missing.Count} teams to '{MetadataResolver.TableName<TeamSql>()}' table.");
 
-			logger.LogTrace($"Added {missing.Count} teams to '{collectionName}' collection.");
+			await DbConnection.InsertMany(missing).ExecuteAsync();
 		}
 
-		private async Task<HashSet<int>> GetExistingTeamIdsAsync(DbConnection dbConnection)
+		private async Task<HashSet<int>> GetExistingTeamIdsAsync()
 		{
-			List<TeamSql> existing = await dbConnection.Select<TeamSql>(t => t.Id).ExecuteAsync();
+			List<TeamSql> existing = await DbConnection.Select<TeamSql>(t => t.Id).ExecuteAsync();
 			return existing.Select(t => t.Id).ToHashSet();
 		}
-
-		public Task UpdateRosterMappingsAsync(List<Roster> rosters)
+		
+		public async Task UpdateRosterMappingsAsync(List<Roster> rosters)
 		{
-			throw new NotImplementedException();
+			if (rosters == null)
+			{
+				throw new ArgumentNullException(nameof(rosters), "Rosters must be provided.");
+			}
+
+			Logger.LogDebug($"Updating roster mappings for players in '{MetadataResolver.TableName<PlayerTeamMapSql>()}'.");
+
+			await DbConnection.Truncate<PlayerTeamMapSql>().ExecuteAsync();
+
+			List<PlayerSql> players = await DbConnection.Select<PlayerSql>(p => p.Id, p => p.NflId).ExecuteAsync();
+			Dictionary<string, Guid> nflIdMap = players.ToDictionary(p => p.NflId, p => p.Id);
+
+			foreach (Roster roster in rosters)
+			{
+				await UpdateForRosterAsync(roster, nflIdMap);
+			}
+		}
+		
+
+		private Task UpdateForRosterAsync(Roster roster, Dictionary<string, Guid> nflIdMap)
+		{
+			List<PlayerTeamMapSql> entries = roster.Players
+				.Where(p => nflIdMap.ContainsKey(p.NflId))
+				.Select(p => PlayerTeamMapSql.ToSqlEntity(nflIdMap[p.NflId], roster.TeamId))
+				.ToList();
+
+			return DbConnection.InsertMany(entries.ToList()).ExecuteAsync();
 		}
 	}
 }

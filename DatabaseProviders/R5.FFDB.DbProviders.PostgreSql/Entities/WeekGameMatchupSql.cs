@@ -51,6 +51,18 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 			};
 		}
 
+		public static WeekMatchup ToCoreEntity(WeekGameMatchupSql sql)
+		{
+			return new WeekMatchup
+			{
+				Week = new WeekInfo(sql.Season, sql.Week),
+				HomeTeamId = sql.HomeTeamId,
+				AwayTeamId = sql.AwayTeamId,
+				NflGameId = sql.NflGameId,
+				GsisGameId = sql.GsisGameId
+			};
+		}
+
 		public override string PrimaryKeyMatchCondition()
 		{
 			return $"season = {Season} AND week = {Week} AND home_team_id = '{HomeTeamId}' AND away_team_id = '{AwayTeamId}'";

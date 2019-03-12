@@ -1,14 +1,73 @@
-﻿//using Microsoft.Extensions.Logging;
-//using Npgsql;
-//using R5.FFDB.Core.Database;
-//using R5.FFDB.Core.Entities;
-//using R5.FFDB.Core.Models;
-//using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
-//using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Core.Database;
+using R5.FFDB.Core.Entities;
+using R5.FFDB.Core.Models;
+using R5.FFDB.DbProviders.PostgreSql.Entities;
+using R5.Internals.PostgresMapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
+{
+	public class PlayerDbContext : DbContextBase, IPlayerDbContext
+	{
+		public PlayerDbContext(DbConnection dbConnection, ILogger<PlayerDbContext> logger)
+			: base(dbConnection, logger)
+		{
+		}
+
+		public async Task<List<Player>> GetAllAsync()
+		{
+			Logger.LogDebug($"Getting all players from '{MetadataResolver.TableName<PlayerSql>()}' table.");
+
+			List<PlayerSql> sqlEntries = await DbConnection.Select<PlayerSql>().ExecuteAsync();
+
+			return sqlEntries.Select(PlayerSql.ToCoreEntity).ToList();
+		}
+
+		public Task AddAsync(PlayerAdd player)
+		{
+			if (player == null)
+			{
+				throw new ArgumentNullException(nameof(player), "Player add must be provided.");
+			}
+
+			Logger.LogDebug($"Adding player '{player}' to '{MetadataResolver.TableName<PlayerSql>()}' table.");
+
+			PlayerSql sqlEntry = PlayerSql.FromCoreAddEntity(player);
+
+			return DbConnection.Insert(sqlEntry).ExecuteAsync();
+		}
+
+		public Task UpdateAsync(Guid id, PlayerUpdate update)
+		{
+			if (id == Guid.Empty)
+			{
+				throw new ArgumentException("Player id must be provided.", nameof(id));
+			}
+			if (update == null)
+			{
+				throw new ArgumentNullException(nameof(update), "Update must be provided.");
+			}
+
+			Logger.LogDebug($"Updating player '{id}' in '{MetadataResolver.TableName<PlayerSql>()}' table.");
+
+			return DbConnection.Update<PlayerSql>()
+				.Where(p => p.Id == id)
+				.Set(p => p.Number, update.Number)
+				.Set(p => p.Position, update.Position)
+				.Set(p => p.Status, update.Status)
+				.ExecuteAsync();
+		}
+	}
+}
+
+
+
+
+
 
 //namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 //{
@@ -37,7 +96,7 @@
 //			{
 //				throw new ArgumentNullException(nameof(player), "Player add model must be provided.");
 //			}
-			
+
 //			PlayerSql playerSql = PlayerSql.FromCoreAddEntity(player);
 
 //			await GetPostgresDbContext().InsertAsync(playerSql);
@@ -46,7 +105,7 @@
 //			logger.LogTrace($"Added player '{player.NflId}' as '{playerSql.Id}' to '{EntityMetadata.TableName<PlayerSql>()}' table.");
 //		}
 
-		
+
 
 //		public async Task UpdateAsync(Guid id, PlayerUpdate update)
 //		{

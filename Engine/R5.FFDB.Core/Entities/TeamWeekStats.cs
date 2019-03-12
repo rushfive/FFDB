@@ -7,6 +7,10 @@ namespace R5.FFDB.Core.Entities
 	{
 		public int TeamId { get; set; }
 		public WeekInfo Week { get; set; }
+
+		// todo: create derived model that contains ths property
+		// its only used in engine to populate a cache
+		// dbContext doesnt care about this nor sohuld it
 		public List<string> PlayerNflIds { get; set; }
 
 		// points

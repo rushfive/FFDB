@@ -12,46 +12,41 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
 	[Table(TableName.WeekStats.Pass)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
-	public class WeekStatsPassSql : WeekStatsPlayerSql
+	public class WeekStatsPassSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(PlayerSql), "id")]
 		[Column("player_id", PostgresDataType.UUID)]
-		public override Guid PlayerId { get; set; }
+		public Guid PlayerId { get; set; }
 		
 		[ForeignKey(typeof(TeamSql), "id")]
 		[Column("team_id", PostgresDataType.INT)]
-		public override int? TeamId { get; set; }
+		public int? TeamId { get; set; }
 
 		[NotNull]
 		[Column("season", PostgresDataType.INT)]
-		public override int Season { get; set; }
+		public int Season { get; set; }
 
 		[NotNull]
 		[Column("week", PostgresDataType.INT)]
-		public override int Week { get; set; }
+		public int Week { get; set; }
 
-		[WeekStatColumn("pass_attempts", WeekStatType.Pass_Attempts)]
+		[Column("pass_attempts", PostgresDataType.FLOAT8)]
 		public double? PassAttempts { get; set; }
 
-		[WeekStatColumn("pass_completions", WeekStatType.Pass_Completions)]
+		[Column("pass_completions", PostgresDataType.FLOAT8)]
 		public double? PassCompletions { get; set; }
 
-		[WeekStatColumn("pass_yards", WeekStatType.Pass_Yards)]
+		[Column("pass_yards", PostgresDataType.FLOAT8)]
 		public double? PassYards { get; set; }
 
-		[WeekStatColumn("pass_touchdowns", WeekStatType.Pass_Touchdowns)]
+		[Column("pass_touchdowns", PostgresDataType.FLOAT8)]
 		public double? PassTouchdowns { get; set; }
 
-		[WeekStatColumn("pass_interceptions", WeekStatType.Pass_Interceptions)]
+		[Column("pass_interceptions", PostgresDataType.FLOAT8)]
 		public double? PassInterceptions { get; set; }
 
-		[WeekStatColumn("pass_sacked", WeekStatType.Pass_Sacked)]
+		[Column("pass_sacked", PostgresDataType.FLOAT8)]
 		public double? PassSacked { get; set; }
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"player_id = '{PlayerId}' AND season = {Season} AND week = {Week}";
-		}
 	}
 }

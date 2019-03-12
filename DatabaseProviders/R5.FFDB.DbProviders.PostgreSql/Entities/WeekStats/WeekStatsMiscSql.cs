@@ -12,40 +12,35 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
 	[Table(TableName.WeekStats.Misc)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
-	public class WeekStatsMiscSql : WeekStatsPlayerSql
+	public class WeekStatsMiscSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(PlayerSql), "id")]
 		[Column("player_id", PostgresDataType.UUID)]
-		public override Guid PlayerId { get; set; }
+		public Guid PlayerId { get; set; }
 		
 		[ForeignKey(typeof(TeamSql), "id")]
 		[Column("team_id", PostgresDataType.INT)]
-		public override int? TeamId { get; set; }
+		public int? TeamId { get; set; }
 
 		[NotNull]
 		[Column("season", PostgresDataType.INT)]
-		public override int Season { get; set; }
+		public int Season { get; set; }
 
 		[NotNull]
 		[Column("week", PostgresDataType.INT)]
-		public override int Week { get; set; }
+		public int Week { get; set; }
 
-		[WeekStatColumn("fumble_recover_touchdowns", WeekStatType.Fumble_Recover_Touchdowns)]
+		[Column("fumble_recover_touchdowns", PostgresDataType.FLOAT8)]
 		public double? FumbleRecoverTouchdowns { get; set; }
 
-		[WeekStatColumn("fumbles_lost", WeekStatType.Fumbles_Lost)]
+		[Column("fumbles_lost", PostgresDataType.FLOAT8)]
 		public double? FumblesLost { get; set; }
 
-		[WeekStatColumn("fumbles_total", WeekStatType.Fumbles_Total)]
+		[Column("fumbles_total", PostgresDataType.FLOAT8)]
 		public double? FumblesTotal { get; set; }
 
-		[WeekStatColumn("two_point_conversions", WeekStatType.TwoPointConversions)]
+		[Column("two_point_conversions", PostgresDataType.FLOAT8)]
 		public double? TwoPointConversions { get; set; }
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"player_id = '{PlayerId}' AND season = {Season} AND week = {Week}";
-		}
 	}
 }

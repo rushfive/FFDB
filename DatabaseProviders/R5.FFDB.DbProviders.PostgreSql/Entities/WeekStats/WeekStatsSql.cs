@@ -8,26 +8,26 @@ using System.Text;
 
 namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
-	public abstract class WeekStatsSql : SqlEntity
+	public abstract class WeekStatsSql// : SqlEntity
 	{
 		public abstract int Season { get; set; }
 		public abstract int Week { get; set; }
 	}
 
-	public class WeekStatColumnAttribute : EntityColumnAttribute
-	{
-		public string Name { get; }
-		public WeekStatType StatType { get; }
+	//public class WeekStatColumnAttribute : EntityColumnAttribute
+	//{
+	//	public string Name { get; }
+	//	public WeekStatType StatType { get; }
 
-		public WeekStatColumnAttribute(string name, WeekStatType statType)
-		{
-			Name = name;
-			StatType = statType;
-		}
+	//	public WeekStatColumnAttribute(string name, WeekStatType statType)
+	//	{
+	//		Name = name;
+	//		StatType = statType;
+	//	}
 
-		public override void UpdateTableColumn(TableColumn column)
-		{
-			throw new NotImplementedException();
-		}
-	}
+	//	public override void UpdateTableColumn(TableColumn column)
+	//	{
+	//		throw new NotImplementedException();
+	//	}
+	//}
 }

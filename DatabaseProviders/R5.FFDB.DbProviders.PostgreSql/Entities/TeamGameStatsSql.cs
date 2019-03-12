@@ -115,6 +115,31 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 			};
 		}
 
+		public static TeamWeekStats ToCoreEntity(TeamGameStatsSql sql)
+		{
+			return new TeamWeekStats
+			{
+				TeamId = sql.TeamId,
+				Week = new WeekInfo(sql.Season, sql.Week),
+				PointsFirstQuarter = sql.PointsFirstQuarter,
+				PointsSecondQuarter = sql.PointsSecondQuarter,
+				PointsThirdQuarter = sql.PointsThirdQuarter,
+				PointsFourthQuarter = sql.PointsFourthQuarter,
+				PointsOverTime = sql.PointsOverTime,
+				PointsTotal = sql.PointsTotal,
+				FirstDowns = sql.FirstDowns,
+				TotalYards = sql.TotalYards,
+				PassingYards = sql.PassingYards,
+				RushingYards = sql.RushingYards,
+				Penalties = sql.Penalties,
+				PenaltyYards = sql.PenaltyYards,
+				Turnovers = sql.Turnovers,
+				Punts = sql.Punts,
+				PuntYards = sql.PuntYards,
+				TimeOfPossessionSeconds = sql.TimeOfPossessionSeconds
+			};
+		}
+
 		public override string PrimaryKeyMatchCondition()
 		{
 			return $"team_id = {TeamId} AND season = {Season} AND week = {Week}";

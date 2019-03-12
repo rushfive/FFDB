@@ -29,11 +29,32 @@ using R5.Internals.PostgresMapper.SqlBuilders;
 using R5.Internals.Abstractions.Expressions;
 using R5.Internals.PostgresMapper.Attributes;
 using R5.Internals.PostgresMapper.QueryCommand;
+using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
 
 namespace DevTester
 {
 	[Table("ffdb.team")]
 	public class TestTmSql
+	{
+		[PrimaryKey]
+		[Column("id", PostgresDataType.INT)]
+		public int Id { get; set; }
+
+		[NotNull]
+		[Column("nfl_id", PostgresDataType.TEXT)]
+		public string NflId { get; set; }
+
+		[NotNull]
+		[Column("name", PostgresDataType.TEXT)]
+		public string Name { get; set; }
+
+		[NotNull]
+		[Column("abbreviation", PostgresDataType.TEXT)]
+		public string Abbreviation { get; set; }
+	}
+
+	[Table("ffdb.team22222")]
+	public class TestTmSql222
 	{
 		[PrimaryKey]
 		[Column("id", PostgresDataType.INT)]
@@ -91,101 +112,51 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
+			Func<NpgsqlConnection> getConnection = () => null;
+
 			var name = MetadataResolver.TableName<CompositePrimaryKeys>();
 			var cpk = MetadataResolver.CompositePrimaryKeys<CompositePrimaryKeys>();
 			var cols = MetadataResolver.TableColumns<CompositePrimaryKeys>();
 
-			var update = new UpdateCommand<CompositePrimaryKeys>(() => null);
-			update
-				.Set(c => c.String, "NEWSTR")
-				.Set(c => c.Int, 33);
+			//var selectBuilder = new UnionQuery<int>.SelectBuilder<TestTmSql>();
+			//selectBuilder
+			//	.Property(t => t.Id)
+			//	.Where(t => t.Id > 20);
 
-			var sqllll1 = update.GetSqlCommand();
+			//var sbResult = selectBuilder.BuildQuery();
 
-			var update2 = new UpdateCommand<CompositePrimaryKeys>(() => null);
-			update2
-				.Set(c => c.String, "NEWSTR");
+			//var unionQuery = new UnionQuery<int>(getConnection);
 
-			var sqllll2 = update2.GetSqlCommand();
+			//unionQuery
+			//	.Select<TestTmSql>(
+			//		sb => sb
+			//			.Property(t => t.Id)
+			//			.Where(t => t.Id > 20))
+			//	.Select<TestTmSql>(
+			//		sb => sb
+			//			.Property(t => t.Id)
+			//			.Where(t => t.Id > 300))
+			//	.Select<TestTmSql222>(
+			//		sb => sb
+			//			.Property(t => t.Id)
+			//			.Where(t => t.Id > 20 || t.Name == "EQUAL_NAME"));
 
-			var update3 = new UpdateCommand<CompositePrimaryKeys>(() => null);
-			update3
-				.Where(c => c.String != "what" && c.Int < 55)
-				.Set(c => c.String, "NEWSTR")
-				.Set(c => c.Int, 33);
+			//var unionResult = unionQuery.GetSqlCommand();
 
-			var sqllll13 = update3.GetSqlCommand();
-
-			var update4 = new UpdateCommand<CompositePrimaryKeys>(() => null);
-			update4
-				.Where(c => c.String != "what" && c.Int < 55)
-				.Set(c => c.String, "NEWSTR");
-
-			var sqllll4 = update4.GetSqlCommand();
-
-			var deleteWhere = new DeleteWhereCommand<CompositePrimaryKeys>(
-				() => null,
-				c => c.Int > 33 && c.String != "test");
-			var deleWhereSql = deleteWhere.GetSqlCommand();
-
-			var resolver = MetadataResolver.GetPrimaryKeyMatchConditionFunc<CompositePrimaryKeys>();
-
-			var t1 = new CompositePrimaryKeys
-			{
-				Bool = false,
-				Int = 33,
-				String = "string for t1111111"
-			};
-			var t2 = new CompositePrimaryKeys
-			{
-				Bool = true,
-				Int = 77,
-				String = "string for 222"
-			};
-
-			var tEntity = new TestTmSql
-			{
-				Abbreviation = "abbr1",
-				Id = 35,
-				Name = "name1",
-				NflId = "sadfasdf1"
-			};
-			var tEntity2 = new TestTmSql
-			{
-				Abbreviation = "abbr2",
-				Id = 36,
-				Name = "name2",
-				NflId = "sadfasdf2"
-			};
-
-			var deleteCmd1 = new DeleteCommand<CompositePrimaryKeys>(
-				() => null, t1);
-			string sql1 = deleteCmd1.GetSqlCommand();
-
-			var deleteCmd2 = new DeleteCommand<TestTmSql>(
-				() => null, tEntity);
-			string sql2 = deleteCmd2.GetSqlCommand();
-
-
-			var resolved1 = resolver(t1);
-			var resolved2 = resolver(t2);
+			//var unionResult = unionQuery.GetSqlCommand();
 
 			DbConnection dbConnection = GetPostgresDbConnection();
 
-			var insertCmd = dbConnection.InsertMany(new List<TestTmSql>
-			{
-				tEntity,
-					tEntity2
-			});
-
-			var sql = insertCmd.GetSqlCommand();
-
-			//await insertCmd.ExecuteAsync();
-
-
-
-
-
+			var guids = await dbConnection.UnionSelect<Guid>()
+				.From<WeekStatsReceiveSql>(select => 
+					select
+						.Property(s => s.PlayerId)
+						.Where(s => s.Season == 2018 && s.Week == 15))
+				.From<WeekStatsRushSql>(select => 
+					select
+						.Property(s => s.PlayerId)
+						.Where(s => s.Season == 2018 && s.Week == 15))
+				.ExecuteAsync();
 
 
 

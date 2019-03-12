@@ -12,79 +12,74 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
 	[Table(TableName.WeekStats.IDP)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
-	public class WeekStatsIdpSql : WeekStatsPlayerSql
+	public class WeekStatsIdpSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(PlayerSql), "id")]
 		[Column("player_id", PostgresDataType.UUID)]
-		public override Guid PlayerId { get; set; }
+		public Guid PlayerId { get; set; }
 		
 		[ForeignKey(typeof(TeamSql), "id")]
 		[Column("team_id", PostgresDataType.INT)]
-		public override int? TeamId { get; set; }
+		public int? TeamId { get; set; }
 
 		[NotNull]
 		[Column("season", PostgresDataType.INT)]
-		public override int Season { get; set; }
+		public int Season { get; set; }
 
 		[NotNull]
 		[Column("week", PostgresDataType.INT)]
-		public override int Week { get; set; }
+		public int Week { get; set; }
 
-		[WeekStatColumn("tackles", WeekStatType.IDP_Tackles)]
+		[Column("tackles", PostgresDataType.FLOAT8)]
 		public double? Tackles { get; set; }
 
-		[WeekStatColumn("assisted_tackles", WeekStatType.IDP_AssistedTackles)]
+		[Column("assisted_tackles", PostgresDataType.FLOAT8)]
 		public double? AssistedTackles { get; set; }
 
-		[WeekStatColumn("sacks", WeekStatType.IDP_Sacks)]
+		[Column("sacks", PostgresDataType.FLOAT8)]
 		public double? Sacks { get; set; }
 
-		[WeekStatColumn("interceptions", WeekStatType.IDP_Interceptions)]
+		[Column("interceptions", PostgresDataType.FLOAT8)]
 		public double? Interceptions { get; set; }
 
-		[WeekStatColumn("forced_fumbles", WeekStatType.IDP_ForcedFumbles)]
+		[Column("forced_fumbles", PostgresDataType.FLOAT8)]
 		public double? ForcedFumbles { get; set; }
 
-		[WeekStatColumn("fumbles_recovered", WeekStatType.IDP_FumblesRecovered)]
+		[Column("fumbles_recovered", PostgresDataType.FLOAT8)]
 		public double? FumblesRecovered { get; set; }
 
-		[WeekStatColumn("interception_touchdowns", WeekStatType.IDP_InterceptionTouchdowns)]
+		[Column("interception_touchdowns", PostgresDataType.FLOAT8)]
 		public double? InterceptionTouchdowns { get; set; }
 
-		[WeekStatColumn("fumble_touchdowns", WeekStatType.IDP_FumbleTouchdowns)]
+		[Column("fumble_touchdowns", PostgresDataType.FLOAT8)]
 		public double? FumbleTouchdowns { get; set; }
 
-		[WeekStatColumn("blocked_kick_touchdowns", WeekStatType.IDP_BlockedKickTouchdowns)]
+		[Column("blocked_kick_touchdowns", PostgresDataType.FLOAT8)]
 		public double? BlockedKickTouchdowns { get; set; }
 
-		[WeekStatColumn("blocked_kicks", WeekStatType.IDP_BlockedKicks)]
+		[Column("blocked_kicks", PostgresDataType.FLOAT8)]
 		public double? BlockedKicks { get; set; }
 
-		[WeekStatColumn("safeties", WeekStatType.IDP_Safeties)]
+		[Column("safeties", PostgresDataType.FLOAT8)]
 		public double? Safeties { get; set; }
 
-		[WeekStatColumn("passes_defended", WeekStatType.IDP_PassesDefended)]
+		[Column("passes_defended", PostgresDataType.FLOAT8)]
 		public double? PassesDefended { get; set; }
 
-		[WeekStatColumn("interception_return_yards", WeekStatType.IDP_InterceptionReturnYards)]
+		[Column("interception_return_yards", PostgresDataType.FLOAT8)]
 		public double? InterceptionReturnYards { get; set; }
 
-		[WeekStatColumn("fumble_return_yards", WeekStatType.IDP_FumbleReturnYards)]
+		[Column("fumble_return_yards", PostgresDataType.FLOAT8)]
 		public double? FumbleReturnYards { get; set; }
 
-		[WeekStatColumn("tackles_for_loss", WeekStatType.IDP_TacklesForLoss)]
+		[Column("tackles_for_loss", PostgresDataType.FLOAT8)]
 		public double? TacklesForLoss { get; set; }
 
-		[WeekStatColumn("quarterback_hits", WeekStatType.IDP_QuarterBackHits)]
+		[Column("quarterback_hits", PostgresDataType.FLOAT8)]
 		public double? QuarterbackHits { get; set; }
 
-		[WeekStatColumn("sack_yards", WeekStatType.IDP_SackYards)]
+		[Column("sack_yards", PostgresDataType.FLOAT8)]
 		public double? SackYards { get; set; }
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"player_id = '{PlayerId}' AND season = {Season} AND week = {Week}";
-		}
 	}
 }

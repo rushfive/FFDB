@@ -12,64 +12,59 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 {
 	[Table(TableName.WeekStats.Kick)]
 	[CompositePrimaryKeys("player_id", "season", "week")]
-	public class WeekStatsKickSql : WeekStatsPlayerSql
+	public class WeekStatsKickSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(PlayerSql), "id")]
 		[Column("player_id", PostgresDataType.UUID)]
-		public override Guid PlayerId { get; set; }
+		public Guid PlayerId { get; set; }
 		
 		[ForeignKey(typeof(TeamSql), "id")]
 		[Column("team_id", PostgresDataType.INT)]
-		public override int? TeamId { get; set; }
+		public int? TeamId { get; set; }
 
 		[NotNull]
 		[Column("season", PostgresDataType.INT)]
-		public override int Season { get; set; }
+		public int Season { get; set; }
 
 		[NotNull]
 		[Column("week", PostgresDataType.INT)]
-		public override int Week { get; set; }
+		public int Week { get; set; }
 
-		[WeekStatColumn("pat_makes", WeekStatType.Kick_PAT_Makes)]
+		[Column("pat_makes", PostgresDataType.FLOAT8)]
 		public double? PatMakes { get; set; }
 
-		[WeekStatColumn("pat_misses", WeekStatType.Kick_PAT_Misses)]
+		[Column("pat_misses", PostgresDataType.FLOAT8)]
 		public double? PatMisses { get; set; }
 
-		[WeekStatColumn("zero_twenty_makes", WeekStatType.Kick_ZeroTwenty_Makes)]
+		[Column("zero_twenty_makes", PostgresDataType.FLOAT8)]
 		public double? ZeroTwentyMakes { get; set; }
 
-		[WeekStatColumn("twenty_thirty_makes", WeekStatType.Kick_TwentyThirty_Makes)]
+		[Column("twenty_thirty_makes", PostgresDataType.FLOAT8)]
 		public double? TwentyThirtyMakes { get; set; }
 
-		[WeekStatColumn("thirty_forty_makes", WeekStatType.Kick_ThirtyForty_Makes)]
+		[Column("thirty_forty_makes", PostgresDataType.FLOAT8)]
 		public double? ThirtyFortyMakes { get; set; }
 
-		[WeekStatColumn("forty_fifty_makes", WeekStatType.Kick_FortyFifty_Makes)]
+		[Column("forty_fifty_makes", PostgresDataType.FLOAT8)]
 		public double? FortyFiftyMakes { get; set; }
 
-		[WeekStatColumn("fifty_plus_makes", WeekStatType.Kick_FiftyPlus_Makes)]
+		[Column("fifty_plus_makes", PostgresDataType.FLOAT8)]
 		public double? FiftyPlusMakes { get; set; }
 
-		[WeekStatColumn("zero_twenty_misses", WeekStatType.Kick_ZeroTwenty_Misses)]
+		[Column("zero_twenty_misses", PostgresDataType.FLOAT8)]
 		public double? ZeroTwentyMisses { get; set; }
 
-		[WeekStatColumn("twenty_thirty_misses", WeekStatType.Kick_TwentyThirty_Misses)]
+		[Column("twenty_thirty_misses", PostgresDataType.FLOAT8)]
 		public double? TwentyThirtyMisses { get; set; }
 
-		[WeekStatColumn("thirty_forty_misses", WeekStatType.Kick_ThirtyForty_Misses)]
+		[Column("thirty_forty_misses", PostgresDataType.FLOAT8)]
 		public double? ThirtyFortyMisses { get; set; }
 
-		[WeekStatColumn("forty_fifty_misses", WeekStatType.Kick_FortyFifty_Misses)]
+		[Column("forty_fifty_misses", PostgresDataType.FLOAT8)]
 		public double? FortyFiftyMisses { get; set; }
 
-		[WeekStatColumn("fifty_plus_misses", WeekStatType.Kick_FiftyPlus_Misses)]
+		[Column("fifty_plus_misses", PostgresDataType.FLOAT8)]
 		public double? FiftyPlusMisses { get; set; }
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"player_id = '{PlayerId}' AND season = {Season} AND week = {Week}";
-		}
 	}
 }

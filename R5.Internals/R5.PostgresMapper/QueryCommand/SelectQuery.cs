@@ -29,82 +29,13 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 
 		private void AppendSelectFrom(List<Expression<Func<TEntity, object>>> propertySelections)
 		{
-			propertySelections?.ForEach(ValidatePropertyExpression);
+			propertySelections?.ForEach(PropertySelectionResolver.ValidatePropertyExpression);
 
 			var table = MetadataResolver.TableName<TEntity>();
-			var selections = GetSelectionsFromProperties(propertySelections);
+			var selections = PropertySelectionResolver.GetSelectionsFromProperties(propertySelections);
 
 			string selectFrom = $"SELECT {selections} FROM {table}";
 			_sqlBuilder.Append(selectFrom);
-		}
-
-		// expected to be a lambda, with the body being a simple MemberAccess
-		// todo: any way to get compile time checks on these??
-		private static void ValidatePropertyExpression<TProp>(Expression<Func<TEntity, TProp>> expression)
-		{
-			var lambda = expression as LambdaExpression;
-			if (lambda == null)
-			{
-				throw new Exception("NotLambda");
-			}
-
-			MemberExpression member;
-
-			// if TProp is object, handle conversions from the actual underlying type
-			if (lambda.Body is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
-			{
-				member = unary.Operand as MemberExpression;
-				if (member?.NodeType != ExpressionType.MemberAccess)
-				{
-					throw new ArgumentException($"Convert's operand type must be a '{ExpressionType.MemberAccess}'.");
-				}
-			}
-			else
-			{
-				member = lambda.Body as MemberExpression;
-				if (member?.NodeType != ExpressionType.MemberAccess)
-				{
-					throw new ArgumentException($"Lambda's body type must be a '{ExpressionType.MemberAccess}'. "
-						+ "Don't reference properties of type 'object' (converting/casting is unsupported).");
-				}
-			}
-
-			Type entityType = lambda.Parameters.Single().Type;
-
-			if (member.Member.DeclaringType != entityType)
-			{
-				throw new ArgumentException($"Expression must reference a property from class '{entityType.Name}");
-			}
-		}
-
-		private static string GetSelectionsFromProperties(List<Expression<Func<TEntity, object>>> propertySelections)
-		{
-			string selections;
-			if (propertySelections == null)
-			{
-				selections = "*";
-			}
-			else
-			{
-				Dictionary<string, TableColumn> propertyColumnMap = MetadataResolver.PropertyColumnMap<TEntity>();
-
-				var columns = new List<string>();
-				foreach (Expression<Func<TEntity, object>> propExpression in propertySelections)
-				{
-					PropertyInfo property = propExpression.GetProperty();
-
-					if (!propertyColumnMap.TryGetValue(property.Name, out TableColumn column))
-					{
-						throw new ArgumentException($"Property '{property.Name}' derived from expression is invalid: failed to find matching table column.");
-					}
-
-					columns.Add(column.Name);
-				}
-
-				selections = string.Join(", ", columns);
-			}
-
-			return selections;
 		}
 
 		public SelectQuery<TEntity> Where(Expression<Func<TEntity, bool>> conditionExpression)
