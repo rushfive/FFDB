@@ -66,5 +66,53 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 
 		[Column("fifty_plus_misses", PostgresDataType.FLOAT8)]
 		public double? FiftyPlusMisses { get; set; }
+
+		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
+		{
+			foreach (KeyValuePair<WeekStatType, double> kv in stats)
+			{
+				switch (kv.Key)
+				{
+					case WeekStatType.Kick_PAT_Makes:
+						this.PatMakes = kv.Value;
+						break;
+					case WeekStatType.Kick_PAT_Misses:
+						this.PatMisses = kv.Value;
+						break;
+					case WeekStatType.Kick_ZeroTwenty_Makes:
+						this.ZeroTwentyMakes = kv.Value;
+						break;
+					case WeekStatType.Kick_TwentyThirty_Makes:
+						this.TwentyThirtyMakes = kv.Value;
+						break;
+					case WeekStatType.Kick_ThirtyForty_Makes:
+						this.ThirtyFortyMakes = kv.Value;
+						break;
+					case WeekStatType.Kick_FortyFifty_Makes:
+						this.FortyFiftyMakes = kv.Value;
+						break;
+					case WeekStatType.Kick_FiftyPlus_Makes:
+						this.FiftyPlusMakes = kv.Value;
+						break;
+					case WeekStatType.Kick_ZeroTwenty_Misses:
+						this.ZeroTwentyMisses = kv.Value;
+						break;
+					case WeekStatType.Kick_TwentyThirty_Misses:
+						this.TwentyThirtyMisses = kv.Value;
+						break;
+					case WeekStatType.Kick_ThirtyForty_Misses:
+						this.ThirtyFortyMisses = kv.Value;
+						break;
+					case WeekStatType.Kick_FortyFifty_Misses:
+						this.FortyFiftyMisses = kv.Value;
+						break;
+					case WeekStatType.Kick_FiftyPlus_Misses:
+						this.FiftyPlusMisses = kv.Value;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a kicking stat type.");
+				}
+			}
+		}
 	}
 }

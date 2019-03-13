@@ -42,5 +42,29 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 
 		[Column("two_point_conversions", PostgresDataType.FLOAT8)]
 		public double? TwoPointConversions { get; set; }
+
+		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
+		{
+			foreach (KeyValuePair<WeekStatType, double> kv in stats)
+			{
+				switch (kv.Key)
+				{
+					case WeekStatType.Fumble_Recover_Touchdowns:
+						this.FumbleRecoverTouchdowns = kv.Value;
+						break;
+					case WeekStatType.Fumbles_Lost:
+						this.FumblesLost = kv.Value;
+						break;
+					case WeekStatType.Fumbles_Total:
+						this.FumblesTotal = kv.Value;
+						break;
+					case WeekStatType.TwoPointConversions:
+						this.TwoPointConversions = kv.Value;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a misc stat type.");
+				}
+			}
+		}
 	}
 }

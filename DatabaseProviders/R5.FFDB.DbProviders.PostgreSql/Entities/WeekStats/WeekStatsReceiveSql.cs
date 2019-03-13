@@ -39,5 +39,26 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 
 		[Column("receive_touchdowns", PostgresDataType.FLOAT8)]
 		public double? ReceiveTouchdowns { get; set; }
+
+		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
+		{
+			foreach (KeyValuePair<WeekStatType, double> kv in stats)
+			{
+				switch (kv.Key)
+				{
+					case WeekStatType.Receive_Catches:
+						this.ReceiveCatches = kv.Value;
+						break;
+					case WeekStatType.Receive_Yards:
+						this.ReceiveYards = kv.Value;
+						break;
+					case WeekStatType.Receive_Touchdowns:
+						this.ReceiveTouchdowns = kv.Value;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a receiving stat type.");
+				}
+			}
+		}
 	}
 }

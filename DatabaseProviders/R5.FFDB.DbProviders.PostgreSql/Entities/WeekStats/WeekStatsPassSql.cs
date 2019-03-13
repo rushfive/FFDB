@@ -48,5 +48,35 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 
 		[Column("pass_sacked", PostgresDataType.FLOAT8)]
 		public double? PassSacked { get; set; }
-	}
+
+		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
+		{
+			foreach (KeyValuePair<WeekStatType, double> kv in stats)
+			{
+				switch (kv.Key)
+				{
+					case WeekStatType.Pass_Attempts:
+						this.PassAttempts = kv.Value;
+						break;
+					case WeekStatType.Pass_Completions:
+						this.PassCompletions = kv.Value;
+						break;
+					case WeekStatType.Pass_Yards:
+						this.PassYards = kv.Value;
+						break;
+					case WeekStatType.Pass_Touchdowns:
+						this.PassTouchdowns = kv.Value;
+						break;
+					case WeekStatType.Pass_Interceptions:
+						this.PassInterceptions = kv.Value;
+						break;
+					case WeekStatType.Pass_Sacked:
+						this.PassSacked = kv.Value;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a passing stat type.");
+				}
+			}
+		}
+	}	
 }

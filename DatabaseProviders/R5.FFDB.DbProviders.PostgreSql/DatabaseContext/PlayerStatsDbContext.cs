@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
@@ -21,8 +22,20 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public Task AddAsync(List<PlayerWeekStats> stats)
 		{
+
+			foreach(PlayerWeekStats s in stats)
+			{
+				var passing = s.GetPassingStats();
+				if (passing.Any())
+				{
+
+				}
+			}
+
 			throw new NotImplementedException();
 		}
+
+		
 
 		public async Task<List<string>> GetPlayerNflIdsAsync(WeekInfo week)
 		{

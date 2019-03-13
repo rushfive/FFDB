@@ -39,5 +39,26 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 
 		[Column("rush_touchdowns", PostgresDataType.FLOAT8)]
 		public double? RushTouchdowns { get; set; }
+
+		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
+		{
+			foreach (KeyValuePair<WeekStatType, double> kv in stats)
+			{
+				switch (kv.Key)
+				{
+					case WeekStatType.Rush_Attempts:
+						this.RushAttempts = kv.Value;
+						break;
+					case WeekStatType.Rush_Yards:
+						this.RushYards = kv.Value;
+						break;
+					case WeekStatType.Rush_Touchdowns:
+						this.RushTouchdowns = kv.Value;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a rushing stat type.");
+				}
+			}
+		}
 	}
 }

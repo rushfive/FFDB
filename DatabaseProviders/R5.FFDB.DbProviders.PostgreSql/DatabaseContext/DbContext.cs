@@ -24,6 +24,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			: base(getDbConnection, loggerFactory.CreateLogger<DbContext>())
 		{
 			Player = new PlayerDbContext(getDbConnection, loggerFactory.CreateLogger<PlayerDbContext>());
+			PlayerStats = new PlayerStatsDbContext(getDbConnection, loggerFactory.CreateLogger<PlayerStatsDbContext>());
 			Team = new TeamDbContext(getDbConnection, loggerFactory.CreateLogger<TeamDbContext>());
 			TeamStats = new TeamStatsDbContext(getDbConnection, loggerFactory.CreateLogger<TeamStatsDbContext>());
 			UpdateLog = new UpdateLogDbContext(getDbConnection, loggerFactory.CreateLogger<UpdateLogDbContext>());

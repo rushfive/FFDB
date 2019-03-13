@@ -60,36 +60,49 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 		[Column("yards_allowed", PostgresDataType.FLOAT8)]
 		public double? YardsAllowed { get; set; }
 
-		//public static WeekStatsDstSql FromCoreEntity(int teamId, WeekInfo week,
-		//	IEnumerable<KeyValuePair<WeekStatType, double>> stats)
-		//{
-		//	var result = new WeekStatsDstSql
-		//	{
-		//		TeamId = teamId,
-		//		Season = week.Season,
-		//		Week = week.Week
-		//	};
-
-		//	foreach (var kv in stats)
-		//	{
-		//		//Column column = EntityMetadata.GetColumnByType(kv.Key);
-		//		//column.SetValue(result, kv.Value);
-
-		//		//PropertyInfo property = EntityMetadata.GetPropertyByStat(kv.Key);
-		//		//property.SetValue(result, kv.Value);
-		//	}
-
-		//	return result;
-		//}
-
-		//public static IEnumerable<KeyValuePair<WeekStatType, double>> FilterStatValues(PlayerWeekStats stats)
-		//{
-		//	return stats.Stats.Where(kv => WeekStatCategory.DST.Contains(kv.Key));
-		//}
-
-		//public override string PrimaryKeyMatchCondition()
-		//{
-		//	return $"team_id = {TeamId} AND season = {Season} AND week = {Week}";
-		//}
+		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
+		{
+			foreach (KeyValuePair<WeekStatType, double> kv in stats)
+			{
+				switch (kv.Key)
+				{
+					case WeekStatType.DST_Sacks:
+						this.Sacks = kv.Value;
+						break;
+					case WeekStatType.DST_Interceptions:
+						this.Interceptions = kv.Value;
+						break;
+					case WeekStatType.DST_FumblesRecovered:
+						this.FumblesRecovered = kv.Value;
+						break;
+					case WeekStatType.DST_FumblesForced:
+						this.FumblesForced = kv.Value;
+						break;
+					case WeekStatType.DST_Safeties:
+						this.Safeties = kv.Value;
+						break;
+					case WeekStatType.DST_Touchdowns:
+						this.Touchdowns = kv.Value;
+						break;
+					case WeekStatType.DST_BlockedKicks:
+						this.BlockedKicks = kv.Value;
+						break;
+					case WeekStatType.DST_ReturnYards:
+						this.ReturnYards = kv.Value;
+						break;
+					case WeekStatType.DST_ReturnTouchdowns:
+						this.ReturnTouchdowns = kv.Value;
+						break;
+					case WeekStatType.DST_PointsAllowed:
+						this.PointsAllowed = kv.Value;
+						break;
+					case WeekStatType.DST_YardsAllowed:
+						this.YardsAllowed = kv.Value;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a DST stat type.");
+				}
+			}
+		}
 	}
 }

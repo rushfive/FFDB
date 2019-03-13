@@ -36,5 +36,23 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 
 		[Column("return_touchdowns", PostgresDataType.FLOAT8)]
 		public double? ReturnTouchdowns { get; set; }
+
+		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
+		{
+			foreach (KeyValuePair<WeekStatType, double> kv in stats)
+			{
+				switch (kv.Key)
+				{
+					case WeekStatType.Return_Yards:
+						this.ReturnYards = kv.Value;
+						break;
+					case WeekStatType.Return_Touchdowns:
+						this.ReturnTouchdowns = kv.Value;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a return stat type.");
+				}
+			}
+		}
 	}
 }

@@ -81,5 +81,68 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 
 		[Column("sack_yards", PostgresDataType.FLOAT8)]
 		public double? SackYards { get; set; }
+
+		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
+		{
+			foreach (KeyValuePair<WeekStatType, double> kv in stats)
+			{
+				switch (kv.Key)
+				{
+					case WeekStatType.IDP_Tackles:
+						this.Tackles = kv.Value;
+						break;
+					case WeekStatType.IDP_AssistedTackles:
+						this.AssistedTackles = kv.Value;
+						break;
+					case WeekStatType.IDP_Sacks:
+						this.Sacks = kv.Value;
+						break;
+					case WeekStatType.IDP_Interceptions:
+						this.Interceptions = kv.Value;
+						break;
+					case WeekStatType.IDP_ForcedFumbles:
+						this.ForcedFumbles = kv.Value;
+						break;
+					case WeekStatType.IDP_FumblesRecovered:
+						this.FumblesRecovered = kv.Value;
+						break;
+					case WeekStatType.IDP_InterceptionTouchdowns:
+						this.InterceptionTouchdowns = kv.Value;
+						break;
+					case WeekStatType.IDP_FumbleTouchdowns:
+						this.FumbleTouchdowns = kv.Value;
+						break;
+					case WeekStatType.IDP_BlockedKickTouchdowns:
+						this.BlockedKickTouchdowns = kv.Value;
+						break;
+					case WeekStatType.IDP_BlockedKicks:
+						this.BlockedKicks = kv.Value;
+						break;
+					case WeekStatType.IDP_Safeties:
+						this.Safeties = kv.Value;
+						break;
+					case WeekStatType.IDP_PassesDefended:
+						this.PassesDefended = kv.Value;
+						break;
+					case WeekStatType.IDP_InterceptionReturnYards:
+						this.InterceptionReturnYards = kv.Value;
+						break;
+					case WeekStatType.IDP_FumbleReturnYards:
+						this.FumbleReturnYards = kv.Value;
+						break;
+					case WeekStatType.IDP_TacklesForLoss:
+						this.TacklesForLoss = kv.Value;
+						break;
+					case WeekStatType.IDP_QuarterBackHits:
+						this.QuarterbackHits = kv.Value;
+						break;
+					case WeekStatType.IDP_SackYards:
+						this.SackYards = kv.Value;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as an IDP stat type.");
+				}
+			}
+		}
 	}
 }
