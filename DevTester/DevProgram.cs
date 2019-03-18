@@ -2,31 +2,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Npgsql;
 using R5.FFDB.Components;
-using R5.FFDB.Components.CoreData;
-using R5.FFDB.Components.CoreData.Dynamic.Rosters;
-using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1;
-using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1;
-using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers;
-using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1;
-using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers;
 using R5.FFDB.Components.Extensions.JsonConverters;
-using R5.FFDB.Components.Http;
-using R5.FFDB.Components.ValueProviders;
-using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.Mongo;
-using R5.FFDB.DbProviders.PostgreSql;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
-using R5.FFDB.DbProviders.PostgreSql.Models;
-using R5.FFDB.DbProviders.PostgreSql.Models.Entities;
-using R5.FFDB.DbProviders.PostgreSql.Models.Entities.WeekStats;
 using R5.FFDB.Engine;
 using R5.Lib.Pipeline;
+using R5.Internals.PostgresMapper.Models;
 using Serilog;
 using Serilog.Events;
 using System;
@@ -36,11 +22,73 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using R5.Internals.PostgresMapper;
+using System.Linq.Expressions;
+using System.Text;
+using R5.Internals.PostgresMapper.SqlBuilders;
+using R5.Internals.Abstractions.Expressions;
+using R5.Internals.PostgresMapper.Attributes;
+using R5.Internals.PostgresMapper.QueryCommand;
+using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
+using R5.FFDB.DbProviders.PostgreSql.Entities;
 
 namespace DevTester
 {
-	public class TestContext
+	[Table("ffdb.team")]
+	public class TestTmSql
 	{
+		[PrimaryKey]
+		[Column("id", PostgresDataType.INT)]
+		public int Id { get; set; }
+
+		[NotNull]
+		[Column("nfl_id", PostgresDataType.TEXT)]
+		public string NflId { get; set; }
+
+		[NotNull]
+		[Column("name", PostgresDataType.TEXT)]
+		public string Name { get; set; }
+
+		[NotNull]
+		[Column("abbreviation", PostgresDataType.TEXT)]
+		public string Abbreviation { get; set; }
+	}
+
+	[Table("ffdb.team22222")]
+	public class TestTmSql222
+	{
+		[PrimaryKey]
+		[Column("id", PostgresDataType.INT)]
+		public int Id { get; set; }
+
+		[NotNull]
+		[Column("nfl_id", PostgresDataType.TEXT)]
+		public string NflId { get; set; }
+
+		[NotNull]
+		[Column("name", PostgresDataType.TEXT)]
+		public string Name { get; set; }
+
+		[NotNull]
+		[Column("abbreviation", PostgresDataType.TEXT)]
+		public string Abbreviation { get; set; }
+	}
+
+	[Table("ffdb.NOT_EXISTS")]
+	public class NotExists
+	{
+		public string LOL { get; set; }
+	}
+
+	[Table("cpk")]
+	[CompositePrimaryKeys("stringCol", "intCol", "boolCol")]
+	public class CompositePrimaryKeys
+	{
+		[Column("stringCol")]
+		public string String { get; set; }
+		[Column("intCol")]
+		public int Int { get; set; }
+		[Column("boolCol")]
 		public bool Bool { get; set; }
 	}
 
@@ -65,18 +113,131 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			//_serviceProvider = DevTestServiceProvider.Build();
-			//_logger = _serviceProvider.GetService<ILogger<DevProgram>>();
-			//var dbProvider = _serviceProvider.GetRequiredService<IDatabaseProvider>();
-			//_dbContext = dbProvider.GetContext();
-			//_dataPath = _serviceProvider.GetRequiredService<DataDirectoryPath>();
-
-			FfdbEngine engine = GetConfiguredMongoEngine();
+			FfdbEngine engine = GetConfiguredPostgresEngine();
 			await engine.RunInitialSetupAsync();
+
+
+			//ILoggerFactory loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
+
+			//PostgresDbProvider dbProvider = GetPostgresDbProvider(loggerFactory);
+
+			//IDatabaseContext context = dbProvider.GetContext();
+
+			//await context.InitializeAsync();
+
 
 			return;
 			Console.ReadKey();
 		}
+
+		private static DbConnection GetPostgresDbConnection()
+		{
+			return new DbConnection(NpgsqlConnectionFactory);
+
+		}
+
+		private static NpgsqlConnection NpgsqlConnectionFactory()
+		{
+			var _config = new PostgresConfig
+			{
+				DatabaseName = "ffdb_test_1",
+				Host = "localhost",
+				Username = "ffdb",
+				Password = "welc0me!"
+			};
+
+			string connectionString = $"Host={_config.Host};Database={_config.DatabaseName};";
+
+			if (_config.IsSecured)
+			{
+				connectionString += $"Username={_config.Username};Password={_config.Password}";
+			}
+
+			return new NpgsqlConnection(connectionString);
+		}
+
+		public class Other
+		{
+			public bool OtherBool { get; set; }
+		}
+		
+
+
+
+		//public abstract class ExpressionTreeVisitor
+		//{
+		//	public ExpressionType NodeType => _node.NodeType;
+		//	private readonly Expression _node;
+
+		//	protected ExpressionTreeVisitor(Expression node)
+		//	{
+		//		_node = node;
+		//	}
+
+		//	protected abstract void Visit();
+
+		//	public static ExpressionTreeVisitor FromExpression(Expression node)
+		//	{
+		//		switch (node)
+		//		{
+		//			case ConstantExpression constant:
+		//				return new ConstantVisitor(constant);
+		//			case LambdaExpression lambda:
+		//				break;
+		//			case ParameterExpression param:
+		//				break;
+		//			default:
+		//				throw new ArgumentException($"Expression type '{node.NodeType}' is missing a visitor implementation.");
+		//		}
+		//	}
+		//}
+
+		//public class ConstantVisitor : ExpressionTreeVisitor
+		//{
+		//	private readonly ConstantExpression _node;
+
+		//	public ConstantVisitor(ConstantExpression node)
+		//		: base(node)
+		//	{
+		//		_node = node;
+		//	}
+
+		//	protected override void Visit()
+		//	{
+		//		Console.WriteLine($"Visiting a '{NodeType}' node:");
+		//		Console.WriteLine($"    value = {_node.Value} type = {_node.Type}");
+		//	}
+		//}
+
+		//public class LambdaVisitor : ExpressionTreeVisitor
+		//{
+		//	private readonly ConstantExpression _node;
+
+		//	public LambdaVisitor(ConstantExpression node)
+		//		: base(node)
+		//	{
+		//		_node = node;
+		//	}
+
+		//	protected override void Visit()
+		//	{
+		//		Console.WriteLine($"Visiting a '{NodeType}' node:");
+		//		Console.WriteLine($"    value = {_node.Value} type = {_node.Type}");
+		//	}
+		//}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -96,7 +257,7 @@ namespace DevTester
 		{
 			var _config = new PostgresConfig
 			{
-				DatabaseName = "ffdb_test_1",
+				DatabaseName = "ffdb_test_2",
 				Host = "localhost",
 				Username = "ffdb",
 				Password = "welc0me!"
@@ -132,7 +293,7 @@ namespace DevTester
 
 			setup.UsePostgreSql(new PostgresConfig
 			{
-				DatabaseName = "ffdb_test_1",
+				DatabaseName = "ffdb_test_2",
 				Host = "localhost",
 				Username = "ffdb",
 				Password = "welc0me!"
@@ -175,7 +336,7 @@ namespace DevTester
 
 			return setup.Create();
 		}
-		
+
 
 		private static async Task<HtmlDocument> DownloadPageAsync(
 			string pageUri, string filePath, bool skipFetch)
@@ -189,7 +350,7 @@ namespace DevTester
 				HtmlDocument doc = await web.LoadFromWebAsync(pageUri);
 				doc.Save(filePath);
 			}
-			
+
 			string html = File.ReadAllText(filePath);
 			var page = new HtmlDocument();
 			page.LoadHtml(html);

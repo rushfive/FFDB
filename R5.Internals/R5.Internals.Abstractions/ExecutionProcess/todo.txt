@@ -1,0 +1,4 @@
+maybe better name? ths replaces "pipeline"
+
+reference RequestChain
+the process/pipelines should declare a list of types that'll be used as the nodes/stages, no more manually initializing the stages using sp
