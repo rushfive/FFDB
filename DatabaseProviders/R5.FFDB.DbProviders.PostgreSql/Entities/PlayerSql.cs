@@ -9,7 +9,7 @@ using System.Text;
 namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
 	[Table(TableName.Player)]
-	public class PlayerSql : SqlEntity
+	public class PlayerSql
 	{
 		[PrimaryKey]
 		[Column("id", PostgresDataType.UUID)]
@@ -84,11 +84,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 				FirstName = sql.FirstName,
 				LastName = sql.LastName
 			};
-		}
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"id = '{Id}'";
 		}
 	}
 }

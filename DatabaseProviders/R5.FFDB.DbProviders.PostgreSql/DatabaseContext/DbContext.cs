@@ -20,15 +20,15 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public IUpdateLogDbContext UpdateLog { get; }
 		public IWeekMatchupsDbContext WeekMatchups { get; }
 		
-		public DbContext(DbConnection getDbConnection, ILoggerFactory loggerFactory)
-			: base(getDbConnection, loggerFactory.CreateLogger<DbContext>())
+		public DbContext(DbConnection dbConnection, ILoggerFactory loggerFactory)
+			: base(dbConnection, loggerFactory.CreateLogger<DbContext>())
 		{
-			Player = new PlayerDbContext(getDbConnection, loggerFactory.CreateLogger<PlayerDbContext>());
-			PlayerStats = new PlayerStatsDbContext(getDbConnection, loggerFactory.CreateLogger<PlayerStatsDbContext>());
-			Team = new TeamDbContext(getDbConnection, loggerFactory.CreateLogger<TeamDbContext>());
-			TeamStats = new TeamStatsDbContext(getDbConnection, loggerFactory.CreateLogger<TeamStatsDbContext>());
-			UpdateLog = new UpdateLogDbContext(getDbConnection, loggerFactory.CreateLogger<UpdateLogDbContext>());
-			WeekMatchups = new WeekMatchupsDbContext(getDbConnection, loggerFactory.CreateLogger<WeekMatchupsDbContext>());
+			Player = new PlayerDbContext(dbConnection, loggerFactory.CreateLogger<PlayerDbContext>());
+			PlayerStats = new PlayerStatsDbContext(dbConnection, loggerFactory.CreateLogger<PlayerStatsDbContext>());
+			Team = new TeamDbContext(dbConnection, loggerFactory.CreateLogger<TeamDbContext>());
+			TeamStats = new TeamStatsDbContext(dbConnection, loggerFactory.CreateLogger<TeamStatsDbContext>());
+			UpdateLog = new UpdateLogDbContext(dbConnection, loggerFactory.CreateLogger<UpdateLogDbContext>());
+			WeekMatchups = new WeekMatchupsDbContext(dbConnection, loggerFactory.CreateLogger<WeekMatchupsDbContext>());
 		}
 
 		public Task<bool> HasBeenInitializedAsync()
@@ -68,12 +68,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		private async Task CreateTableAsync<TEntity>()
 		{
 			var tableName = MetadataResolver.TableName<TEntity>();
-			// TODO: check is table already exists, DONT create if so
-			bool exists = false;
+
+			bool exists = await DbConnection.TableExists<TEntity>().ExecuteAsync();
 			if (exists)
 			{
 				Logger.LogDebug($"Table '{tableName}' already exists.");
-				// TODOOOOOOOOOOOOOOOOOOOO
 			}
 			else
 			{
@@ -92,19 +91,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 	}
 
-	public abstract class DbContextBase
-	{
-		protected DbConnection DbConnection { get; }
-		protected ILogger<DbContextBase> Logger { get; }
-
-		protected DbContextBase(
-			DbConnection dbConnection,
-			ILogger<DbContextBase> logger)
-		{
-			DbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
-			Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-		}
-	}
+	
 }
 
 //namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext

@@ -30,6 +30,7 @@ using R5.Internals.Abstractions.Expressions;
 using R5.Internals.PostgresMapper.Attributes;
 using R5.Internals.PostgresMapper.QueryCommand;
 using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
+using R5.FFDB.DbProviders.PostgreSql.Entities;
 
 namespace DevTester
 {
@@ -112,53 +113,13 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			Func<NpgsqlConnection> getConnection = () => null;
-
-			var name = MetadataResolver.TableName<CompositePrimaryKeys>();
-			var cpk = MetadataResolver.CompositePrimaryKeys<CompositePrimaryKeys>();
-			var cols = MetadataResolver.TableColumns<CompositePrimaryKeys>();
-
-			//var selectBuilder = new UnionQuery<int>.SelectBuilder<TestTmSql>();
-			//selectBuilder
-			//	.Property(t => t.Id)
-			//	.Where(t => t.Id > 20);
-
-			//var sbResult = selectBuilder.BuildQuery();
-
-			//var unionQuery = new UnionQuery<int>(getConnection);
-
-			//unionQuery
-			//	.Select<TestTmSql>(
-			//		sb => sb
-			//			.Property(t => t.Id)
-			//			.Where(t => t.Id > 20))
-			//	.Select<TestTmSql>(
-			//		sb => sb
-			//			.Property(t => t.Id)
-			//			.Where(t => t.Id > 300))
-			//	.Select<TestTmSql222>(
-			//		sb => sb
-			//			.Property(t => t.Id)
-			//			.Where(t => t.Id > 20 || t.Name == "EQUAL_NAME"));
-
-			//var unionResult = unionQuery.GetSqlCommand();
-
-			//var unionResult = unionQuery.GetSqlCommand();
 
 			DbConnection dbConnection = GetPostgresDbConnection();
 
-			var guids = await dbConnection.UnionSelect<Guid>()
-				.From<WeekStatsReceiveSql>(select => 
-					select
-						.Property(s => s.PlayerId)
-						.Where(s => s.Season == 2018 && s.Week == 15))
-				.From<WeekStatsRushSql>(select => 
-					select
-						.Property(s => s.PlayerId)
-						.Where(s => s.Season == 2018 && s.Week == 15))
-				.ExecuteAsync();
+			// TestTmSql222
 
-
+			var exists = await dbConnection.TableExists<UpdateLogSql>().ExecuteAsync();
+			var exists2 = await dbConnection.TableExists<TestTmSql222>().ExecuteAsync();
 
 			return;
 			Console.ReadKey();

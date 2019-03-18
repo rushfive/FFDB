@@ -83,6 +83,11 @@ namespace R5.Internals.PostgresMapper
 			return new TruncateCommand<TEntity>(_getConnection);
 		}
 
+		public TableExistsQuery<TEntity> TableExists<TEntity>()
+		{
+			return new TableExistsQuery<TEntity>(_getConnection);
+		}
+
 		public Task CreateSchema(string schema)
 		{
 			if (string.IsNullOrWhiteSpace(schema))

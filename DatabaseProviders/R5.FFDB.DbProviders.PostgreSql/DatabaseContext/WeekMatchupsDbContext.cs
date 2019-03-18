@@ -39,7 +39,9 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 			
 			Logger.LogDebug($"Adding {matchups.Count} week matchups to '{MetadataResolver.TableName<WeekGameMatchupSql>()}' table.");
 
-			return DbConnection.InsertMany(matchups).ExecuteAsync();
+			var sqlEntries = matchups.Select(WeekGameMatchupSql.FromCoreEntity).ToList();
+
+			return DbConnection.InsertMany(sqlEntries).ExecuteAsync();
 		}
 	}
 }

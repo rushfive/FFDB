@@ -10,7 +10,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
 	[Table(TableName.WeekGameMatchup)]
 	[CompositePrimaryKeys("season", "week", "home_team_id", "away_team_id")]
-	public class WeekGameMatchupSql : SqlEntity
+	public class WeekGameMatchupSql
 	{
 		[NotNull]
 		[Column("season", PostgresDataType.INT)]
@@ -61,11 +61,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 				NflGameId = sql.NflGameId,
 				GsisGameId = sql.GsisGameId
 			};
-		}
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"season = {Season} AND week = {Week} AND home_team_id = '{HomeTeamId}' AND away_team_id = '{AwayTeamId}'";
 		}
 	}
 }

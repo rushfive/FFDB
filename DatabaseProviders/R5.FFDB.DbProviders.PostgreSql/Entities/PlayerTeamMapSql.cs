@@ -10,7 +10,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
 	[Table(TableName.PlayerTeamMap)]
 	[CompositePrimaryKeys("player_id", "team_id")]
-	public class PlayerTeamMapSql : SqlEntity
+	public class PlayerTeamMapSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(PlayerSql), "id")]
@@ -29,11 +29,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 				PlayerId = playerId,
 				TeamId = teamId
 			};
-		}
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"player_id = '{PlayerId}' AND team_id = {TeamId}";
 		}
 	}
 }

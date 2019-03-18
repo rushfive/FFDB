@@ -8,7 +8,7 @@ using System.Text;
 namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
 	[Table(TableName.Team)]
-	public class TeamSql : SqlEntity
+	public class TeamSql
 	{
 		[PrimaryKey]
 		[Column("id", PostgresDataType.INT)]
@@ -35,11 +35,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 				Name = entity.Name,
 				Abbreviation = entity.Abbreviation
 			};
-		}
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"id = {Id}";
 		}
 	}
 }

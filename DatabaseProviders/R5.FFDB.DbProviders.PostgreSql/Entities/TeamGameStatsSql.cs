@@ -10,7 +10,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
 	[Table(TableName.TeamGameStats)]
 	[CompositePrimaryKeys("team_id", "season", "week")]
-	public class TeamGameStatsSql : SqlEntity
+	public class TeamGameStatsSql
 	{
 		[NotNull]
 		[ForeignKey(typeof(TeamSql), "id")]
@@ -138,11 +138,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 				PuntYards = sql.PuntYards,
 				TimeOfPossessionSeconds = sql.TimeOfPossessionSeconds
 			};
-		}
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"team_id = {TeamId} AND season = {Season} AND week = {Week}";
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 {
 	[Table(TableName.UpdateLog)]
 	[CompositePrimaryKeys("season", "week")]
-	public class UpdateLogSql : SqlEntity
+	public class UpdateLogSql
 	{
 		[NotNull]
 		[Column("season", PostgresDataType.INT)]
@@ -22,10 +22,5 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 
 		[Column("datetime", PostgresDataType.TIMESTAMPTZ)]
 		public DateTimeOffset UpdateTime { get; set; }
-
-		public override string PrimaryKeyMatchCondition()
-		{
-			return $"season = {Season} AND week = {Week}";
-		}
 	}
 }

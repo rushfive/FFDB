@@ -53,10 +53,5 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 			NpgsqlConnection connection = _getConnection();
 			return connection.ExecuteReaderAsync(sqlCommand, r => r.HasRows);
 		}
-
-		private static bool QueryHasRowResults(NpgsqlDataReader reader)
-		{
-			return reader.HasRows;
-		}
 	}
 }

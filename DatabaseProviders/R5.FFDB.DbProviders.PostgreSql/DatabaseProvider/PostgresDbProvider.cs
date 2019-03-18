@@ -2,6 +2,7 @@
 using Npgsql;
 using R5.FFDB.Core.Database;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseContext;
+using R5.Internals.PostgresMapper;
 using System;
 
 namespace R5.FFDB.DbProviders.PostgreSql.DatabaseProvider
@@ -19,14 +20,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseProvider
 			_loggerFactory = loggerFactory;
 		}
 
-
-
 		public IDatabaseContext GetContext()
 		{
-			throw new NotImplementedException();
-			//return default(IDatabaseContext);// new DbContext(GetConnection, _loggerFactory);
+			var dbConnection = new DbConnection(GetConnection);
+			return new DbContext(dbConnection, _loggerFactory);
 		}
 
+		// todo: use connection builder
 		private NpgsqlConnection GetConnection()
 		{
 			string connectionString = $"Host={_config.Host};Database={_config.DatabaseName};";
