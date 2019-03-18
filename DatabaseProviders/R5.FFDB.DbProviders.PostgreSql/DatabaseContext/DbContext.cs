@@ -47,6 +47,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			Logger.LogInformation("Creating database tables.");
 
+			// this ordering of table creations must be preserved (for FKs)
 			await CreateTableAsync<TeamSql>();
 			await CreateTableAsync<PlayerSql>();
 			await CreateTableAsync<PlayerTeamMapSql>();

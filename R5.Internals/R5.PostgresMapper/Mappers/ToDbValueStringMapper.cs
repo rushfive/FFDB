@@ -28,6 +28,7 @@ namespace R5.Internals.PostgresMapper.Mappers
 			switch (dataType)
 			{
 				case PostgresDataType.UUID:
+				case PostgresDataType.SQL_IDENTIFIER:
 					return _converters[typeof(Guid)](value);
 				case PostgresDataType.TEXT:
 					return _converters[typeof(string)](value);

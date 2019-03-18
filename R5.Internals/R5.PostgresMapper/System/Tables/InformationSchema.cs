@@ -11,7 +11,7 @@ namespace R5.Internals.PostgresMapper.System.Tables
 		[Table("information_schema.schemata")]
 		public class Schemata
 		{
-			[Column("schemata", PostgresDataType.SQL_IDENTIFIER)]
+			[Column("schema_name", PostgresDataType.SQL_IDENTIFIER)]
 			public string SchemaName { get; set; }
 		}
 	}

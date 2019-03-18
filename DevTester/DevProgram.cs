@@ -113,13 +113,18 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
+			FfdbEngine engine = GetConfiguredPostgresEngine();
+			await engine.RunInitialSetupAsync();
 
-			DbConnection dbConnection = GetPostgresDbConnection();
 
-			// TestTmSql222
+			//ILoggerFactory loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
-			var exists = await dbConnection.TableExists<UpdateLogSql>().ExecuteAsync();
-			var exists2 = await dbConnection.TableExists<TestTmSql222>().ExecuteAsync();
+			//PostgresDbProvider dbProvider = GetPostgresDbProvider(loggerFactory);
+
+			//IDatabaseContext context = dbProvider.GetContext();
+
+			//await context.InitializeAsync();
+
 
 			return;
 			Console.ReadKey();
@@ -252,7 +257,7 @@ namespace DevTester
 		{
 			var _config = new PostgresConfig
 			{
-				DatabaseName = "ffdb_test_1",
+				DatabaseName = "ffdb_test_2",
 				Host = "localhost",
 				Username = "ffdb",
 				Password = "welc0me!"
@@ -288,7 +293,7 @@ namespace DevTester
 
 			setup.UsePostgreSql(new PostgresConfig
 			{
-				DatabaseName = "ffdb_test_1",
+				DatabaseName = "ffdb_test_2",
 				Host = "localhost",
 				Username = "ffdb",
 				Password = "welc0me!"
