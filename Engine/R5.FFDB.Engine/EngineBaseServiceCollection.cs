@@ -94,10 +94,6 @@ namespace R5.FFDB.Engine
 			{
 				throw new InvalidOperationException("Web request config must be provided.");
 			}
-			if (_loggingConfig == null)
-			{
-				throw new InvalidOperationException("Logging config must be provided.");
-			}
 			if (_dbProviderFactory == null)
 			{
 				throw new InvalidOperationException("Database provider factory must be provided.");
@@ -140,42 +136,97 @@ namespace R5.FFDB.Engine
 	{
 		public static IServiceCollection AddLogging(this IServiceCollection services, LoggingConfig config)
 		{
-			var loggerConfig = new LoggerConfiguration();
-			switch (config.LogLevel)
+			IAppLogger appLogger;
+
+			if (config.CustomLogger != null)
 			{
-				case LogEventLevel.Verbose:
-					loggerConfig = loggerConfig.MinimumLevel.Verbose();
-					break;
-				case LogEventLevel.Debug:
-					loggerConfig = loggerConfig.MinimumLevel.Debug();
-					break;
-				case LogEventLevel.Information:
-					loggerConfig = loggerConfig.MinimumLevel.Information();
-					break;
-				case LogEventLevel.Warning:
-					loggerConfig = loggerConfig.MinimumLevel.Warning();
-					break;
-				case LogEventLevel.Error:
-					loggerConfig = loggerConfig.MinimumLevel.Error();
-					break;
-				case LogEventLevel.Fatal:
-					loggerConfig = loggerConfig.MinimumLevel.Fatal();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException($"'{config.LogLevel}' is an invalid serilog log event level.");
+				appLogger = new CustomLogger(config.CustomLogger);
 			}
+			else if (!config.IsConfigured)
+			{
+				appLogger = new AppLogger(null);
+			}
+			else
+			{
+				var loggerConfig = new LoggerConfiguration();
+				switch (config.LogLevel)
+				{
+					case LogEventLevel.Verbose:
+						loggerConfig = loggerConfig.MinimumLevel.Verbose();
+						break;
+					case LogEventLevel.Debug:
+						loggerConfig = loggerConfig.MinimumLevel.Debug();
+						break;
+					case LogEventLevel.Information:
+						loggerConfig = loggerConfig.MinimumLevel.Information();
+						break;
+					case LogEventLevel.Warning:
+						loggerConfig = loggerConfig.MinimumLevel.Warning();
+						break;
+					case LogEventLevel.Error:
+						loggerConfig = loggerConfig.MinimumLevel.Error();
+						break;
+					case LogEventLevel.Fatal:
+						loggerConfig = loggerConfig.MinimumLevel.Fatal();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException($"'{config.LogLevel}' is an invalid serilog log event level.");
+				}
+
+				Serilog.ILogger seriLogger = loggerConfig
+					.WriteTo.Console()
+					.WriteTo.File(
+						config.LogDirectory + ".txt",
+						fileSizeLimitBytes: config.MaxBytes,
+						restrictedToMinimumLevel: config.LogLevel,
+						rollingInterval: config.RollingInterval,
+						rollOnFileSizeLimit: config.RollOnFileSizeLimit)
+					.CreateLogger();
+
+				appLogger = new AppLogger(seriLogger);
+			}
+
+			return services.AddScoped<IAppLogger>(sp => appLogger);
+
+
+
+			//
+			//var loggerConfig = new LoggerConfiguration();
+			//switch (config.LogLevel)
+			//{
+			//	case LogEventLevel.Verbose:
+			//		loggerConfig = loggerConfig.MinimumLevel.Verbose();
+			//		break;
+			//	case LogEventLevel.Debug:
+			//		loggerConfig = loggerConfig.MinimumLevel.Debug();
+			//		break;
+			//	case LogEventLevel.Information:
+			//		loggerConfig = loggerConfig.MinimumLevel.Information();
+			//		break;
+			//	case LogEventLevel.Warning:
+			//		loggerConfig = loggerConfig.MinimumLevel.Warning();
+			//		break;
+			//	case LogEventLevel.Error:
+			//		loggerConfig = loggerConfig.MinimumLevel.Error();
+			//		break;
+			//	case LogEventLevel.Fatal:
+			//		loggerConfig = loggerConfig.MinimumLevel.Fatal();
+			//		break;
+			//	default:
+			//		throw new ArgumentOutOfRangeException($"'{config.LogLevel}' is an invalid serilog log event level.");
+			//}
 			
-			Log.Logger = loggerConfig
-				.WriteTo.Console()
-				.WriteTo.File(
-					config.LogDirectory + ".txt",
-					fileSizeLimitBytes: config.MaxBytes,
-					restrictedToMinimumLevel: config.LogLevel,
-					rollingInterval: config.RollingInterval,
-					rollOnFileSizeLimit: config.RollOnFileSizeLimit)
-				.CreateLogger();
+			//Log.Logger = loggerConfig
+			//	.WriteTo.Console()
+			//	.WriteTo.File(
+			//		config.LogDirectory + ".txt",
+			//		fileSizeLimitBytes: config.MaxBytes,
+			//		restrictedToMinimumLevel: config.LogLevel,
+			//		rollingInterval: config.RollingInterval,
+			//		rollOnFileSizeLimit: config.RollOnFileSizeLimit)
+			//	.CreateLogger();
 			
-			return services.AddLogging(lb => lb.AddSerilog());
+			//return services.AddLogging(lb => lb.AddSerilog());
 		}
 	}
 }

@@ -1,3 +1,13 @@
+update logging
+updating pipelines to use an abstract list of stages instead of
+manually creating and chaining stages
+update engine setup - configuring the db provider should just
+set an instance of IDbProvider, not have to resolve it on build based on set
+props
+
+
+
+------------------
 - add Sql lite (use entity framework core)
 - use entity framework core for postgresql provider
 

@@ -13,6 +13,7 @@ namespace R5.FFDB.Engine.ConfigBuilders
 		private RollingInterval _rollingInterval { get; set; } = RollingInterval.Day;
 		private bool _rollOnFileSizeLimit { get; set; }
 		private LogEventLevel _logLevel { get; set; } = LogEventLevel.Debug;
+		private Microsoft.Extensions.Logging.ILogger _customLogger { get; set; }
 
 		public LoggingConfigBuilder SetLogDirectory(string directoryPath)
 		{
@@ -62,9 +63,19 @@ namespace R5.FFDB.Engine.ConfigBuilders
 			return this;
 		}
 
+		public void UseCustom(Microsoft.Extensions.Logging.ILogger logger)
+		{
+			_customLogger = logger ?? throw new ArgumentNullException(nameof(logger), "Custom ILogger implementation must be provided.");
+		}
+
 		internal LoggingConfig Build()
 		{
 			Validate();
+			
+			if (_customLogger != null)
+			{
+				return LoggingConfig.Custom(_customLogger);
+			}
 
 			return new LoggingConfig(
 				_logDirectory,

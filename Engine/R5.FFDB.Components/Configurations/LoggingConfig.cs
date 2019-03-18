@@ -5,11 +5,14 @@ namespace R5.FFDB.Components.Configurations
 {
 	public class LoggingConfig
 	{
-		public string LogDirectory { get; set; }
-		public long? MaxBytes { get; set; }
-		public RollingInterval RollingInterval { get; set; }
-		public bool RollOnFileSizeLimit { get; set; }
-		public LogEventLevel LogLevel { get; set; }
+		public string LogDirectory { get; }
+		public long? MaxBytes { get; }
+		public RollingInterval RollingInterval { get; }
+		public bool RollOnFileSizeLimit { get; }
+		public LogEventLevel LogLevel { get; }
+		public Microsoft.Extensions.Logging.ILogger CustomLogger { get; }
+
+		public bool IsConfigured => !string.IsNullOrWhiteSpace(LogDirectory);
 
 		public LoggingConfig(
 			string logDirectory,
@@ -23,6 +26,16 @@ namespace R5.FFDB.Components.Configurations
 			RollingInterval = rollingInterval;
 			RollOnFileSizeLimit = rollOnFileSizeLimit;
 			LogLevel = logLevel;
+		}
+
+		private LoggingConfig(Microsoft.Extensions.Logging.ILogger logger)
+		{
+			CustomLogger = logger;
+		}
+
+		public static LoggingConfig Custom(Microsoft.Extensions.Logging.ILogger logger)
+		{
+			return new LoggingConfig(logger);
 		}
 	}
 }

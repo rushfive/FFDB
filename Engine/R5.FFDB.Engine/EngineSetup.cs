@@ -13,6 +13,7 @@ namespace R5.FFDB.Engine
 {
 	public class EngineSetup
 	{
+		// todo: sane defaults for this
 		public WebRequestConfigBuilder WebRequest { get; } = new WebRequestConfigBuilder();
 		public LoggingConfigBuilder Logging { get; } = new LoggingConfigBuilder();
 
