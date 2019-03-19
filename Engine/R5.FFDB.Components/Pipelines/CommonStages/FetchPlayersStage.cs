@@ -37,9 +37,8 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 			IAppLogger logger,
 			IDatabaseProvider dbProvider,
 			WebRequestThrottle throttle,
-			IPlayerAddSource playerAddSource,
-			int nestedDepth = 0)
-			: base(logger, "Fetch Players", nestedDepth)
+			IPlayerAddSource playerAddSource)
+			: base(logger, "Fetch Players")
 		{
 			_dbProvider = dbProvider;
 			_throttle = throttle;

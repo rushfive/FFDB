@@ -8,47 +8,28 @@ namespace R5.FFDB.Components.Pipelines
 	public abstract class Stage<TContext> : AsyncPipelineStage<TContext>
 	{
 		private IAppLogger _logger { get; }
-		private string _indent { get; set; }
 
 		protected Stage(
 			IAppLogger logger,
-			string name,
-			int nestedDepth = 0) 
+			string name) 
 			: base(name)
 		{
 			_logger = logger;
-
-			SetLoggingIndents(nestedDepth);
-		}
-
-		private void SetLoggingIndents(int nestedDepth)
-		{
-			string indent = "  ";
-
-			while (nestedDepth > 0)
-			{
-				indent += "    ";
-				nestedDepth--;
-			}
-
-			_indent = indent;
 		}
 
 		protected void LogInformation(string message)
 		{
-			_logger.LogInformation(NamePrepended(message));
+			_logger.LogInformation(message);
 		}
 
 		protected void LogDebug(string message)
 		{
-			_logger.LogDebug(NamePrepended(message));
+			_logger.LogDebug(message);
 		}
 
 		protected void LogWarning(string message)
 		{
-			_logger.LogWarning(NamePrepended(message));
+			_logger.LogWarning(message);
 		}
-
-		private string NamePrepended(string message) => $"{_indent}[Stage - {Name}] {message}";
 	}
 }

@@ -123,24 +123,29 @@ namespace R5.Internals.PostgresMapper.SqlBuilders
 
 		protected override Expression VisitMember(MemberExpression node)
 		{
+			// handles exprs like "e => e.Number == 12345" (compile time literal constants)
 			if (node.Member is FieldInfo fieldInfo
 				&& node.Expression is ConstantExpression constExpr)
 			{
 				var value = constExpr.Value;
 				var fieldValue = fieldInfo.GetValue(value);
+
 				_whereFilterBuilder.Append(fieldValue);
 			}
-			else if (node.Member is PropertyInfo propertyInfo
+			// handles exprs like "e => e.Number == someObj.Prop"
+			// (where someObj.Prop is a numeric type as well)
+			else if (
+				node.Member is PropertyInfo propertyInfo
 				&& node.Expression is MemberExpression memberExpr
-					&& memberExpr.Member is FieldInfo memberFieldInfo
-					&& memberExpr.Expression is ConstantExpression memberConstExpr)
+				&& memberExpr.Member is FieldInfo memberFieldInfo
+				&& memberExpr.Expression is ConstantExpression memberConstExpr)
 			{
-				var value = memberConstExpr.Value;
-				var memberValue = memberFieldInfo.GetValue(value);
+				var memberValue = memberFieldInfo.GetValue(memberConstExpr.Value);
 				var result = propertyInfo.GetValue(memberValue);
 
 				_whereFilterBuilder.Append(result);
 			}
+			// if neither of the above, assume its a reference to a table column
 			else
 			{
 				if (!_propertyColumns.TryGetValue(node.Member.Name, out TableColumn column))

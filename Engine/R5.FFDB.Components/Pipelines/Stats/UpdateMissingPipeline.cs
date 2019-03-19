@@ -104,7 +104,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 					foreach (var week in context.MissingWeeks)
 					{
-						var pipeline = AddForWeekPipeline.Create(_serviceProvider, nestedDepth: 1);
+						var pipeline = AddForWeekPipeline.Create(_serviceProvider);
 
 						await pipeline.ProcessAsync(new AddForWeekPipeline.Context
 						{

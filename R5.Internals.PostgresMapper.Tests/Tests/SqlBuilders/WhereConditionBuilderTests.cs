@@ -67,8 +67,6 @@ namespace R5.Internals.PostgresMapper.Tests.Tests.SqlBuilders
 
 			Expression<Func<TestEntity, bool>> expr
 				= e => e.Number1 == week.Season && e.Number2 == week.Week;
-			//Expression<Func<TestEntity, bool>> expr
-			//	= e => e.Number1 == week.Season;
 
 			string expected = "((number1 = 2019) AND (number2 = 1))";
 
@@ -78,19 +76,6 @@ namespace R5.Internals.PostgresMapper.Tests.Tests.SqlBuilders
 				expected.RemoveWhiteSpaces(),
 				result.RemoveWhiteSpaces());
 		}
-
-		//[Fact]
-		//public void Condition_WithAndOperator_MultipleMemberAccess_Success()
-		//{
-		//	var week = new WeekInfo { Season = 2019, Week = 5 };
-
-		//	Expression<Func<TestEntity, bool>> expr
-		//		= e => e.Number1 == week.Season && e.Number2 == week.Week;
-
-		//	string result = WhereConditionBuilder<TestEntity>.FromExpression(expr);
-
-		//	Assert.Equal("", result);
-		//}
 	}
 
 	

@@ -31,7 +31,7 @@ namespace R5.FFDB.Engine.Processors
 				Week = week
 			};
 
-			var pipeline = AddForWeekPipeline.Create(_serviceProvider, nestedDepth: 0);
+			var pipeline = AddForWeekPipeline.Create(_serviceProvider);
 
 			return pipeline.ProcessAsync(context);
 		}

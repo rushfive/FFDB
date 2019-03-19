@@ -31,7 +31,7 @@ namespace DevTester
 			
 			var postgresConfig = new PostgresConfig
 			{
-				DatabaseName = "ffdb_test_1",
+				DatabaseName = "ffdb_test_2",
 				Host = "localhost",
 				Username = "ffdb",
 				Password = "welc0me!"

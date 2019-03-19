@@ -26,9 +26,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 		public AddForWeekPipeline(
 			IAppLogger logger,
-			AsyncPipelineStage<Context> head,
-			int nestedDepth)
-			: base(logger, head, "Add Stats for Week", nestedDepth)
+			AsyncPipelineStage<Context> head)
+			: base(logger, head, "Add Stats for Week")
 		{
 			_logger = logger;
 		}
@@ -42,21 +41,21 @@ namespace R5.FFDB.Components.Pipelines.Stats
 			public List<WeekMatchup> WeekMatchups { get; set; }
 		}
 
-		public static AddForWeekPipeline Create(IServiceProvider sp, int nestedDepth)
+		public static AddForWeekPipeline Create(IServiceProvider sp)
 		{
-			var checkAlreadyUpdated = sp.Create<Stages.CheckAlreadyUpdated>(nestedDepth);
+			var checkAlreadyUpdated = sp.Create<Stages.CheckAlreadyUpdated>();
 
-			var getPlayerWeekStats = sp.Create<Stages.GetPlayerWeekStats>(nestedDepth);
-			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>(nestedDepth);
-			var addPlayerWeekStats = sp.Create<Stages.AddPlayerWeekStats>(nestedDepth);
+			var getPlayerWeekStats = sp.Create<Stages.GetPlayerWeekStats>();
+			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>();
+			var addPlayerWeekStats = sp.Create<Stages.AddPlayerWeekStats>();
 
-			var getTeamWeekStats = sp.Create<Stages.GetTeamWeekStats>(nestedDepth);
-			var addTeamWeekStats = sp.Create<Stages.AddTeamWeekStats>(nestedDepth);
+			var getTeamWeekStats = sp.Create<Stages.GetTeamWeekStats>();
+			var addTeamWeekStats = sp.Create<Stages.AddTeamWeekStats>();
 
-			var getWeekMatchups = sp.Create<Stages.GetWeekMatchups>(nestedDepth);
-			var addWeekMatchups = sp.Create<Stages.AddWeekMatchups>(nestedDepth);
+			var getWeekMatchups = sp.Create<Stages.GetWeekMatchups>();
+			var addWeekMatchups = sp.Create<Stages.AddWeekMatchups>();
 
-			var addUpdateLog = sp.Create<Stages.AddUpdateLog>(nestedDepth);
+			var addUpdateLog = sp.Create<Stages.AddUpdateLog>();
 
 			AsyncPipelineStage<Context> chain = checkAlreadyUpdated;
 			chain
@@ -69,7 +68,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				.SetNext(addWeekMatchups)
 				.SetNext(addUpdateLog);
 
-			return sp.Create<AddForWeekPipeline>(chain, nestedDepth);
+			return sp.Create<AddForWeekPipeline>(chain);
 		}
 
 		public static class Stages
@@ -80,9 +79,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public CheckAlreadyUpdated(
 					IAppLogger logger,
-					IDatabaseProvider dbProvider,
-					int nestedDepth)
-					: base(logger, "Check Stats Already Updated", nestedDepth)
+					IDatabaseProvider dbProvider)
+					: base(logger, "Check Stats Already Updated")
 				{
 					_dbProvider = dbProvider;
 				}
@@ -110,9 +108,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				public GetPlayerWeekStats(
 					IAppLogger logger,
 					IDatabaseProvider dbProvider,
-					IPlayerWeekStatsSource source,
-					int nestedDepth)
-					: base(logger, "Get Player Week Stats", nestedDepth)
+					IPlayerWeekStatsSource source)
+					: base(logger, "Get Player Week Stats")
 				{
 					_dbProvider = dbProvider;
 					_source = source;
@@ -145,9 +142,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public AddPlayerWeekStats(
 					IAppLogger logger,
-					IDatabaseProvider dbProvider,
-					int nestedDepth)
-					: base(logger, "Add Player Week Stats", nestedDepth)
+					IDatabaseProvider dbProvider)
+					: base(logger, "Add Player Week Stats")
 				{
 					_dbProvider = dbProvider;
 				}
@@ -186,9 +182,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 					IAppLogger logger,
 					ITeamWeekStatsSource source,
 					IWeekMatchupsCache weekMatchupsCache,
-					WebRequestThrottle throttle,
-					int nestedDepth)
-					: base(logger, "Get Team Week Stats", nestedDepth)
+					WebRequestThrottle throttle)
+					: base(logger, "Get Team Week Stats")
 				{
 					_source = source;
 					_weekMatchupsCache = weekMatchupsCache;
@@ -224,9 +219,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public AddTeamWeekStats(
 					IAppLogger logger,
-					IDatabaseProvider dbProvider,
-					int nestedDepth)
-					: base(logger, "Add Team Week Stats", nestedDepth)
+					IDatabaseProvider dbProvider)
+					: base(logger, "Add Team Week Stats")
 				{
 					_dbProvider = dbProvider;
 				}
@@ -262,9 +256,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public GetWeekMatchups(
 					IAppLogger logger,
-					IWeekMatchupsCache cache,
-					int nestedDepth)
-					: base(logger, "Get Week Matchups", nestedDepth)
+					IWeekMatchupsCache cache)
+					: base(logger, "Get Week Matchups")
 				{
 					_cache = cache;
 				}
@@ -285,9 +278,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public AddWeekMatchups(
 					IAppLogger logger,
-					IDatabaseProvider dbProvider,
-					int nestedDepth)
-					: base(logger, "Add Week Matchups", nestedDepth)
+					IDatabaseProvider dbProvider)
+					: base(logger, "Add Week Matchups")
 				{
 					_dbProvider = dbProvider;
 				}
@@ -323,9 +315,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 				public AddUpdateLog(
 					IAppLogger logger,
-					IDatabaseProvider dbProvider,
-					int nestedDepth)
-					: base(logger, "Add Update Log", nestedDepth)
+					IDatabaseProvider dbProvider)
+					: base(logger, "Add Update Log")
 				{
 					_dbProvider = dbProvider;
 				}

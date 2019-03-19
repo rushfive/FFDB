@@ -31,6 +31,7 @@ using R5.Internals.PostgresMapper.Attributes;
 using R5.Internals.PostgresMapper.QueryCommand;
 using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
 using R5.FFDB.DbProviders.PostgreSql.Entities;
+using Serilog.Context;
 
 namespace DevTester
 {
@@ -94,7 +95,7 @@ namespace DevTester
 
 	public class DevProgram
 	{
-		private static IServiceProvider _serviceProvider { get; set; }
+		private static IServiceProvider _serviceProvider { get; } = DevTestServiceProvider.Build();
 		private static IAppLogger _logger { get; set; }
 		private static IDatabaseContext _dbContext { get; set; }
 		private static DataDirectoryPath _dataPath { get; set; }
@@ -113,25 +114,33 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			int year = 2019;
-			int week = 1;
+			//var appLogger = _serviceProvider.GetRequiredService<IAppLogger>();
 
-			Expression<Func<TestEntity, bool>> expr
-				= e => e.Number1 == year && e.Number2 == week;
+			////appLogger.LogInformation("Hello there {test}", 12345);
 
-			var testExpr = expr.Body as MemberExpression;
-			var binaryExp = expr.Body as BinaryExpression;
+			//using (LogContext.PushProperty("Pipeline", "InitialPipeline"))
+			//{
+			//	appLogger.LogInformation("Hello there {test} 111", 12345);
+			//	using (LogContext.PushProperty("Stage", "Stage2"))
+			//	{
+			//		appLogger.LogInformation("Hello there {test} 222", 12345);
+			//	}
+			//}
 
-			string result = WhereConditionBuilder<TestEntity>.FromExpression(expr);
+			//	IDisposable disposable = LogContext.PushProperty("Stage", "Test Stage Label");
+			//appLogger.LogInformation("Hello with pushed property: {Property}", "popaewrpoaewr");
+			//appLogger.LogInformation("Hello AGAIN with pushed property: {Property}", "popaewrpoaewr");
+			//disposable.Dispose();
 
+			//appLogger.LogInformation("Hello AGAIN !!!AFTER!!! with pushed property: {Property}", "popaewrpoaewr");
 
-			return;
+			//return;
 
 			FfdbEngine engine = GetConfiguredPostgresEngine();
 
-			//List<WeekInfo> updatedWeeks = await engine.GetAllUpdatedWeeksAsync();
+			List<WeekInfo> updatedWeeks = await engine.GetAllUpdatedWeeksAsync();
 
-			await engine.Stats.AddForWeekAsync(new WeekInfo(2010, 2));
+			//await engine.Stats.AddForWeekAsync(new WeekInfo(2010, 6));
 			//await engine.RunInitialSetupAsync();
 			
 
@@ -174,89 +183,6 @@ namespace DevTester
 
 			return new NpgsqlConnection(connectionString);
 		}
-
-		public class Other
-		{
-			public bool OtherBool { get; set; }
-		}
-		
-
-
-
-		//public abstract class ExpressionTreeVisitor
-		//{
-		//	public ExpressionType NodeType => _node.NodeType;
-		//	private readonly Expression _node;
-
-		//	protected ExpressionTreeVisitor(Expression node)
-		//	{
-		//		_node = node;
-		//	}
-
-		//	protected abstract void Visit();
-
-		//	public static ExpressionTreeVisitor FromExpression(Expression node)
-		//	{
-		//		switch (node)
-		//		{
-		//			case ConstantExpression constant:
-		//				return new ConstantVisitor(constant);
-		//			case LambdaExpression lambda:
-		//				break;
-		//			case ParameterExpression param:
-		//				break;
-		//			default:
-		//				throw new ArgumentException($"Expression type '{node.NodeType}' is missing a visitor implementation.");
-		//		}
-		//	}
-		//}
-
-		//public class ConstantVisitor : ExpressionTreeVisitor
-		//{
-		//	private readonly ConstantExpression _node;
-
-		//	public ConstantVisitor(ConstantExpression node)
-		//		: base(node)
-		//	{
-		//		_node = node;
-		//	}
-
-		//	protected override void Visit()
-		//	{
-		//		Console.WriteLine($"Visiting a '{NodeType}' node:");
-		//		Console.WriteLine($"    value = {_node.Value} type = {_node.Type}");
-		//	}
-		//}
-
-		//public class LambdaVisitor : ExpressionTreeVisitor
-		//{
-		//	private readonly ConstantExpression _node;
-
-		//	public LambdaVisitor(ConstantExpression node)
-		//		: base(node)
-		//	{
-		//		_node = node;
-		//	}
-
-		//	protected override void Visit()
-		//	{
-		//		Console.WriteLine($"Visiting a '{NodeType}' node:");
-		//		Console.WriteLine($"    value = {_node.Value} type = {_node.Type}");
-		//	}
-		//}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

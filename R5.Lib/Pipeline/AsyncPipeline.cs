@@ -31,7 +31,7 @@ namespace R5.Lib.Pipeline
 					continue;
 				}
 
-				OnStageProcessStart(context, currentStage.Name);
+				Guid stageId = OnStageProcessStart(context, currentStage.Name);
 
 				ProcessStageResult result = await currentStage.ProcessAsync(context);
 
@@ -47,7 +47,7 @@ namespace R5.Lib.Pipeline
 						throw new ArgumentOutOfRangeException($"'{result.GetType().Name}' is an invalid process stage result type.");
 				}
 
-				OnStageProcessEnd(context, currentStage.Name);
+				OnStageProcessEnd(stageId, context, currentStage.Name);
 
 				if (endProcessing)
 				{
@@ -64,9 +64,9 @@ namespace R5.Lib.Pipeline
 
 		protected virtual void OnPipelineProcessEnd(TContext context, string name) { }
 
-		protected virtual void OnStageProcessStart(TContext context, string name) { }
+		protected virtual Guid OnStageProcessStart(TContext context, string name) { return default; }
 
-		protected virtual void OnStageProcessEnd(TContext context, string name) { }
+		protected virtual void OnStageProcessEnd(Guid stageId, TContext context, string name) { }
 
 		public override string ToString()
 		{
