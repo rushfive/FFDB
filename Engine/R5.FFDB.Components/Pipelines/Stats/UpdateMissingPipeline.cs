@@ -17,10 +17,10 @@ namespace R5.FFDB.Components.Pipelines.Stats
 {
 	public class UpdateMissingPipeline : Pipeline<UpdateMissingPipeline.Context>
 	{
-		private ILogger<UpdateMissingPipeline> _logger { get; }
+		private IAppLogger _logger { get; }
 
 		public UpdateMissingPipeline(
-			ILogger<UpdateMissingPipeline> logger,
+			IAppLogger logger,
 			AsyncPipelineStage<Context> head)
 			: base(logger, head, "Add Stats for Missing Weeks")
 		{
@@ -51,7 +51,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				private AvailableWeeksValue _availableWeeks { get; }
 
 				public GetMissingWeeks(
-					ILogger<GetMissingWeeks> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					AvailableWeeksValue availableWeeks)
 					: base(logger, "Get Missing Weeks")
@@ -89,7 +89,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				private IAsyncLazyCache _cache { get; }
 
 				public AddMissingWeeks(
-					ILogger<AddMissingWeeks> logger,
+					IAppLogger logger,
 					IServiceProvider serviceProvider,
 					IAsyncLazyCache cache)
 					: base(logger, "Add Missing Weeks")

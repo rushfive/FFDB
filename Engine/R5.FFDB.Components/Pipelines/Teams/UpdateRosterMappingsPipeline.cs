@@ -16,10 +16,10 @@ namespace R5.FFDB.Components.Pipelines.Teams
 {
 	public class UpdateRosterMappingsPipeline : Pipeline<UpdateRosterMappingsPipeline.Context>
 	{
-		private ILogger<UpdateRosterMappingsPipeline> _logger { get; }
+		private IAppLogger _logger { get; }
 
 		public UpdateRosterMappingsPipeline(
-			ILogger<UpdateRosterMappingsPipeline> logger,
+			IAppLogger logger,
 			AsyncPipelineStage<Context> head)
 			: base(logger, head, "Update Rosters")
 		{
@@ -53,7 +53,7 @@ namespace R5.FFDB.Components.Pipelines.Teams
 				private IRosterCache _rosterCache { get; }
 
 				public ResolveNewRosteredPlayers(
-					ILogger<ResolveNewRosteredPlayers> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					IRosterCache rosterCache)
 					: base(logger, "Resolve New Rostered Players")
@@ -86,7 +86,7 @@ namespace R5.FFDB.Components.Pipelines.Teams
 				private IRosterCache _rosterCache { get; }
 
 				public Update(
-					ILogger<Update> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					IRosterCache rosterCache)
 					: base(logger, "Update Rosters")

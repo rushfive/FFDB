@@ -18,10 +18,10 @@ namespace R5.FFDB.Components.Pipelines.Players
 {
 	public class UpdateCurrentlyRosteredPipeline : Pipeline<UpdateCurrentlyRosteredPipeline.Context>
 	{
-		private ILogger<UpdateCurrentlyRosteredPipeline> _logger { get; }
+		private IAppLogger _logger { get; }
 
 		public UpdateCurrentlyRosteredPipeline(
-			ILogger<UpdateCurrentlyRosteredPipeline> logger,
+			IAppLogger logger,
 			AsyncPipelineStage<Context> head)
 			: base(logger, head, "Update Currently Rostered Players")
 		{
@@ -57,7 +57,7 @@ namespace R5.FFDB.Components.Pipelines.Players
 				private IRosterCache _rosterCache { get; }
 
 				public GroupByNewAndExisting(
-					ILogger<GroupByNewAndExisting> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					IRosterCache rosterCache)
 					: base(logger, "Group by New and Existing")
@@ -105,7 +105,7 @@ namespace R5.FFDB.Components.Pipelines.Players
 				private IPlayerIdMappings _playerIdMappings { get; }
 
 				public UpdatePlayersStage(
-					ILogger<UpdatePlayersStage> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					IRosterCache rosterCache,
 					IPlayerIdMappings playerIdMappings)

@@ -18,7 +18,7 @@ namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1
 	public class PlayerWeekStatsSource : CoreDataSource<PlayerWeekStatsVersioned, List<PlayerWeekStats>, WeekInfo>, IPlayerWeekStatsSource
 	{
 		public PlayerWeekStatsSource(
-			ILogger<PlayerWeekStatsSource> logger,
+			IAppLogger logger,
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,

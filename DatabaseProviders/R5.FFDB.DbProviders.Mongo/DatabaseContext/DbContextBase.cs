@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,30 +9,20 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 {
 	public abstract class DbContextBase
 	{
-		private Func<IMongoDatabase> _getDatabase { get; }
-		private ILoggerFactory _loggerFactory { get; }
+		protected Func<IMongoDatabase> GetDatabase { get; }
+		protected IAppLogger Logger { get; }
 
 		protected DbContextBase(
 			Func<IMongoDatabase> getDatabase,
-			ILoggerFactory loggerFactory)
+			IAppLogger logger)
 		{
-			_getDatabase = getDatabase;
-			_loggerFactory = loggerFactory;
-		}
-
-		protected IMongoDatabase GetDatabase()
-		{
-			return _getDatabase();
+			GetDatabase = getDatabase;
+			Logger = logger;
 		}
 
 		protected MongoDbContext GetMongoDbContext()
 		{
-			return new MongoDbContext(_getDatabase());
-		}
-
-		protected ILogger<T> GetLogger<T>()
-		{
-			return _loggerFactory.CreateLogger<T>();
+			return new MongoDbContext(GetDatabase());
 		}
 	}
 }

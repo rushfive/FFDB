@@ -209,7 +209,10 @@ namespace R5.Internals.Caching.Caches
 				throw new ArgumentNullException(nameof(services), "Service collection must be provided.");
 			}
 
-			services.TryAdd(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
+			//services.TryAdd(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
+			services.TryAdd(
+				ServiceDescriptor.Singleton<IMemoryCache>(
+					sp => new MemoryCache(new MemoryCacheOptions())));
 			services.TryAdd(ServiceDescriptor.Singleton<IAsyncLazyCache, AsyncLazyCache>());
 
 			return services;

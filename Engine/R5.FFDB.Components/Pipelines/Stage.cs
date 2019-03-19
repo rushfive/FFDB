@@ -7,11 +7,11 @@ namespace R5.FFDB.Components.Pipelines
 {
 	public abstract class Stage<TContext> : AsyncPipelineStage<TContext>
 	{
-		private ILogger<Stage<TContext>> _logger { get; }
+		private IAppLogger _logger { get; }
 		private string _indent { get; set; }
 
 		protected Stage(
-			ILogger<Stage<TContext>> logger,
+			IAppLogger logger,
 			string name,
 			int nestedDepth = 0) 
 			: base(name)
@@ -42,11 +42,6 @@ namespace R5.FFDB.Components.Pipelines
 		protected void LogDebug(string message)
 		{
 			_logger.LogDebug(NamePrepended(message));
-		}
-
-		protected void LogTrace(string message)
-		{
-			_logger.LogTrace(NamePrepended(message));
 		}
 
 		protected void LogWarning(string message)

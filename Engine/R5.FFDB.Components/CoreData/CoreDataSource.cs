@@ -24,14 +24,14 @@ namespace R5.FFDB.Components.CoreData
 	{
 		protected DataDirectoryPath DataPath { get; }
 
-		private ILogger<CoreDataSource<TVersionedModel, TCoreData, TKey>> _logger { get; }
+		private IAppLogger _logger { get; }
 		private IAsyncMapper<string, TVersionedModel, TKey> _toVersionedMapper { get; }
 		private IAsyncMapper<TVersionedModel, TCoreData, TKey> _toCoreMapper { get; }
 		private ProgramOptions _programOptions { get; }
 		private IWebRequestClient _webClient { get; }
 
 		protected CoreDataSource(
-			ILogger<CoreDataSource<TVersionedModel, TCoreData, TKey>> logger,
+			IAppLogger logger,
 			IAsyncMapper<string, TVersionedModel, TKey> toVersionedMapper,
 			IAsyncMapper<TVersionedModel, TCoreData, TKey> toCoreMapper,
 			ProgramOptions programOptions,

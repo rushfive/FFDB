@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
@@ -13,7 +14,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
 	public class PlayerDbContext : DbContextBase, IPlayerDbContext
 	{
-		public PlayerDbContext(DbConnection dbConnection, ILogger<PlayerDbContext> logger)
+		public PlayerDbContext(DbConnection dbConnection, IAppLogger logger)
 			: base(dbConnection, logger)
 		{
 		}

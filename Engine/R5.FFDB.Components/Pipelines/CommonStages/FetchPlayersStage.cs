@@ -34,7 +34,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 		private IPlayerAddSource _playerAddSource { get; }
 
 		public FetchPlayersStage(
-			ILogger<FetchPlayersStage<TContext>> logger,
+			IAppLogger logger,
 			IDatabaseProvider dbProvider,
 			WebRequestThrottle throttle,
 			IPlayerAddSource playerAddSource,

@@ -17,7 +17,7 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1
 	public class WeekMatchupSource : CoreDataSource<WeekMatchupsVersioned, List<WeekMatchup>, WeekInfo>, IWeekMatchupSource
 	{
 		public WeekMatchupSource(
-			ILogger<WeekMatchupSource> logger,
+			IAppLogger logger,
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,

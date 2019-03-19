@@ -16,7 +16,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 
 		public PlayerAddSource(
 			IRosterCache rosterCache,
-			ILogger<PlayerAddSource> logger,
+			IAppLogger logger,
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,

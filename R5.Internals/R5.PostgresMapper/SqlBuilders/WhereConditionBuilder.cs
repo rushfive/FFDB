@@ -123,15 +123,78 @@ namespace R5.Internals.PostgresMapper.SqlBuilders
 
 		protected override Expression VisitMember(MemberExpression node)
 		{
-			if (!_propertyColumns.TryGetValue(node.Member.Name, out TableColumn column))
+			//switch (node.Member)
+			//{
+			//	case FieldInfo fieldInfo:
+			//		{
+			//			if (node.Expression is ConstantExpression constExpr)
+			//			{
+			//				var value = constExpr.Value;
+
+			//				var fieldValue = fieldInfo.GetValue(value);
+			//			}
+
+			//			if (node.Expression.NodeType == ExpressionType.Constant)
+			//			{
+							
+			//			}
+			//		}
+			//		break;
+			//	case PropertyInfo propertyInfo:
+			//		break;
+			//}
+
+			
+			if (node.Member is FieldInfo fieldInfo
+				&& node.Expression is ConstantExpression constExpr)
 			{
-				throw new InvalidOperationException($"Failed to find column associated to property "
-					+ $"'{node.Member.Name}' on entity type '{typeof(TEntity).Name}'.");
+				var value = constExpr.Value;
+				var fieldValue = fieldInfo.GetValue(value);
+				_whereFilterBuilder.Append(fieldValue);
+			}
+			else if (node.Member is PropertyInfo propertyInfo
+				&& node.Expression is MemberExpression memberExpr
+					&& memberExpr.Member is FieldInfo memberFieldInfo
+					&& memberExpr.Expression is ConstantExpression memberConstExpr)
+			{
+				var value = memberConstExpr.Value;
+				var memberValue = memberFieldInfo.GetValue(value);
+			}
+			//else if (node.Member is PropertyInfo propertyInfo)
+			//{
+			//	if (node.Expression is MemberExpression memberExpr
+			//		&& memberExpr.Member is FieldInfo memberFieldInfo
+			//		&& memberExpr.Expression is ConstantExpression memberConstExpr)
+			//	{
+			//		var value = memberConstExpr.Value;
+			//		var memberValue = memberFieldInfo.GetValue(value);
+			//	}
+
+			//	var nodeExpr = node.Expression;
+			//}
+			else
+			{
+				if (!_propertyColumns.TryGetValue(node.Member.Name, out TableColumn column))
+				{
+					throw new InvalidOperationException($"Failed to find column associated to property "
+						+ $"'{node.Member.Name}' on entity type '{typeof(TEntity).Name}'.");
+				}
+
+				_columnStack.Push(column);
+
+				_whereFilterBuilder.Append(column.Name);
 			}
 
-			_columnStack.Push(column);
+			//
+			//if (!_propertyColumns.TryGetValue(node.Member.Name, out TableColumn column))
+			//{
+			//	throw new InvalidOperationException($"Failed to find column associated to property "
+			//		+ $"'{node.Member.Name}' on entity type '{typeof(TEntity).Name}'.");
+			//}
+
+			//_columnStack.Push(column);
 			
-			_whereFilterBuilder.Append(column.Name);
+			//_whereFilterBuilder.Append(column.Name);
 
 			return node;
 		}

@@ -15,10 +15,10 @@ namespace R5.FFDB.Components.Pipelines.Setup
 {
 	public class InitialSetupPipeline : Pipeline<InitialSetupPipeline.Context>
 	{
-		private ILogger<InitialSetupPipeline> _logger { get; }
+		private IAppLogger _logger { get; }
 
 		public InitialSetupPipeline(
-			ILogger<InitialSetupPipeline> logger,
+			IAppLogger logger,
 			AsyncPipelineStage<Context> head)
 			: base(logger, head, "Initial Setup")
 		{
@@ -54,7 +54,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 				private IDatabaseProvider _dbProvider { get; }
 
 				public Initialize(
-					ILogger<Initialize> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider)
 					: base(logger, "Initialize Database")
 				{
@@ -76,7 +76,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 				private IDatabaseProvider _dbProvider { get; }
 
 				public AddTeams(
-					ILogger<AddTeams> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider)
 					: base(logger, "Add Teams")
 				{
@@ -99,7 +99,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 				private IServiceProvider _serviceProvider { get; }
 
 				public AddStats(
-					ILogger<AddStats> logger,
+					IAppLogger logger,
 					IServiceProvider serviceProvider)
 					: base(logger, "Add Stats")
 				{
@@ -122,7 +122,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 				private IServiceProvider _serviceProvider { get; }
 
 				public UpdateRosterMappings(
-					ILogger<UpdateRosterMappings> logger,
+					IAppLogger logger,
 					IServiceProvider serviceProvider)
 					: base(logger, "Update Roster Mappings")
 				{

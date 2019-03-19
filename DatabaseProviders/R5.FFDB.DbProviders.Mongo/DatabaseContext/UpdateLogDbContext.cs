@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Models;
 using R5.FFDB.DbProviders.Mongo.Collections;
@@ -15,26 +16,24 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 	{
 		public UpdateLogDbContext(
 			Func<IMongoDatabase> getDatabase,
-			ILoggerFactory loggerFactory)
-			: base(getDatabase, loggerFactory)
+			IAppLogger logger)
+			: base(getDatabase, logger)
 		{
 		}
 
 		public async Task<List<WeekInfo>> GetAsync()
 		{
-			var logger = GetLogger<UpdateLogDbContext>();
 			var collectionName = CollectionResolver.GetName<UpdateLogDocument>();
 
 			var logs = await GetMongoDbContext().FindAsync<UpdateLogDocument>();
 
-			logger.LogTrace($"Retrieved updated weeks from '{collectionName}' collection.");
+			Logger.LogDebug($"Retrieved updated weeks from '{collectionName}' collection.");
 
 			return logs.Select(l => new WeekInfo(l.Season, l.Week)).ToList();
 		}
 
 		public async Task AddAsync(WeekInfo week)
 		{
-			var logger = GetLogger<UpdateLogDbContext>();
 			var collectionName = CollectionResolver.GetName<UpdateLogDocument>();
 
 			var log = new UpdateLogDocument
@@ -46,7 +45,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			await GetMongoDbContext().InsertOneAsync(log);
 
-			logger.LogTrace($"Successfully added update log for {week} to '{collectionName}' collection.");
+			Logger.LogDebug($"Successfully added update log for {week} to '{collectionName}' collection.");
 		}
 
 		public async Task<bool> HasUpdatedWeekAsync(WeekInfo week)

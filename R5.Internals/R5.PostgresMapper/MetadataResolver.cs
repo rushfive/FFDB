@@ -163,7 +163,7 @@ namespace R5.Internals.PostgresMapper
 				}
 				else
 				{
-					Debug.Assert(primaryKeyColumn != null, "Primary key column must be set if the table doesn't use composite primary keys.");
+					//Debug.Assert(primaryKeyColumn != null, "Primary key column must be set if the table doesn't use composite primary keys.");
 
 					return entity =>
 					{

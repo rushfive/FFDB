@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.DbProviders.Mongo.Collections;
 using System;
@@ -20,23 +21,21 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 		public DbContext(
 			Func<IMongoDatabase> getDatabase,
-			ILoggerFactory loggerFactory)
-			: base(getDatabase, loggerFactory)
+			IAppLogger logger)
+			: base(getDatabase, logger)
 		{
-			Player = new PlayerDbContext(getDatabase, loggerFactory);
-			PlayerStats = new PlayerStatsDbContext(getDatabase, loggerFactory);
-			Team = new TeamDbContext(getDatabase, loggerFactory);
-			TeamStats = new TeamStatsDbContext(getDatabase, loggerFactory);
-			UpdateLog = new UpdateLogDbContext(getDatabase, loggerFactory);
-			WeekMatchups = new WeekMatchupsDbContext(getDatabase, loggerFactory);
+			Player = new PlayerDbContext(getDatabase, logger);
+			PlayerStats = new PlayerStatsDbContext(getDatabase, logger);
+			Team = new TeamDbContext(getDatabase, logger);
+			TeamStats = new TeamStatsDbContext(getDatabase, logger);
+			UpdateLog = new UpdateLogDbContext(getDatabase, logger);
+			WeekMatchups = new WeekMatchupsDbContext(getDatabase, logger);
 		}
 
 		
 		public async Task InitializeAsync()
 		{
-			var logger = GetLogger<DbContext>();
-
-			logger.LogInformation("Initializing FFDB - creating required collections.");
+			Logger.LogInformation("Initializing FFDB - creating required collections.");
 
 			IMongoDatabase db = GetDatabase();
 
@@ -46,7 +45,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 				await CreateCollectionAsync(type, db);
 			}
 
-			logger.LogInformation("Successfully initialized FFDB.");
+			Logger.LogInformation("Successfully initialized FFDB.");
 		}
 
 		private async Task<List<Type>> GetMissingCollectionTypesAsync(IMongoDatabase db)

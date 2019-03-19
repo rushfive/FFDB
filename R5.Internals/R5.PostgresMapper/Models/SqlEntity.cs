@@ -18,6 +18,11 @@ namespace R5.Internals.PostgresMapper.Models
 	[Table("Test")]
 	public class TestEntity// : SqlEntity
 	{
+		[Column("number1")]
+		public int Number1 { get; set; }
+		[Column("number2")]
+		public int Number2 { get; set; }
+
 		[Column("StringColName")]
 		public string String { get; set; }
 

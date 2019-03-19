@@ -37,13 +37,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Internals.Caching", "R5.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{54D3B8B2-23C4-4C27-9DF3-1D0D85C8B12B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.Internals.Caching.Tests", "R5.Internals\Tests\R5.Internals.Caching.Tests\R5.Internals.Caching.Tests.csproj", "{83337B18-7773-42F8-9B34-1AE964AE4A4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Internals.Caching.Tests", "R5.Internals\Tests\R5.Internals.Caching.Tests\R5.Internals.Caching.Tests.csproj", "{83337B18-7773-42F8-9B34-1AE964AE4A4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.Internals.Abstractions", "R5.Internals\R5.Internals.Abstractions\R5.Internals.Abstractions.csproj", "{01006BB7-9DDD-4F75-BB2F-6FF422040669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Internals.Abstractions", "R5.Internals\R5.Internals.Abstractions\R5.Internals.Abstractions.csproj", "{01006BB7-9DDD-4F75-BB2F-6FF422040669}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.Internals.Extensions", "R5.Internals\R5.Internals.Extensions\R5.Internals.Extensions.csproj", "{17B52ACB-739C-4B20-9680-306F5552BB6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Internals.Extensions", "R5.Internals\R5.Internals.Extensions\R5.Internals.Extensions.csproj", "{17B52ACB-739C-4B20-9680-306F5552BB6C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CLI", "CLI", "{BEE84D90-7713-49FE-A096-5EC7F260CCE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5.Internals.PostgresMapper.Tests", "R5.Internals.PostgresMapper.Tests\R5.Internals.PostgresMapper.Tests.csproj", "{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -142,6 +144,12 @@ Global
 		{17B52ACB-739C-4B20-9680-306F5552BB6C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17B52ACB-739C-4B20-9680-306F5552BB6C}.Test|Any CPU.ActiveCfg = Debug|Any CPU
 		{17B52ACB-739C-4B20-9680-306F5552BB6C}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8}.Test|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,6 +170,7 @@ Global
 		{83337B18-7773-42F8-9B34-1AE964AE4A4E} = {54D3B8B2-23C4-4C27-9DF3-1D0D85C8B12B}
 		{01006BB7-9DDD-4F75-BB2F-6FF422040669} = {7C16622C-1649-42BE-819C-2311FA9724A1}
 		{17B52ACB-739C-4B20-9680-306F5552BB6C} = {7C16622C-1649-42BE-819C-2311FA9724A1}
+		{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8} = {54D3B8B2-23C4-4C27-9DF3-1D0D85C8B12B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2BAF5E7F-EB9F-4D18-93CA-91644AE0282C}

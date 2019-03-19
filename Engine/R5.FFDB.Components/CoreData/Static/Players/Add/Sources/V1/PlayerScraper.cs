@@ -19,9 +19,9 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 
 	public class PlayerScraper : IPlayerScraper
 	{
-		private ILogger<PlayerScraper> _logger { get; }
+		private IAppLogger _logger { get; }
 
-		public PlayerScraper(ILogger<PlayerScraper> logger)
+		public PlayerScraper(IAppLogger logger)
 		{
 			_logger = logger;
 		}

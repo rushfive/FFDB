@@ -19,7 +19,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 	public class TeamWeekStatsSource : CoreDataSource<TeamWeekStatsVersioned, TeamWeekStatsSourceModel, (string, WeekInfo)>, ITeamWeekStatsSource
 	{
 		public TeamWeekStatsSource(
-			ILogger<TeamWeekStatsSource> logger,
+			IAppLogger logger,
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,

@@ -23,13 +23,13 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats
 	{
 		public static string CacheKey(WeekInfo week) => $"team_week_stats_{week}";
 
-		private ILogger<TeamWeekStatsCache> _logger { get; }
+		private IAppLogger _logger { get; }
 		private IAsyncLazyCache _cache { get; }
 		private ITeamWeekStatsSource _source { get; }
 		private IWeekMatchupsCache _weekMatchups { get; }
 
 		public TeamWeekStatsCache(
-			ILogger<TeamWeekStatsCache> logger,
+			IAppLogger logger,
 			IAsyncLazyCache cache,
 			ITeamWeekStatsSource source,
 			IWeekMatchupsCache weekMatchups)

@@ -28,7 +28,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 	{
 		private const string _cacheKey = "rosters";
 
-		private ILogger<RosterCache> _logger { get; }
+		private IAppLogger _logger { get; }
 		private IAsyncLazyCache _cache { get; }
 		private IRosterSource _source { get; }
 		private WebRequestThrottle _throttle { get; }
@@ -36,7 +36,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 		private DataDirectoryPath _dataPath { get; }
 
 		public RosterCache(
-			ILogger<RosterCache> logger,
+			IAppLogger logger,
 			IAsyncLazyCache cache,
 			IRosterSource source,
 			WebRequestThrottle throttle,

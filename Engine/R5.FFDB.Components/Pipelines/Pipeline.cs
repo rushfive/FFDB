@@ -8,12 +8,12 @@ namespace R5.FFDB.Components.Pipelines
 {
 	public abstract class Pipeline<TContext> : AsyncPipeline<TContext>
 	{
-		private ILogger<Pipeline<TContext>> _logger { get; }
+		private IAppLogger _logger { get; }
 		private string _pipelineIndent { get; set; }
 		private string _stageIndent { get; set; }
 
 		protected Pipeline(
-			ILogger<Pipeline<TContext>> logger,
+			IAppLogger logger,
 			AsyncPipelineStage<TContext> head,
 			string name,
 			int nestedDepth = 0)

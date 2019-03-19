@@ -95,7 +95,7 @@ namespace DevTester
 	public class DevProgram
 	{
 		private static IServiceProvider _serviceProvider { get; set; }
-		private static ILogger<DevProgram> _logger { get; set; }
+		private static IAppLogger _logger { get; set; }
 		private static IDatabaseContext _dbContext { get; set; }
 		private static DataDirectoryPath _dataPath { get; set; }
 
@@ -113,21 +113,40 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			FfdbEngine engine = GetConfiguredPostgresEngine();
-			await engine.RunInitialSetupAsync();
+			int year = 2019;
+			int week = 1;
 
+			Expression<Func<TestEntity, bool>> expr
+				= e => e.Number1 == year && e.Number2 == week;
 
-			//ILoggerFactory loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
+			var testExpr = expr.Body as MemberExpression;
+			var binaryExp = expr.Body as BinaryExpression;
 
-			//PostgresDbProvider dbProvider = GetPostgresDbProvider(loggerFactory);
-
-			//IDatabaseContext context = dbProvider.GetContext();
-
-			//await context.InitializeAsync();
+			string result = WhereConditionBuilder<TestEntity>.FromExpression(expr);
 
 
 			return;
+
+			FfdbEngine engine = GetConfiguredPostgresEngine();
+
+			//List<WeekInfo> updatedWeeks = await engine.GetAllUpdatedWeeksAsync();
+
+			await engine.Stats.AddForWeekAsync(new WeekInfo(2010, 2));
+			//await engine.RunInitialSetupAsync();
+			
+
+			return;
 			Console.ReadKey();
+		}
+
+		public static void WriteToConsole<TObj, TMember>(TObj obj, Expression<Func<TObj, TMember>> expression)
+		{
+			MemberExpression memberExpr = (MemberExpression)expression.Body;
+			string memberName = memberExpr.Member.Name;
+			Func<TObj, TMember> compiledDelegate = expression.Compile();
+			TMember value = compiledDelegate(obj);
+
+			Console.WriteLine($"{memberName}: {value}");
 		}
 
 		private static DbConnection GetPostgresDbConnection()
@@ -242,7 +261,7 @@ namespace DevTester
 
 
 
-		private static MongoDbProvider GetMongoDbProvider(ILoggerFactory loggerFactory)
+		private static MongoDbProvider GetMongoDbProvider(IAppLogger logger)
 		{
 			var config = new MongoConfig
 			{
@@ -250,10 +269,10 @@ namespace DevTester
 				DatabaseName = "FFDB_Test_1"
 			};
 
-			return new MongoDbProvider(config, loggerFactory);
+			return new MongoDbProvider(config, logger);
 		}
 
-		private static PostgresDbProvider GetPostgresDbProvider(ILoggerFactory loggerFactory)
+		private static PostgresDbProvider GetPostgresDbProvider(IAppLogger logger)
 		{
 			var _config = new PostgresConfig
 			{
@@ -263,7 +282,7 @@ namespace DevTester
 				Password = "welc0me!"
 			};
 
-			return new PostgresDbProvider(_config, loggerFactory);
+			return new PostgresDbProvider(_config, logger);
 		}
 
 

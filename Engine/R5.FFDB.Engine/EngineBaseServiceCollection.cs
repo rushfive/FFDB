@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
@@ -21,7 +21,9 @@ namespace R5.FFDB.Engine
 		private string _rootDataPath { get; set; }
 		private WebRequestConfig _webRequestConfig { get; set; }
 		private LoggingConfig _loggingConfig { get; set; }
-		private Func<ILoggerFactory, IDatabaseProvider> _dbProviderFactory { get; set; }
+		//private IDatabaseProvider _dbProvider { get; set; }
+		private Func<IAppLogger, IDatabaseProvider> _dbProviderFactory { get; set; }
+		//private Func<ILoggerFactory, IDatabaseProvider> _dbProviderFactory { get; set; }
 		private ProgramOptions _programOptions { get; set; }
 
 		public ServiceCollection Create()
@@ -50,28 +52,12 @@ namespace R5.FFDB.Engine
 				.AddScoped<ProgramOptions>(sp => programOptions)
 				.AddScoped<IDatabaseProvider>(sp =>
 				{
-					var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-					return _dbProviderFactory(loggerFactory);
+					var logger = sp.GetRequiredService<IAppLogger>();
+					return _dbProviderFactory(logger);
 				});
 
 			services
 				.AddScoped<IWebRequestClient, WebRequestClient>();
-			//.AddScoped<IPlayerSource, PlayerSource>()
-			//.AddScoped<IPlayerService, PlayerService>()
-			//.AddScoped<IPlayerScraper, PlayerScraper>()
-			//.AddScoped<IRosterSource, RosterSource>()
-			//.AddScoped<IRosterScraper, RosterScraper>()
-			//.AddScoped<IWeekStatsSource, WeekStatsSource>()
-			//.AddScoped<IWeekStatsService, WeekStatsService>()
-			//.AddScoped<ITeamGamesSource, TeamGamesSource>()
-			//.AddScoped<ITeamGameStatsService, TeamGameStatsService>()
-			//.AddScoped<IWeekGameMatchupService, WeekGameMatchupService>()
-			//.AddScoped<IProcessorHelper, ProcessorHelper>()
-			//.AddScoped<IPlayerMatcherFactory, PlayerMatcherFactory>()
-			//.AddScoped<ITeamGamesDataMapper, TeamGamesDataMapper>()
-			//.AddScoped<ITeamGameDataCache, TeamGameDataCache>()
-			//.AddScoped<IWeekGameDataCache, WeekGameDataCache>()
-			//.AddScoped<IPlayerWeekTeamResolverFactory, PlayerWeekTeamResolverFactory>();
 
 			// NEW:
 
@@ -89,10 +75,6 @@ namespace R5.FFDB.Engine
 			if (string.IsNullOrWhiteSpace(_rootDataPath))
 			{
 				throw new InvalidOperationException("Root data directory path must be provided.");
-			}
-			if (_webRequestConfig == null)
-			{
-				throw new InvalidOperationException("Web request config must be provided.");
 			}
 			if (_dbProviderFactory == null)
 			{
@@ -118,10 +100,9 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
-		public EngineBaseServiceCollection SetDatabaseProviderFactory(
-			Func<ILoggerFactory, IDatabaseProvider> dbProviderFactory)
+		public EngineBaseServiceCollection SetDatabaseProviderFactory(Func<IAppLogger, IDatabaseProvider> factory)
 		{
-			_dbProviderFactory = dbProviderFactory;
+			_dbProviderFactory = factory;
 			return this;
 		}
 

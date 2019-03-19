@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.DbProviders.Mongo.Collections;
@@ -15,8 +16,8 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 	{
 		public TeamDbContext(
 			Func<IMongoDatabase> getDatabase,
-			ILoggerFactory loggerFactory)
-			: base(getDatabase, loggerFactory)
+			IAppLogger logger)
+			: base(getDatabase, logger)
 		{
 		}
 
@@ -26,8 +27,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			{
 				throw new ArgumentNullException(nameof(teams), "Teams must be provided.");
 			}
-
-			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
+			
 			var collectionName = CollectionResolver.GetName<TeamDocument>();
 
 			MongoDbContext mongoDbContext = GetMongoDbContext();
@@ -46,7 +46,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			
 			await mongoDbContext.InsertManyAsync(missing);
 
-			logger.LogTrace($"Added {missing.Count} teams to '{collectionName}' collection.");
+			Logger.LogDebug($"Added {missing.Count} teams to '{collectionName}' collection.");
 		}
 
 		private async Task<HashSet<int>> GetExistingTeamIdsAsync(MongoDbContext mongoDbContext)
@@ -69,11 +69,10 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			{
 				throw new ArgumentNullException(nameof(rosters), "Rosters must be provided.");
 			}
-
-			ILogger<TeamDbContext> logger = GetLogger<TeamDbContext>();
+			
 			var collectionName = CollectionResolver.GetName<PlayerDocument>();
 
-			logger.LogTrace($"Updating roster mappings..");
+			Logger.LogDebug($"Updating roster mappings..");
 
 			MongoDbContext mongoDbContext = GetMongoDbContext();
 			
@@ -86,7 +85,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 				await UpdateForRosterAsync(roster, nflIdMap, mongoDbContext);
 			}
 
-			logger.LogTrace($"Updated roster mappings for players in '{collectionName}' collection.");
+			Logger.LogDebug($"Updated roster mappings for players in '{collectionName}' collection.");
 		}
 
 		private Task ClearRosterMappingsAsync(MongoDbContext mongoDbContext)

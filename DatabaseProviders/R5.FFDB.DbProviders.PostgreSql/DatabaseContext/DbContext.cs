@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.DbProviders.PostgreSql.Entities;
 using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
@@ -20,15 +21,15 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		public IUpdateLogDbContext UpdateLog { get; }
 		public IWeekMatchupsDbContext WeekMatchups { get; }
 		
-		public DbContext(DbConnection dbConnection, ILoggerFactory loggerFactory)
-			: base(dbConnection, loggerFactory.CreateLogger<DbContext>())
+		public DbContext(DbConnection dbConnection, IAppLogger logger)
+			: base(dbConnection, logger)
 		{
-			Player = new PlayerDbContext(dbConnection, loggerFactory.CreateLogger<PlayerDbContext>());
-			PlayerStats = new PlayerStatsDbContext(dbConnection, loggerFactory.CreateLogger<PlayerStatsDbContext>());
-			Team = new TeamDbContext(dbConnection, loggerFactory.CreateLogger<TeamDbContext>());
-			TeamStats = new TeamStatsDbContext(dbConnection, loggerFactory.CreateLogger<TeamStatsDbContext>());
-			UpdateLog = new UpdateLogDbContext(dbConnection, loggerFactory.CreateLogger<UpdateLogDbContext>());
-			WeekMatchups = new WeekMatchupsDbContext(dbConnection, loggerFactory.CreateLogger<WeekMatchupsDbContext>());
+			Player = new PlayerDbContext(dbConnection, logger);
+			PlayerStats = new PlayerStatsDbContext(dbConnection, logger);
+			Team = new TeamDbContext(dbConnection, logger);
+			TeamStats = new TeamStatsDbContext(dbConnection, logger);
+			UpdateLog = new UpdateLogDbContext(dbConnection, logger);
+			WeekMatchups = new WeekMatchupsDbContext(dbConnection, logger);
 		}
 
 		public Task<bool> HasBeenInitializedAsync()

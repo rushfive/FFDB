@@ -16,9 +16,9 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 
 	public class RosterScraper : IRosterScraper
 	{
-		private ILogger<RosterScraper> _logger { get; }
+		private IAppLogger _logger { get; }
 
-		public RosterScraper(ILogger<RosterScraper> logger)
+		public RosterScraper(IAppLogger logger)
 		{
 			_logger = logger;
 		}
@@ -40,7 +40,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 				throw;
 			}
 
-			_logger.LogTrace($"Found {playerRows.Count} player rows to scrape.");
+			_logger.LogDebug($"Found {playerRows.Count} player rows to scrape.");
 
 			foreach (HtmlNode r in playerRows)
 			{
@@ -57,7 +57,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 					Status = status
 				});
 
-				_logger.LogTrace($"Extracted player '{id}'.");
+				_logger.LogDebug($"Extracted player '{id}'.");
 			}
 
 			return result;

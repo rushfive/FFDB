@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Components;
 using R5.FFDB.Components.Extensions.JsonConverters;
 using R5.FFDB.Components.Pipelines.Setup;
 using R5.FFDB.Components.ValueProviders;
@@ -18,13 +19,13 @@ namespace R5.FFDB.Engine
 		public TeamProcessor Team { get; }
 		public PlayerProcessor Player { get; }
 
-		private ILogger<FfdbEngine> _logger { get; }
+		private IAppLogger _logger { get; }
 		private IServiceProvider _serviceProvider { get; }
 		private IDatabaseProvider _databaseProvider { get; }
 		private LatestWeekValue _latestWeekValue { get; }
 
 		public FfdbEngine(
-			ILogger<FfdbEngine> logger,
+			IAppLogger logger,
 			IServiceProvider serviceProvider,
 			IDatabaseProvider databaseProvider,
 			LatestWeekValue latestWeekValue)
@@ -76,7 +77,7 @@ namespace R5.FFDB.Engine
 		public Task<List<WeekInfo>> GetAllUpdatedWeeksAsync()
 		{
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
-			return null;// dbContext.Log.GetUpdatedWeeksAsync();
+			return dbContext.UpdateLog.GetAsync();
 		}
 	}
 }
