@@ -6,7 +6,7 @@ using R5.FFDB.Components.Http;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
-using R5.Lib.Pipeline;
+using R5.Internals.Abstractions.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

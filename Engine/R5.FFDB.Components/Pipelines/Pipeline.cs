@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.Lib.Pipeline;
+using R5.Internals.Abstractions.Pipeline;
 using Serilog.Context;
 using System;
 using System.Collections.Generic;

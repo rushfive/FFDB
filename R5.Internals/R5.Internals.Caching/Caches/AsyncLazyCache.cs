@@ -191,9 +191,7 @@ namespace R5.Internals.Caching.Caches
 							_locks.Remove(_key);
 						}
 					}
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.WriteLine($"RELEASED LOCK: {_key}");
-					Console.ResetColor();
+
 					exclusiveLock.Lock.Release();
 				}
 			}

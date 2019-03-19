@@ -15,9 +15,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\R5.Internals\R5.Internals.Abstractions\R5.Internals.Abstractions.csproj" />
 		<ProjectReference Include="..\..\R5.Internals\R5.Internals.Caching\R5.Internals.Caching.csproj" />
 		<ProjectReference Include="..\..\R5.Internals\R5.Internals.Extensions\R5.Internals.Extensions.csproj" />
-		<ProjectReference Include="..\..\R5.Lib\R5.Lib.csproj" />
 		<ProjectReference Include="..\R5.FFDB.Core\R5.FFDB.Core.csproj" />
 	</ItemGroup>
 

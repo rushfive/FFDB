@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\R5.Internals\R5.PostgresMapper\R5.Internals.PostgresMapper.csproj" />
+	  <ProjectReference Include="..\..\R5.PostgresMapper\R5.Internals.PostgresMapper.csproj" />
 	</ItemGroup>
 </Project>
 

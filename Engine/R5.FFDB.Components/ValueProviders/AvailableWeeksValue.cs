@@ -1,13 +1,11 @@
 ﻿using R5.FFDB.Core.Models;
-using R5.Lib.ValueProviders;
-using System;
+using R5.Internals.Caching.ValueProviders;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.ValueProviders
 {
-	// todo: convert this to a cache?
 	public class AvailableWeeksValue : AsyncValueProvider<List<WeekInfo>>
 	{
 		private LatestWeekValue _latestWeekValue { get; }
