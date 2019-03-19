@@ -65,10 +65,10 @@ namespace R5.Internals.PostgresMapper.Tests.Tests.SqlBuilders
 		{
 			var week = new WeekInfo { Season = 2019, Week = 1 };
 
-			//Expression<Func<TestEntity, bool>> expr
-			//	= e => e.Number1 == week.Season && e.Number2 == week.Week;
 			Expression<Func<TestEntity, bool>> expr
-				= e => e.Number1 == week.Season;
+				= e => e.Number1 == week.Season && e.Number2 == week.Week;
+			//Expression<Func<TestEntity, bool>> expr
+			//	= e => e.Number1 == week.Season;
 
 			string expected = "((number1 = 2019) AND (number2 = 1))";
 
