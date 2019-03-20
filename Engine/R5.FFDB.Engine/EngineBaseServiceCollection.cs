@@ -7,7 +7,6 @@ using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.Internals.Caching.Caches;
 using Serilog;
-using Serilog.Events;
 using System;
 
 namespace R5.FFDB.Engine
@@ -44,7 +43,6 @@ namespace R5.FFDB.Engine
 				.AddScoped(sp => throttle)
 				.AddScoped<LatestWeekValue>()
 				.AddScoped<AvailableWeeksValue>()
-				//.AddScoped<RostersValue>()
 				.AddScoped<ProgramOptions>(sp => programOptions)
 				.AddScoped<IDatabaseProvider>(sp =>
 				{
@@ -127,9 +125,6 @@ namespace R5.FFDB.Engine
 				{
 					loggerConfig = loggerConfig.MinimumLevel.Information();
 				}
-
-				//string outputTemplate = "{Timestamp:MM-dd HH:mm:ss} [{Level:u3}] [{Pipeline}-{Stage}] {Message:lj}{NewLine}{Exception}";
-				//string outputTemplate = "{Timestamp:MM-dd HH:mm:ss} [{PipelineStage}] {Message:lj}{NewLine}{Exception}";
 
 				Serilog.ILogger seriLogger = loggerConfig
 					.Enrich.FromLogContext()

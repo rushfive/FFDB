@@ -113,122 +113,17 @@ namespace DevTester
 
 		public static async Task Main(string[] args)
 		{
-			//var appLogger = _serviceProvider.GetRequiredService<IAppLogger>();
-
-			////appLogger.LogInformation("Hello there {test}", 12345);
-
-			//using (LogContext.PushProperty("Pipeline", "InitialPipeline"))
-			//{
-			//	appLogger.LogInformation("Hello there {test} 111", 12345);
-			//	using (LogContext.PushProperty("Stage", "Stage2"))
-			//	{
-			//		appLogger.LogInformation("Hello there {test} 222", 12345);
-			//	}
-			//}
-
-			//	IDisposable disposable = LogContext.PushProperty("Stage", "Test Stage Label");
-			//appLogger.LogInformation("Hello with pushed property: {Property}", "popaewrpoaewr");
-			//appLogger.LogInformation("Hello AGAIN with pushed property: {Property}", "popaewrpoaewr");
-			//disposable.Dispose();
-
-			//appLogger.LogInformation("Hello AGAIN !!!AFTER!!! with pushed property: {Property}", "popaewrpoaewr");
-
-			//return;
 
 			FfdbEngine engine = GetConfiguredPostgresEngine();
 
 			await engine.Stats.AddForWeekAsync(new WeekInfo(2010, 1));
 			List<WeekInfo> updatedWeeks = await engine.GetAllUpdatedWeeksAsync();
-			//await engine.RunInitialSetupAsync(skipAddingStats: true);
 			
 
 			return;
 			Console.ReadKey();
 		}
 
-		public static void WriteToConsole<TObj, TMember>(TObj obj, Expression<Func<TObj, TMember>> expression)
-		{
-			MemberExpression memberExpr = (MemberExpression)expression.Body;
-			string memberName = memberExpr.Member.Name;
-			Func<TObj, TMember> compiledDelegate = expression.Compile();
-			TMember value = compiledDelegate(obj);
-
-			Console.WriteLine($"{memberName}: {value}");
-		}
-
-		private static DbConnection GetPostgresDbConnection()
-		{
-			return new DbConnection(NpgsqlConnectionFactory);
-
-		}
-
-		private static NpgsqlConnection NpgsqlConnectionFactory()
-		{
-			var _config = new PostgresConfig
-			{
-				DatabaseName = "ffdb_test_1",
-				Host = "localhost",
-				Username = "ffdb",
-				Password = "welc0me!"
-			};
-
-			string connectionString = $"Host={_config.Host};Database={_config.DatabaseName};";
-
-			if (_config.IsSecured)
-			{
-				connectionString += $"Username={_config.Username};Password={_config.Password}";
-			}
-
-			return new NpgsqlConnection(connectionString);
-		}
-
-
-
-
-		private static MongoDbProvider GetMongoDbProvider(IAppLogger logger)
-		{
-			var config = new MongoConfig
-			{
-				ConnectionString = "mongodb://localhost:27017/FFDB_Test_1?replicaSet=rs_local",
-				DatabaseName = "FFDB_Test_1"
-			};
-
-			return new MongoDbProvider(config, logger);
-		}
-
-		private static PostgresDbProvider GetPostgresDbProvider(IAppLogger logger)
-		{
-			var _config = new PostgresConfig
-			{
-				DatabaseName = "ffdb_test_2",
-				Host = "localhost",
-				Username = "ffdb",
-				Password = "welc0me!"
-			};
-
-			return new PostgresDbProvider(_config, logger);
-		}
-
-
-		private static NpgsqlConnection GetConnection()
-		{
-			var _config = new PostgresConfig
-			{
-				DatabaseName = "ffdb_test_1",
-				Host = "localhost",
-				Username = "ffdb",
-				Password = "welc0me!"
-			};
-
-			string connectionString = $"Host={_config.Host};Database={_config.DatabaseName};";
-
-			if (_config.IsSecured)
-			{
-				connectionString += $"Username={_config.Username};Password={_config.Password}";
-			}
-
-			return new NpgsqlConnection(connectionString);
-		}
 
 		private static FfdbEngine GetConfiguredPostgresEngine()
 		{

@@ -79,13 +79,6 @@ namespace R5.FFDB.CLI.Configuration
 				throw new ArgumentException("Log rolling interval must be provided. "
 					+ $"Valid values are: {string.Join(", ", Enum.GetNames(typeof(RollingInterval)))}");
 			}
-
-			if (string.IsNullOrWhiteSpace(Logging.LogLevel)
-				|| !Enum.TryParse(Logging.LogLevel, out LogEventLevel _))
-			{
-				throw new ArgumentException("Log level must be provided. "
-					+ $"Valid values are: {string.Join(", ", Enum.GetNames(typeof(LogEventLevel)))}");
-			}
 		}
 
 		private void ValidateDatabaseConfig()
@@ -147,6 +140,6 @@ namespace R5.FFDB.CLI.Configuration
 		public bool RollOnFileSizeLimit { get; set; }
 
 		// Serilog.Events.LogEventLevel
-		public string LogLevel { get; set; }
+		public bool UseDebugLogLevel { get; set; }
 	}
 }

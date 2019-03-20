@@ -19,8 +19,7 @@ namespace R5.FFDB.Engine
 		public StatsProcessor Stats { get;  }
 		public TeamProcessor Team { get; }
 		public PlayerProcessor Player { get; }
-
-		private IAppLogger _logger { get; }
+		
 		private IServiceProvider _serviceProvider { get; }
 		private IDatabaseProvider _databaseProvider { get; }
 		private LatestWeekValue _latestWeekValue { get; }
@@ -31,7 +30,6 @@ namespace R5.FFDB.Engine
 			IDatabaseProvider databaseProvider,
 			LatestWeekValue latestWeekValue)
 		{
-			_logger = logger;
 			_serviceProvider = serviceProvider;
 			_databaseProvider = databaseProvider;
 			_latestWeekValue = latestWeekValue;
@@ -55,8 +53,6 @@ namespace R5.FFDB.Engine
 		
 		public Task RunInitialSetupAsync(bool skipAddingStats)
 		{
-			_logger.LogInformation("Running initial setup..");
-
 			var context = new InitialSetupPipeline.Context
 			{
 				SkipAddingStats = skipAddingStats

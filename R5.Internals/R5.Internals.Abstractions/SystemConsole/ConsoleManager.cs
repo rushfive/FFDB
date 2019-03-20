@@ -19,7 +19,5 @@ namespace R5.Internals.Abstractions.SystemConsole
 			CM.WriteLineColored(value, color);
 			ResetColor();
 		}
-
-
 	}
 }

@@ -12,7 +12,7 @@
 		"MaxBytes": null,
 		"RollingInterval": "Day",
 		"RollOnFileSizeLimit": false,
-		"LogLevel": "Debug"
+		"UseDebugLogLevel": false
 	},
 	"PostgreSql": {
 		"Host": "",
