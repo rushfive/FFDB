@@ -1,12 +1,8 @@
 update logging
-updating pipelines to use an abstract list of stages instead of
-manually creating and chaining stages
-update engine setup - configuring the db provider should just
-set an instance of IDbProvider, not have to resolve it on build based on set
-props
+
 
 - ffdb.data project to pull data from (zip file + single files fetches)
-- change to netstandard2.0 for better interop
+
 - initial setup should have an option/flag to ONLY setup db stuff (schema + tables, NO stats updates or anything)
 - update logging to make use of serilog structured formatting - use json formatting too when relevant
 	- for ex, when starting up, display the program options as json

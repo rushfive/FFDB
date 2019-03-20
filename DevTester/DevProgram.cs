@@ -137,10 +137,9 @@ namespace DevTester
 
 			FfdbEngine engine = GetConfiguredPostgresEngine();
 
+			await engine.Stats.AddForWeekAsync(new WeekInfo(2010, 1));
 			List<WeekInfo> updatedWeeks = await engine.GetAllUpdatedWeeksAsync();
-
-			//await engine.Stats.AddForWeekAsync(new WeekInfo(2010, 6));
-			//await engine.RunInitialSetupAsync();
+			//await engine.RunInitialSetupAsync(skipAddingStats: true);
 			
 
 			return;
@@ -237,7 +236,7 @@ namespace DevTester
 
 			setup.UsePostgreSql(new PostgresConfig
 			{
-				DatabaseName = "ffdb_test_2",
+				DatabaseName = "ffdb_test_3",
 				Host = "localhost",
 				Username = "ffdb",
 				Password = "welc0me!"
@@ -271,7 +270,7 @@ namespace DevTester
 			setup.Logging
 				.SetLogDirectory(@"D:\Repos\ffdb_data_3\dev_test_logs\")
 				.SetRollingInterval(RollingInterval.Day)
-				.SetLogLevel(LogEventLevel.Debug);
+				.UseDebugLogLevel();
 
 			setup
 				.SkipRosterFetch()

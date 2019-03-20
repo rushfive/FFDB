@@ -10,6 +10,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\R5.Internals.Abstractions\R5.Internals.Abstractions.csproj" />
 		<ProjectReference Include="..\R5.Internals.Extensions\R5.Internals.Extensions.csproj" />
 	</ItemGroup>
 

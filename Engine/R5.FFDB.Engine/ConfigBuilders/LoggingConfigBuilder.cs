@@ -12,8 +12,9 @@ namespace R5.FFDB.Engine.ConfigBuilders
 		private long? _maxBytes { get; set; }
 		private RollingInterval _rollingInterval { get; set; } = RollingInterval.Day;
 		private bool _rollOnFileSizeLimit { get; set; }
-		private LogEventLevel _logLevel { get; set; } = LogEventLevel.Debug;
+		private LogEventLevel _logLevel { get; set; } = LogEventLevel.Information;
 		private Microsoft.Extensions.Logging.ILogger _customLogger { get; set; }
+		private string _messageTemplate { get; set; } = @"{Timestamp:MM-dd HH:mm:ss} [{PipelineStage}] {Message:lj}{NewLine}{Exception}";
 
 		public LoggingConfigBuilder SetLogDirectory(string directoryPath)
 		{
@@ -57,13 +58,24 @@ namespace R5.FFDB.Engine.ConfigBuilders
 			return this;
 		}
 
-		public LoggingConfigBuilder SetLogLevel(LogEventLevel level)
+		public LoggingConfigBuilder UseDebugLogLevel()
 		{
-			_logLevel = level;
+			_logLevel = LogEventLevel.Debug;
 			return this;
 		}
 
-		public void UseCustom(Microsoft.Extensions.Logging.ILogger logger)
+		public LoggingConfigBuilder SetMessageTemplate(string template)
+		{
+			if (string.IsNullOrWhiteSpace(template))
+			{
+				throw new ArgumentNullException(nameof(template), "Message template must be provided.");
+			}
+
+			_messageTemplate = template;
+			return this;
+		}
+
+		public void UseCustomLogger(Microsoft.Extensions.Logging.ILogger logger)
 		{
 			_customLogger = logger ?? throw new ArgumentNullException(nameof(logger), "Custom ILogger implementation must be provided.");
 		}
@@ -82,14 +94,22 @@ namespace R5.FFDB.Engine.ConfigBuilders
 				_maxBytes,
 				_rollingInterval,
 				_rollOnFileSizeLimit,
-				_logLevel);
+				_logLevel == LogEventLevel.Debug,
+				_messageTemplate);
 		}
 
 		private void Validate()
 		{
 			if (string.IsNullOrWhiteSpace(_logDirectory))
 			{
-				throw new InvalidOperationException("Logging directory must be provided.");
+				// not using built-in logging
+				return;
+			}
+
+			if (_logLevel != LogEventLevel.Information && _logLevel != LogEventLevel.Debug)
+			{
+				throw new InvalidOperationException(
+					$"Log level can only be set to '{LogEventLevel.Information}' or '{LogEventLevel.Debug}'.");
 			}
 		}
 	}

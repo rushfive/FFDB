@@ -9,5 +9,10 @@ namespace R5.Internals.Extensions.DependencyInjection
 		{
 			return ActivatorUtilities.CreateInstance<T>(provider, parameters);
 		}
+
+		public static object Create(this IServiceProvider provider, Type instanceType, params object[] parameters)
+		{
+			return ActivatorUtilities.CreateInstance(provider, instanceType, parameters);
+		}
 	}
 }

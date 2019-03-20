@@ -51,7 +51,7 @@ namespace R5.Internals.PostgresMapper.QueryCommand
 		{
 			var sqlCommand = GetSqlCommand();
 #if DEBUG
-			Console.WriteLine(sqlCommand);
+			DebugUtil.OutputSqlCommand(sqlCommand);
 #endif
 			NpgsqlConnection connection = _getConnection();
 			return connection.ExecuteNonQueryAsync(sqlCommand);

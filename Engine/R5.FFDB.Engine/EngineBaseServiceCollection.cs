@@ -118,42 +118,29 @@ namespace R5.FFDB.Engine
 			else
 			{
 				var loggerConfig = new LoggerConfiguration();
-				switch (config.LogLevel)
+				
+				if (config.UseDebugLogLevel)
 				{
-					case LogEventLevel.Verbose:
-						loggerConfig = loggerConfig.MinimumLevel.Verbose();
-						break;
-					case LogEventLevel.Debug:
-						loggerConfig = loggerConfig.MinimumLevel.Debug();
-						break;
-					case LogEventLevel.Information:
-						loggerConfig = loggerConfig.MinimumLevel.Information();
-						break;
-					case LogEventLevel.Warning:
-						loggerConfig = loggerConfig.MinimumLevel.Warning();
-						break;
-					case LogEventLevel.Error:
-						loggerConfig = loggerConfig.MinimumLevel.Error();
-						break;
-					case LogEventLevel.Fatal:
-						loggerConfig = loggerConfig.MinimumLevel.Fatal();
-						break;
-					default:
-						throw new ArgumentOutOfRangeException($"'{config.LogLevel}' is an invalid serilog log event level.");
+					loggerConfig = loggerConfig.MinimumLevel.Debug();
+				}
+				else
+				{
+					loggerConfig = loggerConfig.MinimumLevel.Information();
 				}
 
 				//string outputTemplate = "{Timestamp:MM-dd HH:mm:ss} [{Level:u3}] [{Pipeline}-{Stage}] {Message:lj}{NewLine}{Exception}";
-				string outputTemplate = "{Timestamp:MM-dd HH:mm:ss} [{PipelineStage}] {Message:lj}{NewLine}{Exception}";
+				//string outputTemplate = "{Timestamp:MM-dd HH:mm:ss} [{PipelineStage}] {Message:lj}{NewLine}{Exception}";
 
 				Serilog.ILogger seriLogger = loggerConfig
 					.Enrich.FromLogContext()
-					.WriteTo.Console(outputTemplate: outputTemplate)
+					.WriteTo.Console(outputTemplate: config.MessageTemplate)
 					.WriteTo.File(
 						config.LogDirectory + ".txt",
 						fileSizeLimitBytes: config.MaxBytes,
 						restrictedToMinimumLevel: config.LogLevel,
 						rollingInterval: config.RollingInterval,
-						rollOnFileSizeLimit: config.RollOnFileSizeLimit)
+						rollOnFileSizeLimit: config.RollOnFileSizeLimit,
+						outputTemplate: config.MessageTemplate)
 					.CreateLogger();
 
 				appLogger = new AppLogger(seriLogger);

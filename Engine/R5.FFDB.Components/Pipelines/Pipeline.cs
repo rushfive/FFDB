@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.Internals.Abstractions.Pipeline;
+using R5.Internals.Extensions.DependencyInjection;
 using Serilog.Context;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,32 @@ namespace R5.FFDB.Components.Pipelines
 		private IAppLogger _logger { get; }
 		private IDisposable _contextProperty { get; set; }
 		private Dictionary<Guid, IDisposable> _stageContextProperties { get; } = new Dictionary<Guid, IDisposable>();
+		private IServiceProvider _serviceProvider { get; }
 
 		protected Pipeline(
 			IAppLogger logger,
-			AsyncPipelineStage<TContext> head,
+			IServiceProvider serviceProvider,
 			string name)
-			: base(head, name)
+			: base(name)
 		{
 			_logger = logger;
+			_serviceProvider = serviceProvider;
+		}
+
+		// Types should represent the implementations of AsyncPipelineStages
+		protected abstract List<Type> Stages { get; }
+
+		protected override List<AsyncPipelineStage<TContext>> GetStages()
+		{
+			var stages = new List<AsyncPipelineStage<TContext>>();
+
+			foreach(var stageType in Stages)
+			{
+				var stage = _serviceProvider.Create(stageType) as AsyncPipelineStage<TContext>;
+				stages.Add(stage);
+			}
+
+			return stages;
 		}
 
 		protected override void OnPipelineProcessStart(TContext context, string name)
@@ -54,7 +73,5 @@ namespace R5.FFDB.Components.Pipelines
 				_stageContextProperties.Remove(stageId);
 			}
 		}
-
-
 	}
 }

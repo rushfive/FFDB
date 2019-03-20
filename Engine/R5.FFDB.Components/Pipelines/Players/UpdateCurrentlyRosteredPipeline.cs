@@ -22,8 +22,8 @@ namespace R5.FFDB.Components.Pipelines.Players
 
 		public UpdateCurrentlyRosteredPipeline(
 			IAppLogger logger,
-			AsyncPipelineStage<Context> head)
-			: base(logger, head, "Update Currently Rostered Players")
+			IServiceProvider serviceProvider)
+			: base(logger, serviceProvider, "Update Currently Rostered Players")
 		{
 			_logger = logger;
 		}
@@ -35,21 +35,14 @@ namespace R5.FFDB.Components.Pipelines.Players
 			public List<string> UpdateNflIds { get; set; }
 		}
 
-		public static UpdateCurrentlyRosteredPipeline Create(IServiceProvider sp)
+		protected override List<Type> Stages => new List<Type>
 		{
-			var groupByNewExisting = sp.Create<Stages.GroupByNewAndExisting>();
-			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>();
-			var updatePlayers = sp.Create<Stages.UpdatePlayersStage>();
+			typeof(Stage.GroupByNewAndExisting),
+			typeof(FetchPlayersStage<Context>),
+			typeof(Stage.UpdatePlayersStage)
+		};
 
-			AsyncPipelineStage<Context> chain = groupByNewExisting;
-			chain
-				.SetNext(fetchSavePlayers)
-				.SetNext(updatePlayers);
-
-			return sp.Create<UpdateCurrentlyRosteredPipeline>(chain);
-		}
-
-		public static class Stages
+		public static class Stage
 		{
 			public class GroupByNewAndExisting : Stage<Context>
 			{

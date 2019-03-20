@@ -19,8 +19,8 @@ namespace R5.FFDB.Components.Pipelines.Setup
 
 		public InitialSetupPipeline(
 			IAppLogger logger,
-			AsyncPipelineStage<Context> head)
-			: base(logger, head, "Initial Setup")
+			IServiceProvider serviceProvider)
+			: base(logger, serviceProvider, "Initial Setup")
 		{
 			_logger = logger;
 		}
@@ -28,26 +28,18 @@ namespace R5.FFDB.Components.Pipelines.Setup
 
 		public class Context
 		{
-			
+			public bool SkipAddingStats { get; set; }
 		}
 
-		public static InitialSetupPipeline Create(IServiceProvider sp)
+		protected override List<Type> Stages => new List<Type>
 		{
-			var initialize = sp.Create<Stages.Initialize>();
-			var addTeams = sp.Create<Stages.AddTeams>();
-			var addStats = sp.Create<Stages.AddStats>();
-			var updateRosterMappings = sp.Create<Stages.UpdateRosterMappings>();
+			typeof(Stage.Initialize),
+			typeof(Stage.AddTeams),
+			typeof(Stage.AddStats),
+			typeof(Stage.UpdateRosterMappings)
+		};
 
-			AsyncPipelineStage<Context> chain = initialize;
-			chain
-				.SetNext(addTeams)
-				.SetNext(addStats)
-				.SetNext(updateRosterMappings);
-
-			return sp.Create<InitialSetupPipeline>(chain);
-		}
-
-		public static class Stages
+		public static class Stage
 		{
 			public class Initialize : Stage<Context>
 			{
@@ -64,7 +56,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
 					LogInformation($"Will run using database provider '{_dbProvider.GetType().Name}'.");
-					
+
 					await _dbProvider.GetContext().InitializeAsync();
 
 					return ProcessResult.Continue;
@@ -108,7 +100,13 @@ namespace R5.FFDB.Components.Pipelines.Setup
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
-					var pipeline = UpdateMissingPipeline.Create(_serviceProvider);
+					if (context.SkipAddingStats)
+					{
+						LogInformation($"Program set to skip adding of stats, will not add.");
+						return ProcessResult.Continue;
+					}
+
+					var pipeline = _serviceProvider.Create<UpdateMissingPipeline>();
 
 					await pipeline.ProcessAsync(
 						new UpdateMissingPipeline.Context());
@@ -131,6 +129,12 @@ namespace R5.FFDB.Components.Pipelines.Setup
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
+					if (context.SkipAddingStats)
+					{
+						LogInformation($"Program set to skip adding of stats, will not update roster mappings.");
+						return ProcessResult.Continue;
+					}
+
 					var pipeline = UpdateRosterMappingsPipeline.Create(_serviceProvider);
 
 					await pipeline.ProcessAsync(

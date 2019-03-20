@@ -27,7 +27,8 @@ namespace DevTester
 				maxBytes: null,
 				RollingInterval.Day,
 				rollOnFileSizeLimit: false,
-				LogEventLevel.Debug);
+				useDebugLogLevel: true,
+				messageTemplate: @"{Timestamp:MM-dd HH:mm:ss} [{PipelineStage}] {Message:lj}{NewLine}{Exception}");
 			
 			var postgresConfig = new PostgresConfig
 			{

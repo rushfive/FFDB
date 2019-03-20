@@ -9,23 +9,30 @@ namespace R5.FFDB.Components.Configurations
 		public long? MaxBytes { get; }
 		public RollingInterval RollingInterval { get; }
 		public bool RollOnFileSizeLimit { get; }
-		public LogEventLevel LogLevel { get; }
+		public bool UseDebugLogLevel { get; }
 		public Microsoft.Extensions.Logging.ILogger CustomLogger { get; }
+		public string MessageTemplate { get; }
 
 		public bool IsConfigured => !string.IsNullOrWhiteSpace(LogDirectory);
+
+		public LogEventLevel LogLevel => UseDebugLogLevel
+			? LogEventLevel.Debug
+			: LogEventLevel.Information;
 
 		public LoggingConfig(
 			string logDirectory,
 			long? maxBytes,
 			RollingInterval rollingInterval,
 			bool rollOnFileSizeLimit,
-			LogEventLevel logLevel)
+			bool useDebugLogLevel,
+			string messageTemplate)
 		{
 			LogDirectory = logDirectory;
 			MaxBytes = maxBytes;
 			RollingInterval = rollingInterval;
 			RollOnFileSizeLimit = rollOnFileSizeLimit;
-			LogLevel = logLevel;
+			UseDebugLogLevel = useDebugLogLevel;
+			MessageTemplate = messageTemplate;
 		}
 
 		private LoggingConfig(Microsoft.Extensions.Logging.ILogger logger)

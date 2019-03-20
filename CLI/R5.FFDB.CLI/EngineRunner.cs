@@ -56,7 +56,8 @@ namespace R5.FFDB.CLI
 
 		private Task RunInitialSetupAsync()
 		{
-			return _engine.RunInitialSetupAsync();
+			// todo: make skip configurable
+			return _engine.RunInitialSetupAsync(skipAddingStats: true);
 		}
 
 		private Task RunRostersUpdateAsync()

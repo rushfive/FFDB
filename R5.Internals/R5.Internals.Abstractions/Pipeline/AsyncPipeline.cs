@@ -5,16 +5,12 @@ using System.Threading.Tasks;
 
 namespace R5.Internals.Abstractions.Pipeline
 {
-	public class AsyncPipeline<TContext>
+	public abstract class AsyncPipeline<TContext>
 	{
-		private AsyncPipelineStage<TContext> _head { get; }
 		private string _name { get; }
 
-		public AsyncPipeline(
-			AsyncPipelineStage<TContext> head,
-			string name)
+		public AsyncPipeline(string name)
 		{
-			_head = head;
 			_name = name;
 		}
 
@@ -22,18 +18,18 @@ namespace R5.Internals.Abstractions.Pipeline
 		{
 			OnPipelineProcessStart(context, _name);
 
-			AsyncPipelineStage<TContext> currentStage = _head;
-			while (currentStage != null)
+			List<AsyncPipelineStage<TContext>> stages = GetStages();
+
+			foreach(var stage in stages)
 			{
-				if (await currentStage.ShouldSkipAsync(context))
+				if (await stage.ShouldSkipAsync(context))
 				{
-					currentStage = currentStage.Next;
 					continue;
 				}
 
-				Guid stageId = OnStageProcessStart(context, currentStage.Name);
+				Guid stageId = OnStageProcessStart(context, stage.Name);
 
-				ProcessStageResult result = await currentStage.ProcessAsync(context);
+				ProcessStageResult result = await stage.ProcessAsync(context);
 
 				bool endProcessing = false;
 				switch (result)
@@ -47,18 +43,55 @@ namespace R5.Internals.Abstractions.Pipeline
 						throw new ArgumentOutOfRangeException($"'{result.GetType().Name}' is an invalid process stage result type.");
 				}
 
-				OnStageProcessEnd(stageId, context, currentStage.Name);
+				OnStageProcessEnd(stageId, context, stage.Name);
 
 				if (endProcessing)
 				{
 					break;
 				}
-
-				currentStage = currentStage.Next;
 			}
+
+			//
+
+			//AsyncPipelineStage<TContext> currentStage = _head;
+			//while (currentStage != null)
+			//{
+			//	if (await currentStage.ShouldSkipAsync(context))
+			//	{
+			//		currentStage = currentStage.Next;
+			//		continue;
+			//	}
+
+			//	Guid stageId = OnStageProcessStart(context, currentStage.Name);
+
+			//	ProcessStageResult result = await currentStage.ProcessAsync(context);
+
+			//	bool endProcessing = false;
+			//	switch (result)
+			//	{
+			//		case Continue _:
+			//			break;
+			//		case End _:
+			//			endProcessing = true;
+			//			break;
+			//		default:
+			//			throw new ArgumentOutOfRangeException($"'{result.GetType().Name}' is an invalid process stage result type.");
+			//	}
+
+			//	OnStageProcessEnd(stageId, context, currentStage.Name);
+
+			//	if (endProcessing)
+			//	{
+			//		break;
+			//	}
+
+			//	currentStage = currentStage.Next;
+			//}
 
 			OnPipelineProcessEnd(context, _name);
 		}
+
+		protected abstract List<AsyncPipelineStage<TContext>> GetStages();
 
 		protected virtual void OnPipelineProcessStart(TContext context, string name) { }
 

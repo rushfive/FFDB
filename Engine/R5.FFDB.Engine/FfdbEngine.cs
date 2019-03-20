@@ -7,6 +7,7 @@ using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Engine.Processors;
+using R5.Internals.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -52,13 +53,16 @@ namespace R5.FFDB.Engine
 			};
 		}
 		
-		public Task RunInitialSetupAsync()
+		public Task RunInitialSetupAsync(bool skipAddingStats)
 		{
 			_logger.LogInformation("Running initial setup..");
 
-			var context = new InitialSetupPipeline.Context();
+			var context = new InitialSetupPipeline.Context
+			{
+				SkipAddingStats = skipAddingStats
+			};
 
-			var pipeline = InitialSetupPipeline.Create(_serviceProvider);
+			var pipeline = _serviceProvider.Create<InitialSetupPipeline>();
 
 			return pipeline.ProcessAsync(context);
 		}

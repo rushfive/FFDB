@@ -26,8 +26,8 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 		public AddForWeekPipeline(
 			IAppLogger logger,
-			AsyncPipelineStage<Context> head)
-			: base(logger, head, "Add Stats for Week")
+			IServiceProvider serviceProvider)
+			: base(logger, serviceProvider, "Add Stats for Week")
 		{
 			_logger = logger;
 		}
@@ -41,37 +41,20 @@ namespace R5.FFDB.Components.Pipelines.Stats
 			public List<WeekMatchup> WeekMatchups { get; set; }
 		}
 
-		public static AddForWeekPipeline Create(IServiceProvider sp)
+		protected override List<Type> Stages => new List<Type>
 		{
-			var checkAlreadyUpdated = sp.Create<Stages.CheckAlreadyUpdated>();
+			typeof(Stage.CheckAlreadyUpdated),
+			typeof(Stage.GetPlayerWeekStats),
+			typeof(FetchPlayersStage<Context>),
+			typeof(Stage.AddPlayerWeekStats),
+			typeof(Stage.GetTeamWeekStats),
+			typeof(Stage.AddTeamWeekStats),
+			typeof(Stage.GetWeekMatchups),
+			typeof(Stage.AddWeekMatchups),
+			typeof(Stage.AddUpdateLog)
+		};
 
-			var getPlayerWeekStats = sp.Create<Stages.GetPlayerWeekStats>();
-			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>();
-			var addPlayerWeekStats = sp.Create<Stages.AddPlayerWeekStats>();
-
-			var getTeamWeekStats = sp.Create<Stages.GetTeamWeekStats>();
-			var addTeamWeekStats = sp.Create<Stages.AddTeamWeekStats>();
-
-			var getWeekMatchups = sp.Create<Stages.GetWeekMatchups>();
-			var addWeekMatchups = sp.Create<Stages.AddWeekMatchups>();
-
-			var addUpdateLog = sp.Create<Stages.AddUpdateLog>();
-
-			AsyncPipelineStage<Context> chain = checkAlreadyUpdated;
-			chain
-				.SetNext(getPlayerWeekStats)
-				.SetNext(fetchSavePlayers)
-				.SetNext(addPlayerWeekStats)
-				.SetNext(getTeamWeekStats)
-				.SetNext(addTeamWeekStats)
-				.SetNext(getWeekMatchups)
-				.SetNext(addWeekMatchups)
-				.SetNext(addUpdateLog);
-
-			return sp.Create<AddForWeekPipeline>(chain);
-		}
-
-		public static class Stages
+		public static class Stage
 		{
 			public class CheckAlreadyUpdated : Stage<Context>
 			{
