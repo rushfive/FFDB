@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using R5.FFDB.Core.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Models
 {
@@ -23,6 +21,8 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Models
 			public int Id { get; set; }
 
 			// list of players from team active, must map from esb to nflid
+			// todo: better way of doing this, the DbContext providers shouldn't have
+			// this info, its only used to populate the cache
 			[JsonProperty("playerNflIds")]
 			public List<string> PlayerNflIds { get; set; }
 

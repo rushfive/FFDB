@@ -77,7 +77,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
-					List<Team> teams = TeamDataStore.GetAll();
+					List<Team> teams = Core.Teams.GetAll();
 
 					IDatabaseContext dbContext = _dbProvider.GetContext();
 					await dbContext.Team.AddAsync(teams);

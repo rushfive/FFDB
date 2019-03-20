@@ -181,7 +181,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 				return false;
 			}
 
-			int teamId = TeamDataStore.GetIdFromNflId(stats.NflId);
+			int teamId = Teams.GetIdFromNflId(stats.NflId);
 
 			sql = new WeekStatsDstSql
 			{

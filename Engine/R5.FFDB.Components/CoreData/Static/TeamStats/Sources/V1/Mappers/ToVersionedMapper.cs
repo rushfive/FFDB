@@ -51,7 +51,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 		{
 			Debug.Assert(teamType == "home" || teamType == "away");
 
-			int teamId = TeamDataStore.GetIdFromAbbreviation(
+			int teamId = Teams.GetIdFromAbbreviation(
 				(string)json.SelectToken($"{gameId}.{teamType}.abbr"),
 				includePriorLookup: true);
 

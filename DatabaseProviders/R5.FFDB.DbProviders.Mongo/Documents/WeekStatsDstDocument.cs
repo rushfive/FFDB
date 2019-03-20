@@ -27,7 +27,7 @@ namespace R5.FFDB.DbProviders.Mongo.Documents
 
 		public static WeekStatsDstDocument FromCoreEntity(PlayerWeekStats stats)
 		{
-			int teamId = TeamDataStore.GetIdFromNflId(stats.NflId);
+			int teamId = Teams.GetIdFromNflId(stats.NflId);
 
 			var dstStats = new Dictionary<MongoWeekStatType, double>();
 			foreach (KeyValuePair<WeekStatType, double> statKv in stats.Stats)

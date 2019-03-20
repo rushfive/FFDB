@@ -2,14 +2,9 @@
 using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Models;
 using R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1.Mappers;
 using R5.FFDB.Components.Http;
-using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1
 {

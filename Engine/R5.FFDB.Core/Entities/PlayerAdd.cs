@@ -1,5 +1,4 @@
-﻿using R5.FFDB.Core.Models;
-using System;
+﻿using System;
 
 namespace R5.FFDB.Core.Entities
 {

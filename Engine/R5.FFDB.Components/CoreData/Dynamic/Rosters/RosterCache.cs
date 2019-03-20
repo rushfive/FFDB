@@ -78,7 +78,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters
 
 			_logger.LogInformation("Resolving rosters for all teams.");
 
-			foreach (Team t in TeamDataStore.GetAll())
+			foreach (Team t in Teams.GetAll())
 			{
 				bool shouldThrottle = false;
 				var versionedFilePath = _source.GetVersionedFilePath(t);

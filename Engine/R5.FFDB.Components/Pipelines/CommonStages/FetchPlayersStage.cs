@@ -61,7 +61,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 
 			foreach(string nflId in context.FetchNflIds)
 			{
-				Debug.Assert(!TeamDataStore.IsTeam(nflId),
+				Debug.Assert(!Core.Teams.IsTeam(nflId),
 					$"NFL id '{nflId}' represents a team so shouldn't be fetched as a player.");
 
 				SourceResult<PlayerAdd> result = await _playerAddSource.GetAsync(nflId);

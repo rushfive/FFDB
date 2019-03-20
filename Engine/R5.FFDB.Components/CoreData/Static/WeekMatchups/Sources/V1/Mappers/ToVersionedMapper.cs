@@ -30,8 +30,8 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1.Mappers
 
 			foreach (XElement game in gamesNode.Elements("g"))
 			{
-				int homeTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("h").Value, includePriorLookup: true);
-				int awayTeamId = TeamDataStore.GetIdFromAbbreviation(game.Attribute("v").Value, includePriorLookup: true);
+				int homeTeamId = Teams.GetIdFromAbbreviation(game.Attribute("h").Value, includePriorLookup: true);
+				int awayTeamId = Teams.GetIdFromAbbreviation(game.Attribute("v").Value, includePriorLookup: true);
 				string nflGameId = game.Attribute("eid").Value;
 				string gsisGameId = game.Attribute("gsis").Value;
 

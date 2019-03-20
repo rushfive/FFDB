@@ -99,7 +99,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			foreach (var s in stats)
 			{
-				if (TeamDataStore.IsTeam(s.NflId))
+				if (Teams.IsTeam(s.NflId))
 				{
 					dstStats.Add(s);
 				}

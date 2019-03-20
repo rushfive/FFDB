@@ -109,7 +109,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 					SourceResult<List<PlayerWeekStats>> result = await _source.GetAsync(context.Week);
 
 					List<string> newIds = (result.Value.Select(s => s.NflId))
-						.Where(id => !existingPlayers.Contains(id) && !TeamDataStore.IsTeam(id))
+						.Where(id => !existingPlayers.Contains(id) && !Core.Teams.IsTeam(id))
 						.ToList();
 
 					context.PlayerWeekStats = result.Value;

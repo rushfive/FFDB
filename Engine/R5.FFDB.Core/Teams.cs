@@ -6,14 +6,14 @@ using System.Text;
 
 namespace R5.FFDB.Core
 {
-	public static class TeamDataStore
+	public static class Teams
 	{
 		private static Dictionary<string, int> _nflIdMap { get; }
 		private static Dictionary<string, string> _abbreviationShortNameMap { get; }
 		private static Dictionary<string, int> _shortNameIdMap { get; }
 		private static Dictionary<string, int> _abbreviationIdMap { get; }
 
-		static TeamDataStore()
+		static Teams()
 		{
 			_nflIdMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 			_abbreviationShortNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
