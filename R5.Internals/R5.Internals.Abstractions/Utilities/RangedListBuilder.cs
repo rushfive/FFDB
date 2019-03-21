@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace R5.FFDB.CLI
+namespace R5.Internals.Abstractions.Utilities
 {
 	public static class RangedListBuilder
 	{

@@ -1,6 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
+using R5.FFDB.CLI.Commands;
 using R5.FFDB.CLI.Configuration;
+using R5.FFDB.CLI.Engine;
 using R5.FFDB.Components.Configurations;
 //using R5.FFDB.Components.CoreData.WeekStats.Models;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
@@ -14,7 +16,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using CM = R5.FFDB.CLI.ConsoleManager;
+using CM = R5.Internals.Abstractions.SystemConsole.ConsoleManager;
 
 namespace R5.FFDB.CLI
 {
@@ -24,15 +26,17 @@ namespace R5.FFDB.CLI
 		{
 			try
 			{
-				RunInfoBase runInfo = GetRunInfoFromArgs(args);
+				if (TryGetRunInfo(args, out RunInfoBase runInfo))
+				{
+					FfdbConfig config = FileConfigResolver.FromFile(runInfo.ConfigFilePath);
 
-				FfdbConfig config = FileConfigResolver.FromFile(runInfo.ConfigFilePath);
+					FfdbEngine engine = EngineResolver.Resolve(config, runInfo);
+					var runner = new EngineRunner(engine);
 
-				FfdbEngine engine = GetConfiguredEngine(config, runInfo);
-				var runner = new EngineRunner(engine);
+					await runner.RunAsync(runInfo);
+				}
 
-				await runner.RunAsync(runInfo);
-
+				
 
 				return;
 			}
@@ -45,77 +49,26 @@ namespace R5.FFDB.CLI
 			Console.ReadKey();
 		}
 
-		private static RunInfoBase GetRunInfoFromArgs(string[] args)
+		private static bool TryGetRunInfo(string[] args, out RunInfoBase runInfo)
 		{
-			RunInfoBuilder.RunInfoBuilder builder = ConfigureBuilder.Get();
+			runInfo = null;
 
-			var runInfoObject = builder.Build(args);
-			if (runInfoObject == null)
+			var runInfoBuilder = ConfigureRunInfoBuilder.Create();
+
+			var result = runInfoBuilder.Build(args);
+			if (result == null)
 			{
-				throw new InvalidOperationException("There was an error parsing program args.");
+				// most likely version or help command
+				return false;
 			}
 
-			var runInfo = runInfoObject as RunInfoBase;
+			runInfo = result as RunInfoBase;
 			if (runInfo == null)
 			{
 				throw new InvalidOperationException("There was an error parsing program args.");
 			}
 
-			return runInfo;
-		}
-
-		private static FfdbEngine GetConfiguredEngine(FfdbConfig config, RunInfoBase runInfo)
-		{
-			var setup = new EngineSetup();
-
-			setup.SetRootDataDirectoryPath(config.RootDataPath);
-
-			if (config.WebRequest.RandomizedThrottle != null)
-			{
-				setup.WebRequest.SetRandomizedThrottle(
-					config.WebRequest.RandomizedThrottle.Min,
-					config.WebRequest.RandomizedThrottle.Max);
-			}
-			else
-			{
-				setup.WebRequest.SetThrottle(config.WebRequest.ThrottleMilliseconds);
-			}
-
-			var rollingInterval = Enum.Parse<RollingInterval>(config.Logging.RollingInterval);
-
-			setup.Logging
-				.SetLogDirectory(config.Logging.Directory)
-				.SetRollingInterval(rollingInterval);
-
-			if (config.Logging.UseDebugLogLevel)
-			{
-				setup.Logging.UseDebugLogLevel();
-			}
-
-			if (config.Logging.MaxBytes.HasValue)
-			{
-				setup.Logging.SetMaxBytes(config.Logging.MaxBytes.Value);
-			}
-			if (config.Logging.RollOnFileSizeLimit)
-			{
-				setup.Logging.RollOnFileSizeLimit();
-			}
-				
-			if (config.PostgreSql != null)
-			{
-				setup.UsePostgreSql(config.PostgreSql);
-			}
-			else if (config.Mongo != null)
-			{
-				setup.UseMongo(config.Mongo);
-			}
-
-			if (runInfo.SkipRosterFetch)
-			{
-				setup.SkipRosterFetch();
-			}
-
-			return setup.Create();
+			return true;
 		}
 	}
 }

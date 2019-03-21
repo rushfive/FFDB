@@ -32,6 +32,7 @@ namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1
 
 		protected override bool SupportsSourceFilePersistence => true;
 		protected override bool SupportsVersionedFilePersistence => true;
+		protected override bool SupportsDataRepoFetch => true;
 
 		protected override string GetVersionedFilePath(WeekInfo week)
 		{
@@ -46,6 +47,11 @@ namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1
 		protected override string GetSourceUri(WeekInfo week)
 		{
 			return Endpoints.Api.WeekStats(week);
+		}
+
+		protected override string GetDataRepoUri(WeekInfo week)
+		{
+			return $"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/versioned/player_week_stats/{week}.json";
 		}
 	}
 }

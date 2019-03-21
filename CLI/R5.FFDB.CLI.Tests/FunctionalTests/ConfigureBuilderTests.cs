@@ -15,7 +15,7 @@ namespace R5.FFDB.CLI.Tests
 		{
 			Assert.Throws<ProcessException>(() =>
 			{
-				var builder = ConfigureBuilder.Get();
+				var builder = ConfigureRunInfoBuilder.Create();
 
 				builder.Build(new string[] { "add-stats" });
 			});
@@ -34,7 +34,7 @@ namespace R5.FFDB.CLI.Tests
 				[InlineData("text-text")]
 				public void Invalid_Returns_FalseAndDefault(string value)
 				{
-					var builder = ConfigureBuilder.Get();
+					var builder = ConfigureRunInfoBuilder.Create();
 
 					bool valid = builder.Parser.TryParseAs(value, out WeekInfo? parsed);
 
@@ -48,7 +48,7 @@ namespace R5.FFDB.CLI.Tests
 				public void Valid_Returns_TrueWithCorrectParsedValue(string value,
 					int expectedSeason, int expectedWeek)
 				{
-					var builder = ConfigureBuilder.Get();
+					var builder = ConfigureRunInfoBuilder.Create();
 
 					bool valid = builder.Parser.TryParseAs(value, out WeekInfo? parsed);
 

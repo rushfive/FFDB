@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using CM = R5.FFDB.CLI.ConsoleManager;
 
 namespace R5.FFDB.CLI.Configuration
 {

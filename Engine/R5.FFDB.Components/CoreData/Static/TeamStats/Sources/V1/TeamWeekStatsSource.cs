@@ -31,6 +31,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 
 		protected override bool SupportsSourceFilePersistence => true;
 		protected override bool SupportsVersionedFilePersistence => true;
+		protected override bool SupportsDataRepoFetch => true;
 
 		protected override string GetVersionedFilePath((string, WeekInfo) gameWeek)
 		{
@@ -45,6 +46,11 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1
 		protected override string GetSourceUri((string, WeekInfo) gameWeek)
 		{
 			return Endpoints.Api.GameCenterStats(gameWeek.Item1);
+		}
+
+		protected override string GetDataRepoUri((string, WeekInfo) gameWeek)
+		{
+			return $"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/versioned/team_stats/{gameWeek.Item1}.json";
 		}
 	}
 }

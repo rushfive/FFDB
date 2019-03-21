@@ -35,20 +35,26 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 
 		protected override bool SupportsSourceFilePersistence => false;
 		protected override bool SupportsVersionedFilePersistence => true;
+		protected override bool SupportsDataRepoFetch => true;
 
 		protected override string GetVersionedFilePath(string nflId)
 		{
 			return DataPath.Versioned.V1.PlayerAdd(nflId);
 		}
 
-		protected override string GetSourceFilePath(string key)
+		protected override string GetSourceFilePath(string nflId)
 		{
-			return DataPath.SourceFiles.V1.PlayerAdd(key);
+			return DataPath.SourceFiles.V1.PlayerAdd(nflId);
 		}
 
 		protected override string GetSourceUri(string nflId)
 		{
 			return Endpoints.Page.PlayerProfile(nflId);
+		}
+
+		protected override string GetDataRepoUri(string nflId)
+		{
+			return $"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/versioned/player_add/{nflId}.json";
 		}
 	}
 }

@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Engine\R5.FFDB.Engine\R5.FFDB.Engine.csproj" />
+	  <ProjectReference Include="..\..\R5.Internals\R5.Internals.Abstractions\R5.Internals.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

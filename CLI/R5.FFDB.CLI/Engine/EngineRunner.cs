@@ -1,15 +1,15 @@
 ﻿using R5.FFDB.CLI.Commands;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Engine;
+using R5.Internals.Abstractions.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CM = R5.FFDB.CLI.ConsoleManager;
 using static System.Console;
 
-namespace R5.FFDB.CLI
+namespace R5.FFDB.CLI.Engine
 {
 	public class EngineRunner
 	{

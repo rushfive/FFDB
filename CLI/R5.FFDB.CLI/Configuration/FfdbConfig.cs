@@ -60,13 +60,9 @@ namespace R5.FFDB.CLI.Configuration
 
 		private void ValidateLogging()
 		{
-			if (Logging == null)
+			if (string.IsNullOrWhiteSpace(Logging?.Directory))
 			{
-				throw new ArgumentException("Logging configuration must be provided.");
-			}
-			if (string.IsNullOrWhiteSpace(Logging.Directory))
-			{
-				throw new ArgumentException("Log directory must be provided.");
+				return;
 			}
 			if (!Directory.Exists(Logging.Directory))
 			{

@@ -4,14 +4,14 @@ using System.Text;
 using R5.FFDB.CLI.Commands;
 using R5.FFDB.Core.Models;
 using R5.RunInfoBuilder;
-using CM = R5.FFDB.CLI.ConsoleManager;
+using CM = R5.Internals.Abstractions.SystemConsole.ConsoleManager;
 
 namespace R5.FFDB.CLI
 {
-	internal static class ConfigureBuilder
+	internal static class ConfigureRunInfoBuilder
 	{
 		// todo: help and version triggers
-		internal static RunInfoBuilder.RunInfoBuilder Get()
+		internal static RunInfoBuilder.RunInfoBuilder Create()
 		{
 			var builder = new RunInfoBuilder.RunInfoBuilder();
 
@@ -19,7 +19,16 @@ namespace R5.FFDB.CLI
 				.SetProgramName("ffdb")
 				.InvokeOnBuildFail(suppressException: false);
 
-			builder.Version.Set("v1.0.0-alpha.1");
+			builder.Version.Set(@"
+ _____ _____ ____  _____ 
+|   __|   __|    \| __  |
+|   __|   __|  |  | __ -|
+|__|  |__|  |____/|_____|
+           
+           v1.0.0-alpha.1
+
+For more info and docs:
+https://github.com/rushfive/FFDB");
 
 			builder.Commands
 				//.Add(InitialSetup.Command)

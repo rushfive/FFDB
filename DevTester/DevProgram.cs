@@ -116,7 +116,15 @@ namespace DevTester
 
 			FfdbEngine engine = GetConfiguredPostgresEngine();
 
-			await engine.Team.UpdateRosterMappingsAsync();
+			//await engine.RunInitialSetupAsync(skipAddingStats: true);
+			//bool isInit = await engine.HasBeenInitializedAsync();
+
+			await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 2));
+
+			//await engine.RunInitialSetupAsync(skipAddingStats: true);
+
+			//await engine.Team.UpdateRosterMappingsAsync();
+			//await engine.Stats.AddMissingAsync();
 
 			//await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 17));
 			//List<WeekInfo> updatedWeeks = await engine.GetAllUpdatedWeeksAsync();
@@ -133,7 +141,7 @@ namespace DevTester
 
 			setup.UsePostgreSql(new PostgresConfig
 			{
-				DatabaseName = "ffdb_test_3",
+				DatabaseName = "ffdb_test_4",
 				Host = "localhost",
 				Username = "ffdb",
 				Password = "welc0me!"
@@ -158,16 +166,17 @@ namespace DevTester
 		private static FfdbEngine GetConfiguredEngine(EngineSetup setup)
 		{
 			setup
-				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_3\");
+				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_4\");
+				//.SetRootDataDirectoryPath(@"D:\Repos\FFDB.Data\");
 
 			setup.WebRequest
 				.SetThrottle(3000)
 				.AddDefaultBrowserHeaders();
 
 			setup.Logging
-				.SetLogDirectory(@"D:\Repos\ffdb_data_3\dev_test_logs\")
-				.SetRollingInterval(RollingInterval.Day);
-				//.UseDebugLogLevel();
+				.SetLogDirectory(@"D:\Repos\ffdb_logs\")
+				.SetRollingInterval(RollingInterval.Day)
+				.UseDebugLogLevel();
 
 			setup
 				.SkipRosterFetch()

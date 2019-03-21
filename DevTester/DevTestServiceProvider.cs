@@ -48,7 +48,7 @@ namespace DevTester
 			var baseServiceCollection = new EngineBaseServiceCollection();
 
 			ServiceCollection services = baseServiceCollection
-				.SetRootDataPath(@"D:\Repos\ffdb_data_3\")
+				.SetRootDataPath(@"D:\Repos\ffdb_data_4\")
 				.SetWebRequestConfig(webRequestConfig)
 				.SetLoggingConfig(loggingConfig)
 				.SetDatabaseProviderFactory(loggerFactory => new PostgresDbProvider(postgresConfig, loggerFactory))
