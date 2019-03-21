@@ -82,12 +82,15 @@ namespace R5.FFDB.CLI
 			}
 
 			var rollingInterval = Enum.Parse<RollingInterval>(config.Logging.RollingInterval);
-			var logLevel = Enum.Parse<LogEventLevel>(config.Logging.LogLevel);
 
 			setup.Logging
 				.SetLogDirectory(config.Logging.Directory)
-				.SetRollingInterval(rollingInterval)
-				.SetLogLevel(logLevel);
+				.SetRollingInterval(rollingInterval);
+
+			if (config.Logging.UseDebugLogLevel)
+			{
+				setup.Logging.UseDebugLogLevel();
+			}
 
 			if (config.Logging.MaxBytes.HasValue)
 			{

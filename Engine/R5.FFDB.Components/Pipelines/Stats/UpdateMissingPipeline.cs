@@ -4,9 +4,9 @@ using R5.FFDB.Components.CoreData.Static.WeekMatchups;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Models;
+using R5.Internals.Abstractions.Pipeline;
 using R5.Internals.Caching.Caches;
 using R5.Internals.Extensions.DependencyInjection;
-using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +17,12 @@ namespace R5.FFDB.Components.Pipelines.Stats
 {
 	public class UpdateMissingPipeline : Pipeline<UpdateMissingPipeline.Context>
 	{
-		private ILogger<UpdateMissingPipeline> _logger { get; }
+		private IAppLogger _logger { get; }
 
 		public UpdateMissingPipeline(
-			ILogger<UpdateMissingPipeline> logger,
-			AsyncPipelineStage<Context> head)
-			: base(logger, head, "Add Stats for Missing Weeks")
+			IAppLogger logger,
+			IServiceProvider serviceProvider)
+			: base(logger, serviceProvider, "Add Stats for Missing Weeks")
 		{
 			_logger = logger;
 		}
@@ -32,18 +32,13 @@ namespace R5.FFDB.Components.Pipelines.Stats
 			public List<WeekInfo> MissingWeeks { get; set; }
 		}
 
-		public static UpdateMissingPipeline Create(IServiceProvider sp)
+		protected override List<Type> Stages => new List<Type>
 		{
-			var getMissingWeeks = sp.Create<Stages.GetMissingWeeks>();
-			var addMissingWeeks = sp.Create<Stages.AddMissingWeeks>();
+			typeof(Stage.GetMissingWeeks),
+			typeof(Stage.AddMissingWeeks)
+		};
 
-			AsyncPipelineStage<Context> chain = getMissingWeeks;
-			chain.SetNext(addMissingWeeks);
-
-			return sp.Create<UpdateMissingPipeline>(chain);
-		}
-
-		public static class Stages
+		public static class Stage
 		{
 			public class GetMissingWeeks : Stage<Context>
 			{
@@ -51,7 +46,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				private AvailableWeeksValue _availableWeeks { get; }
 
 				public GetMissingWeeks(
-					ILogger<GetMissingWeeks> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					AvailableWeeksValue availableWeeks)
 					: base(logger, "Get Missing Weeks")
@@ -89,7 +84,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 				private IAsyncLazyCache _cache { get; }
 
 				public AddMissingWeeks(
-					ILogger<AddMissingWeeks> logger,
+					IAppLogger logger,
 					IServiceProvider serviceProvider,
 					IAsyncLazyCache cache)
 					: base(logger, "Add Missing Weeks")
@@ -104,7 +99,7 @@ namespace R5.FFDB.Components.Pipelines.Stats
 
 					foreach (var week in context.MissingWeeks)
 					{
-						var pipeline = AddForWeekPipeline.Create(_serviceProvider, nestedDepth: 1);
+						var pipeline = _serviceProvider.Create<AddForWeekPipeline>();
 
 						await pipeline.ProcessAsync(new AddForWeekPipeline.Context
 						{

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
@@ -16,19 +17,18 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 	{
 		public PlayerDbContext(
 			Func<IMongoDatabase> getDatabase,
-			ILoggerFactory loggerFactory)
-			: base(getDatabase, loggerFactory)
+			IAppLogger logger)
+			: base(getDatabase, logger)
 		{
 		}
 
 		public async Task<List<Player>> GetAllAsync()
 		{
-			var logger = GetLogger<PlayerDbContext>();
 			var collectionName = CollectionResolver.GetName<PlayerDocument>();
 
 			List<PlayerDocument> documents = await GetMongoDbContext().FindAsync<PlayerDocument>();
 
-			logger.LogTrace($"Retrieved all players from '{collectionName}' collection.");
+			Logger.LogDebug($"Retrieved all players from '{collectionName}' collection.");
 
 			return documents.Select(PlayerDocument.ToCoreEntity).ToList();
 		}
@@ -39,15 +39,14 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			{
 				throw new ArgumentNullException(nameof(player), "Player add model must be provided.");
 			}
-
-			var logger = GetLogger<PlayerDbContext>();
+			
 			var collectionName = CollectionResolver.GetName<PlayerDocument>();
 
 			PlayerDocument document = PlayerDocument.FromCoreAddEntity(player);
 
 			await GetMongoDbContext().InsertOneAsync(document);
 
-			logger.LogTrace($"Added player '{player.NflId}' as '{document.Id}' to '{collectionName}' collection.");
+			Logger.LogDebug($"Added player '{player.NflId}' as '{document.Id}' to '{collectionName}' collection.");
 		}
 
 		public async Task UpdateAsync(Guid id, PlayerUpdate update)
@@ -60,11 +59,10 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			{
 				throw new ArgumentNullException(nameof(update), "Player update model must be provided.");
 			}
-
-			var logger = GetLogger<PlayerDbContext>();
+			
 			var collectionName = CollectionResolver.GetName<PlayerDocument>();
 
-			logger.LogTrace($"Updating player '{id}'..");
+			Logger.LogDebug($"Updating player '{id}'..");
 
 			var updateDefinition = Builders<PlayerDocument>.Update
 				.Set(p => p.Number, update.Number)

@@ -38,12 +38,14 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 			var homeStats = GetStats(json, gameWeek.Item1, "home", gsisNflIdMap);
 			var awayStats = GetStats(json, gameWeek.Item1, "away", gsisNflIdMap);
 
-			return new TeamWeekStatsVersioned
+			var versioned = new TeamWeekStatsVersioned
 			{
 				Week = gameWeek.Item2,
 				HomeTeamStats = homeStats,
 				AwayTeamStats = awayStats
 			};
+
+			return versioned;
 		}
 
 		private static TeamWeekStatsVersioned.Stats GetStats(JObject json, 
@@ -51,7 +53,7 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1.Mappers
 		{
 			Debug.Assert(teamType == "home" || teamType == "away");
 
-			int teamId = TeamDataStore.GetIdFromAbbreviation(
+			int teamId = Teams.GetIdFromAbbreviation(
 				(string)json.SelectToken($"{gameId}.{teamType}.abbr"),
 				includePriorLookup: true);
 

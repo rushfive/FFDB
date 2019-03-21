@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
@@ -16,14 +17,13 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 	{
 		public WeekMatchupsDbContext(
 			Func<IMongoDatabase> getDatabase,
-			ILoggerFactory loggerFactory)
-			: base(getDatabase, loggerFactory)
+			IAppLogger logger)
+			: base(getDatabase, logger)
 		{
 		}
 
 		public async Task<List<WeekMatchup>> GetAsync(WeekInfo week)
 		{
-			var logger = GetLogger<WeekMatchupsDbContext>();
 			var collectionName = CollectionResolver.GetName<WeekMatchupDocument>();
 
 			var builder = Builders<WeekMatchupDocument>.Filter;
@@ -32,7 +32,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			List<WeekMatchupDocument> documents = await GetMongoDbContext().FindAsync(filter);
 
-			logger.LogTrace($"Retrieved week matchups for week '{week}' from '{collectionName}' collection.");
+			Logger.LogDebug($"Retrieved week matchups for week '{week}' from '{collectionName}' collection.");
 
 			return documents.Select(WeekMatchupDocument.ToCoreEntity).ToList();
 		}
@@ -43,17 +43,16 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			{
 				throw new ArgumentNullException(nameof(matchups), "Week matchups must be provided.");
 			}
-
-			var logger = GetLogger<WeekMatchupsDbContext>();
+			
 			var collectionName = CollectionResolver.GetName<WeekMatchupDocument>();
 
-			logger.LogTrace($"Adding {matchups.Count} week matchups to '{collectionName}' collection..");
+			Logger.LogDebug($"Adding {matchups.Count} week matchups to '{collectionName}' collection..");
 
 			List<WeekMatchupDocument> documents = matchups.Select(WeekMatchupDocument.FromCoreEntity).ToList();
 
 			await GetMongoDbContext().InsertManyAsync(documents);
 
-			logger.LogTrace($"Added week matchups to '{collectionName}' collection.");
+			Logger.LogDebug($"Added week matchups to '{collectionName}' collection.");
 		}
 	}
 }

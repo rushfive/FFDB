@@ -6,8 +6,8 @@ using R5.FFDB.Components.Pipelines.CommonStages;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
+using R5.Internals.Abstractions.Pipeline;
 using R5.Internals.Extensions.DependencyInjection;
-using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +18,12 @@ namespace R5.FFDB.Components.Pipelines.Players
 {
 	public class UpdateCurrentlyRosteredPipeline : Pipeline<UpdateCurrentlyRosteredPipeline.Context>
 	{
-		private ILogger<UpdateCurrentlyRosteredPipeline> _logger { get; }
+		private IAppLogger _logger { get; }
 
 		public UpdateCurrentlyRosteredPipeline(
-			ILogger<UpdateCurrentlyRosteredPipeline> logger,
-			AsyncPipelineStage<Context> head)
-			: base(logger, head, "Update Currently Rostered Players")
+			IAppLogger logger,
+			IServiceProvider serviceProvider)
+			: base(logger, serviceProvider, "Update Currently Rostered Players")
 		{
 			_logger = logger;
 		}
@@ -35,21 +35,14 @@ namespace R5.FFDB.Components.Pipelines.Players
 			public List<string> UpdateNflIds { get; set; }
 		}
 
-		public static UpdateCurrentlyRosteredPipeline Create(IServiceProvider sp)
+		protected override List<Type> Stages => new List<Type>
 		{
-			var groupByNewExisting = sp.Create<Stages.GroupByNewAndExisting>();
-			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>();
-			var updatePlayers = sp.Create<Stages.UpdatePlayersStage>();
+			typeof(Stage.GroupByNewAndExisting),
+			typeof(FetchPlayersStage<Context>),
+			typeof(Stage.UpdatePlayersStage)
+		};
 
-			AsyncPipelineStage<Context> chain = groupByNewExisting;
-			chain
-				.SetNext(fetchSavePlayers)
-				.SetNext(updatePlayers);
-
-			return sp.Create<UpdateCurrentlyRosteredPipeline>(chain);
-		}
-
-		public static class Stages
+		public static class Stage
 		{
 			public class GroupByNewAndExisting : Stage<Context>
 			{
@@ -57,7 +50,7 @@ namespace R5.FFDB.Components.Pipelines.Players
 				private IRosterCache _rosterCache { get; }
 
 				public GroupByNewAndExisting(
-					ILogger<GroupByNewAndExisting> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					IRosterCache rosterCache)
 					: base(logger, "Group by New and Existing")
@@ -105,7 +98,7 @@ namespace R5.FFDB.Components.Pipelines.Players
 				private IPlayerIdMappings _playerIdMappings { get; }
 
 				public UpdatePlayersStage(
-					ILogger<UpdatePlayersStage> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					IRosterCache rosterCache,
 					IPlayerIdMappings playerIdMappings)

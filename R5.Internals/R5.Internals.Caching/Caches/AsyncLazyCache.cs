@@ -139,9 +139,7 @@ namespace R5.Internals.Caching.Caches
 						_locks[key] = exclusiveLock;
 					}
 				}
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine($"ACQUIRED LOCK: {key}");
-				Console.ResetColor();
+
 				return exclusiveLock.Lock;
 			}
 
@@ -191,9 +189,7 @@ namespace R5.Internals.Caching.Caches
 							_locks.Remove(_key);
 						}
 					}
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.WriteLine($"RELEASED LOCK: {_key}");
-					Console.ResetColor();
+
 					exclusiveLock.Lock.Release();
 				}
 			}
@@ -209,7 +205,10 @@ namespace R5.Internals.Caching.Caches
 				throw new ArgumentNullException(nameof(services), "Service collection must be provided.");
 			}
 
-			services.TryAdd(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
+			//services.TryAdd(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
+			services.TryAdd(
+				ServiceDescriptor.Singleton<IMemoryCache>(
+					sp => new MemoryCache(new MemoryCacheOptions())));
 			services.TryAdd(ServiceDescriptor.Singleton<IAsyncLazyCache, AsyncLazyCache>());
 
 			return services;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
@@ -16,14 +17,13 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 	{
 		public TeamStatsDbContext(
 			Func<IMongoDatabase> getDatabase,
-			ILoggerFactory loggerFactory)
-			: base(getDatabase, loggerFactory)
+			IAppLogger logger)
+			: base(getDatabase, logger)
 		{
 		}
 
 		public async Task<List<TeamWeekStats>> GetAsync(WeekInfo week)
 		{
-			var logger = GetLogger<TeamStatsDbContext>();
 			var collectionName = CollectionResolver.GetName<WeekStatsTeamDocument>();
 
 			var builder = Builders<WeekStatsTeamDocument>.Filter;
@@ -32,7 +32,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			List<WeekStatsTeamDocument> documents = await GetMongoDbContext().FindAsync(filter);
 
-			logger.LogTrace($"Retrieved team week stats for week '{week}' from '{collectionName}' collection.");
+			Logger.LogDebug($"Retrieved team week stats for week '{week}' from '{collectionName}' collection.");
 
 			return documents.Select(WeekStatsTeamDocument.ToCoreEntity).ToList();
 		}
@@ -43,17 +43,16 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			{
 				throw new ArgumentNullException(nameof(stats), "Stats must be provided.");
 			}
-
-			var logger = GetLogger<TeamStatsDbContext>();
+			
 			var collectionName = CollectionResolver.GetName<WeekStatsTeamDocument>();
 
-			logger.LogTrace($"Adding {stats.Count} team week stats to '{collectionName}' collection..");
+			Logger.LogDebug($"Adding {stats.Count} team week stats to '{collectionName}' collection..");
 
 			List<WeekStatsTeamDocument> documents = stats.Select(WeekStatsTeamDocument.FromCoreEntity).ToList();
 
 			await GetMongoDbContext().InsertManyAsync(documents);
 
-			logger.LogTrace($"Added team week stats to '{collectionName}' collection.");
+			Logger.LogDebug($"Added team week stats to '{collectionName}' collection.");
 		}
 	}
 }

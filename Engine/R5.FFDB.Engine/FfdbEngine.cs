@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using R5.FFDB.Components;
 using R5.FFDB.Components.Extensions.JsonConverters;
 using R5.FFDB.Components.Pipelines.Setup;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Models;
 using R5.FFDB.Engine.Processors;
+using R5.Internals.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,19 +19,17 @@ namespace R5.FFDB.Engine
 		public StatsProcessor Stats { get;  }
 		public TeamProcessor Team { get; }
 		public PlayerProcessor Player { get; }
-
-		private ILogger<FfdbEngine> _logger { get; }
+		
 		private IServiceProvider _serviceProvider { get; }
 		private IDatabaseProvider _databaseProvider { get; }
 		private LatestWeekValue _latestWeekValue { get; }
 
 		public FfdbEngine(
-			ILogger<FfdbEngine> logger,
+			IAppLogger logger,
 			IServiceProvider serviceProvider,
 			IDatabaseProvider databaseProvider,
 			LatestWeekValue latestWeekValue)
 		{
-			_logger = logger;
 			_serviceProvider = serviceProvider;
 			_databaseProvider = databaseProvider;
 			_latestWeekValue = latestWeekValue;
@@ -51,13 +51,14 @@ namespace R5.FFDB.Engine
 			};
 		}
 		
-		public Task RunInitialSetupAsync()
+		public Task RunInitialSetupAsync(bool skipAddingStats)
 		{
-			_logger.LogInformation("Running initial setup..");
+			var context = new InitialSetupPipeline.Context
+			{
+				SkipAddingStats = skipAddingStats
+			};
 
-			var context = new InitialSetupPipeline.Context();
-
-			var pipeline = InitialSetupPipeline.Create(_serviceProvider);
+			var pipeline = _serviceProvider.Create<InitialSetupPipeline>();
 
 			return pipeline.ProcessAsync(context);
 		}
@@ -76,7 +77,7 @@ namespace R5.FFDB.Engine
 		public Task<List<WeekInfo>> GetAllUpdatedWeeksAsync()
 		{
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
-			return null;// dbContext.Log.GetUpdatedWeeksAsync();
+			return dbContext.UpdateLog.GetAsync();
 		}
 	}
 }

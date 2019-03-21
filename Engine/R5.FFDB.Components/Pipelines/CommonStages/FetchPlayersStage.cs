@@ -6,7 +6,7 @@ using R5.FFDB.Components.Http;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
-using R5.Lib.Pipeline;
+using R5.Internals.Abstractions.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,18 +29,19 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 	public class FetchPlayersStage<TContext> : Stage<TContext>
 		where TContext : IFetchPlayersContext
 	{
+		private IAppLogger _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private WebRequestThrottle _throttle { get; }
 		private IPlayerAddSource _playerAddSource { get; }
 
 		public FetchPlayersStage(
-			ILogger<FetchPlayersStage<TContext>> logger,
+			IAppLogger logger,
 			IDatabaseProvider dbProvider,
 			WebRequestThrottle throttle,
-			IPlayerAddSource playerAddSource,
-			int nestedDepth = 0)
-			: base(logger, "Fetch Players", nestedDepth)
+			IPlayerAddSource playerAddSource)
+			: base(logger, "Fetch Players")
 		{
+			_logger = logger;
 			_dbProvider = dbProvider;
 			_throttle = throttle;
 			_playerAddSource = playerAddSource;
@@ -62,10 +63,19 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 
 			foreach(string nflId in context.FetchNflIds)
 			{
-				Debug.Assert(!TeamDataStore.IsTeam(nflId),
+				Debug.Assert(!Core.Teams.IsTeam(nflId),
 					$"NFL id '{nflId}' represents a team so shouldn't be fetched as a player.");
 
-				SourceResult<PlayerAdd> result = await _playerAddSource.GetAsync(nflId);
+				SourceResult<PlayerAdd> result = null;
+				try
+				{
+					result = await _playerAddSource.GetAsync(nflId);
+				}
+				catch (SourceDataScrapeException ex)
+				{
+					_logger.LogError(ex, $"Failed to fetch player info for '{nflId}', will skip adding them.");
+					continue;
+				}
 
 				await dbContext.Player.AddAsync(result.Value);
 

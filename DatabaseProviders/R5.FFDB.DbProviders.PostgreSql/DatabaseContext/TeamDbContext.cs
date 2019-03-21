@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
+using R5.FFDB.Components;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
@@ -15,7 +16,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 {
 	public class TeamDbContext : DbContextBase, ITeamDbContext
 	{
-		public TeamDbContext(DbConnection dbConnection, ILogger<TeamDbContext> logger)
+		public TeamDbContext(DbConnection dbConnection, IAppLogger logger)
 			: base(dbConnection, logger)
 		{
 		}

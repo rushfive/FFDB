@@ -8,8 +8,6 @@ namespace R5.FFDB.Core.Database
 {
 	public interface IDatabaseContext
 	{
-		// running AGAIN should be a safe operation. When adding tables/collections,
-		// make sure to add only those missing
 		Task InitializeAsync();
 		Task<bool> HasBeenInitializedAsync();
 

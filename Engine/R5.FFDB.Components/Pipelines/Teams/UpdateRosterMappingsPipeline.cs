@@ -4,8 +4,8 @@ using R5.FFDB.Components.Extensions;
 using R5.FFDB.Components.Pipelines.CommonStages;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
+using R5.Internals.Abstractions.Pipeline;
 using R5.Internals.Extensions.DependencyInjection;
-using R5.Lib.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,36 +16,29 @@ namespace R5.FFDB.Components.Pipelines.Teams
 {
 	public class UpdateRosterMappingsPipeline : Pipeline<UpdateRosterMappingsPipeline.Context>
 	{
-		private ILogger<UpdateRosterMappingsPipeline> _logger { get; }
+		private IAppLogger _logger { get; }
 
 		public UpdateRosterMappingsPipeline(
-			ILogger<UpdateRosterMappingsPipeline> logger,
-			AsyncPipelineStage<Context> head)
-			: base(logger, head, "Update Rosters")
+			IAppLogger logger,
+			IServiceProvider serviceProvider)
+			: base(logger, serviceProvider, "Update Rosters")
 		{
 			_logger = logger;
 		}
+
+		protected override List<Type> Stages => new List<Type>
+		{
+			typeof(Stage.ResolveNewRosteredPlayers),
+			typeof(FetchPlayersStage<Context>),
+			typeof(Stage.Update)
+		};
 
 		public class Context : IFetchPlayersContext
 		{
 			public List<string> FetchNflIds { get; set; }
 		}
 
-		public static UpdateRosterMappingsPipeline Create(IServiceProvider sp)
-		{
-			var resolveNewRosteredPlayers = sp.Create<Stages.ResolveNewRosteredPlayers>();
-			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>();
-			var update = sp.Create<Stages.Update>();
-
-			AsyncPipelineStage<Context> chain = resolveNewRosteredPlayers;
-			chain
-				.SetNext(fetchSavePlayers)
-				.SetNext(update);
-
-			return sp.Create<UpdateRosterMappingsPipeline>(chain);
-		}
-
-		public static class Stages
+		public static class Stage
 		{
 			public class ResolveNewRosteredPlayers : Stage<Context>
 			{
@@ -53,7 +46,7 @@ namespace R5.FFDB.Components.Pipelines.Teams
 				private IRosterCache _rosterCache { get; }
 
 				public ResolveNewRosteredPlayers(
-					ILogger<ResolveNewRosteredPlayers> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					IRosterCache rosterCache)
 					: base(logger, "Resolve New Rostered Players")
@@ -69,7 +62,7 @@ namespace R5.FFDB.Components.Pipelines.Teams
 					HashSet<string> existingPlayers = (await dbContext.Player.GetAllAsync())
 						.Select(p => p.NflId)
 						.ToHashSet(StringComparer.OrdinalIgnoreCase);
-					List<string> rostered = await _rosterCache.GetRosteredIdsAsync();///////TEMP
+
 					List<string> newIds = (await _rosterCache.GetRosteredIdsAsync())
 						.Where(id => !existingPlayers.Contains(id))
 						.ToList();
@@ -86,7 +79,7 @@ namespace R5.FFDB.Components.Pipelines.Teams
 				private IRosterCache _rosterCache { get; }
 
 				public Update(
-					ILogger<Update> logger,
+					IAppLogger logger,
 					IDatabaseProvider dbProvider,
 					IRosterCache rosterCache)
 					: base(logger, "Update Rosters")

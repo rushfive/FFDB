@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
@@ -17,14 +18,13 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 	{
 		public PlayerStatsDbContext(
 			Func<IMongoDatabase> getDatabase,
-			ILoggerFactory loggerFactory)
-			: base(getDatabase, loggerFactory)
+			IAppLogger logger)
+			: base(getDatabase, logger)
 		{
 		}
 
 		public async Task<List<string>> GetPlayerNflIdsAsync(WeekInfo week)
 		{
-			var logger = GetLogger<PlayerStatsDbContext>();
 			var collectionName = CollectionResolver.GetName<WeekStatsPlayerDocument>();
 
 			MongoDbContext mongoDbContext = GetMongoDbContext();
@@ -76,20 +76,19 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			}
 
 			MongoDbContext mongoDbContext = GetMongoDbContext();
-
-			var logger = GetLogger<PlayerStatsDbContext>();
-			logger.LogTrace($"Adding {stats.Count} week stats..");
+			
+			Logger.LogDebug($"Adding {stats.Count} week stats..");
 			
 			var (playerStats, dstStats) = GroupStats(stats);
 			
 			await AddPlayerStatsAsync(playerStats, mongoDbContext);
 
-			logger.LogTrace("Added player week stats to '{0}' collection.",
+			Logger.LogDebug("Added player week stats to '{0}' collection.",
 				CollectionResolver.GetName<WeekStatsPlayerDocument>());
 
 			await AddDstStatsAsync(dstStats, mongoDbContext);
 
-			logger.LogTrace("Added DST week stats to '{0}' collection.",
+			Logger.LogDebug("Added DST week stats to '{0}' collection.",
 				CollectionResolver.GetName<WeekStatsDstDocument>());
 		}
 
@@ -100,7 +99,7 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 			foreach (var s in stats)
 			{
-				if (TeamDataStore.IsTeam(s.NflId))
+				if (Teams.IsTeam(s.NflId))
 				{
 					dstStats.Add(s);
 				}

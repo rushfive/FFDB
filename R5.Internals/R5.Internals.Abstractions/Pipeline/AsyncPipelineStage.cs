@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace R5.Lib.Pipeline
+namespace R5.Internals.Abstractions.Pipeline
 {
 	public class AsyncPipelineStage<TContext>
 	{

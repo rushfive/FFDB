@@ -10,6 +10,11 @@ namespace R5.FFDB.Engine.ConfigBuilders
 		private (int min, int max)? _randomizedThrottle { get; set; }
 		private Dictionary<string, string> _headers { get; } = new Dictionary<string, string>();
 
+		public WebRequestConfigBuilder()
+		{
+			AddDefaultBrowserHeaders();
+		}
+
 		public WebRequestConfigBuilder SetThrottle(int milliseconds)
 		{
 			if (milliseconds < 0)

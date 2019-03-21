@@ -123,15 +123,41 @@ namespace R5.Internals.PostgresMapper.SqlBuilders
 
 		protected override Expression VisitMember(MemberExpression node)
 		{
-			if (!_propertyColumns.TryGetValue(node.Member.Name, out TableColumn column))
+			// handles exprs like "e => e.Number == 12345" (compile time literal constants)
+			if (node.Member is FieldInfo fieldInfo
+				&& node.Expression is ConstantExpression constExpr)
 			{
-				throw new InvalidOperationException($"Failed to find column associated to property "
-					+ $"'{node.Member.Name}' on entity type '{typeof(TEntity).Name}'.");
-			}
+				var value = constExpr.Value;
+				var fieldValue = fieldInfo.GetValue(value);
 
-			_columnStack.Push(column);
-			
-			_whereFilterBuilder.Append(column.Name);
+				_whereFilterBuilder.Append(fieldValue);
+			}
+			// handles exprs like "e => e.Number == someObj.Prop"
+			// (where someObj.Prop is a numeric type as well)
+			else if (
+				node.Member is PropertyInfo propertyInfo
+				&& node.Expression is MemberExpression memberExpr
+				&& memberExpr.Member is FieldInfo memberFieldInfo
+				&& memberExpr.Expression is ConstantExpression memberConstExpr)
+			{
+				var memberValue = memberFieldInfo.GetValue(memberConstExpr.Value);
+				var result = propertyInfo.GetValue(memberValue);
+
+				_whereFilterBuilder.Append(result);
+			}
+			// if neither of the above, assume its a reference to a table column
+			else
+			{
+				if (!_propertyColumns.TryGetValue(node.Member.Name, out TableColumn column))
+				{
+					throw new InvalidOperationException($"Failed to find column associated to property "
+						+ $"'{node.Member.Name}' on entity type '{typeof(TEntity).Name}'.");
+				}
+
+				_columnStack.Push(column);
+
+				_whereFilterBuilder.Append(column.Name);
+			}
 
 			return node;
 		}

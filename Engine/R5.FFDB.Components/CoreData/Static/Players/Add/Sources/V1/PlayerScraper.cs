@@ -19,9 +19,9 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 
 	public class PlayerScraper : IPlayerScraper
 	{
-		private ILogger<PlayerScraper> _logger { get; }
+		private IAppLogger _logger { get; }
 
-		public PlayerScraper(ILogger<PlayerScraper> logger)
+		public PlayerScraper(IAppLogger logger)
 		{
 			_logger = logger;
 		}
@@ -39,7 +39,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find HTML comments on page containing player's ESB and GSIS id.");
-				throw;
 			}
 
 			// "ESB ID: ADA218591"
@@ -54,7 +53,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find ESB id.");
-				throw;
 			}
 
 			// "GSIS ID: 00-0031381"
@@ -69,7 +67,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find GSIS id.");
-				throw;
 			}
 
 			return (esbId, gsisId);
@@ -88,7 +85,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find paragraph containing player's height and weight.");
-				throw;
 			}
 
 			string[] colonSplit = heightWeightParagraph.InnerText.Split(":");
@@ -104,7 +100,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find player's height.");
-				throw;
 			}
 
 			int weight = -1;
@@ -116,7 +111,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find player's weight.");
-				throw;
 			}
 
 			return (height, weight);
@@ -135,7 +129,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find paragraph containing player's date of birth.");
-				throw;
 			}
 
 			try
@@ -146,7 +139,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to parse player's date of birth.");
-				throw;
+				return default;
 			}
 		}
 
@@ -162,7 +155,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find paragraph containing player's college.");
-				throw;
 			}
 
 			try
@@ -174,7 +166,7 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to parser player's college.");
-				throw;
+				return null;
 			}
 		}
 
@@ -191,7 +183,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find paragraph containing player's first and last name.");
-				throw;
 			}
 
 			string fullName = name.InnerText;
@@ -207,7 +198,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to parse player's first name.");
-				throw;
 			}
 
 			string lastName = null;
@@ -220,7 +210,6 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, "Failed to find parser player's last name.");
-					throw;
 				}
 			}
 

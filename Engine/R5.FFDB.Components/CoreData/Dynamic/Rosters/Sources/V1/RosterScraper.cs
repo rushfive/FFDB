@@ -16,9 +16,9 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 
 	public class RosterScraper : IRosterScraper
 	{
-		private ILogger<RosterScraper> _logger { get; }
+		private IAppLogger _logger { get; }
 
-		public RosterScraper(ILogger<RosterScraper> logger)
+		public RosterScraper(IAppLogger logger)
 		{
 			_logger = logger;
 		}
@@ -37,27 +37,29 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to find players table rows.");
-				throw;
 			}
 
-			_logger.LogTrace($"Found {playerRows.Count} player rows to scrape.");
+			_logger.LogDebug($"Found {playerRows.Count} player rows to scrape.");
 
-			foreach (HtmlNode r in playerRows)
+			if (playerRows != null)
 			{
-				string id = ExtractNflId(r);
-				int? number = ExtractNumber(r);
-				Position position = ExtractPosition(r);
-				RosterStatus status = ExtractStatus(r);
-
-				result.Add(new RosterVersioned.Player
+				foreach (HtmlNode r in playerRows)
 				{
-					NflId = id,
-					Number = number,
-					Position = position,
-					Status = status
-				});
+					string id = ExtractNflId(r);
+					int? number = ExtractNumber(r);
+					Position position = ExtractPosition(r);
+					RosterStatus status = ExtractStatus(r);
 
-				_logger.LogTrace($"Extracted player '{id}'.");
+					result.Add(new RosterVersioned.Player
+					{
+						NflId = id,
+						Number = number,
+						Position = position,
+						Status = status
+					});
+
+					_logger.LogDebug($"Extracted player '{id}'.");
+				}
 			}
 
 			return result;
@@ -84,7 +86,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to extract NFL Id from a player row.");
-				throw;
+				return null;
 			}
 		}
 
@@ -111,7 +113,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to extract player's number from a player row.");
-				throw;
+				return null;
 			}
 		}
 
@@ -154,7 +156,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to extract position from a player row.");
-				throw;
+				return default;
 			}
 		}
 
@@ -172,7 +174,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Failed to extract roster status from a player row.");
-				throw;
+				return default;
 			}
 		}
 	}

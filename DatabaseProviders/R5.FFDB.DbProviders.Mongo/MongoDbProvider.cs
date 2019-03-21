@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using R5.FFDB.Components;
 using R5.FFDB.Core.Database;
 using R5.FFDB.DbProviders.Mongo.DatabaseContext;
 using R5.FFDB.DbProviders.Mongo.Serialization;
@@ -9,17 +10,17 @@ namespace R5.FFDB.DbProviders.Mongo
 	public class MongoDbProvider : IDatabaseProvider
 	{
 		private MongoConfig _config { get; }
-		private ILoggerFactory _loggerFactory { get; }
+		private IAppLogger _logger { get; }
 
 		// use a single instance for the entire lifetime
 		private IMongoClient _client { get; }
 
 		public MongoDbProvider(
 			MongoConfig config,
-			ILoggerFactory loggerFactory)
+			IAppLogger logger)
 		{
 			_config = config;
-			_loggerFactory = loggerFactory;
+			_logger = logger;
 
 			// must be registered before first time db is used, or it'll
 			// initialize some clashing default serializers
@@ -30,7 +31,7 @@ namespace R5.FFDB.DbProviders.Mongo
 
 		public IDatabaseContext GetContext()
 		{
-			return new DbContext(GetDatabase, _loggerFactory);
+			return new DbContext(GetDatabase, _logger);
 		}
 
 		private IMongoDatabase GetDatabase()

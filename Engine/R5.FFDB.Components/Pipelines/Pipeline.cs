@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using R5.Lib.Pipeline;
+using R5.Internals.Abstractions.Pipeline;
+using R5.Internals.Extensions.DependencyInjection;
+using Serilog.Context;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,59 +10,68 @@ namespace R5.FFDB.Components.Pipelines
 {
 	public abstract class Pipeline<TContext> : AsyncPipeline<TContext>
 	{
-		private ILogger<Pipeline<TContext>> _logger { get; }
-		private string _pipelineIndent { get; set; }
-		private string _stageIndent { get; set; }
+		private IAppLogger _logger { get; }
+		private IDisposable _contextProperty { get; set; }
+		private Dictionary<Guid, IDisposable> _stageContextProperties { get; } = new Dictionary<Guid, IDisposable>();
+		private IServiceProvider _serviceProvider { get; }
 
 		protected Pipeline(
-			ILogger<Pipeline<TContext>> logger,
-			AsyncPipelineStage<TContext> head,
-			string name,
-			int nestedDepth = 0)
-			: base(head, name)
+			IAppLogger logger,
+			IServiceProvider serviceProvider,
+			string name)
+			: base(name)
 		{
 			_logger = logger;
-
-			SetLoggingIndents(nestedDepth);
+			_serviceProvider = serviceProvider;
 		}
 
-		private void SetLoggingIndents(int nestedDepth)
+		// Types should represent the implementations of AsyncPipelineStages
+		protected abstract List<Type> Stages { get; }
+
+		protected override List<AsyncPipelineStage<TContext>> GetStages()
 		{
-			string pipeline = "";
-			string stage = "  ";
+			var stages = new List<AsyncPipelineStage<TContext>>();
 
-			while (nestedDepth > 0)
+			foreach(var stageType in Stages)
 			{
-				pipeline += "    ";
-				stage += "    ";
-
-				nestedDepth--;
+				var stage = _serviceProvider.Create(stageType) as AsyncPipelineStage<TContext>;
+				stages.Add(stage);
 			}
 
-			_pipelineIndent = pipeline;
-			_stageIndent = stage;
+			return stages;
 		}
 
 		protected override void OnPipelineProcessStart(TContext context, string name)
 		{
-			_logger.LogInformation($"{_pipelineIndent}[Pipeline - {name}] Starting.");
+			_contextProperty = LogContext.PushProperty("PipelineStage", name);
+			_logger.LogInformation("Pipeline started.");
 		}
 
 		protected override void OnPipelineProcessEnd(TContext context, string name)
 		{
-			_logger.LogInformation($"{_pipelineIndent}[Pipeline - {name}] Ended.");
+			_logger.LogInformation("Pipeline completed.");
+			_contextProperty?.Dispose();
 		}
 
-		protected override void OnStageProcessStart(TContext context, string name)
+		protected override Guid OnStageProcessStart(TContext context, string name)
 		{
-			_logger.LogDebug($"{_stageIndent}[Stage - {name}] Starting.");
+			var id = Guid.NewGuid();
+			_stageContextProperties[id] = LogContext.PushProperty("PipelineStage", name);
+
+			_logger.LogInformation("Stage started.");
+
+			return id;
 		}
 
-		protected override void OnStageProcessEnd(TContext context, string name)
+		protected override void OnStageProcessEnd(Guid stageId, TContext context, string name)
 		{
-			_logger.LogInformation($"{_stageIndent}[Stage - {name}] Ended.");
+			_logger.LogInformation("Stage completed.");
+
+			if (_stageContextProperties.TryGetValue(stageId, out IDisposable stageContext))
+			{
+				stageContext?.Dispose();
+				_stageContextProperties.Remove(stageId);
+			}
 		}
-
-
 	}
 }

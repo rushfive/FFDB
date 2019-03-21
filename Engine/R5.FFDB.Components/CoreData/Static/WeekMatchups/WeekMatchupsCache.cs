@@ -1,11 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1;
+﻿using R5.FFDB.Components.CoreData.Static.WeekMatchups.Sources.V1;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.Internals.Caching.Caches;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.WeekMatchups
@@ -19,17 +17,14 @@ namespace R5.FFDB.Components.CoreData.Static.WeekMatchups
 	public class WeekMatchupsCache : IWeekMatchupsCache
 	{
 		public static string CacheKey(WeekInfo week) => $"week_matchups_{week}";
-
-		private ILogger<WeekMatchupsCache> _logger { get; }
+		
 		private IAsyncLazyCache _cache { get; }
 		private IWeekMatchupSource _source { get; }
 
 		public WeekMatchupsCache(
-			ILogger<WeekMatchupsCache> logger,
 			IAsyncLazyCache cache,
 			IWeekMatchupSource source)
 		{
-			_logger = logger;
 			_cache = cache;
 			_source = source;
 		}

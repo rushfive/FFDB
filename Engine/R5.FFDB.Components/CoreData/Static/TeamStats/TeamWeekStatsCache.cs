@@ -1,14 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using R5.FFDB.Components.CoreData.Static.TeamStats.Models;
+﻿using R5.FFDB.Components.CoreData.Static.TeamStats.Models;
 using R5.FFDB.Components.CoreData.Static.TeamStats.Sources.V1;
 using R5.FFDB.Components.CoreData.Static.WeekMatchups;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using R5.Internals.Caching.Caches;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace R5.FFDB.Components.CoreData.Static.TeamStats
@@ -23,13 +19,13 @@ namespace R5.FFDB.Components.CoreData.Static.TeamStats
 	{
 		public static string CacheKey(WeekInfo week) => $"team_week_stats_{week}";
 
-		private ILogger<TeamWeekStatsCache> _logger { get; }
+		private IAppLogger _logger { get; }
 		private IAsyncLazyCache _cache { get; }
 		private ITeamWeekStatsSource _source { get; }
 		private IWeekMatchupsCache _weekMatchups { get; }
 
 		public TeamWeekStatsCache(
-			ILogger<TeamWeekStatsCache> logger,
+			IAppLogger logger,
 			IAsyncLazyCache cache,
 			ITeamWeekStatsSource source,
 			IWeekMatchupsCache weekMatchups)

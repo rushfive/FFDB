@@ -1,4 +1,5 @@
 ﻿using R5.FFDB.Components.Pipelines.Players;
+using R5.Internals.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace R5.FFDB.Engine.Processors
 		{
 			var context = new UpdateCurrentlyRosteredPipeline.Context();
 
-			var pipeline = UpdateCurrentlyRosteredPipeline.Create(_serviceProvider);
+			var pipeline = _serviceProvider.Create<UpdateCurrentlyRosteredPipeline>();
 
 			return pipeline.ProcessAsync(context);
 		}

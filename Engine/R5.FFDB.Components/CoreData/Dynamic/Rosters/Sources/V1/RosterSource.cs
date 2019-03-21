@@ -20,7 +20,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 	public class RosterSource : CoreDataSource<RosterVersioned, Roster, Team>, IRosterSource
 	{
 		public RosterSource(
-			ILogger<RosterSource> logger,
+			IAppLogger logger,
 			IToVersionedMapper toVersionedMapper,
 			IToCoreMapper toCoreMapper,
 			ProgramOptions programOptions,
