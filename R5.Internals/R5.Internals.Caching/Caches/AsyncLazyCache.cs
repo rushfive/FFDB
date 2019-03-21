@@ -139,9 +139,7 @@ namespace R5.Internals.Caching.Caches
 						_locks[key] = exclusiveLock;
 					}
 				}
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine($"ACQUIRED LOCK: {key}");
-				Console.ResetColor();
+
 				return exclusiveLock.Lock;
 			}
 

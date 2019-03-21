@@ -38,20 +38,6 @@ namespace R5.FFDB.Components.Pipelines.Teams
 			public List<string> FetchNflIds { get; set; }
 		}
 
-		public static UpdateRosterMappingsPipeline Create(IServiceProvider sp)
-		{
-			var resolveNewRosteredPlayers = sp.Create<Stage.ResolveNewRosteredPlayers>();
-			var fetchSavePlayers = sp.Create<FetchPlayersStage<Context>>();
-			var update = sp.Create<Stage.Update>();
-
-			AsyncPipelineStage<Context> chain = resolveNewRosteredPlayers;
-			chain
-				.SetNext(fetchSavePlayers)
-				.SetNext(update);
-
-			return sp.Create<UpdateRosterMappingsPipeline>(chain);
-		}
-
 		public static class Stage
 		{
 			public class ResolveNewRosteredPlayers : Stage<Context>

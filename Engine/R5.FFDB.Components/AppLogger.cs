@@ -10,6 +10,8 @@ namespace R5.FFDB.Components
 		void LogInformation<T>(string messageTemplate, T propertyValue);
 		void LogDebug(string messageTemplate);
 		void LogDebug<T>(string messageTemplate, T propertyValue);
+		void LogTrace(string messageTemplate);
+		void LogTrace<T>(string messageTemplate, T propertyValue);
 		void LogError(Exception exception, string messageTemplate);
 		void LogError<T>(Exception exception, string messageTemplate, T propertyValue);
 		void LogWarning(string messageTemplate);
@@ -47,6 +49,18 @@ namespace R5.FFDB.Components
 		public void LogDebug<T>(string messageTemplate, T propertyValue)
 		{
 			_logger?.Debug(messageTemplate, propertyValue);
+		}
+
+		[MessageTemplateFormatMethod("messageTemplate")]
+		public void LogTrace(string messageTemplate)
+		{
+			_logger?.Verbose(messageTemplate);
+		}
+
+		[MessageTemplateFormatMethod("messageTemplate")]
+		public void LogTrace<T>(string messageTemplate, T propertyValue)
+		{
+			_logger?.Verbose(messageTemplate, propertyValue);
 		}
 
 		[MessageTemplateFormatMethod("messageTemplate")]
@@ -101,6 +115,16 @@ namespace R5.FFDB.Components
 		public void LogDebug<T>(string message, T propertyValue)
 		{
 			_logger?.LogDebug(message, propertyValue);
+		}
+
+		public void LogTrace(string message)
+		{
+			_logger?.LogTrace(message);
+		}
+
+		public void LogTrace<T>(string message, T propertyValue)
+		{
+			_logger?.LogTrace(message, propertyValue);
 		}
 
 		public void LogError(Exception exception, string message)

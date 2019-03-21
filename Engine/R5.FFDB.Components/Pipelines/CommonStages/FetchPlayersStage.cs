@@ -29,6 +29,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 	public class FetchPlayersStage<TContext> : Stage<TContext>
 		where TContext : IFetchPlayersContext
 	{
+		private IAppLogger _logger { get; }
 		private IDatabaseProvider _dbProvider { get; }
 		private WebRequestThrottle _throttle { get; }
 		private IPlayerAddSource _playerAddSource { get; }
@@ -40,6 +41,7 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 			IPlayerAddSource playerAddSource)
 			: base(logger, "Fetch Players")
 		{
+			_logger = logger;
 			_dbProvider = dbProvider;
 			_throttle = throttle;
 			_playerAddSource = playerAddSource;
@@ -64,7 +66,16 @@ namespace R5.FFDB.Components.Pipelines.CommonStages
 				Debug.Assert(!Core.Teams.IsTeam(nflId),
 					$"NFL id '{nflId}' represents a team so shouldn't be fetched as a player.");
 
-				SourceResult<PlayerAdd> result = await _playerAddSource.GetAsync(nflId);
+				SourceResult<PlayerAdd> result = null;
+				try
+				{
+					result = await _playerAddSource.GetAsync(nflId);
+				}
+				catch (SourceDataScrapeException ex)
+				{
+					_logger.LogError(ex, $"Failed to fetch player info for '{nflId}', will skip adding them.");
+					continue;
+				}
 
 				await dbContext.Player.AddAsync(result.Value);
 

@@ -135,7 +135,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 						return ProcessResult.Continue;
 					}
 
-					var pipeline = UpdateRosterMappingsPipeline.Create(_serviceProvider);
+					var pipeline = _serviceProvider.Create<UpdateRosterMappingsPipeline>();
 
 					await pipeline.ProcessAsync(
 						new UpdateRosterMappingsPipeline.Context());

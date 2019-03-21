@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.Http;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -80,6 +81,10 @@ namespace R5.FFDB.Components.CoreData
 			}
 
 			versioned = JsonConvert.DeserializeObject<TVersionedModel>(File.ReadAllText(filePath));
+
+			_logger.LogDebug("Retrieved versioned model from disk:"
+				+ Environment.NewLine + "{@VersionedModel}", versioned);
+
 			return true;
 		}
 
@@ -92,6 +97,11 @@ namespace R5.FFDB.Components.CoreData
 				string uri = GetSourceUri(key);
 				sourceResponse = await _webClient.GetStringAsync(uri, throttle: false);
 
+				// we dont currently log trace levels, this was outputting way too much
+				// esp for the HTML page fetches
+				_logger.LogTrace("Fetched source response from web:"
+					+ Environment.NewLine + "{@SourceResponse}", sourceResponse);
+
 				if (SupportsSourceFilePersistence && !File.Exists(GetSourceFilePath(key)))
 				{
 					File.WriteAllText(GetSourceFilePath(key), sourceResponse);
@@ -101,6 +111,9 @@ namespace R5.FFDB.Components.CoreData
 			}
 
 			TVersionedModel versioned = await _toVersionedMapper.MapAsync(sourceResponse, key);
+
+			_logger.LogDebug("Mapped to versioned model:"
+				+ Environment.NewLine + "{@VersionedModel}", versioned);
 
 			if (SupportsVersionedFilePersistence && _programOptions.SaveToDisk)
 			{
@@ -130,6 +143,10 @@ namespace R5.FFDB.Components.CoreData
 			}
 
 			sourceResponse = File.ReadAllText(filePath);
+
+			_logger.LogDebug("Retrieved source response from disk:"
+				+ Environment.NewLine + "{@SourceReponse}", sourceResponse);
+
 			return true;
 		}
 	}

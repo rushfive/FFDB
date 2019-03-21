@@ -116,8 +116,10 @@ namespace DevTester
 
 			FfdbEngine engine = GetConfiguredPostgresEngine();
 
-			await engine.Stats.AddForWeekAsync(new WeekInfo(2010, 1));
-			List<WeekInfo> updatedWeeks = await engine.GetAllUpdatedWeeksAsync();
+			await engine.Team.UpdateRosterMappingsAsync();
+
+			//await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 17));
+			//List<WeekInfo> updatedWeeks = await engine.GetAllUpdatedWeeksAsync();
 			
 
 			return;
@@ -164,8 +166,8 @@ namespace DevTester
 
 			setup.Logging
 				.SetLogDirectory(@"D:\Repos\ffdb_data_3\dev_test_logs\")
-				.SetRollingInterval(RollingInterval.Day)
-				.UseDebugLogLevel();
+				.SetRollingInterval(RollingInterval.Day);
+				//.UseDebugLogLevel();
 
 			setup
 				.SkipRosterFetch()

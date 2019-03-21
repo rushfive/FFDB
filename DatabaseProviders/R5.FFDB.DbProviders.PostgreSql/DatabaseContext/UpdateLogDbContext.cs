@@ -20,8 +20,6 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 		public async Task<List<WeekInfo>> GetAsync()
 		{
-			Logger.LogDebug("Getting all existing update log entries.");
-
 			List<UpdateLogSql> logs = await DbConnection.Select<UpdateLogSql>().ExecuteAsync();
 
 			return logs.Select(l => new WeekInfo(l.Season, l.Week)).ToList();

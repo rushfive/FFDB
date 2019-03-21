@@ -9,10 +9,14 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1.Mappers
 
 	public class ToVersionedMapper : IToVersionedMapper
 	{
+		private IAppLogger _logger { get; }
 		private IPlayerScraper _scraper { get; }
 
-		public ToVersionedMapper(IPlayerScraper scraper)
+		public ToVersionedMapper(
+			IAppLogger logger,
+			IPlayerScraper scraper)
 		{
+			_logger = logger;
 			_scraper = scraper;
 		}
 
@@ -26,6 +30,11 @@ namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1.Mappers
 			DateTimeOffset dateOfBirth = _scraper.ExtractDateOfBirth(page);
 			string college = _scraper.ExtractCollege(page);
 			(string esbId, string gsisId) = _scraper.ExtractIds(page);
+
+			if (esbId == null || gsisId == null)
+			{
+				throw new SourceDataScrapeException($"Failed to scrape esbId and/or gsisId for player '{nflId}' ({firstName} {lastName}).", httpResponse);
+			}
 
 			return Task.FromResult(new PlayerAddVersioned
 			{
