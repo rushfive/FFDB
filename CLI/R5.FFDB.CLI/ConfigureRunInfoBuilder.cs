@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using R5.FFDB.CLI.Commands;
 using R5.FFDB.Core.Models;
-using R5.RunInfoBuilder;
 using CM = R5.Internals.Abstractions.SystemConsole.ConsoleManager;
 using static System.Console;
 
@@ -11,31 +8,24 @@ namespace R5.FFDB.CLI
 {
 	internal static class ConfigureRunInfoBuilder
 	{
-		// todo: help and version triggers
 		internal static RunInfoBuilder.RunInfoBuilder Create()
 		{
 			var builder = new RunInfoBuilder.RunInfoBuilder();
 
 			builder.Commands
 				.Add(InitialSetup.GetCommand())
-				.Add(ViewUpdated.GetCommand())
+				.Add(ViewState.GetCommand())
 				.Add(UpdateRosters.GetCommand())
 				.Add(AddStats.GetCommand())
 				.Add(UpdateRosteredPlayers.GetCommand());
 
 			builder.Version.Set(@"
- _____ _____ ____  _____ 
-|   __|   __|    \| __  |
-|   __|   __|  |  | __ -|
-|__|  |__|  |____/|_____|
-           
-           v1.0.0-alpha.1
+  Current version is v1.0.0-alpha.1
 
-For more info and docs:
-https://github.com/rushfive/FFDB");
+  For more info and docs:
+  https://github.com/rushfive/FFDB");
 
 			builder.Help
-				//.SetProgramName("ffdb")
 				.OnTrigger(DisplayHelp)
 				.InvokeOnBuildFail(suppressException: false);
 
@@ -83,10 +73,10 @@ https://github.com/rushfive/FFDB");
 			WriteLine("└");
 
 			Write("┌───");
-			CM.WriteLineColoredReset(" < view-updated >", ConsoleColor.White);
-			WriteLine("│ Lists the weeks that have already been updated.");
+			CM.WriteLineColoredReset(" < view-state >", ConsoleColor.White);
+			WriteLine("│ Display general state information, such as weeks already updated.");
 			Write("│ Usage: ");
-			CM.WriteLineColoredReset("ffdb view-updated", ConsoleColor.White);
+			CM.WriteLineColoredReset("ffdb view-state", ConsoleColor.White);
 			WriteLine("└");
 
 			Write("┌───");

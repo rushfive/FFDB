@@ -6,8 +6,6 @@ using System.Text;
 
 namespace R5.FFDB.CLI.Commands
 {
-	// ffdb update-players rostered
-	// ffdb update-players all
 	public static class UpdateRosteredPlayers
 	{
 		private const string _commandKey = "update-players";
@@ -15,6 +13,7 @@ namespace R5.FFDB.CLI.Commands
 		public class RunInfo : RunInfoBase
 		{
 			public override string CommandKey => _commandKey;
+			public override string Description => "Updates dynamic information for players currently rostered on a team.";
 		}
 
 		internal static Command<RunInfo> GetCommand()

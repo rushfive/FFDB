@@ -31,7 +31,7 @@ namespace R5.FFDB.Engine
 			}
 			if (!Directory.Exists(path))
 			{
-				throw new ArgumentException($"Directory path '{path}' doesn't exist.");
+				Directory.CreateDirectory(path);
 			}
 
 			_rootDataPath = path;

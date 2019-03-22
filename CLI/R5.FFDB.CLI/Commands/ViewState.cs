@@ -5,14 +5,14 @@ using System.Text;
 
 namespace R5.FFDB.CLI.Commands
 {
-	// ffdb view-updated --config|c=path\to\config.json
-	public static class ViewUpdated
+	public static class ViewState
 	{
-		private const string _commandKey = "view-updated";
+		private const string _commandKey = "view-state";
 
 		public class RunInfo : RunInfoBase
 		{
 			public override string CommandKey => _commandKey;
+			public override string Description => "Will acquire and display general state information regarding the app and the NFL season.";
 		}
 
 		internal static Command<RunInfo> GetCommand()

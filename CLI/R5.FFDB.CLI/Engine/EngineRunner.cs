@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Console;
+using CM = R5.Internals.Abstractions.SystemConsole.ConsoleManager;
 
 namespace R5.FFDB.CLI.Engine
 {
@@ -46,8 +47,8 @@ namespace R5.FFDB.CLI.Engine
 				case UpdateRosteredPlayers.RunInfo updatePlayers:
 					await RunUpdatePlayersAsync(updatePlayers);
 					break;
-				case ViewUpdated.RunInfo _:
-					await RunViewUpdatedWeeksAsync();
+				case ViewState.RunInfo _:
+					await RunViewStateAsync();
 					break;
 				default:
 					throw new ArgumentOutOfRangeException($"'{runInfo.GetType().Name}' is an invalid '{nameof(RunInfoBase)}' type.");
@@ -76,7 +77,7 @@ namespace R5.FFDB.CLI.Engine
 			var latestAvailable = await _engine.GetLatestWeekAsync();
 
 			var specifiedWeek = runInfo.Week.Value;
-			
+
 			if (specifiedWeek < earliestAvailable)
 			{
 				throw new InvalidOperationException($"Cannot add stats for week '{specifiedWeek}'. "
@@ -91,36 +92,60 @@ namespace R5.FFDB.CLI.Engine
 			await _engine.Stats.AddForWeekAsync(specifiedWeek);
 		}
 
-		private async Task RunUpdatePlayersAsync(UpdateRosteredPlayers.RunInfo runInfo)
+		private Task RunUpdatePlayersAsync(UpdateRosteredPlayers.RunInfo runInfo)
 		{
-			// todo
+			return _engine.Player.UpdateCurrentlyRosteredAsync();
 		}
 
-		private async Task RunViewUpdatedWeeksAsync()
+		private async Task RunViewStateAsync()
 		{
-			List<WeekInfo> weeks = await _engine.GetAllUpdatedWeeksAsync();
+			Task<WeekInfo> latestWeekTask = _engine.GetLatestWeekAsync();
+			Task<DateTime> dataRepoUpdatedTask = _engine.GetDataRepoLastUpdatedAsync();
+			Task<List<WeekInfo>> updatedWeeksTask = _engine.GetAllUpdatedWeeksAsync();
 
-			if (!weeks.Any())
+			await Task.WhenAll(
+				latestWeekTask,
+				dataRepoUpdatedTask,
+				updatedWeeksTask);
+
+			WriteLine("┌");
+			Write("│ Data Repository last updated: ");
+			CM.WriteLineColoredReset($"{dataRepoUpdatedTask.Result:d}", ConsoleColor.White);
+			WriteLine("│ Will attempt fetching core data from the repo first.");
+			WriteLine("│ If unavailable, falls back to fetching from the original sources.");
+			WriteLine("│");
+			Write("│ Latest available NFL week: ");
+			CM.WriteLineColoredReset(latestWeekTask.Result.ToString(), ConsoleColor.White);
+			WriteLine("│");
+
+			List<WeekInfo> updatedWeeks = updatedWeeksTask.Result;
+			if (!updatedWeeks.Any())
 			{
-				WriteLine("No weeks have been updated.");
-				return;
+				WriteLine("│ No weeks have been updated in your database.");
+			}
+			else
+			{
+				var groupsBySeason = updatedWeeks
+					.GroupBy(w => w.Season)
+					.OrderBy(g => g.Key)
+					.ToList();
+
+				var seasonUpdateLines = new List<string>();
+
+				foreach (var group in groupsBySeason)
+				{
+					var rangedWeeks = RangedListBuilder.Build(group.Select(w => w.Week).ToList());
+					seasonUpdateLines.Add($"{group.Key}: {string.Join(", ", rangedWeeks)}");
+				}
+
+				WriteLine("│ The following weeks have been updated in your database:");
+				foreach(var seasonUpdates in seasonUpdateLines)
+				{
+					WriteLine($"│ {seasonUpdates}");
+				}
 			}
 
-			var groupsBySeason = weeks
-				.GroupBy(w => w.Season)
-				.OrderBy(g => g.Key)
-				.ToList();
-
-			var seasonUpdateLines = new List<string>();
-
-			foreach(var group in groupsBySeason)
-			{
-				var rangedWeeks = RangedListBuilder.Build(group.Select(w => w.Week).ToList());
-				seasonUpdateLines.Add($"{group.Key}: {string.Join(", ", rangedWeeks)}");
-			}
-
-			WriteLine("The following weeks have been updated:");
-			seasonUpdateLines.ForEach(WriteLine);
+			WriteLine("└");
 		}
 	}
 }

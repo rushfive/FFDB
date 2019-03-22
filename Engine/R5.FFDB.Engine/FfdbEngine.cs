@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Extensions.JsonConverters;
+using R5.FFDB.Components.Http;
 using R5.FFDB.Components.Pipelines.Setup;
 using R5.FFDB.Components.ValueProviders;
 using R5.FFDB.Core.Database;
@@ -23,16 +24,19 @@ namespace R5.FFDB.Engine
 		private IServiceProvider _serviceProvider { get; }
 		private IDatabaseProvider _databaseProvider { get; }
 		private LatestWeekValue _latestWeekValue { get; }
+		private IWebRequestClient _webRequestClient { get; }
 
 		public FfdbEngine(
 			IAppLogger logger,
 			IServiceProvider serviceProvider,
 			IDatabaseProvider databaseProvider,
-			LatestWeekValue latestWeekValue)
+			LatestWeekValue latestWeekValue,
+			IWebRequestClient webRequestClient)
 		{
 			_serviceProvider = serviceProvider;
 			_databaseProvider = databaseProvider;
 			_latestWeekValue = latestWeekValue;
+			_webRequestClient = webRequestClient;
 			
 			Stats = new StatsProcessor(serviceProvider);
 			Team = new TeamProcessor(serviceProvider);
@@ -79,5 +83,22 @@ namespace R5.FFDB.Engine
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
 			return dbContext.UpdateLog.GetAsync();
 		}
+
+		public async Task<DateTime> GetDataRepoLastUpdatedAsync()
+		{
+			string uri = @"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/updated_date.json";
+
+			string response = await _webRequestClient.GetStringAsync(uri, throttle: false);
+
+			var lastUpdated = JsonConvert.DeserializeObject<DataRepoLastUpdated>(response);
+
+			return lastUpdated.Timestamp;
+		}
+	}
+
+	internal class DataRepoLastUpdated
+	{
+		[JsonProperty("timestamp")]
+		public DateTime Timestamp { get; set; }
 	}
 }

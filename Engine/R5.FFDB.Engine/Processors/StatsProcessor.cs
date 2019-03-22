@@ -36,5 +36,7 @@ namespace R5.FFDB.Engine.Processors
 
 			return pipeline.ProcessAsync(context);
 		}
+
+		public Task AddForWeekAsync(int season, int week) => AddForWeekAsync(new WeekInfo(season, week));
 	}
 }

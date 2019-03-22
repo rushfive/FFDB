@@ -8,6 +8,7 @@ using R5.Internals.Abstractions.Pipeline;
 using R5.Internals.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -77,10 +78,21 @@ namespace R5.FFDB.Components.Pipelines.Setup
 
 				public override async Task<ProcessStageResult> ProcessAsync(Context context)
 				{
-					List<Team> teams = Core.Teams.GetAll();
-
 					IDatabaseContext dbContext = _dbProvider.GetContext();
-					await dbContext.Team.AddAsync(teams);
+					
+					List<int> existingTeams = await dbContext.Team.GetExistingTeamIdsAsync();
+					
+					List<Team> missing = Core.Teams.GetAll()
+						.Where(t => existingTeams.Contains(t.Id))
+						.ToList();
+
+					if (!missing.Any())
+					{
+						LogInformation("All teams have already been added.");
+						return ProcessResult.Continue;
+					}
+					
+					await dbContext.Team.AddAsync(missing);
 
 					return ProcessResult.Continue;
 				}

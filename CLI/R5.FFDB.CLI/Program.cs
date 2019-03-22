@@ -1,21 +1,11 @@
-﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
-using R5.FFDB.CLI.Commands;
+﻿using R5.FFDB.CLI.Commands;
 using R5.FFDB.CLI.Configuration;
 using R5.FFDB.CLI.Engine;
-using R5.FFDB.Components.Configurations;
-//using R5.FFDB.Components.CoreData.WeekStats.Models;
-using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using R5.FFDB.Engine;
-using Serilog;
-using Serilog.Events;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using static System.Console;
 using CM = R5.Internals.Abstractions.SystemConsole.ConsoleManager;
 
 namespace R5.FFDB.CLI
@@ -33,20 +23,20 @@ namespace R5.FFDB.CLI
 
 					FfdbEngine engine = EngineResolver.Resolve(config, runInfo);
 
-					var runner = new EngineRunner(engine);
+					OutputCommandInfo(runInfo);
 
-					await runner.RunAsync(runInfo);
+					await new EngineRunner(engine).RunAsync(runInfo);
 				}
-
-				return;
 			}
 			catch (Exception ex)
 			{
 				CM.WriteError(ex.Message);
-				return;
 			}
-
-			Console.ReadKey();
+			finally
+			{
+				WriteLine(Environment.NewLine + "Completed running command. Press any key to exit..");
+				ReadKey();
+			}
 		}
 
 		private static bool TryGetRunInfo(string[] args, out RunInfoBase runInfo)
@@ -58,16 +48,11 @@ namespace R5.FFDB.CLI
 			var result = runInfoBuilder.Build(args);
 			if (result == null)
 			{
-				// most likely version or help command
+				// version or help command
 				return false;
 			}
 
 			runInfo = result as RunInfoBase;
-			if (runInfo == null)
-			{
-				throw new InvalidOperationException("There was an error parsing program args.");
-			}
-
 			return true;
 		}
 
@@ -86,6 +71,20 @@ namespace R5.FFDB.CLI
 			}
 
 			return path;
+		}
+
+		private static void OutputCommandInfo(RunInfoBase runInfo)
+		{
+			WriteLine(@"
+   _____ _____ ____  _____ 
+  |   __|   __|    \| __  |
+  |   __|   __|  |  | __ -|
+  |__|  |__|  |____/|_____|
+             v1.0.0-alpha.1" + Environment.NewLine);
+
+			Write("Running command: ");
+			CM.WriteLineColoredReset(runInfo.CommandKey, ConsoleColor.Yellow);
+			WriteLine(runInfo.Description + Environment.NewLine);
 		}
 	}
 }

@@ -44,7 +44,9 @@ namespace R5.FFDB.CLI.Engine
 		{
 			if (config.Logging != null)
 			{
-				var rollingInterval = Enum.Parse<RollingInterval>(config.Logging.RollingInterval);
+				var rollingInterval = config.Logging.RollingInterval.HasValue
+					? config.Logging.RollingInterval.Value
+					: RollingInterval.Day;
 
 				setup.Logging
 					.SetLogDirectory(config.Logging.Directory)

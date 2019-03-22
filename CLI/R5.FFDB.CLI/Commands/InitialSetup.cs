@@ -5,7 +5,6 @@ using System.Text;
 
 namespace R5.FFDB.CLI.Commands
 {
-	// ffdb setup --skip-stats|s --config|c=path\to\config.json
 	public static class InitialSetup
 	{
 		private const string _commandKey = "setup";
@@ -13,6 +12,8 @@ namespace R5.FFDB.CLI.Commands
 		public class RunInfo : RunInfoBase
 		{
 			public override string CommandKey => _commandKey;
+			public override string Description => "Runs initial database setup (ie creating tables, etc). Can optionally add all missing stats afterwards.";
+
 			public bool SkipAddingStats { get; set; }
 		}
 

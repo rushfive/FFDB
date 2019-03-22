@@ -1,4 +1,6 @@
-﻿using R5.FFDB.DbProviders.Mongo;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using R5.FFDB.DbProviders.Mongo;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
 using Serilog;
 using Serilog.Events;
@@ -66,14 +68,7 @@ namespace R5.FFDB.CLI.Configuration
 			}
 			if (!Directory.Exists(Logging.Directory))
 			{
-				throw new ArgumentException($"Specified log directory doesn't exist at: '{Logging.Directory}'.");
-			}
-
-			if (string.IsNullOrWhiteSpace(Logging.RollingInterval)
-				|| !Enum.TryParse(Logging.RollingInterval, out RollingInterval _))
-			{
-				throw new ArgumentException("Log rolling interval must be provided. "
-					+ $"Valid values are: {string.Join(", ", Enum.GetNames(typeof(RollingInterval)))}");
+				Directory.CreateDirectory(Logging.Directory);
 			}
 		}
 
@@ -131,11 +126,10 @@ namespace R5.FFDB.CLI.Configuration
 		public string Directory { get; set; }
 		public long? MaxBytes { get; set; }
 
-		// Serilog.RollingInterval
-		public string RollingInterval { get; set; }
-		public bool RollOnFileSizeLimit { get; set; }
+		[JsonConverter(typeof(StringEnumConverter))]
+		public RollingInterval? RollingInterval { get; set; }
 
-		// Serilog.Events.LogEventLevel
+		public bool RollOnFileSizeLimit { get; set; }
 		public bool UseDebugLogLevel { get; set; }
 	}
 }
