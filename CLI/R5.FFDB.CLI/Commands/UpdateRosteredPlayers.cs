@@ -1,14 +1,16 @@
-﻿using R5.RunInfoBuilder;
+﻿using R5.FFDB.Core.Models;
+using R5.RunInfoBuilder;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace R5.FFDB.CLI.Commands
 {
-	// ffdb update-rosters --config|c=path\to\config.json
-	public static class UpdateRosters
+	// ffdb update-players rostered
+	// ffdb update-players all
+	public static class UpdateRosteredPlayers
 	{
-		private const string _commandKey = "update-rosters";
+		private const string _commandKey = "update-players";
 
 		public class RunInfo : RunInfoBase
 		{

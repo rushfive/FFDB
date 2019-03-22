@@ -22,12 +22,12 @@ namespace R5.FFDB.CLI.Engine
 
 		public async Task RunAsync(RunInfoBase runInfo)
 		{
-			//if (runInfo is InitialSetup.RunInfo initialSetup)
-			//{
-			//	await RunInitialSetupAsync(initialSetup);
-			//	return;
-			//}
-			
+			if (runInfo is InitialSetup.RunInfo initialSetup)
+			{
+				await RunInitialSetupAsync(initialSetup);
+				return;
+			}
+
 			bool ffdbInitialized = await _engine.HasBeenInitializedAsync();
 			if (!ffdbInitialized)
 			{
@@ -43,7 +43,7 @@ namespace R5.FFDB.CLI.Engine
 				case AddStats.RunInfo addStats:
 					await RunAddStatsAsync(addStats);
 					break;
-				case UpdatePlayers.RunInfo updatePlayers:
+				case UpdateRosteredPlayers.RunInfo updatePlayers:
 					await RunUpdatePlayersAsync(updatePlayers);
 					break;
 				case ViewUpdated.RunInfo _:
@@ -54,10 +54,9 @@ namespace R5.FFDB.CLI.Engine
 			}
 		}
 
-		private Task RunInitialSetupAsync()
+		private Task RunInitialSetupAsync(InitialSetup.RunInfo initialSetup)
 		{
-			// todo: make skip configurable
-			return _engine.RunInitialSetupAsync(skipAddingStats: true);
+			return _engine.RunInitialSetupAsync(initialSetup.SkipAddingStats);
 		}
 
 		private Task RunRostersUpdateAsync()
@@ -92,7 +91,7 @@ namespace R5.FFDB.CLI.Engine
 			await _engine.Stats.AddForWeekAsync(specifiedWeek);
 		}
 
-		private async Task RunUpdatePlayersAsync(UpdatePlayers.RunInfo runInfo)
+		private async Task RunUpdatePlayersAsync(UpdateRosteredPlayers.RunInfo runInfo)
 		{
 			// todo
 		}

@@ -28,15 +28,15 @@ namespace R5.FFDB.CLI
 			{
 				if (TryGetRunInfo(args, out RunInfoBase runInfo))
 				{
-					FfdbConfig config = FileConfigResolver.FromFile(runInfo.ConfigFilePath);
+					string configFilePath = GetConfigFilePath(runInfo);
+					FfdbConfig config = FileConfigResolver.FromFile(configFilePath);
 
 					FfdbEngine engine = EngineResolver.Resolve(config, runInfo);
+
 					var runner = new EngineRunner(engine);
 
 					await runner.RunAsync(runInfo);
 				}
-
-				
 
 				return;
 			}
@@ -69,6 +69,23 @@ namespace R5.FFDB.CLI
 			}
 
 			return true;
+		}
+
+		private static string GetConfigFilePath(RunInfoBase runInfo)
+		{
+			string path = runInfo.ConfigFilePath;
+			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+			{
+				path = "ffdb_config.json";
+
+				if (!File.Exists(path))
+				{
+					throw new InvalidOperationException("Failed to find config file. Ensure that you either include it as a program option "
+						+ "or that the file exists in the same dir as the program exe.");
+				}
+			}
+
+			return path;
 		}
 	}
 }

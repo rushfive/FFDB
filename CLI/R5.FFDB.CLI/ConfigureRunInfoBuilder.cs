@@ -5,6 +5,7 @@ using R5.FFDB.CLI.Commands;
 using R5.FFDB.Core.Models;
 using R5.RunInfoBuilder;
 using CM = R5.Internals.Abstractions.SystemConsole.ConsoleManager;
+using static System.Console;
 
 namespace R5.FFDB.CLI
 {
@@ -15,9 +16,12 @@ namespace R5.FFDB.CLI
 		{
 			var builder = new RunInfoBuilder.RunInfoBuilder();
 
-			builder.Help
-				.SetProgramName("ffdb")
-				.InvokeOnBuildFail(suppressException: false);
+			builder.Commands
+				.Add(InitialSetup.GetCommand())
+				.Add(ViewUpdated.GetCommand())
+				.Add(UpdateRosters.GetCommand())
+				.Add(AddStats.GetCommand())
+				.Add(UpdateRosteredPlayers.GetCommand());
 
 			builder.Version.Set(@"
  _____ _____ ____  _____ 
@@ -30,12 +34,10 @@ namespace R5.FFDB.CLI
 For more info and docs:
 https://github.com/rushfive/FFDB");
 
-			builder.Commands
-				//.Add(InitialSetup.Command)
-				.Add(ViewUpdated.Command)
-				.Add(UpdateRosters.Command)
-				.Add(AddStats.Command)
-				.Add(UpdatePlayers.Command);
+			builder.Help
+				//.SetProgramName("ffdb")
+				.OnTrigger(DisplayHelp)
+				.InvokeOnBuildFail(suppressException: false);
 
 			builder.Parser.SetPredicateForType<WeekInfo?>(value =>
 			{
@@ -64,6 +66,73 @@ https://github.com/rushfive/FFDB");
 			});
 
 			return builder;
+		}
+
+		private static void DisplayHelp()
+		{
+			CM.WriteLineColoredReset("Available Commands:" + Environment.NewLine, ConsoleColor.White);
+
+			Write("┌───");
+			CM.WriteLineColoredReset(" < setup >", ConsoleColor.White);
+			WriteLine("│ Initializes the database and adds all available stats and data.");
+			Write("│ Usage: ");
+			CM.WriteLineColoredReset("ffdb setup", ConsoleColor.White);
+			Write("│ Option");
+			CM.WriteColoredReset(" [skip-stats|s] ", ConsoleColor.White);
+			WriteLine("skips adding stats after db setup (ie only adds tables and static data).");
+			WriteLine("└");
+
+			Write("┌───");
+			CM.WriteLineColoredReset(" < view-updated >", ConsoleColor.White);
+			WriteLine("│ Lists the weeks that have already been updated.");
+			Write("│ Usage: ");
+			CM.WriteLineColoredReset("ffdb view-updated", ConsoleColor.White);
+			WriteLine("└");
+
+			Write("┌───");
+			CM.WriteLineColoredReset(" < update-rosters >", ConsoleColor.White);
+			WriteLine("│ Updates players-to-team mappings.");
+			Write("│ Usage: ");
+			CM.WriteLineColoredReset("ffdb update-rosters", ConsoleColor.White);
+			WriteLine("└");
+
+			Write("┌───");
+			CM.WriteLineColoredReset(" < add-stats >", ConsoleColor.White);
+			WriteLine("│ Adds stats for players and teams (also fetches/updates relevant players).");
+			WriteLine("│ Can choose between adding stats for all missing weeks, or a single specified week.");
+			Write("│ Usage: ");
+			CM.WriteColoredReset("ffdb add-stats missing", ConsoleColor.White);
+			Write(" or ");
+			CM.WriteLineColoredReset("ffdb add-stats week 2018-1", ConsoleColor.White);
+			Write("│ Option");
+			CM.WriteColoredReset(" [save-to-disk] ", ConsoleColor.White);
+			WriteLine("saves versioned data files to disk, preventing HTTP reqs in the future.");
+			Write("│ Option");
+			CM.WriteColoredReset(" [save-src-files] ", ConsoleColor.White);
+			WriteLine("saves original source data to disk, preventing HTTP reqs in the future.");
+			WriteLine("└");
+
+			Write("┌───");
+			CM.WriteLineColoredReset(" < update-players >", ConsoleColor.White);
+			WriteLine("│ Updates dynamic player info for those currently rostered.");
+			Write("│ Usage: ");
+			CM.WriteLineColoredReset("ffdb update-players", ConsoleColor.White);
+			WriteLine("└" + Environment.NewLine);
+
+			WriteLine("These 2 options are available for any command:");
+			WriteLine("┌");
+			Write("│ ");
+			CM.WriteColoredReset("[config|c]", ConsoleColor.White);
+			WriteLine(" path to the config file.");
+			Write("│ ");
+			CM.WriteColoredReset("[skip-roster]", ConsoleColor.White);
+			WriteLine(" skips fetching roster info for every team.");
+			WriteLine("│               This info is dynamic but not worth re-fetching multiple times in a day.");
+			WriteLine("└" + Environment.NewLine);
+
+			WriteLine("For better usage details and other documentation, go to:");
+			WriteLine("https://github.com/rushfive/FFDB");
+
 		}
 	}
 }

@@ -15,17 +15,15 @@ namespace R5.FFDB.CLI.Commands
 			public override string CommandKey => _commandKey;
 		}
 
-		internal static Command<RunInfo> Command = new Command<RunInfo>
+		internal static Command<RunInfo> GetCommand()
 		{
-			Key = _commandKey,
-			Options =
+			var command = new Command<RunInfo>
 			{
-				new Option<RunInfo, string>
-				{
-					Key = "config | c",
-					Property = ri => ri.ConfigFilePath
-				}
-			}
-		};
+				Key = _commandKey
+			};
+
+			RunInfoBase.AddCommonOptions(command);
+			return command;
+		}
 	}
 }
