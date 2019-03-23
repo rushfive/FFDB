@@ -34,63 +34,6 @@ using Serilog.Context;
 
 namespace DevTester
 {
-	[Table("ffdb.team")]
-	public class TestTmSql
-	{
-		[PrimaryKey]
-		[Column("id", PostgresDataType.INT)]
-		public int Id { get; set; }
-
-		[NotNull]
-		[Column("nfl_id", PostgresDataType.TEXT)]
-		public string NflId { get; set; }
-
-		[NotNull]
-		[Column("name", PostgresDataType.TEXT)]
-		public string Name { get; set; }
-
-		[NotNull]
-		[Column("abbreviation", PostgresDataType.TEXT)]
-		public string Abbreviation { get; set; }
-	}
-
-	[Table("ffdb.team22222")]
-	public class TestTmSql222
-	{
-		[PrimaryKey]
-		[Column("id", PostgresDataType.INT)]
-		public int Id { get; set; }
-
-		[NotNull]
-		[Column("nfl_id", PostgresDataType.TEXT)]
-		public string NflId { get; set; }
-
-		[NotNull]
-		[Column("name", PostgresDataType.TEXT)]
-		public string Name { get; set; }
-
-		[NotNull]
-		[Column("abbreviation", PostgresDataType.TEXT)]
-		public string Abbreviation { get; set; }
-	}
-
-	[Table("ffdb.NOT_EXISTS")]
-	public class NotExists
-	{
-		public string LOL { get; set; }
-	}
-
-	[Table("cpk")]
-	[CompositePrimaryKeys("stringCol", "intCol", "boolCol")]
-	public class CompositePrimaryKeys
-	{
-		[Column("stringCol")]
-		public string String { get; set; }
-		[Column("intCol")]
-		public int Int { get; set; }
-		[Column("boolCol")]
-		public bool Bool { get; set; }
-	}
 
 	public class DevProgram
 	{
@@ -119,7 +62,9 @@ namespace DevTester
 			//await engine.RunInitialSetupAsync(skipAddingStats: true);
 			//bool isInit = await engine.HasBeenInitializedAsync();
 
-			await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 2));
+			await engine.RunInitialSetupAsync(skipAddingStats: false);
+
+			//await engine.Stats.AddForWeekAsync(new WeekInfo(2018, 2));
 
 			//await engine.RunInitialSetupAsync(skipAddingStats: true);
 
@@ -141,7 +86,7 @@ namespace DevTester
 
 			setup.UsePostgreSql(new PostgresConfig
 			{
-				DatabaseName = "ffdb_test_4",
+				DatabaseName = "ffdb_test_5",
 				Host = "localhost",
 				Username = "ffdb",
 				Password = "welc0me!"
@@ -157,7 +102,7 @@ namespace DevTester
 			setup.UseMongo(new MongoConfig
 			{
 				ConnectionString = "mongodb://localhost:27017/FFDB_Test_2?replicaSet=rs_local",
-				DatabaseName = "FFDB_Test_2"
+				DatabaseName = "FFDB_Test_3"
 			});
 
 			return GetConfiguredEngine(setup);
@@ -166,7 +111,7 @@ namespace DevTester
 		private static FfdbEngine GetConfiguredEngine(EngineSetup setup)
 		{
 			setup
-				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_4\");
+				.SetRootDataDirectoryPath(@"D:\Repos\ffdb_data_5\");
 				//.SetRootDataDirectoryPath(@"D:\Repos\FFDB.Data\");
 
 			setup.WebRequest
@@ -181,7 +126,8 @@ namespace DevTester
 			setup
 				.SkipRosterFetch()
 				.SaveToDisk()
-				.SaveOriginalSourceFiles();
+				.SaveOriginalSourceFiles()
+				.EnableFetchingFromDataRepo();
 
 			return setup.Create();
 		}

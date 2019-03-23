@@ -83,7 +83,7 @@ namespace R5.FFDB.Components.Pipelines.Setup
 					List<int> existingTeams = await dbContext.Team.GetExistingTeamIdsAsync();
 					
 					List<Team> missing = Core.Teams.GetAll()
-						.Where(t => existingTeams.Contains(t.Id))
+						.Where(t => !existingTeams.Contains(t.Id))
 						.ToList();
 
 					if (!missing.Any())

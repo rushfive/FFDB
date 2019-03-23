@@ -2,23 +2,27 @@
 using R5.FFDB.CLI.Configuration;
 using R5.FFDB.Engine;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace R5.FFDB.CLI.Engine
 {
 	internal static class EngineResolver
 	{
-		internal static FfdbEngine Resolve(FfdbConfig config, RunInfoBase runInfo)
+		internal static FfdbEngine Resolve(FfdbConfig config, RunInfoBase runInfo, DataRepoState dataRepoState)
 		{
-			return new EngineSetup()
+			var setup = new EngineSetup()
 				.SetRootDataDirectoryPath(config.RootDataPath)
 				.ConfigureWebClient(config)
 				.ConfigureLogging(config)
 				.ConfigureDbProvider(config)
-				.ConfigureFromRunInfo(runInfo)
-				.Create();
+				.ConfigureFromRunInfo(runInfo);
+
+			bool fetchFromDataRepo = dataRepoState?.Enabled ?? false;
+			if (fetchFromDataRepo)
+			{
+				setup.EnableFetchingFromDataRepo();
+			}
+
+			return setup.Create();
 		}
 	}
 

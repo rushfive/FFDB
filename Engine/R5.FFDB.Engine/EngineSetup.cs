@@ -86,6 +86,12 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
+		public EngineSetup EnableFetchingFromDataRepo()
+		{
+			_programOptions.DataRepoEnabled = true;
+			return this;
+		}
+
 		public FfdbEngine Create()
 		{
 			var baseServiceCollection = new EngineBaseServiceCollection();

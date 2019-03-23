@@ -100,19 +100,31 @@ namespace R5.FFDB.CLI.Engine
 		private async Task RunViewStateAsync()
 		{
 			Task<WeekInfo> latestWeekTask = _engine.GetLatestWeekAsync();
-			Task<DateTime> dataRepoUpdatedTask = _engine.GetDataRepoLastUpdatedAsync();
+			Task<DataRepoState> dataRepoStateTask = _engine.GetDataRepoStateAsync();
 			Task<List<WeekInfo>> updatedWeeksTask = _engine.GetAllUpdatedWeeksAsync();
 
 			await Task.WhenAll(
 				latestWeekTask,
-				dataRepoUpdatedTask,
+				dataRepoStateTask,
 				updatedWeeksTask);
 
+			var dataRepoState = dataRepoStateTask.Result;
+
 			WriteLine("┌");
-			Write("│ Data Repository last updated: ");
-			CM.WriteLineColoredReset($"{dataRepoUpdatedTask.Result:d}", ConsoleColor.White);
-			WriteLine("│ Will attempt fetching core data from the repo first.");
-			WriteLine("│ If unavailable, falls back to fetching from the original sources.");
+
+			if (dataRepoState.Enabled)
+			{
+				Write("│ Data Repository last updated: ");
+				CM.WriteLineColoredReset($"{dataRepoState.Timestamp:d}", ConsoleColor.White);
+				WriteLine("│ Will attempt fetching core data from the repo first.");
+				WriteLine("│ If unavailable, falls back to fetching from the original sources.");
+			}
+			else
+			{
+				WriteLine("│ Data Repository is currently disabled. ");
+				WriteLine("│ Will fetch all core data directly from the original sources. ");
+			}
+
 			WriteLine("│");
 			Write("│ Latest available NFL week: ");
 			CM.WriteLineColoredReset(latestWeekTask.Result.ToString(), ConsoleColor.White);

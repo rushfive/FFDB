@@ -39,9 +39,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 				return;
 			}
 
-			Logger.LogDebug($"Adding {teams.Count} teams to '{MetadataResolver.TableName<TeamSql>()}' table.");
+			var sqlEntries = teams.Select(TeamSql.FromCoreEntity).ToList();
 
-			await DbConnection.InsertMany(teams).ExecuteAsync();
+			Logger.LogDebug($"Adding {sqlEntries.Count} teams to '{MetadataResolver.TableName<TeamSql>()}' table.");
+
+			await DbConnection.InsertMany(sqlEntries).ExecuteAsync();
 		}
 		
 		public async Task UpdateRosterMappingsAsync(List<Roster> rosters)

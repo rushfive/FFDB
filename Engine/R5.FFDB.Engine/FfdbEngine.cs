@@ -84,21 +84,22 @@ namespace R5.FFDB.Engine
 			return dbContext.UpdateLog.GetAsync();
 		}
 
-		public async Task<DateTime> GetDataRepoLastUpdatedAsync()
+		public async Task<DataRepoState> GetDataRepoStateAsync()
 		{
-			string uri = @"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/updated_date.json";
+			string uri = @"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/state.json";
 
 			string response = await _webRequestClient.GetStringAsync(uri, throttle: false);
 
-			var lastUpdated = JsonConvert.DeserializeObject<DataRepoLastUpdated>(response);
-
-			return lastUpdated.Timestamp;
+			return JsonConvert.DeserializeObject<DataRepoState>(response);
 		}
 	}
 
-	internal class DataRepoLastUpdated
+	public class DataRepoState
 	{
 		[JsonProperty("timestamp")]
 		public DateTime Timestamp { get; set; }
+
+		[JsonProperty("enabled")]
+		public bool Enabled { get; set; }
 	}
 }

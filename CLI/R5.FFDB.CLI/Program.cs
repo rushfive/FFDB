@@ -1,9 +1,11 @@
-﻿using R5.FFDB.CLI.Commands;
+﻿using Newtonsoft.Json;
+using R5.FFDB.CLI.Commands;
 using R5.FFDB.CLI.Configuration;
 using R5.FFDB.CLI.Engine;
 using R5.FFDB.Engine;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using static System.Console;
 using CM = R5.Internals.Abstractions.SystemConsole.ConsoleManager;
@@ -21,7 +23,9 @@ namespace R5.FFDB.CLI
 					string configFilePath = GetConfigFilePath(runInfo);
 					FfdbConfig config = FileConfigResolver.FromFile(configFilePath);
 
-					FfdbEngine engine = EngineResolver.Resolve(config, runInfo);
+					DataRepoState dataRepoState = await GetDataRepoStateAsync();
+
+					FfdbEngine engine = EngineResolver.Resolve(config, runInfo, dataRepoState);
 
 					OutputCommandInfo(runInfo);
 
@@ -73,14 +77,37 @@ namespace R5.FFDB.CLI
 			return path;
 		}
 
+		private static async Task<DataRepoState> GetDataRepoStateAsync()
+		{
+			try
+			{
+				using (var client = new HttpClient())
+				{
+					string uri = @"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/state.json";
+
+					string response = await client.GetStringAsync(uri);
+
+					return JsonConvert.DeserializeObject<DataRepoState>(response);
+				}
+			}
+			catch (Exception ex)
+			{
+				CM.WriteError("Failed to fetch data repo state, this feature will be disabled."
+					+ Environment.NewLine + ex);
+				return null;
+			}
+			
+		}
+
 		private static void OutputCommandInfo(RunInfoBase runInfo)
 		{
-			WriteLine(@"
+			CM.WriteLineColoredReset(@"
    _____ _____ ____  _____ 
   |   __|   __|    \| __  |
   |   __|   __|  |  | __ -|
-  |__|  |__|  |____/|_____|
-             v1.0.0-alpha.1" + Environment.NewLine);
+  |__|  |__|  |____/|_____|", ConsoleColor.Cyan);
+
+			CM.WriteLineColoredReset("             v1.0.0-alpha.1" + Environment.NewLine, ConsoleColor.White);
 
 			Write("Running command: ");
 			CM.WriteLineColoredReset(runInfo.CommandKey, ConsoleColor.Yellow);

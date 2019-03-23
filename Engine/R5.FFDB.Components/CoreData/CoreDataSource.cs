@@ -47,12 +47,23 @@ namespace R5.FFDB.Components.CoreData
 			
 			if (!TryGetVersionedFromDisk(key, out versioned))
 			{
-				if (SupportsDataRepoFetch)
+				if (SupportsDataRepoFetch && _programOptions.DataRepoEnabled)
 				{
 					versioned = await GetVersionedFromDataRepoAsync(key);
 				}
 
-				if (versioned == null)
+				if (versioned != null)
+				{
+					if (SupportsVersionedFilePersistence && _programOptions.SaveToDisk)
+					{
+						string filePath = GetVersionedFilePath(key);
+
+						string serializedModel = JsonConvert.SerializeObject(versioned);
+
+						File.WriteAllText(filePath, serializedModel);
+					}
+				}
+				else
 				{
 					var (versionedModel, fetchedWeb) = await FetchFromSourceAsync(key);
 
