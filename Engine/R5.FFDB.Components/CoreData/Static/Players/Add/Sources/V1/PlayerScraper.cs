@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
+using R5.FFDB.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;

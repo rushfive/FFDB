@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using R5.FFDB.Components;
+using R5.FFDB.Core;
 using R5.Internals.PostgresMapper;
 using System;
 

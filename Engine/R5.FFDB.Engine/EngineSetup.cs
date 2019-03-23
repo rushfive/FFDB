@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using R5.FFDB.Components;
 using R5.FFDB.Components.Configurations;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.DbProviders.Mongo;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;

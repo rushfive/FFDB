@@ -4,6 +4,7 @@ using R5.FFDB.Components.CoreData.Dynamic.Rosters;
 using R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1.Mappers;
 using R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1.Models;
 using R5.FFDB.Components.Http;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Entities;
 
 namespace R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1

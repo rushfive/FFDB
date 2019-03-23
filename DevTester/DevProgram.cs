@@ -31,6 +31,7 @@ using R5.Internals.PostgresMapper.QueryCommand;
 using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
 using R5.FFDB.DbProviders.PostgreSql.Entities;
 using Serilog.Context;
+using R5.FFDB.Core;
 
 namespace DevTester
 {

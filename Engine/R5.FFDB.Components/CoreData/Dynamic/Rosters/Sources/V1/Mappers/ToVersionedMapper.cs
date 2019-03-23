@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Entities;
 using System;
 using System.Collections.Generic;

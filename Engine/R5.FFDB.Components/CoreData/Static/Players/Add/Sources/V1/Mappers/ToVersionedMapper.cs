@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using R5.FFDB.Components.CoreData.Static.Players.Add.Sources.V1.Models;
+using R5.FFDB.Core;
 using System;
 using System.Threading.Tasks;
 
