@@ -19,5 +19,24 @@ namespace R5.Internals.Abstractions.SystemConsole
 			CM.WriteLineColored(value, color);
 			ResetColor();
 		}
+
+		public static void WriteColored(string value, ConsoleColor color)
+		{
+			ForegroundColor = color;
+			Write(value);
+		}
+
+		public static void WriteColoredReset(string value, ConsoleColor color)
+		{
+			CM.WriteColored(value, color);
+			ResetColor();
+		}
+
+		public static void WriteError(string message)
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine(message);
+			Console.ResetColor();
+		}
 	}
 }

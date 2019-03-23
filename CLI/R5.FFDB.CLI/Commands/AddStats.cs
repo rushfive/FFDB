@@ -6,8 +6,6 @@ using System.Text;
 
 namespace R5.FFDB.CLI.Commands
 {
-	// ffdb add-stats missing
-	// ffdb add-stats week 2018-5
 	public static class AddStats
 	{
 		private const string _commandKey = "add-stats";
@@ -15,47 +13,52 @@ namespace R5.FFDB.CLI.Commands
 		public class RunInfo : RunInfoBase
 		{
 			public override string CommandKey => _commandKey;
+			public override string Description => "Adds player and team stats for either a specified week, or for all available and missing.";
+
 			public WeekInfo? Week { get; set; }
 		}
 
-		internal static Command<RunInfo> Command = new Command<RunInfo>
+		internal static Command<RunInfo> GetCommand()
 		{
-			Key = _commandKey,
-			SubCommands =
+			var command = new Command<RunInfo>
 			{
-				new SubCommand<RunInfo>
+				Key = _commandKey,
+				SubCommands =
 				{
-					Key = "missing"
-				},
-				new SubCommand<RunInfo>
-				{
-					Key = "week",
-					Arguments =
+					new SubCommand<RunInfo>
 					{
-						new PropertyArgument<RunInfo, WeekInfo?>
-						{
-							Property = ri => ri.Week,
-							HelpToken = "<week>"
-						}
+						Key = "missing"
 					},
-					Options =
+					new SubCommand<RunInfo>
 					{
-						new Option<RunInfo, bool>
+						Key = "week",
+						Arguments =
 						{
-							Key = "skip-roster-fetch | s",
-							Property = ri => ri.SkipRosterFetch
+							new PropertyArgument<RunInfo, WeekInfo?>
+							{
+								Property = ri => ri.Week,
+								HelpToken = "<week>"
+							}
 						}
 					}
-				}
-			},
-			GlobalOptions =
-			{
-				new Option<RunInfo, string>
+				},
+				GlobalOptions =
 				{
-					Key = "config | c",
-					Property = ri => ri.ConfigFilePath
+					new Option<RunInfo, bool>
+					{
+						Key = "save-to-disk",
+						Property = ri => ri.SaveToDisk
+					},
+					new Option<RunInfo, bool>
+					{
+						Key = "save-src-files",
+						Property = ri => ri.SaveOriginalSourceFiles
+					}
 				}
-			}
-		};
+			};
+
+			RunInfoBase.AddCommonOptions(command);
+			return command;
+		}
 	}
 }

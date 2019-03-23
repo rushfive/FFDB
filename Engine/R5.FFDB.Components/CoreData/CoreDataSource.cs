@@ -44,13 +44,32 @@ namespace R5.FFDB.Components.CoreData
 		{
 			TVersionedModel versioned = null;
 			bool fetchedFromWeb = false;
-
+			
 			if (!TryGetVersionedFromDisk(key, out versioned))
 			{
-				var (versionedModel, fetchedWeb) = await FetchFromSourceAsync(key);
+				if (SupportsDataRepoFetch && _programOptions.DataRepoEnabled)
+				{
+					versioned = await GetVersionedFromDataRepoAsync(key);
+				}
 
-				versioned = versionedModel;
-				fetchedFromWeb = fetchedWeb;
+				if (versioned != null)
+				{
+					if (SupportsVersionedFilePersistence && _programOptions.SaveToDisk)
+					{
+						string filePath = GetVersionedFilePath(key);
+
+						string serializedModel = JsonConvert.SerializeObject(versioned);
+
+						File.WriteAllText(filePath, serializedModel);
+					}
+				}
+				else
+				{
+					var (versionedModel, fetchedWeb) = await FetchFromSourceAsync(key);
+
+					versioned = versionedModel;
+					fetchedFromWeb = fetchedWeb;
+				}
 			}
 
 			TCoreData coreData = await _toCoreMapper.MapAsync(versioned, key);
@@ -58,12 +77,34 @@ namespace R5.FFDB.Components.CoreData
 			return new SourceResult<TCoreData>(coreData, fetchedFromWeb);
 		}
 
+		private async Task<TVersionedModel> GetVersionedFromDataRepoAsync(TKey key)
+		{
+			try
+			{
+				string uri = GetDataRepoUri(key);
+				string response = await _webClient.GetStringAsync(uri, throttle: false);
+
+				var versioned = JsonConvert.DeserializeObject<TVersionedModel>(response);
+
+				_logger.LogDebug($"Fetched versioned model from data repo for '{key}'.");
+
+				return versioned;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"There was an error fetching from the data repo for '{key}'.");
+				return null;
+			}
+		}
+
 		protected abstract bool SupportsSourceFilePersistence { get; }
 		protected abstract bool SupportsVersionedFilePersistence { get; }
+		protected abstract bool SupportsDataRepoFetch { get; }
 
 		protected abstract string GetVersionedFilePath(TKey key);
 		protected abstract string GetSourceFilePath(TKey key);
 		protected abstract string GetSourceUri(TKey key);
+		protected abstract string GetDataRepoUri(TKey key);
 
 		private bool TryGetVersionedFromDisk(TKey key, out TVersionedModel versioned)
 		{

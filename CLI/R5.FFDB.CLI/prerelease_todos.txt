@@ -1,26 +1,8 @@
-update logging
 
 
-- ffdb.data project to pull data from (zip file + single files fetches)
-
-
-- update logging to make use of serilog structured formatting - use json formatting too when relevant
-	- for ex, when starting up, display the program options as json
-
-
-
-
-update access modifiers to as restrictive as needed (mainly public -> internal)
--unit & functional tests for everything
 - documentation
 - get image/diagram of db schemas (both mongo and postgres) for alpha release discussion
 
-
-
-------------------------------------------
-
-
-cleanup baseservicecollection adding of services
 
 
 add readme docs and c# comments

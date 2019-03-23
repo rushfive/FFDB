@@ -43,6 +43,7 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 
 		protected override bool SupportsSourceFilePersistence => false;
 		protected override bool SupportsVersionedFilePersistence => true;
+		protected override bool SupportsDataRepoFetch => false;
 
 		protected override string GetVersionedFilePath(Team team)
 		{
@@ -59,6 +60,9 @@ namespace R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1
 			return Endpoints.Page.TeamRoster(team);
 		}
 
-		
+		protected override string GetDataRepoUri(Team key)
+		{
+			return null;
+		}
 	}
 }

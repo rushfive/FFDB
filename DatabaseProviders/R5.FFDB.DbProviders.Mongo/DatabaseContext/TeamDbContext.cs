@@ -21,6 +21,17 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 		{
 		}
 
+		public async Task<List<int>> GetExistingTeamIdsAsync()
+		{
+			var findOptions = new FindOptions<TeamDocument, int>
+			{
+				Projection = Builders<TeamDocument>.Projection
+					.Expression(t => t.Id)
+			};
+
+			return await GetMongoDbContext().FindAsync(findOptions: findOptions) ?? new List<int>();
+		}
+
 		public async Task AddAsync(List<Team> teams)
 		{
 			if (teams == null)
@@ -29,37 +40,17 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 			}
 			
 			var collectionName = CollectionResolver.GetName<TeamDocument>();
-
-			MongoDbContext mongoDbContext = GetMongoDbContext();
-
-			HashSet<int> existing = await GetExistingTeamIdsAsync(mongoDbContext);
-
-			List<TeamDocument> missing = teams
-				.Where(t => !existing.Contains(t.Id))
-				.Select(TeamDocument.FromCoreEntity)
-				.ToList();
-
-			if (!missing.Any())
+			
+			if (!teams.Any())
 			{
 				return;
 			}
-			
-			await mongoDbContext.InsertManyAsync(missing);
 
-			Logger.LogDebug($"Added {missing.Count} teams to '{collectionName}' collection.");
-		}
+			var docs = teams.Select(TeamDocument.FromCoreEntity).ToList();
 
-		private async Task<HashSet<int>> GetExistingTeamIdsAsync(MongoDbContext mongoDbContext)
-		{
-			var findOptions = new FindOptions<TeamDocument, int>
-			{
-				Projection = Builders<TeamDocument>.Projection
-					.Expression(t => t.Id)
-			};
+			await GetMongoDbContext().InsertManyAsync(docs);
 
-			List<int> ids = await mongoDbContext.FindAsync(findOptions: findOptions) ?? new List<int>();
-
-			return ids.ToHashSet();
+			Logger.LogDebug($"Added {teams.Count} teams to '{collectionName}' collection.");
 		}
 
 		// first set all player's team ids to null, then update

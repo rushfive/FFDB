@@ -5,14 +5,14 @@ using System.Text;
 
 namespace R5.FFDB.CLI.Commands
 {
-	public static class UpdateRosters
+	public static class ViewState
 	{
-		private const string _commandKey = "update-rosters";
+		private const string _commandKey = "view-state";
 
 		public class RunInfo : RunInfoBase
 		{
 			public override string CommandKey => _commandKey;
-			public override string Description => "Updates mappings between players-and-teams, based off of a current fetch of team roster information.";
+			public override string Description => "Will acquire and display general state information regarding the app and the NFL season.";
 		}
 
 		internal static Command<RunInfo> GetCommand()

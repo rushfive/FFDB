@@ -1,20 +1,14 @@
-﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using R5.FFDB.CLI.Commands;
 using R5.FFDB.CLI.Configuration;
-using R5.FFDB.Components.Configurations;
-//using R5.FFDB.Components.CoreData.WeekStats.Models;
-using R5.FFDB.DbProviders.PostgreSql.DatabaseProvider;
+using R5.FFDB.CLI.Engine;
 using R5.FFDB.Engine;
-using Serilog;
-using Serilog.Events;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using CM = R5.FFDB.CLI.ConsoleManager;
+using static System.Console;
+using CM = R5.Internals.Abstractions.SystemConsole.ConsoleManager;
 
 namespace R5.FFDB.CLI
 {
@@ -24,98 +18,100 @@ namespace R5.FFDB.CLI
 		{
 			try
 			{
-				RunInfoBase runInfo = GetRunInfoFromArgs(args);
+				if (TryGetRunInfo(args, out RunInfoBase runInfo))
+				{
+					string configFilePath = GetConfigFilePath(runInfo);
+					FfdbConfig config = FileConfigResolver.FromFile(configFilePath);
 
-				FfdbConfig config = FileConfigResolver.FromFile(runInfo.ConfigFilePath);
+					DataRepoState dataRepoState = await GetDataRepoStateAsync();
 
-				FfdbEngine engine = GetConfiguredEngine(config, runInfo);
-				var runner = new EngineRunner(engine);
+					FfdbEngine engine = EngineResolver.Resolve(config, runInfo, dataRepoState);
 
-				await runner.RunAsync(runInfo);
+					OutputCommandInfo(runInfo);
 
-
-				return;
+					await new EngineRunner(engine).RunAsync(runInfo);
+				}
 			}
 			catch (Exception ex)
 			{
 				CM.WriteError(ex.Message);
-				return;
 			}
-
-			Console.ReadKey();
+			finally
+			{
+				WriteLine(Environment.NewLine + "Completed running command. Press any key to exit..");
+				ReadKey();
+			}
 		}
 
-		private static RunInfoBase GetRunInfoFromArgs(string[] args)
+		private static bool TryGetRunInfo(string[] args, out RunInfoBase runInfo)
 		{
-			RunInfoBuilder.RunInfoBuilder builder = ConfigureBuilder.Get();
+			runInfo = null;
 
-			var runInfoObject = builder.Build(args);
-			if (runInfoObject == null)
+			var runInfoBuilder = ConfigureRunInfoBuilder.Create();
+
+			var result = runInfoBuilder.Build(args);
+			if (result == null)
 			{
-				throw new InvalidOperationException("There was an error parsing program args.");
+				// version or help command
+				return false;
 			}
 
-			var runInfo = runInfoObject as RunInfoBase;
-			if (runInfo == null)
-			{
-				throw new InvalidOperationException("There was an error parsing program args.");
-			}
-
-			return runInfo;
+			runInfo = result as RunInfoBase;
+			return true;
 		}
 
-		private static FfdbEngine GetConfiguredEngine(FfdbConfig config, RunInfoBase runInfo)
+		private static string GetConfigFilePath(RunInfoBase runInfo)
 		{
-			var setup = new EngineSetup();
-
-			setup.SetRootDataDirectoryPath(config.RootDataPath);
-
-			if (config.WebRequest.RandomizedThrottle != null)
+			string path = runInfo.ConfigFilePath;
+			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
 			{
-				setup.WebRequest.SetRandomizedThrottle(
-					config.WebRequest.RandomizedThrottle.Min,
-					config.WebRequest.RandomizedThrottle.Max);
-			}
-			else
-			{
-				setup.WebRequest.SetThrottle(config.WebRequest.ThrottleMilliseconds);
+				path = "ffdb_config.json";
+
+				if (!File.Exists(path))
+				{
+					throw new InvalidOperationException("Failed to find config file. Ensure that you either include it as a program option "
+						+ "or that the file exists in the same dir as the program exe.");
+				}
 			}
 
-			var rollingInterval = Enum.Parse<RollingInterval>(config.Logging.RollingInterval);
+			return path;
+		}
 
-			setup.Logging
-				.SetLogDirectory(config.Logging.Directory)
-				.SetRollingInterval(rollingInterval);
+		private static async Task<DataRepoState> GetDataRepoStateAsync()
+		{
+			try
+			{
+				using (var client = new HttpClient())
+				{
+					string uri = @"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/state.json";
 
-			if (config.Logging.UseDebugLogLevel)
-			{
-				setup.Logging.UseDebugLogLevel();
-			}
+					string response = await client.GetStringAsync(uri);
 
-			if (config.Logging.MaxBytes.HasValue)
-			{
-				setup.Logging.SetMaxBytes(config.Logging.MaxBytes.Value);
+					return JsonConvert.DeserializeObject<DataRepoState>(response);
+				}
 			}
-			if (config.Logging.RollOnFileSizeLimit)
+			catch (Exception ex)
 			{
-				setup.Logging.RollOnFileSizeLimit();
+				CM.WriteError("Failed to fetch data repo state, this feature will be disabled."
+					+ Environment.NewLine + ex);
+				return null;
 			}
-				
-			if (config.PostgreSql != null)
-			{
-				setup.UsePostgreSql(config.PostgreSql);
-			}
-			else if (config.Mongo != null)
-			{
-				setup.UseMongo(config.Mongo);
-			}
+			
+		}
 
-			if (runInfo.SkipRosterFetch)
-			{
-				setup.SkipRosterFetch();
-			}
+		private static void OutputCommandInfo(RunInfoBase runInfo)
+		{
+			CM.WriteLineColoredReset(@"
+   _____ _____ ____  _____ 
+  |   __|   __|    \| __  |
+  |   __|   __|  |  | __ -|
+  |__|  |__|  |____/|_____|", ConsoleColor.Cyan);
 
-			return setup.Create();
+			CM.WriteLineColoredReset("             v1.0.0-alpha.1" + Environment.NewLine, ConsoleColor.White);
+
+			Write("Running command: ");
+			CM.WriteLineColoredReset(runInfo.CommandKey, ConsoleColor.Yellow);
+			WriteLine(runInfo.Description + Environment.NewLine);
 		}
 	}
 }

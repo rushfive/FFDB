@@ -31,7 +31,7 @@ namespace R5.FFDB.Engine
 			}
 			if (!Directory.Exists(path))
 			{
-				throw new ArgumentException($"Directory path '{path}' doesn't exist.");
+				Directory.CreateDirectory(path);
 			}
 
 			_rootDataPath = path;
@@ -83,6 +83,12 @@ namespace R5.FFDB.Engine
 		public EngineSetup SaveOriginalSourceFiles()
 		{
 			_programOptions.SaveOriginalSourceFiles = true;
+			return this;
+		}
+
+		public EngineSetup EnableFetchingFromDataRepo()
+		{
+			_programOptions.DataRepoEnabled = true;
 			return this;
 		}
 

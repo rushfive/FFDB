@@ -34,6 +34,7 @@ namespace R5.FFDB.Core.Database
 
 	public interface ITeamDbContext
 	{
+		Task<List<int>> GetExistingTeamIdsAsync();
 		Task AddAsync(List<Team> teams);
 		Task UpdateRosterMappingsAsync(List<Roster> rosters);
 	}

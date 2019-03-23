@@ -21,35 +21,29 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 		{
 		}
 
+		public async Task<List<int>> GetExistingTeamIdsAsync()
+		{
+			List<TeamSql> existing = await DbConnection.Select<TeamSql>(t => t.Id).ExecuteAsync();
+			return existing.Select(t => t.Id).ToList();
+		}
+
 		public async Task AddAsync(List<Team> teams)
 		{
 			if (teams == null)
 			{
 				throw new ArgumentNullException(nameof(teams), "Teams must be provided.");
 			}
-
-			// todo: move this checking of existing to the engine. dbContext shouldnt care about this kind of logic
-			HashSet<int> existing = await GetExistingTeamIdsAsync();
-
-			List<TeamSql> missing = teams
-				.Where(t => !existing.Contains(t.Id))
-				.Select(TeamSql.FromCoreEntity)
-				.ToList();
-
-			if (!missing.Any())
+			
+			if (!teams.Any())
 			{
 				return;
 			}
 
-			Logger.LogDebug($"Adding {missing.Count} teams to '{MetadataResolver.TableName<TeamSql>()}' table.");
+			var sqlEntries = teams.Select(TeamSql.FromCoreEntity).ToList();
 
-			await DbConnection.InsertMany(missing).ExecuteAsync();
-		}
+			Logger.LogDebug($"Adding {sqlEntries.Count} teams to '{MetadataResolver.TableName<TeamSql>()}' table.");
 
-		private async Task<HashSet<int>> GetExistingTeamIdsAsync()
-		{
-			List<TeamSql> existing = await DbConnection.Select<TeamSql>(t => t.Id).ExecuteAsync();
-			return existing.Select(t => t.Id).ToHashSet();
+			await DbConnection.InsertMany(sqlEntries).ExecuteAsync();
 		}
 		
 		public async Task UpdateRosterMappingsAsync(List<Roster> rosters)
@@ -82,5 +76,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.DatabaseContext
 
 			return DbConnection.InsertMany(entries.ToList()).ExecuteAsync();
 		}
+
+		
 	}
 }
