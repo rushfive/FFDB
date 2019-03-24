@@ -31,7 +31,7 @@ namespace R5.FFDB.CLI.Commands
 
 			command.GlobalOptions.Add(new Option<T, bool>
 			{
-				Key = "skip-roster",
+				Key = "skip-roster | s",
 				Property = ri => ri.SkipRosterFetch
 			});
 		}
