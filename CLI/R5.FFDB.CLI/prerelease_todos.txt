@@ -1,4 +1,7 @@
-
+Update the HasBeenInitialized for the db providers.
+it should check that all of the following are met:
+- ALL tables/collections have been created
+- ALL teams have been added
 
 - documentation
 - get image/diagram of db schemas (both mongo and postgres) for alpha release discussion

@@ -41,6 +41,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CLI", "CLI", "{BEE84D90-771
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "R5.Internals.PostgresMapper.Tests", "R5.Internals\Tests\R5.Internals.PostgresMapper.Tests\R5.Internals.PostgresMapper.Tests.csproj", "{BE2C19EF-2FA1-46EE-8185-4CD1930ECFE8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1028CD87-3D5A-4B3F-8A6E-9B5335E5638E}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

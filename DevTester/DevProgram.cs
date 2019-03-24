@@ -109,6 +109,23 @@ namespace DevTester
 			return GetConfiguredEngine(setup);
 		}
 
+		private static FfdbEngine FOR_DOCS()
+		{
+var setup = new EngineSetup();
+
+setup
+	.SetRootDataDirectoryPath(@"C:\path\to\data\dir\")
+	.UseMongo(new MongoConfig
+	{
+		ConnectionString = "connection_string",
+		DatabaseName = "db_name"
+	});
+
+FfdbEngine engine = setup.Create();
+
+			return GetConfiguredEngine(setup);
+		}
+
 		private static FfdbEngine GetConfiguredEngine(EngineSetup setup)
 		{
 			setup

@@ -69,6 +69,12 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
+		public EngineSetup UseCustomDbProvider(Func<IAppLogger, IDatabaseProvider> dbProviderFactory)
+		{
+			_dbProviderFactory = dbProviderFactory;
+			return this;
+		}
+
 		public EngineSetup SkipRosterFetch()
 		{
 			_programOptions.SkipRosterFetch = true;
