@@ -2,6 +2,9 @@
 
 namespace R5.FFDB.Core.Models
 {
+	/// <summary>
+	/// Represents a single and specific week in a season.
+	/// </summary>
 	public struct WeekInfo : IComparable<WeekInfo>
 	{
 		public int Season { get; }	

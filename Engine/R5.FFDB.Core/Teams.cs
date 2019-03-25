@@ -6,6 +6,9 @@ using System.Text;
 
 namespace R5.FFDB.Core
 {
+	/// <summary>
+	/// Contains the list of all NFL teams, and some helper methods to interact with them.
+	/// </summary>
 	public static class Teams
 	{
 		private static Dictionary<string, int> _nflIdMap { get; }
@@ -29,16 +32,29 @@ namespace R5.FFDB.Core
 			});
 		}
 
+		/// <summary>
+		/// Get the list of all NFL teams.
+		/// </summary>
+		/// <returns></returns>
 		public static List<Team> GetAll()
 		{
 			return _teams;
 		}
 
+		/// <summary>
+		/// Determines whether a given NFL id belongs to a team.
+		/// </summary>
+		/// <param name="nflId">The team's NFL Id (same id type used for players)</param>
 		public static bool IsTeam(string nflId)
 		{
 			return _nflIdMap.ContainsKey(nflId);
 		}
 
+		/// <summary>
+		/// Get the team's integer Id from their NFL id.
+		/// </summary>
+		/// <param name="nflId">The team's NFL Id (same id type used for players)</param>
+		/// <returns></returns>
 		public static int GetIdFromNflId(string nflId)
 		{
 			if (!_nflIdMap.TryGetValue(nflId, out int id))
@@ -49,6 +65,11 @@ namespace R5.FFDB.Core
 			return id;
 		}
 
+		/// <summary>
+		/// Return the team's short name given their abbreviation.
+		/// For example, given the "SEA" abbreviation, returns "seahawks".
+		/// </summary>
+		/// <param name="abbreviation">The team's official abbreviation.</param>
 		public static string GetShortNameFromAbbreviation(string abbreviation)
 		{
 			if (!_abbreviationShortNameMap.TryGetValue(abbreviation, out string shortName))
@@ -59,6 +80,11 @@ namespace R5.FFDB.Core
 			return shortName;
 		}
 
+		/// <summary>
+		/// Get the team's id from their short name.
+		/// </summary>
+		/// <param name="shortName">The team's short name (eg "seahawks")</param>
+		/// <returns></returns>
 		public static int GetIdFromShortName(string shortName)
 		{
 			if (!_shortNameIdMap.TryGetValue(shortName, out int id))
@@ -69,6 +95,12 @@ namespace R5.FFDB.Core
 			return id;
 		}
 
+		/// <summary>
+		/// Get the team's id from their abbreviation.
+		/// </summary>
+		/// <param name="abbreviation">The team's abbreviation (eg "SEA")</param>
+		/// <param name="includePriorLookup">If true, will also search by any of the team's knowns past abbreviations.</param>
+		/// <returns></returns>
 		public static int GetIdFromAbbreviation(string abbreviation, bool includePriorLookup = false)
 		{
 			if (_abbreviationIdMap.TryGetValue(abbreviation, out int id))

@@ -27,8 +27,6 @@ The Player Stats also includes data for IDP.
 
 ---
 
-#### A couple important notes:
-
 _The Engine and CLI are currently in an alpha release state_
 
 Although they're essentially feature complete, I have some uncertainties on how I've drawn up the database schemas for both Postgres and Mongo. I'll leave these two issue threads up for a period to get community input:
@@ -38,45 +36,25 @@ Although they're essentially feature complete, I have some uncertainties on how 
 
 The official v1 release may include db schema changes so be aware that you may need to re-build your db on v1 (migrations won't be supported for the alpha-to-v1 change).
 
-_Receiving targets are not included_
-
-This is a stat I really wanted to include, and had spent a good amount of time trying to get working. NFL's site does include this information, but as it's loaded dynamically using JS, it turned to be too time-consuming and I didn't want to hold off on building the rest of the engine out.
-
-I'm most likely _not_ going to be adding this in as a feature. After checking out a lot of football and fantasy related sites, it turns out most of them don't even include target numbers. For purposes of Fantasy Football, which is what I've built this for, receptions count is clearly the more critical stat, and is included.
-
-Anyone is more than welcome to try adding the _targets_ stat within the alpha-release period - it would undoubtedly be appreciated by everyone. However, once the engine gets into a v1 state, it will become more difficult as db migrations aren't currently built in.
-
-_The Engine is tighly-coupled with NFL's data sources and schemes_
-
-100% of the data is sourced from either APIs hosted by the NFL, or scraped from some site. The data is pieced together using _IDs_ specifically used by the NFL (such as GSIS and ESB).
-
-What does this mean? If the data sources are either shutdown or changed significantly, the Engine will stop working until either the codes updated or, in the worst case, a new data source is found to replace it.
-
-If you're curious, you can read more about the Engine design further down to see how this might be accomplished.
-
 ---
 
 #### Documentation Table of Contents
 
 - [Using the CLI](#using-the-cli)
-  - [persisting data files](#persisting-data-files)
-  - [configuration file](#config-file)
-  - [commands and options](#commands-and-options)
+  - [Persisting Data Files](#persisting-data-files)
+  - [Configuration File](#config-file)
+  - [Commands and Options](#commands-and-options)
     - [initial-setup](#initial-setup)
     - [add-stats](#add-stats)
     - [update-players](#update-players)
     - [update-rosters](#update-rosters)
     - [view-stats](#view-stats)
 - [The Engine](#the-engine)
-  - [design overview](#design-overview)
-  - [engine setup](#engine-setup)
-  - [engine and processors API](#engine-and-processors-api)
+  - [Design Overview](#design-overview)
+  - [Engine Setup](#engine-setup)
+  - [Engine and Processors API](#engine-and-processors-api)
 - [Extending with DbProvider](#extending-with-database-provider)
-  - [logging](#logging)
-  - [implementing the contract](#implementing-the-contract)
-
-
-
+- [Reporting Bugs and Issues](#reporting-bugs-and-issues)
 
 ---
 

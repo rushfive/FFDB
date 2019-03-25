@@ -1,5 +1,8 @@
 ﻿namespace R5.FFDB.Core.Models
 {
+	/// <summary>
+	/// Represents a player's position.
+	/// </summary>
 	public enum Position
 	{
 		QB,
