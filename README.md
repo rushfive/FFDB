@@ -1,5 +1,15 @@
 # NFL Database Engine
 
+__Engine__
+
+[![Nuget](https://img.shields.io/nuget/v/r5.ffdb.core.svg)](https://www.nuget.org/packages/R5.FFDB.Core/)
+
+__ Core__
+
+[![Nuget](https://img.shields.io/nuget/v/r5.ffdb.core.svg)](https://www.nuget.org/packages/R5.FFDB.Core/)
+
+---
+
 This program provides a simple CLI to an engine that allows you to easily create your own databases containing the core data needed to run your football and fantasy apps.
 
 The data provided starts with the 2010 season and up until the present.
@@ -367,7 +377,9 @@ As mentioned before, you're not limited to using the natively-supported `Postgre
 
 To do this, you'll need a reference to the _R5.FFDB.Core_ library, which can be fetched from nuget:
 
-- (nuget link here)
+```
+dotnet add package R5.FFDB.Core --version 1.0.0-alpha.1
+```
 
 Here, we'll walk through that interface and its contract, so you can understand not only the literal API the Engine expects to work with, but also the underlying behavior and assumptions that are relevant.
 
