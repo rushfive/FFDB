@@ -31,11 +31,11 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
 
-		[Column("return_yards", PostgresDataType.FLOAT8)]
-		public double? ReturnYards { get; set; }
+		[Column("yards", PostgresDataType.FLOAT8)]
+		public double? Yards { get; set; }
 
-		[Column("return_touchdowns", PostgresDataType.FLOAT8)]
-		public double? ReturnTouchdowns { get; set; }
+		[Column("touchdowns", PostgresDataType.FLOAT8)]
+		public double? Touchdowns { get; set; }
 
 		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
 		{
@@ -44,10 +44,10 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 				switch (kv.Key)
 				{
 					case WeekStatType.Return_Yards:
-						this.ReturnYards = kv.Value;
+						this.Yards = kv.Value;
 						break;
 					case WeekStatType.Return_Touchdowns:
-						this.ReturnTouchdowns = kv.Value;
+						this.Touchdowns = kv.Value;
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a return stat type.");

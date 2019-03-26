@@ -4,7 +4,10 @@ using System.Text;
 
 namespace R5.FFDB.Core.Models
 {
-	// key "pts" == null means DIDNT play
+	/// <summary>
+	/// Enumeration containing all the different stat types used by NFL's Fantasy API.
+	/// The numeric values are what's received in the response.
+	/// </summary>
 	public enum WeekStatType
 	{
 		// Passing

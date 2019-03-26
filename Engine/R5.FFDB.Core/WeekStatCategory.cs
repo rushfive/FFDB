@@ -5,8 +5,14 @@ using System.Text;
 
 namespace R5.FFDB.Core
 {
+	/// <summary>
+	/// Contains sets of all the recorded stat types, grouped by categories.
+	/// </summary>
 	public static class WeekStatCategory
 	{
+		/// <summary>
+		/// Set of all the different passing stat types.
+		/// </summary>
 		public static HashSet<WeekStatType> Pass = new HashSet<WeekStatType>
 		{
 			WeekStatType.Pass_Attempts,
@@ -17,6 +23,9 @@ namespace R5.FFDB.Core
 			WeekStatType.Pass_Sacked
 		};
 
+		/// <summary>
+		/// Set of all the different rushing stat types.
+		/// </summary>
 		public static HashSet<WeekStatType> Rush = new HashSet<WeekStatType>
 		{
 			WeekStatType.Rush_Attempts,
@@ -24,6 +33,9 @@ namespace R5.FFDB.Core
 			WeekStatType.Rush_Touchdowns
 		};
 
+		/// <summary>
+		/// Set of all the different receiving stat types.
+		/// </summary>
 		public static HashSet<WeekStatType> Receive = new HashSet<WeekStatType>
 		{
 			WeekStatType.Receive_Catches,
@@ -31,12 +43,18 @@ namespace R5.FFDB.Core
 			WeekStatType.Receive_Touchdowns
 		};
 
+		/// <summary>
+		/// Set of all the different special-teams return stat types.
+		/// </summary>
 		public static HashSet<WeekStatType> Return = new HashSet<WeekStatType>
 		{
 			WeekStatType.Return_Yards,
 			WeekStatType.Return_Touchdowns
 		};
 
+		/// <summary>
+		/// Set of all the different misc stat types.
+		/// </summary>
 		public static HashSet<WeekStatType> Misc = new HashSet<WeekStatType>
 		{
 			WeekStatType.Fumble_Recover_Touchdowns,
@@ -45,6 +63,9 @@ namespace R5.FFDB.Core
 			WeekStatType.TwoPointConversions
 		};
 
+		/// <summary>
+		/// Set of all the different kicking stat types.
+		/// </summary>
 		public static HashSet<WeekStatType> Kick = new HashSet<WeekStatType>
 		{
 			WeekStatType.Kick_PAT_Makes,
@@ -61,6 +82,9 @@ namespace R5.FFDB.Core
 			WeekStatType.Kick_FiftyPlus_Misses
 		};
 
+		/// <summary>
+		/// Set of all the different IDP stat types.
+		/// </summary>
 		public static HashSet<WeekStatType> IDP = new HashSet<WeekStatType>
 		{
 			WeekStatType.IDP_Tackles,
@@ -82,6 +106,9 @@ namespace R5.FFDB.Core
 			WeekStatType.IDP_SackYards
 		};
 
+		/// <summary>
+		/// Set of all the different DST stat types.
+		/// </summary>
 		public static HashSet<WeekStatType> DST = new HashSet<WeekStatType>
 		{
 			WeekStatType.DST_Sacks,

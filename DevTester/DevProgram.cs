@@ -31,6 +31,7 @@ using R5.Internals.PostgresMapper.QueryCommand;
 using R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats;
 using R5.FFDB.DbProviders.PostgreSql.Entities;
 using Serilog.Context;
+using R5.FFDB.Core;
 
 namespace DevTester
 {
@@ -104,6 +105,23 @@ namespace DevTester
 				ConnectionString = "mongodb://localhost:27017/FFDB_Test_2?replicaSet=rs_local",
 				DatabaseName = "FFDB_Test_3"
 			});
+
+			return GetConfiguredEngine(setup);
+		}
+
+		private static FfdbEngine FOR_DOCS()
+		{
+var setup = new EngineSetup();
+
+setup
+	.SetRootDataDirectoryPath(@"C:\path\to\data\dir\")
+	.UseMongo(new MongoConfig
+	{
+		ConnectionString = "connection_string",
+		DatabaseName = "db_name"
+	});
+
+FfdbEngine engine = setup.Create();
 
 			return GetConfiguredEngine(setup);
 		}

@@ -31,23 +31,23 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
 
-		[Column("pass_attempts", PostgresDataType.FLOAT8)]
-		public double? PassAttempts { get; set; }
+		[Column("attempts", PostgresDataType.FLOAT8)]
+		public double? Attempts { get; set; }
 
-		[Column("pass_completions", PostgresDataType.FLOAT8)]
-		public double? PassCompletions { get; set; }
+		[Column("completions", PostgresDataType.FLOAT8)]
+		public double? Completions { get; set; }
 
-		[Column("pass_yards", PostgresDataType.FLOAT8)]
-		public double? PassYards { get; set; }
+		[Column("yards", PostgresDataType.FLOAT8)]
+		public double? Yards { get; set; }
 
-		[Column("pass_touchdowns", PostgresDataType.FLOAT8)]
-		public double? PassTouchdowns { get; set; }
+		[Column("touchdowns", PostgresDataType.FLOAT8)]
+		public double? Touchdowns { get; set; }
 
-		[Column("pass_interceptions", PostgresDataType.FLOAT8)]
-		public double? PassInterceptions { get; set; }
+		[Column("interceptions", PostgresDataType.FLOAT8)]
+		public double? Interceptions { get; set; }
 
-		[Column("pass_sacked", PostgresDataType.FLOAT8)]
-		public double? PassSacked { get; set; }
+		[Column("sacked", PostgresDataType.FLOAT8)]
+		public double? Sacked { get; set; }
 
 		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
 		{
@@ -56,22 +56,22 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 				switch (kv.Key)
 				{
 					case WeekStatType.Pass_Attempts:
-						this.PassAttempts = kv.Value;
+						this.Attempts = kv.Value;
 						break;
 					case WeekStatType.Pass_Completions:
-						this.PassCompletions = kv.Value;
+						this.Completions = kv.Value;
 						break;
 					case WeekStatType.Pass_Yards:
-						this.PassYards = kv.Value;
+						this.Yards = kv.Value;
 						break;
 					case WeekStatType.Pass_Touchdowns:
-						this.PassTouchdowns = kv.Value;
+						this.Touchdowns = kv.Value;
 						break;
 					case WeekStatType.Pass_Interceptions:
-						this.PassInterceptions = kv.Value;
+						this.Interceptions = kv.Value;
 						break;
 					case WeekStatType.Pass_Sacked:
-						this.PassSacked = kv.Value;
+						this.Sacked = kv.Value;
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a passing stat type.");

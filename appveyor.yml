@@ -1,0 +1,13 @@
+version: 1.0.0-alpha.1
+image: Visual Studio 2017
+configuration: Release
+
+before_build:
+- cmd: nuget restore
+
+build:
+  project: FFDB.sln
+  verbosity: minimal
+
+artifacts:
+ - path: '**\*.nupkg'

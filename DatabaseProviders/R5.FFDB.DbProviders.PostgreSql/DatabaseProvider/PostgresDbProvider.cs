@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Npgsql;
 using R5.FFDB.Components;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.DbProviders.PostgreSql.DatabaseContext;
 using R5.Internals.PostgresMapper;

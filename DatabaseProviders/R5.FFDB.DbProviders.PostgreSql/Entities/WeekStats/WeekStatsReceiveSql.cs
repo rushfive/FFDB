@@ -31,14 +31,14 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
 
-		[Column("receive_catches", PostgresDataType.FLOAT8)]
-		public double? ReceiveCatches { get; set; }
+		[Column("catches", PostgresDataType.FLOAT8)]
+		public double? Catches { get; set; }
 
-		[Column("receive_yards", PostgresDataType.FLOAT8)]
-		public double? ReceiveYards { get; set; }
+		[Column("yards", PostgresDataType.FLOAT8)]
+		public double? Yards { get; set; }
 
-		[Column("receive_touchdowns", PostgresDataType.FLOAT8)]
-		public double? ReceiveTouchdowns { get; set; }
+		[Column("touchdowns", PostgresDataType.FLOAT8)]
+		public double? Touchdowns { get; set; }
 
 		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
 		{
@@ -47,13 +47,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 				switch (kv.Key)
 				{
 					case WeekStatType.Receive_Catches:
-						this.ReceiveCatches = kv.Value;
+						this.Catches = kv.Value;
 						break;
 					case WeekStatType.Receive_Yards:
-						this.ReceiveYards = kv.Value;
+						this.Yards = kv.Value;
 						break;
 					case WeekStatType.Receive_Touchdowns:
-						this.ReceiveTouchdowns = kv.Value;
+						this.Touchdowns = kv.Value;
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a receiving stat type.");

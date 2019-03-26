@@ -20,7 +20,7 @@ namespace R5.FFDB.CLI
 				.Add(UpdateRosteredPlayers.GetCommand());
 
 			builder.Version.Set(@"
-  Current version is v1.0.0-alpha.1
+  Current version is 1.0.0-alpha.1
 
   For more info and docs:
   https://github.com/rushfive/FFDB");
@@ -68,7 +68,7 @@ namespace R5.FFDB.CLI
 			Write("│ Usage: ");
 			CM.WriteLineColoredReset("ffdb setup", ConsoleColor.White);
 			Write("│ Option");
-			CM.WriteColoredReset(" [skip-stats|s] ", ConsoleColor.White);
+			CM.WriteColoredReset(" [skip-stats] ", ConsoleColor.White);
 			WriteLine("skips adding stats after db setup (ie only adds tables and static data).");
 			WriteLine("└");
 
@@ -115,7 +115,7 @@ namespace R5.FFDB.CLI
 			CM.WriteColoredReset("[config|c]", ConsoleColor.White);
 			WriteLine(" path to the config file.");
 			Write("│ ");
-			CM.WriteColoredReset("[skip-roster]", ConsoleColor.White);
+			CM.WriteColoredReset("[skip-roster|s]", ConsoleColor.White);
 			WriteLine(" skips fetching roster info for every team.");
 			WriteLine("│               This info is dynamic but not worth re-fetching multiple times in a day.");
 			WriteLine("└" + Environment.NewLine);

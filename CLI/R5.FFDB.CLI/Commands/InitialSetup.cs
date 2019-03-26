@@ -26,7 +26,7 @@ namespace R5.FFDB.CLI.Commands
 				{
 					new Option<RunInfo, bool>
 					{
-						Key = "skip-stats | s",
+						Key = "skip-stats",
 						Property = ri => ri.SkipAddingStats
 					}
 				}

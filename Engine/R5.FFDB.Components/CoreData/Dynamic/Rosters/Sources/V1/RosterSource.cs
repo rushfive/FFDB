@@ -3,6 +3,7 @@ using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Mappers;
 using R5.FFDB.Components.CoreData.Dynamic.Rosters.Sources.V1.Models;
 using R5.FFDB.Components.Http;
+using R5.FFDB.Core;
 using R5.FFDB.Core.Database;
 using R5.FFDB.Core.Entities;
 using System;

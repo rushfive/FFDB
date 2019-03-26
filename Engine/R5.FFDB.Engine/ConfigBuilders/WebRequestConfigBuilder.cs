@@ -4,17 +4,23 @@ using System.Collections.Generic;
 
 namespace R5.FFDB.Engine.ConfigBuilders
 {
+	/// <summary>
+	/// Builder for the web request client used by the engine.
+	/// </summary>
 	public class WebRequestConfigBuilder
 	{
 		private int _throttleMilliseconds { get; set; } = 3000;
 		private (int min, int max)? _randomizedThrottle { get; set; }
 		private Dictionary<string, string> _headers { get; } = new Dictionary<string, string>();
 
-		public WebRequestConfigBuilder()
+		internal static WebRequestConfigBuilder WithDefaultBrowserHeaders()
 		{
-			AddDefaultBrowserHeaders();
+			return new WebRequestConfigBuilder().AddDefaultBrowserHeaders();
 		}
 
+		/// <summary>
+		/// Sets a static delay amount to be used between HTTP requests.
+		/// </summary>
 		public WebRequestConfigBuilder SetThrottle(int milliseconds)
 		{
 			if (milliseconds < 0)
@@ -26,6 +32,9 @@ namespace R5.FFDB.Engine.ConfigBuilders
 			return this;
 		}
 
+		/// <summary>
+		/// Sets a min and max value for a randomized delay between HTTP requests.
+		/// </summary>
 		public WebRequestConfigBuilder SetRandomizedThrottle(int min, int max)
 		{
 			if (min < 0 || max < 0)
@@ -41,6 +50,9 @@ namespace R5.FFDB.Engine.ConfigBuilders
 			return this;
 		}
 
+		/// <summary>
+		/// Add a custom HTTP header to be included in every request.
+		/// </summary>
 		public WebRequestConfigBuilder AddHeader(string key, string value)
 		{
 			if (string.IsNullOrWhiteSpace(key))
@@ -52,6 +64,9 @@ namespace R5.FFDB.Engine.ConfigBuilders
 			return this;
 		}
 
+		/// <summary>
+		/// Adds a default "User-Agent" header in each request.
+		/// </summary>
 		public WebRequestConfigBuilder AddDefaultBrowserHeaders()
 		{
 			// todo:

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using R5.FFDB.Components.Configurations;
 using R5.FFDB.Components.Http;
+using R5.FFDB.Core;
 using System;
 using System.IO;
 using System.Threading.Tasks;

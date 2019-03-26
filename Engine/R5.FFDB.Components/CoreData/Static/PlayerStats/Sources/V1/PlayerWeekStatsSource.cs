@@ -5,6 +5,7 @@ using R5.FFDB.Components.Http;
 using R5.FFDB.Core.Entities;
 using R5.FFDB.Core.Models;
 using System.Collections.Generic;
+using R5.FFDB.Core;
 
 namespace R5.FFDB.Components.CoreData.Static.PlayerStats.Sources.V1
 {
