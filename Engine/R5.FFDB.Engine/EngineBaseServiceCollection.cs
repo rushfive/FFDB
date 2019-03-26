@@ -111,29 +111,34 @@ namespace R5.FFDB.Engine
 	{
 		public static IServiceCollection AddLogging(this IServiceCollection services, LoggingConfig config)
 		{
-			IAppLogger appLogger;
-
 			if (config.CustomLogger != null)
 			{
-				appLogger = new CustomLogger(config.CustomLogger);
+				IAppLogger customLogger = new CustomLogger(config.CustomLogger);
+				return services.AddScoped<IAppLogger>(sp => customLogger);
 			}
-			else if (!config.IsConfigured)
+
+			var loggerConfig = new LoggerConfiguration();
+			if (config.UseDebugLogLevel)
 			{
-				appLogger = new AppLogger(null);
+				loggerConfig = loggerConfig.MinimumLevel.Debug();
 			}
 			else
 			{
-				var loggerConfig = new LoggerConfiguration();
-				
-				if (config.UseDebugLogLevel)
-				{
-					loggerConfig = loggerConfig.MinimumLevel.Debug();
-				}
-				else
-				{
-					loggerConfig = loggerConfig.MinimumLevel.Information();
-				}
+				loggerConfig = loggerConfig.MinimumLevel.Information();
+			}
 
+			IAppLogger appLogger;
+			if (!config.IsConfigured)
+			{
+				Serilog.ILogger seriLogger = loggerConfig
+					.Enrich.FromLogContext()
+					.WriteTo.Console(outputTemplate: config.MessageTemplate)
+					.CreateLogger();
+
+				appLogger = new AppLogger(seriLogger);
+			}
+			else
+			{
 				Serilog.ILogger seriLogger = loggerConfig
 					.Enrich.FromLogContext()
 					.WriteTo.Console(outputTemplate: config.MessageTemplate)

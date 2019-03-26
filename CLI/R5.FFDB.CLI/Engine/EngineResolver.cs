@@ -46,7 +46,7 @@ namespace R5.FFDB.CLI.Engine
 
 		internal static EngineSetup ConfigureLogging(this EngineSetup setup, FfdbConfig config)
 		{
-			if (config.Logging != null)
+			if (!string.IsNullOrWhiteSpace(config.Logging?.Directory))
 			{
 				var rollingInterval = config.Logging.RollingInterval.HasValue
 					? config.Logging.RollingInterval.Value

@@ -63,10 +63,10 @@ Download the latest compiled CLI programs from the list below to get started. Th
 
 OS | Download | Notes | SHA256 Hash
 ---|---|---|---
-Windows x64 | download-link-here | | BAEB11566837763106DE017AA8FA782492F0B67D64FC55FCD67FE9EA34EA4D7F
-Windows x86 | download-link-here | | 40773284F794DECED49F165A46AB52DDCA5594376ED83FCEA2D66005C5921B37
-OSX x64 | download-link-here | Minimum OS version is macOS 10.12 Sierra | 6525E717B78489C96E946B624DD9E94A464DEF5D6FB90C831D7F15DDBE6FC896
-Linux x64 | download-link-here | Most desktop distributions like CentOS, Debian, Fedora, Ubuntu and derivatives | C97EB01553653DB235B83FC3C9C6347D1F539724BC7BA7132242DE9D24EAB94D
+Windows x64 | download-link-here | | 7A52CFF8186CA3CD9A9837F0A95344E9BA0C2BA746582AFE08F4B6FED5E1B592
+Windows x86 | download-link-here | | 45DACA1CBB4121A6D6D0884C75E4C8283B01ADC7C21266ECE53CA11B1E4AC8C8
+OSX x64 | download-link-here | Minimum OS version is macOS 10.12 Sierra | 5898F611AA5317821B61AC55DE700F525B555C60C975774F5B3E2E98EE1AB0C3
+Linux x64 | download-link-here | Most desktop distributions like CentOS, Debian, Fedora, Ubuntu and derivatives | 98BDE72ACDCF3C1E2C794686F5443F9D2F9CE1EDC7FB7A01C8F05352F0BC44EB
 
 If you need the compiled program for a different environment, you can either:
 
@@ -83,7 +83,7 @@ If you need the compiled program for a different environment, you can either:
   - [Persisting Data Files](#persisting-data-files)
   - [Configuration File](#config-file)
   - [Commands and Options](#commands-and-options)
-    - [initial-setup](#initial-setup)
+    - [setup](#setup)
     - [add-stats](#add-stats)
     - [update-players](#update-players)
     - [update-rosters](#update-rosters)
@@ -106,7 +106,7 @@ Just a few notes about data files before diving in:
 - Data fetched from the various sources can optionally be persisted to disk. This allows you to re-create databases faster by not making the same HTTP requests. For context, as of this writing, theres almost 3800 player records, each of which require a separate request to resolve. Yeah.. it's a lot.
 - There's an additional option to fetch from a data repository I'm hosting on the side that includes the files needed. You'll still need to make HTTP requests to grab these, but it guarantees that if the sources go down, we'll at least have these records going forward.
 - There's also _another_ additional option (har har) to persist the original source files. When the Engine receives the original data, it will first map it to a versioned format that's eventually used. You most likely won't need these original files, as they aren't necessary to rebuild databases from files (only the versioned ones are required).
-- But wait, there's more! There's a _final additional_ option that..... just kidding. That is all.
+- But wait, there's more! Just kidding.
 
 ##### Configuration File
 
@@ -162,7 +162,7 @@ Initializes the database tables/collections, adds the team entries (static), and
 
 This command allows you to create a database with all available data in one-go (as long as you don't include the `skip-stats` option).
 
-Usage: `ffdb initial-setup`
+Usage: `ffdb setup`
 
 Options:
 
