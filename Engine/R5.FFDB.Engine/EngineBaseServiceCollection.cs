@@ -12,6 +12,10 @@ using System;
 
 namespace R5.FFDB.Engine
 {
+	/// <summary>
+	/// Helper class used to initialize an Engine instance.
+	/// This is used for both the actual Engine used in the CLI and for my personal testing.
+	/// </summary>
 	public class EngineBaseServiceCollection
 	{
 		private ServiceCollection _services { get; } = new ServiceCollection();
@@ -22,6 +26,9 @@ namespace R5.FFDB.Engine
 		private Func<IAppLogger, IDatabaseProvider> _dbProviderFactory { get; set; }
 		private ProgramOptions _programOptions { get; set; }
 
+		/// <summary>
+		/// Returns a configured ServiceCollection.
+		/// </summary>
 		public ServiceCollection Create()
 		{
 			ValidateConfigurations();

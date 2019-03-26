@@ -16,10 +16,24 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine
 {
+	/// <summary>
+	/// The FFDB Engine that interfaces with the data sources and db providers.
+	/// </summary>
 	public class FfdbEngine
 	{
+		/// <summary>
+		/// Processor for stats related tasks.
+		/// </summary>
 		public StatsProcessor Stats { get;  }
+
+		/// <summary>
+		/// Processor for team related tasks.
+		/// </summary>
 		public TeamProcessor Team { get; }
+
+		/// <summary>
+		/// Processor for player related tasks.
+		/// </summary>
 		public PlayerProcessor Player { get; }
 		
 		private IServiceProvider _serviceProvider { get; }
@@ -56,6 +70,10 @@ namespace R5.FFDB.Engine
 			};
 		}
 		
+		/// <summary>
+		/// Runs the initial database setup (eg creating tables).
+		/// </summary>
+		/// <param name="skipAddingStats">If true, will skip adding stats after the initial setup.</param>
 		public Task RunInitialSetupAsync(bool skipAddingStats)
 		{
 			var context = new InitialSetupPipeline.Context
@@ -68,23 +86,35 @@ namespace R5.FFDB.Engine
 			return pipeline.ProcessAsync(context);
 		}
 
+		/// <summary>
+		/// Returns whether the database has already been initialized.
+		/// </summary>
 		public Task<bool> HasBeenInitializedAsync()
 		{
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
 			return dbContext.HasBeenInitializedAsync();
 		}
 
+		/// <summary>
+		/// Returns the latest available week as officially determined by the NFL.
+		/// </summary>
 		public Task<WeekInfo> GetLatestWeekAsync()
 		{
 			return _latestWeekValue.GetAsync();
 		}
 
+		/// <summary>
+		/// Returns the list of all weeks already updated in the database.
+		/// </summary>
 		public Task<List<WeekInfo>> GetAllUpdatedWeeksAsync()
 		{
 			IDatabaseContext dbContext = _databaseProvider.GetContext();
 			return dbContext.UpdateLog.GetAsync();
 		}
 
+		/// <summary>
+		/// Returns information regarding the state of the data repository.
+		/// </summary>
 		public async Task<DataRepoState> GetDataRepoStateAsync()
 		{
 			string uri = @"https://raw.githubusercontent.com/rushfive/FFDB.Data/master/state.json";

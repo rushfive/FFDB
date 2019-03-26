@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine.Processors
 {
+	/// <summary>
+	/// Contains the Engine tasks specific to players.
+	/// </summary>
 	public class PlayerProcessor
 	{
 		private IServiceProvider _serviceProvider { get; }
@@ -14,6 +17,10 @@ namespace R5.FFDB.Engine.Processors
 			_serviceProvider = serviceProvider;
 		}
 
+		/// <summary>
+		/// Updates the dynamic information for players currently rostered on a team.
+		/// </summary>
+		/// <returns></returns>
 		public Task UpdateCurrentlyRosteredAsync()
 		{
 			var context = new UpdateCurrentlyRosteredPipeline.Context();

@@ -31,14 +31,14 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
 
-		[Column("rush_attempts", PostgresDataType.FLOAT8)]
-		public double? RushAttempts { get; set; }
+		[Column("attempts", PostgresDataType.FLOAT8)]
+		public double? Attempts { get; set; }
 
-		[Column("rush_yards", PostgresDataType.FLOAT8)]
-		public double? RushYards { get; set; }
+		[Column("yards", PostgresDataType.FLOAT8)]
+		public double? Yards { get; set; }
 
-		[Column("rush_touchdowns", PostgresDataType.FLOAT8)]
-		public double? RushTouchdowns { get; set; }
+		[Column("touchdowns", PostgresDataType.FLOAT8)]
+		public double? Touchdowns { get; set; }
 
 		public void UpdateFromStats(List<KeyValuePair<WeekStatType, double>> stats)
 		{
@@ -47,13 +47,13 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities.WeekStats
 				switch (kv.Key)
 				{
 					case WeekStatType.Rush_Attempts:
-						this.RushAttempts = kv.Value;
+						this.Attempts = kv.Value;
 						break;
 					case WeekStatType.Rush_Yards:
-						this.RushYards = kv.Value;
+						this.Yards = kv.Value;
 						break;
 					case WeekStatType.Rush_Touchdowns:
-						this.RushTouchdowns = kv.Value;
+						this.Touchdowns = kv.Value;
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(kv.Key), $"'{kv.Key}' is either an invalid or unhandled as a rushing stat type.");

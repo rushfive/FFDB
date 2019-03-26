@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine.Processors
 {
+	/// <summary>
+	/// Contains the Engine tasks specific to stats.
+	/// </summary>
 	public class StatsProcessor
 	{
 		private IServiceProvider _serviceProvider { get; }
@@ -16,6 +19,9 @@ namespace R5.FFDB.Engine.Processors
 			_serviceProvider = serviceProvider;
 		}
 
+		/// <summary>
+		/// Add stats for every possible week that's missing in the database.
+		/// </summary>
 		public Task AddMissingAsync()
 		{
 			var context = new UpdateMissingPipeline.Context();
@@ -25,6 +31,9 @@ namespace R5.FFDB.Engine.Processors
 			return pipeline.ProcessAsync(context);
 		}
 
+		/// <summary>
+		/// Add stats for the specified week.
+		/// </summary>
 		public Task AddForWeekAsync(WeekInfo week)
 		{
 			var context = new AddForWeekPipeline.Context
@@ -37,6 +46,9 @@ namespace R5.FFDB.Engine.Processors
 			return pipeline.ProcessAsync(context);
 		}
 
+		/// <summary>
+		/// Add stats for the specified week.
+		/// </summary>
 		public Task AddForWeekAsync(int season, int week) => AddForWeekAsync(new WeekInfo(season, week));
 	}
 }

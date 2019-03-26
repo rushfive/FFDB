@@ -1,10 +1,10 @@
 # NFL Database Engine
 
-__Engine__
+__R5.FFDB.Engine__
 
-[![Nuget](https://img.shields.io/nuget/v/r5.ffdb.core.svg)](https://www.nuget.org/packages/R5.FFDB.Core/)
+[![Nuget](https://img.shields.io/nuget/v/r5.ffdb.engine.svg)](https://www.nuget.org/packages/R5.FFDB.Engine/)
 
-__ Core__
+__R5.FFDB.Core__
 
 [![Nuget](https://img.shields.io/nuget/v/r5.ffdb.core.svg)](https://www.nuget.org/packages/R5.FFDB.Core/)
 
@@ -191,9 +191,11 @@ There are 2 options that can be used with any of the commands above.
 
 #### The Engine
 
-The engine is what does all the real work behind the scenes - the CLI is just an interface to it. Given that, the Engine is also released separately as its own package for those that would like to interact with it programmatically:
+The engine is what does all the real work behind the scenes - the CLI is just an interface to it. Given that, the Engine is also released separately as its own nuget package for those that would like to interact with it programmatically:
 
-- (link to its nuget)
+```
+dotnet add package R5.FFDB.Core --version 1.0.0-alpha.1
+```
 
 ##### Design Overview
 

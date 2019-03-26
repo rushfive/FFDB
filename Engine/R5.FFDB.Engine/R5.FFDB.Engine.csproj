@@ -3,6 +3,15 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.2</TargetFramework>
 		<LangVersion>latest</LangVersion>
+		<AssemblyName>R5.FFDB.Engine</AssemblyName>
+		<RootNamespace>R5.FFDB.Engine</RootNamespace>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+		<Configurations>Debug;Release;Test</Configurations>
+		<Authors>Isaiah Lee</Authors>
+		<Company />
+		<Description>The FFDB Engine that interfaces with the data sources and db providers.</Description>
+		<Version>1.0.0-alpha.1</Version>
+		<PackageProjectUrl>https://github.com/rushfive/FFDB</PackageProjectUrl>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+	<metadata>
+		<id>R5.FFDB.Engine</id>
+		<version>1.0.0-alpha.1</version>
+		<title>R5.FFDB.Engine</title>
+		<authors>Isaiah Lee</authors>
+		<owners>Isaiah Lee</owners>
+		<projectUrl>https://github.com/rushfive/FFDB</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>The FFDB Engine that interfaces with the data sources and db providers.</description>
+		<releaseNotes>Alpha release - Feature complete but may include database schema changes for v1.</releaseNotes>
+		<copyright>Copyright 2019</copyright>
+		<tags>NFL fantasy football database stats</tags>
+	</metadata>
+</package>

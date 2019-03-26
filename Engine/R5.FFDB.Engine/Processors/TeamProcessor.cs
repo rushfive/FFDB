@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace R5.FFDB.Engine.Processors
 {
+	/// <summary>
+	/// Contains the Engine tasks specific to teams.
+	/// </summary>
 	public class TeamProcessor
 	{
 		private IServiceProvider _serviceProvider { get; }
@@ -14,7 +17,9 @@ namespace R5.FFDB.Engine.Processors
 			_serviceProvider = serviceProvider;
 		}
 
-		// Updates player-team mappings. Doesn't update player data
+		/// <summary>
+		/// Update the player-to-team mappings based off of the current roster information.
+		/// </summary>
 		public Task UpdateRosterMappingsAsync()
 		{
 			var context = new UpdateRosterMappingsPipeline.Context();

@@ -71,11 +71,29 @@ namespace R5.FFDB.DbProviders.Mongo.DatabaseContext
 
 		public async Task<bool> HasBeenInitializedAsync()
 		{
-			List<string> ffdbCollections = CollectionResolver.GetAllNames();
+			var requiredInitChecks = new List<Func<Task<bool>>>
+			{
+				async () =>
+				{
+					var existingCollections = (await GetDatabase().ListCollectionNames().ToListAsync()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+					return CollectionResolver.GetAllNames().All(n => existingCollections.Contains(n));
+				},
+				async () =>
+				{
+					var existingTeams = (await Team.GetExistingTeamIdsAsync()).ToHashSet();
+					return Teams.GetAll().Select(t => t.Id).All(id => existingTeams.Contains(id));
+				}
+			};
 
-			var existingNames = await GetDatabase().ListCollectionNames().ToListAsync();
+			foreach(var checkFunc in requiredInitChecks)
+			{
+				if (!await checkFunc())
+				{
+					return false;
+				}
+			}
 
-			return existingNames.Any(n => ffdbCollections.Contains(n));
+			return true;
 		}
 	}
 }

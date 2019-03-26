@@ -20,6 +20,7 @@ namespace R5.FFDB.DbProviders.PostgreSql.Entities
 		[Column("week", PostgresDataType.INT)]
 		public int Week { get; set; }
 
+		[NotNull]
 		[Column("datetime", PostgresDataType.TIMESTAMPTZ)]
 		public DateTimeOffset UpdateTime { get; set; }
 	}

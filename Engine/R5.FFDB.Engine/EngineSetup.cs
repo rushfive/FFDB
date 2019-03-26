@@ -11,15 +11,28 @@ using System.IO;
 
 namespace R5.FFDB.Engine
 {
+	/// <summary>
+	/// Builder class used to help build out and configure the FfdbEngine.
+	/// </summary>
 	public class EngineSetup
 	{
-		public WebRequestConfigBuilder WebRequest { get; } = new WebRequestConfigBuilder();
+		/// <summary>
+		/// Builder for the web request client used by the engine.
+		/// </summary>
+		public WebRequestConfigBuilder WebRequest { get; } = WebRequestConfigBuilder.WithDefaultBrowserHeaders();
+
+		/// <summary>
+		/// Builder for logging configuration.
+		/// </summary>
 		public LoggingConfigBuilder Logging { get; } = new LoggingConfigBuilder();
 
 		private string _rootDataPath { get; set; }
 		private Func<IAppLogger, IDatabaseProvider> _dbProviderFactory { get; set; }
 		private ProgramOptions _programOptions { get; } = new ProgramOptions();
 
+		/// <summary>
+		/// Sets the data directory path where data files are persisted into.
+		/// </summary>
 		public EngineSetup SetRootDataDirectoryPath(string path)
 		{
 			if (string.IsNullOrWhiteSpace(path))
@@ -39,6 +52,9 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
+		/// <summary>
+		/// Sets the Engine to use PostgreSql as its datastore.
+		/// </summary>
 		public EngineSetup UsePostgreSql(PostgresConfig config)
 		{
 			if (string.IsNullOrEmpty(config.Host))
@@ -54,6 +70,9 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
+		/// <summary>
+		/// Sets the Engine to use Mongo as its datastore.
+		/// </summary>
 		public EngineSetup UseMongo(MongoConfig config)
 		{
 			if (string.IsNullOrWhiteSpace(config.ConnectionString))
@@ -69,36 +88,56 @@ namespace R5.FFDB.Engine
 			return this;
 		}
 
+		/// <summary>
+		/// Sets the Engine to use your own custom database.
+		/// </summary>
+		/// <param name="dbProviderFactory">Database provider factory function.</param>
 		public EngineSetup UseCustomDbProvider(Func<IAppLogger, IDatabaseProvider> dbProviderFactory)
 		{
 			_dbProviderFactory = dbProviderFactory;
 			return this;
 		}
 
+		/// <summary>
+		/// Skips the fetching of team roster information.
+		/// </summary>
 		public EngineSetup SkipRosterFetch()
 		{
 			_programOptions.SkipRosterFetch = true;
 			return this;
 		}
 
+		/// <summary>
+		/// Configures the Engine to save the versioned models to disk.
+		/// </summary>
 		public EngineSetup SaveToDisk()
 		{
 			_programOptions.SaveToDisk = true;
 			return this;
 		}
 
+		/// <summary>
+		/// Configures the Engine to save the original sources data files to disk.
+		/// </summary>
+		/// <returns></returns>
 		public EngineSetup SaveOriginalSourceFiles()
 		{
 			_programOptions.SaveOriginalSourceFiles = true;
 			return this;
 		}
 
+		/// <summary>
+		/// Enables the fetching of versioned data from the data repository.
+		/// </summary>
 		public EngineSetup EnableFetchingFromDataRepo()
 		{
 			_programOptions.DataRepoEnabled = true;
 			return this;
 		}
 
+		/// <summary>
+		/// Create an instance of the FfdbEngine based on this builder's configuration.
+		/// </summary>
 		public FfdbEngine Create()
 		{
 			var baseServiceCollection = new EngineBaseServiceCollection();
