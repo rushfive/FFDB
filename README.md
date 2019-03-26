@@ -62,7 +62,7 @@ ffdb setup
 Download the latest compiled CLI programs from the list below to get started. They're all built as self-contained apps, so you don't need to have the net core runtime installed on your machine.
 
 OS | Download | Notes | SHA256 Hash
----|---|---
+---|---|---|---
 Windows x64 | download-link-here | | BAEB11566837763106DE017AA8FA782492F0B67D64FC55FCD67FE9EA34EA4D7F
 Windows x86 | download-link-here | | 40773284F794DECED49F165A46AB52DDCA5594376ED83FCEA2D66005C5921B37
 OSX x64 | download-link-here | Minimum OS version is macOS 10.12 Sierra | 6525E717B78489C96E946B624DD9E94A464DEF5D6FB90C831D7F15DDBE6FC896

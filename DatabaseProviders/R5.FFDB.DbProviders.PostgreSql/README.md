@@ -17,7 +17,7 @@ There's several columns that serialize core enum values as strings. The definiti
 ###### ffdb.player
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 id | UUID | yes | |
 nfl_id | TEXT | | |
 esb_id | TEXT | | |
@@ -35,7 +35,7 @@ college | TEXT | | |
 ###### ffdb.team
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 id | INT | yes | |
 nfl_id | TEXT | | | true
 name | TEXT | | |
@@ -44,14 +44,14 @@ abbreviation | TEXT | | |
 ###### ffdb.player_team_map
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | composite | ffdb.team_id | true
 
 ###### ffdb.week_stats_pass
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | | ffdb.team_id | 
 season | INT | composite | | true
@@ -66,7 +66,7 @@ sacked | FLOAT8 | | |
 ###### ffdb.week_stats_rush
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | | ffdb.team_id | 
 season | INT | composite | | true
@@ -78,7 +78,7 @@ touchdowns | FLOAT8 | | |
 ###### ffdb.week_stats_receive
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | | ffdb.team_id | 
 season | INT | composite | | true
@@ -90,7 +90,7 @@ touchdowns | FLOAT8 | | |
 ###### ffdb.week_stats_return
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | | ffdb.team_id | 
 season | INT | composite | | true
@@ -101,7 +101,7 @@ touchdowns | FLOAT8 | | |
 ###### ffdb.week_stats_misc
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | | ffdb.team_id | 
 season | INT | composite | | true
@@ -114,7 +114,7 @@ two_point_conversions | FLOAT8 | | |
 ###### ffdb.week_stats_kick
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | | ffdb.team_id | 
 season | INT | composite | | true
@@ -135,7 +135,7 @@ fifty_plus_misses | FLOAT8 | | |
 ###### ffdb.week_stats_dst
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | | ffdb.team_id | 
 season | INT | composite | | true
@@ -155,7 +155,7 @@ yards_allowed | FLOAT8 | | |
 ###### ffdb.week_stats_idp
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 player_id | UUID | composite | ffdb.player_id | true
 team_id | INT | | ffdb.team_id | 
 season | INT | composite | | true
@@ -181,7 +181,7 @@ sack_yards | FLOAT8 | | |
 ###### ffdb.team_game_stats
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 team_id | INT | composite | ffdb.team_id | true
 season | INT | composite | | true
 week | INT | composite | |  true
@@ -205,7 +205,7 @@ time_of_posession | INT | | |  true
 ###### ffdb.week_game_matchup
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 season | INT | composite | | true
 week | INT | composite | |  true
 home_team_id | INT | composite | ffdb.team_id | true
@@ -216,7 +216,7 @@ gsis_game_id | TEXT | | |  true
 ###### ffdb.update_log
 
 Column | DataType | PK | FK | NotNull
----|---|---|---
+---|---|---|---|---
 season | INT | composite | | true
 week | INT | composite | |  true
 datetime | TIMESTAMPTZ | | | true
