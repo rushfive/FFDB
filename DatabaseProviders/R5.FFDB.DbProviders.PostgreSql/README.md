@@ -6,6 +6,10 @@ This document describes the schema for the current version _v1.0.0-alpha.1_
 - All player week stats use a `FLOAT8` datatype. I understand that this doesn't make sense for a lot of stat types, but when I was building this out initially I kept finding new stats that were of a double-precision type and running into exceptions. Keeping them all as `FLOAT8` simplifies the processing work the Engine has to do, and future proofs any additional stat types that may come out.
 - Pretty much every table _doesn't_ have a single-column PK. For example, the various player stats tables make use of composite primary keys instead (eg combining player_id, season, and week which together uniquely identifies the entry)
 
+There's several columns that serialize core enum values as strings. The definitions of these enums can be found in the `R5.FFDB.Core` project:
+
+- [R5.FFDB.Core Documentation](../../Engine/R5.FFDB.Core/README.md)
+
 ---
 
 ### Tables

@@ -2,13 +2,9 @@
 
 This document describes the schema for the current version _v1.0.0-alpha.1_
 
-##### Quick Notes
-- All enums are stored as their string representations.
-
 There's several fields that serialize core enum values as strings. The definitions of these enums can be found in the `R5.FFDB.Core` project:
 
-- (link to Cores readme)
-
+- [R5.FFDB.Core Documentation](../../Engine/R5.FFDB.Core/README.md)
 
 ---
 

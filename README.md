@@ -3,6 +3,7 @@
 __R5.FFDB.Engine__
 
 [![Nuget](https://img.shields.io/nuget/v/r5.ffdb.engine.svg)](https://www.nuget.org/packages/R5.FFDB.Engine/)
+[![Build status](https://img.shields.io/appveyor/ci/rushfive/ffdb.svg)](https://ci.appveyor.com/project/rushfive/ffdb)
 
 __R5.FFDB.Core__
 
@@ -18,7 +19,9 @@ The two databases natively supported by the CLI are:
 - PostgreSql (v10.0.4)
 - Mongo (v4.0.2)
 
-If you'd like to use the engine to create a different database, or even postgres/mongo with your own customized schema, you can easily provide your own `IDbProvider` implementation to do so.
+If you'd like to use the engine to create a different database, or even postgres/mongo with your own customized schema, you can easily provide your own `IDatabaseProvider` implementation to do so.
+
+This app is written using `netcore 2.2`.
 
 ---
 
@@ -39,12 +42,38 @@ The Player Stats also includes data for IDP.
 
 _The Engine and CLI are currently in an alpha release state_
 
-Although they're essentially feature complete, I have some uncertainties on how I've drawn up the database schemas for both Postgres and Mongo. I'll leave these two issue threads up for a period to get community input:
+Although they're essentially feature complete, I have some uncertainties on how I've drawn up the database schemas for both Postgres and Mongo. For those interested, check the README files below for their schemas:
 
-- (Link to Postgres issue)
-- (Link to Mongo issue)
+- [PostgreSql](DatabaseProviders/R5.FFDB.DbProviders.PostgreSql/README.md)
+- [Mongo](DatabaseProviders/R5.FFDB.DbProviders.Mongo/README.md)
 
 The official v1 release may include db schema changes so be aware that you may need to re-build your db on v1 (migrations won't be supported for the alpha-to-v1 change).
+
+---
+
+#### Getting Started
+
+How easy is this to use? You can run and setup a database with all the latest data in a single command:
+
+```
+ffdb setup
+```
+
+Download the latest compiled CLI programs from the list below to get started. They're all built as self-contained apps, so you don't need to have the net core runtime installed on your machine.
+
+OS | Download | Notes | SHA256 Hash
+---|---|---
+Windows x64 | download-link-here | | BAEB11566837763106DE017AA8FA782492F0B67D64FC55FCD67FE9EA34EA4D7F
+Windows x86 | download-link-here | | 40773284F794DECED49F165A46AB52DDCA5594376ED83FCEA2D66005C5921B37
+OSX x64 | download-link-here | Minimum OS version is macOS 10.12 Sierra | 6525E717B78489C96E946B624DD9E94A464DEF5D6FB90C831D7F15DDBE6FC896
+Linux x64 | download-link-here | Most desktop distributions like CentOS, Debian, Fedora, Ubuntu and derivatives | C97EB01553653DB235B83FC3C9C6347D1F539724BC7BA7132242DE9D24EAB94D
+
+If you need the compiled program for a different environment, you can either:
+
+- Run the build yourself using these 2 resources:
+  - [Simple Walkthrough of Build/Publishing](https://docs.microsoft.com/en-us/dotnet/core/deploying/deploy-with-cli)
+  - [Supported Environments for DotNet Publish](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog)
+- Create an issue and I'll see if I can get around to building it out for ya.
 
 ---
 
@@ -69,12 +98,6 @@ The official v1 release may include db schema changes so be aware that you may n
 ---
 
 #### Using the CLI
-
-To get started, head to the release page and download the latest version:
-
-- (link to release page)
-
-Or, clone the repo and run it yourself (the app was built using netcore2.2)
 
 ##### Persisting Data Files
 
@@ -383,6 +406,10 @@ To do this, you'll need a reference to the _R5.FFDB.Core_ library, which can be 
 dotnet add package R5.FFDB.Core --version 1.0.0-alpha.1
 ```
 
+If you're also pulling in the `R5.FFDB.Engine` package, this Core library is included as a transitive dependency so no need to directly add it into your project.
+
+---
+
 Here, we'll walk through that interface and its contract, so you can understand not only the literal API the Engine expects to work with, but also the underlying behavior and assumptions that are relevant.
 
 Here's the `IDatabaseProvider` interface definition:
@@ -488,4 +515,6 @@ Take the list of matchups and add it to your database.
 
 Stumbled across a bug? Program throwing some exception? Please enable debug level logging and provide the log file or relevant snippets.
 
-It's an easy request to meet, and I'll most likely ignore/close the issue without it. Thanks!
+_Issues without logs (when relevant) will most likely be ignored and closed_
+
+I can't guarantee that a fix will happen immediately, but I will at least try to get back with a reply within a reasonable time.
