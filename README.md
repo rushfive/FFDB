@@ -114,6 +114,8 @@ Just a few notes about data files before diving in:
 
 ##### Configuration File
 
+__Warning: I made an error where the downloaded folder contains the name "ffdb_config.template.json", but the program searches its directory for "ffdb_config.json". I'll be updating the downloads soon, but for now, you can just rename the file to "ffdb_config.json" to get it working.__
+
 There's a configuration file required to use the CLI. Below's the template:
 
 ```
