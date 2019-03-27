@@ -67,10 +67,10 @@ Download the latest compiled CLI programs from the list below to get started. Th
 
 OS | Download | Notes | SHA256 Hash
 ---|---|---|---
-Windows x64 | [win-x64.zip - 30.5MB](https://github.com/rushfive/FFDB/releases/download/v1.0.0-alpha.1/win-x64.zip) | | 7A52CFF8186CA3CD9A9837F0A95344E9BA0C2BA746582AFE08F4B6FED5E1B592
-Windows x86 | [win-x86.zip - 27.6MB](https://github.com/rushfive/FFDB/releases/download/v1.0.0-alpha.1/win-x86.zip) | | 45DACA1CBB4121A6D6D0884C75E4C8283B01ADC7C21266ECE53CA11B1E4AC8C8
-OSX x64 | [osx-x64.tar - 72.5MB](https://github.com/rushfive/FFDB/releases/download/v1.0.0-alpha.1/osx-x64.tar) | Minimum OS version is macOS 10.12 Sierra | 5898F611AA5317821B61AC55DE700F525B555C60C975774F5B3E2E98EE1AB0C3
-Linux x64 | [linux-x64.tar - 78MB](https://github.com/rushfive/FFDB/releases/download/v1.0.0-alpha.1/linux-x64.tar) | Most desktop distributions like CentOS, Debian, Fedora, Ubuntu and derivatives | 98BDE72ACDCF3C1E2C794686F5443F9D2F9CE1EDC7FB7A01C8F05352F0BC44EB
+Windows x64 | [win-x64.zip - 30.5MB](https://github.com/rushfive/FFDB/releases/download/v1.0.0-alpha.1/win-x64.zip) | | 2628E4D69E0575244B7896EB6B42091050BF260C41EA1992EE5859249B0C4083
+Windows x86 | [win-x86.zip - 27.6MB](https://github.com/rushfive/FFDB/releases/download/v1.0.0-alpha.1/win-x86.zip) | | 58BD545E2ED494EB37A4D0C081D3A45FEBE31D8F56E81F15DCC247E923B3193A
+OSX x64 | [osx-x64.tar - 72.5MB](https://github.com/rushfive/FFDB/releases/download/v1.0.0-alpha.1/osx-x64.tar) | Minimum OS version is macOS 10.12 Sierra | FAD3BADCB9CE539F628C8B7B72BDCDAC3DA3D875D2EAE789D167C204447AFE43
+Linux x64 | [linux-x64.tar - 78MB](https://github.com/rushfive/FFDB/releases/download/v1.0.0-alpha.1/linux-x64.tar) | Most desktop distributions like CentOS, Debian, Fedora, Ubuntu and derivatives | 26FCA6EEB6552860DB90AC33030E3965AE2EAC7F400E71DABD7C2F0CF16E2BFC
 
 If you need the compiled program for a different environment, you can either:
 
@@ -113,8 +113,6 @@ Just a few notes about data files before diving in:
 - But wait, there's more! Just kidding.
 
 ##### Configuration File
-
-__Warning: I made an error where the downloaded folder contains the name "ffdb_config.template.json", but the program searches its directory for "ffdb_config.json". I'll be updating the downloads soon, but for now, you can just rename the file to "ffdb_config.json" to get it working.__
 
 There's a configuration file required to use the CLI. Below's the template:
 

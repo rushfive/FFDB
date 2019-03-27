@@ -70,7 +70,7 @@ namespace R5.FFDB.CLI
 				if (!File.Exists(path))
 				{
 					throw new InvalidOperationException("Failed to find config file. Ensure that you either include it as a program option "
-						+ "or that the file exists in the same dir as the program exe.");
+						+ "or that the file exists (named as 'ffdb_config.json') in the same dir as the program exe.");
 				}
 			}
 

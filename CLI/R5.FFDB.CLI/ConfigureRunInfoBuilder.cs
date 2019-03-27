@@ -20,7 +20,7 @@ namespace R5.FFDB.CLI
 				.Add(UpdateRosteredPlayers.GetCommand());
 
 			builder.Version.Set(@"
-  Current version is 1.0.0-alpha.1
+  Current version is 1.0.0-alpha.2
 
   For more info and docs:
   https://github.com/rushfive/FFDB");
