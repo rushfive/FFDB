@@ -1,4 +1,8 @@
-# NFL Database Engine
+![alt text](/Documentation/ffdb_logo.png)
+
+###### Easily create your own NFL databases to power your football and fantasy apps!
+
+---
 
 __R5.FFDB.Engine__
 
@@ -166,7 +170,7 @@ Usage: `ffdb setup`
 
 Options:
 
-- `skip-stats` - will skip adding all missing stats after running the initial database setup. Usage: `ffdb initial-setup --skip-stats`
+- `skip-stats` - will skip adding all missing stats after running the initial database setup. Usage: `ffdb setup --skip-stats`
 
 ###### Add Stats
 
@@ -177,9 +181,9 @@ Usage: `ffdb add-stats week 2018-1` or `ffdb add-stats missing`
 Options:
 
 - `save-to-disk` - save the versioned files to disk. This is what the Engine needs to create the database.
-Usage: `ffdb initial-setup --skip-stats`
+Usage: `ffdb add-stats missing --save-to-disk`
 - `save-src-files` - save the original source response as a file. In most cases, this is the JSON or XML response from the request.
-Usage: `ffdb initial-setup --save-src-files`
+Usage: `ffdb add-stats missing --save-src-files`
 
 ###### Update Players
 
@@ -217,7 +221,7 @@ There are 2 options that can be used with any of the commands above.
 The engine is what does all the real work behind the scenes - the CLI is just an interface to it. Given that, the Engine is also released separately as its own nuget package for those that would like to interact with it programmatically:
 
 ```
-dotnet add package R5.FFDB.Core --version 1.0.0-alpha.1
+dotnet add package R5.FFDB.Engine --version 1.0.0-alpha.1
 ```
 
 ##### Design Overview
