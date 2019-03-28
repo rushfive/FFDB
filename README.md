@@ -97,6 +97,7 @@ If you need the compiled program for a different environment, you can either:
   - [Engine Setup](#engine-setup)
   - [Engine and Processors API](#engine-and-processors-api)
 - [Extending with the IDatabaseProvider](#extending-with-database-provider)
+- [Roadmap](#roadmap)
 - [Reporting Bugs and Issues](#reporting-bugs-and-issues)
 
 ---
@@ -494,6 +495,20 @@ Returns the list of weekly matchups (between teams) for a given week.
 
 ###### Task AddAsync(List\<WeekMatchup> matchups);
 Take the list of matchups and add it to your database.
+
+---
+
+#### Roadmap
+
+Here's a few features that are in consideration for the future:
+
+- Receiving targets count (currently only have _catches_)
+- Team depth charts
+- Betting lines and odds for the games.
+
+There's some reasons they didn't make the cut yet, feel free to open a thread if you want to discuss.
+
+There's also _no timeline_ for these yet. I'm going to be fairly busy for a while with some other things, but I do plan on getting back to this when I can.
 
 ---
 
