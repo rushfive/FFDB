@@ -96,7 +96,7 @@ If you need the compiled program for a different environment, you can either:
   - [Design Overview](#design-overview)
   - [Engine Setup](#engine-setup)
   - [Engine and Processors API](#engine-and-processors-api)
-- [Extending with DbProvider](#extending-with-database-provider)
+- [Extending with the IDatabaseProvider](#extending-with-database-provider)
 - [Reporting Bugs and Issues](#reporting-bugs-and-issues)
 
 ---
@@ -108,9 +108,7 @@ If you need the compiled program for a different environment, you can either:
 Just a few notes about data files before diving in:
 
 - Data fetched from the various sources can optionally be persisted to disk. This allows you to re-create databases faster by not making the same HTTP requests. For context, as of this writing, theres almost 3800 player records, each of which require a separate request to resolve. Yeah.. it's a lot.
-- There's an additional option to fetch from a data repository I'm hosting on the side that includes the files needed. You'll still need to make HTTP requests to grab these, but it guarantees that if the sources go down, we'll at least have these records going forward.
-- There's also _another_ additional option (har har) to persist the original source files. When the Engine receives the original data, it will first map it to a versioned format that's eventually used. You most likely won't need these original files, as they aren't necessary to rebuild databases from files (only the versioned ones are required).
-- But wait, there's more! Just kidding.
+- There's also another option to persist the original source files. When the Engine receives the original data, it will first map it to a versioned format that's eventually used. You most likely won't need these original files, as they aren't necessary to rebuild databases from files (only the versioned ones are required).
 
 ##### Configuration File
 
@@ -233,7 +231,7 @@ The diagram above depicts how the various data is fetched. Here's a quick rundow
 1. An HTTP request is made to the data source. The response is optionally saved to disk.
 2. The original source data is mapped to a versioned model, and optionally saved to disk. By _versioned_, I mean that the model is specific to the version of the source. For example, player stats are currently fetched from NFL's fantasy API v2. When they deprecate v2 and move onto v3, we may also need to update our models, resulting in a new _versioned_ model.
 3. The versioned model is mapped to the core model used by the Engine.
-4. The core models are passed to the configured `DbProvider`, which ultimately maps it to the database specific models (eg SQL or Document) and persists it to the database store.
+4. The core models are passed to the configured `IDatabaseProvider`, which ultimately maps it to the database specific models (eg SQL or Document) and persists it to the database store.
 
 The middle section labeled _FFDB Engine_ literally represents the stages that are handle by the Engine. Things were designed such that this nice boundary is created, and it's agnostic to the original data sources. It doesn't care where the data is coming from, or what the original format is, as long as it provides the correct mappers that can eventually turn things into the required core engine models.
 
@@ -304,9 +302,6 @@ Will save the _versioned_ models to disk.
 ###### SaveOriginalSourceFiles()
 Will save the original source data (HTTP response) to disk. Again, this is probably something you don't need (it takes up almost 300MB of space)
 
-###### EnableFetchingFromDataRepo()
-The data repository concept was described earlier. Use this method to enable it. On either the repo being disabled, or failures on fetch, the Engine will simply revert to fetching from the original source.
-
 ###### WebRequest.SetThrottle(int milliseconds)
 Sets a static delay amount to be used between HTTP requests. Lets try to play nicely with the original sources.
 
@@ -360,19 +355,6 @@ Gets the latest available week, as officially determined by the NFL.
 ###### Task<List\<WeekInfo>> GetAllUpdatedWeeksAsync()
 Gets the complete list of weeks already updated and existing in the database.
 
-###### Task\<DataRepoState> GetDataRepoStateAsync()
-Returns an object representing the current state of the data repository. The `DataRepoState` class is defined as:
-
-```
-public class DataRepoState
-{
-  public DateTime Timestamp { get; set; }
-  public bool Enabled { get; set; }
-}
-```
-
-The `Timestamp` represents when the repo was last updated. If `Enabled` is false, the Engine will not make requests to the data repo.
-
 _StatsProcessor_
 
 Access the following methods using `engine.Stats.MethodName()`
@@ -400,7 +382,7 @@ Updates the dynamic player information for those currently rostered on a team.
 
 ---
 
-#### Extending with Database Provider
+#### Extending with the IDatabaseProvider
 
 As mentioned before, you're not limited to using the natively-supported `PostgreSql` or `Mongo` options as your data store. The Engine simply takes in an instance of `IDatabaseProvider` to interface with whatever implementation is out there.
 
