@@ -99,6 +99,7 @@ If you need the compiled program for a different environment, you can either:
 - [Extending with the IDatabaseProvider](#extending-with-database-provider)
 - [Roadmap](#roadmap)
 - [Reporting Bugs and Issues](#reporting-bugs-and-issues)
+- [Disclaimer](#disclaimer)
 
 ---
 
