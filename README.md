@@ -505,10 +505,15 @@ Here's a few features that are in consideration for the future:
 - Receiving targets count (currently only have _catches_)
 - Team depth charts
 - Betting lines and odds for the games.
+- Player draft information (year drafted, combine measurements and scores, etc.)
+- Additional stats such as QBR, game splits, etc.
+- Additional data source for redundancy.
 
 There's some reasons they didn't make the cut yet, feel free to open a thread if you want to discuss.
 
 There's also _no timeline_ for these yet. I'm going to be fairly busy for a while with some other things, but I do plan on getting back to this when I can.
+
+Realistically, don't expect new features before the start of the 2019 season.
 
 ---
 
@@ -519,3 +524,22 @@ Stumbled across a bug? Program throwing some exception? Please enable debug leve
 _Issues without logs (when relevant) will most likely be ignored and closed_
 
 I can't guarantee that a fix will happen immediately, but I will at least try to get back with a reply within a reasonable time.
+
+---
+
+#### Disclaimer
+
+Be _nice_ using this - make sure to throttle your requests.
+
+_DO NOT_ use this for commercial purposes whatsoever. My intention is to provide this as a means for hobby projects and the like.
+
+Use of the Engine for commercial purposes also doesn't make sense for various reasons, but here's two important ones:
+
+1. It's not reliable. It uses data from sources that are outside of its control, so if those change, we're left with a broken Engine until it's updated.
+2. From what I've seen, most websites strictly forbid the use of their data and pages for your own commercial purposes.
+
+My hope is that this app won't cause too much fuss from the organizations the data's sourced from. There's a lot of fun and creative ideas developers out there want to try out (for fun), but it's been tough getting the data they need.
+
+If you're a developer trying to create a football related app, you're pretty much a hardcore fan of the sport so lets uphold a good image and stay respectful on the usage of the data.
+
+If you're an owner of such data reading this, my hope would be that you'd be understanding of the many football fans out there that simply want to build cool football-related stuff for fun. _IANAL_ so my understanding of the legality of all this could be completely wrong. Please reach out if this is an issue and I'll make sure to take it down as soon as possible.
